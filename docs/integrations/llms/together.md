@@ -1,0 +1,70 @@
+---
+custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/together.ipynb
+---
+# Together AI
+
+:::caution
+You are currently on a page documenting the use of Together AI models as [text completion models](/docs/concepts/#llms). Many popular Together AI models are [chat completion models](/docs/concepts/#chat-models).
+
+You may be looking for [this page instead](/docs/integrations/chat/together/).
+:::
+
+[Together AI](https://www.together.ai/) offers an API to query [50+ leading open-source models](https://docs.together.ai/docs/inference-models) in a couple lines of code.
+
+This example goes over how to use LangChain to interact with Together AI models.
+
+## Installation
+
+
+```python
+%pip install --upgrade langchain-together
+```
+
+## Environment
+
+To use Together AI, you'll need an API key which you can find here:
+https://api.together.ai/settings/api-keys. This can be passed in as an init param
+``together_api_key`` or set as environment variable ``TOGETHER_API_KEY``.
+
+
+## Example
+
+
+```python
+# Querying chat models with Together AI
+
+from langchain_together import ChatTogether
+
+# choose from our 50+ models here: https://docs.together.ai/docs/inference-models
+chat = ChatTogether(
+    # together_api_key="YOUR_API_KEY",
+    model="meta-llama/Llama-3-70b-chat-hf",
+)
+
+# stream the response back from the model
+for m in chat.stream("Tell me fun things to do in NYC"):
+    print(m.content, end="", flush=True)
+
+# if you don't want to do streaming, you can use the invoke method
+# chat.invoke("Tell me fun things to do in NYC")
+```
+
+
+```python
+# Querying code and language models with Together AI
+
+from langchain_together import Together
+
+llm = Together(
+    model="codellama/CodeLlama-70b-Python-hf",
+    # together_api_key="..."
+)
+
+print(llm.invoke("def bubble_sort(): "))
+```
+
+
+## Related
+
+- LLM [conceptual guide](/docs/concepts/#llms)
+- LLM [how-to guides](/docs/how_to/#llms)

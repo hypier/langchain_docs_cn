@@ -1,0 +1,49 @@
+---
+sidebar_position: 0
+sidebar_class_name: hidden
+keywords: [compatibility]
+custom_edit_url:
+hide_table_of_contents: true
+---
+
+# Chat models
+
+:::info
+
+If you'd like to write your own chat model, see [this how-to](/docs/how_to/custom_chat_model/).
+If you'd like to contribute an integration, see [Contributing integrations](/docs/contributing/integrations/).
+
+:::
+
+## Advanced features
+
+The following table shows all the chat model classes that support one or more advanced features.
+
+:::info
+While all these LangChain classes support the indicated advanced feature, you may have
+to open the provider-specific documentation to learn which hosted models or backends support
+the feature.
+:::
+
+Model|[Tool calling](/docs/how_to/tool_calling)|[Structured output](/docs/how_to/structured_output/)|JSON mode|Local|[Multimodal](/docs/how_to/multimodal_inputs/)|Package
+:-|:-:|:-:|:-:|:-:|:-:|:-:
+[AzureChatOpenAI](/docs/integrations/chat/azure_chat_openai/)|✅|✅|✅|❌|✅|[langchain-openai](https://api.python.langchain.com/en/latest/openai_api_reference.html)
+[ChatAI21](/docs/integrations/chat/ai21)|✅|✅|❌|❌|❌|[langchain-ai21](https://api.python.langchain.com/en/latest/ai21_api_reference.html)
+[ChatAnthropic](/docs/integrations/chat/anthropic/)|✅|✅|❌|❌|✅|[langchain-anthropic](https://api.python.langchain.com/en/latest/anthropic_api_reference.html)
+[ChatBedrock](/docs/integrations/chat/bedrock/)|✅|✅|❌|❌|❌|[langchain-aws](https://api.python.langchain.com/en/latest/aws_api_reference.html)
+[ChatCohere](/docs/integrations/chat/cohere/)|✅|✅|❌|❌|❌|[langchain-cohere](https://api.python.langchain.com/en/latest/cohere_api_reference.html)
+[ChatFireworks](/docs/integrations/chat/fireworks/)|✅|✅|✅|❌|❌|[langchain-fireworks](https://api.python.langchain.com/en/latest/fireworks_api_reference.html)
+[ChatGoogleGenerativeAI](/docs/integrations/chat/google_generative_ai/)|✅|✅|❌|❌|✅|[langchain-google-genai](https://api.python.langchain.com/en/latest/google-genai_api_reference.html)
+[ChatGroq](/docs/integrations/chat/groq/)|✅|✅|✅|❌|❌|[langchain-groq](https://api.python.langchain.com/en/latest/groq_api_reference.html)
+[ChatHuggingFace](/docs/integrations/chat/huggingface/)|✅|✅|❌|✅|❌|[langchain-huggingface](https://api.python.langchain.com/en/latest/huggingface_api_reference.html)
+[ChatLlamaCpp](/docs/integrations/chat/llamacpp)|✅|✅|❌|✅|❌|[langchain-community](https://api.python.langchain.com/en/latest/community_api_reference.html)
+[ChatMistralAI](/docs/integrations/chat/mistralai/)|✅|✅|❌|❌|❌|[langchain-mistralai](https://api.python.langchain.com/en/latest/mistralai_api_reference.html)
+[ChatNVIDIA](/docs/integrations/chat/nvidia_ai_endpoints/)|✅|✅|❌|✅|❌|[langchain-nvidia-ai-endpoints](https://api.python.langchain.com/en/latest/nvidia-ai-endpoints_api_reference.html)
+[ChatOllama](/docs/integrations/chat/ollama/)|✅|✅|✅|✅|❌|[langchain-ollama](https://api.python.langchain.com/en/latest/ollama_api_reference.html)
+[ChatOpenAI](/docs/integrations/chat/openai/)|✅|✅|✅|❌|✅|[langchain-openai](https://api.python.langchain.com/en/latest/openai_api_reference.html)
+[ChatTogether](/docs/integrations/chat/together/)|✅|✅|✅|❌|❌|[langchain-together](https://api.python.langchain.com/en/latest/together_api_reference.html)
+[ChatUpstage](/docs/integrations/chat/upstage)|✅|✅|❌|❌|❌|[langchain-upstage](https://api.python.langchain.com/en/latest/upstage_api_reference.html)
+[ChatVertexAI](/docs/integrations/chat/google_vertex_ai_palm/)|✅|✅|❌|❌|✅|[langchain-google-vertexai](https://api.python.langchain.com/en/latest/google-vertexai_api_reference.html)
+[ChatWatsonx](/docs/integrations/chat/ibm_watsonx)|✅|✅|❌|❌|❌|[langchain-ibm](https://api.python.langchain.com/en/latest/ibm_api_reference.html)
+[vLLM Chat (via ChatOpenAI)](/docs/integrations/chat/vllm/)|❌|❌|❌|✅|❌|[langchain-openai](https://api.python.langchain.com/en/latest/openai_api_reference.html)
+

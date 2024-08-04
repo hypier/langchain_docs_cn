@@ -1,0 +1,204 @@
+---
+sidebar_position: 0
+sidebar_class_name: hidden
+keywords: [compatibility]
+custom_edit_url:
+hide_table_of_contents: true
+---
+
+# Document loaders
+
+:::info
+
+If you'd like to write your own document loader, see [this how-to](/docs/how_to/document_loader_custom/).
+If you'd like to contribute an integration, see [Contributing integrations](/docs/contributing/integrations/).
+
+:::
+
+
+## Features
+
+The following table shows the feature support for all document loaders.
+
+Document Loader|Description|Lazy loading|Native async support
+:-|:-|:-:|:-:
+AZLyricsLoader|Load `AZLyrics` webpages.|✅|✅
+AcreomLoader|Load `acreom` vault from a directory.|✅|❌
+AirtableLoader|Load the `Airtable` tables.|✅|❌
+AmazonTextractPDFLoader|Load `PDF` files from a local file system, HTTP or S3.|✅|❌
+ApifyDatasetLoader|Load datasets from `Apify` web scraping, crawling, and data extraction platform.|❌|❌
+ArcGISLoader|Load records from an ArcGIS FeatureLayer.|✅|❌
+ArxivLoader|Load a query result from `Arxiv`.|✅|❌
+AssemblyAIAudioLoaderById||✅|❌
+AssemblyAIAudioTranscriptLoader|Load AssemblyAI audio transcripts.|✅|❌
+AstraDBLoader|.. deprecated:: 0.0.29 Use ``langchain_astradb.AstraDBLoader`` instead.|✅|✅
+AsyncChromiumLoader|Scrape HTML pages from URLs using a|✅|✅
+AsyncHtmlLoader|Load `HTML` asynchronously.|✅|✅
+AthenaLoader|Load documents from `AWS Athena`.|✅|❌
+AzureAIDataLoader|Load from Azure AI Data.|✅|❌
+AzureAIDocumentIntelligenceLoader|Load a PDF with Azure Document Intelligence.|✅|❌
+AzureBlobStorageContainerLoader|Load from `Azure Blob Storage` container.|❌|❌
+AzureBlobStorageFileLoader|Load from `Azure Blob Storage` files.|❌|❌
+BSHTMLLoader|Load `HTML` files and parse them with `beautiful soup`.|✅|❌
+BibtexLoader|Load a `bibtex` file.|✅|❌
+BigQueryLoader|.. deprecated:: 0.0.32 Use ``langchain_google_community.BigQueryLoader`` instead.|❌|❌
+BiliBiliLoader||❌|❌
+BlackboardLoader|Load a `Blackboard` course.|✅|✅
+BlockchainDocumentLoader|Load elements from a blockchain smart contract.|❌|❌
+BraveSearchLoader|Load with `Brave Search` engine.|✅|❌
+BrowserbaseLoader|Load pre-rendered web pages using a headless browser hosted on Browserbase.|✅|❌
+BrowserlessLoader|Load webpages with `Browserless` /content endpoint.|✅|❌
+CSVLoader|Load a `CSV` file into a list of Documents.|✅|❌
+CassandraLoader||✅|✅
+ChatGPTLoader|Load conversations from exported `ChatGPT` data.|❌|❌
+CoNLLULoader|Load `CoNLL-U` files.|❌|❌
+CollegeConfidentialLoader|Load `College Confidential` webpages.|✅|✅
+ConcurrentLoader|Load and pars Documents concurrently.|✅|❌
+ConfluenceLoader|Load `Confluence` pages.|✅|❌
+CouchbaseLoader|Load documents from `Couchbase`.|✅|❌
+CubeSemanticLoader|Load `Cube semantic layer` metadata.|✅|❌
+DataFrameLoader|Load `Pandas` DataFrame.|✅|❌
+DatadogLogsLoader|Load `Datadog` logs.|❌|❌
+DedocAPIFileLoader||✅|❌
+DedocFileLoader||✅|❌
+DedocPDFLoader||✅|❌
+DiffbotLoader|Load `Diffbot` json file.|❌|❌
+DirectoryLoader|Load from a directory.|✅|❌
+DiscordChatLoader|Load `Discord` chat logs.|❌|❌
+DocugamiLoader|.. deprecated:: 0.0.24 Use ``docugami_langchain.DocugamiLoader`` instead.|❌|❌
+DocusaurusLoader|Load from Docusaurus Documentation.|✅|✅
+Docx2txtLoader|Load `DOCX` file using `docx2txt` and chunks at character level.|❌|❌
+DropboxLoader|Load files from `Dropbox`.|❌|❌
+DuckDBLoader|Load from `DuckDB`.|❌|❌
+EtherscanLoader|Load transactions from `Ethereum` mainnet.|✅|❌
+EverNoteLoader|Load from `EverNote`.|✅|❌
+FacebookChatLoader|Load `Facebook Chat` messages directory dump.|✅|❌
+FaunaLoader|Load from `FaunaDB`.|✅|❌
+FigmaFileLoader|Load `Figma` file.|❌|❌
+FireCrawlLoader|Load web pages as Documents using FireCrawl.|✅|❌
+GCSDirectoryLoader|.. deprecated:: 0.0.32 Use ``langchain_google_community.GCSDirectoryLoader`` instead.|❌|❌
+GCSFileLoader|.. deprecated:: 0.0.32 Use ``langchain_google_community.GCSFileLoader`` instead.|❌|❌
+GeoDataFrameLoader|Load `geopandas` Dataframe.|✅|❌
+GitHubIssuesLoader|Load issues of a GitHub repository.|✅|❌
+GitLoader|Load `Git` repository files.|✅|❌
+GitbookLoader|Load `GitBook` data.|✅|✅
+GithubFileLoader|Load GitHub File|✅|❌
+GlueCatalogLoader|Load table schemas from AWS Glue.|✅|❌
+GoogleApiYoutubeLoader|Load all Videos from a `YouTube` Channel.|❌|❌
+GoogleDriveLoader|.. deprecated:: 0.0.32 Use ``langchain_google_community.GoogleDriveLoader`` instead.|❌|❌
+GoogleSpeechToTextLoader|.. deprecated:: 0.0.32 Use ``langchain_google_community.SpeechToTextLoader`` instead.|❌|❌
+GutenbergLoader|Load from `Gutenberg.org`.|❌|❌
+HNLoader|Load `Hacker News` data.|✅|✅
+HuggingFaceDatasetLoader|Load from `Hugging Face Hub` datasets.|✅|❌
+HuggingFaceModelLoader||✅|❌
+IFixitLoader|Load `iFixit` repair guides, device wikis and answers.|❌|❌
+IMSDbLoader|Load `IMSDb` webpages.|✅|✅
+ImageCaptionLoader|Load image captions.|❌|❌
+IuguLoader|Load from `IUGU`.|❌|❌
+JSONLoader||✅|❌
+JoplinLoader|Load notes from `Joplin`.|✅|❌
+KineticaLoader|Load from `Kinetica` API.|✅|❌
+LLMSherpaFileLoader|Load Documents using `LLMSherpa`.|✅|❌
+LakeFSLoader|Load from `lakeFS`.|❌|❌
+LarkSuiteDocLoader|Load from `LarkSuite` (`FeiShu`).|✅|❌
+MHTMLLoader|Parse `MHTML` files with `BeautifulSoup`.|✅|❌
+MWDumpLoader|Load `MediaWiki` dump from an `XML` file.|✅|❌
+MastodonTootsLoader|Load the `Mastodon` 'toots'.|✅|❌
+MathpixPDFLoader|Load `PDF` files using `Mathpix` service.|❌|❌
+MaxComputeLoader|Load from `Alibaba Cloud MaxCompute` table.|✅|❌
+MergedDataLoader|Merge documents from a list of loaders|✅|✅
+ModernTreasuryLoader|Load from `Modern Treasury`.|❌|❌
+MongodbLoader|Load MongoDB documents.|❌|✅
+NewsURLLoader|Load news articles from URLs using `Unstructured`.|✅|❌
+NotebookLoader|Load `Jupyter notebook` (.ipynb) files.|❌|❌
+NotionDBLoader|Load from `Notion DB`.|❌|❌
+NotionDirectoryLoader|Load `Notion directory` dump.|❌|❌
+OBSDirectoryLoader|Load from `Huawei OBS directory`.|❌|❌
+OBSFileLoader|Load from the `Huawei OBS file`.|❌|❌
+ObsidianLoader|Load `Obsidian` files from directory.|✅|❌
+OneDriveFileLoader|Load a file from `Microsoft OneDrive`.|❌|❌
+OneDriveLoader|Load from `Microsoft OneDrive`.|✅|❌
+OnlinePDFLoader|Load online `PDF`.|❌|❌
+OpenCityDataLoader|Load from `Open City`.|✅|❌
+OracleAutonomousDatabaseLoader||❌|❌
+OracleDocLoader|Read documents using OracleDocLoader|❌|❌
+OutlookMessageLoader||✅|❌
+PDFMinerLoader|Load `PDF` files using `PDFMiner`.|✅|❌
+PDFMinerPDFasHTMLLoader|Load `PDF` files as HTML content using `PDFMiner`.|✅|❌
+PDFPlumberLoader|Load `PDF` files using `pdfplumber`.|❌|❌
+PagedPDFSplitter|Load PDF using pypdf into list of documents.|✅|❌
+PebbloSafeLoader|Pebblo Safe Loader class is a wrapper around document loaders enabling the data|✅|❌
+PlaywrightURLLoader|Load `HTML` pages with `Playwright` and parse with `Unstructured`.|✅|✅
+PolarsDataFrameLoader|Load `Polars` DataFrame.|✅|❌
+PsychicLoader|Load from `Psychic.dev`.|✅|❌
+PubMedLoader|Load from the `PubMed` biomedical library.|✅|❌
+PyMuPDFLoader|Load `PDF` files using `PyMuPDF`.|✅|❌
+PyPDFDirectoryLoader|Load a directory with `PDF` files using `pypdf` and chunks at character level.|❌|❌
+PyPDFLoader|Load PDF using pypdf into list of documents.|✅|❌
+PyPDFium2Loader|Load `PDF` using `pypdfium2` and chunks at character level.|✅|❌
+PySparkDataFrameLoader|Load `PySpark` DataFrames.|✅|❌
+PythonLoader|Load `Python` files, respecting any non-default encoding if specified.|✅|❌
+RSSFeedLoader|Load news articles from `RSS` feeds using `Unstructured`.|✅|❌
+ReadTheDocsLoader|Load `ReadTheDocs` documentation directory.|✅|❌
+RecursiveUrlLoader|Recursively load all child links from a root URL.|✅|❌
+RedditPostsLoader|Load `Reddit` posts.|❌|❌
+RoamLoader|Load `Roam` files from a directory.|❌|❌
+RocksetLoader|Load from a `Rockset` database.|✅|❌
+S3DirectoryLoader|Load from `Amazon AWS S3` directory.|❌|❌
+S3FileLoader|Load from `Amazon AWS S3` file.|✅|❌
+SQLDatabaseLoader||✅|❌
+SRTLoader|Load `.srt` (subtitle) files.|❌|❌
+ScrapflyLoader|Turn a url to llm accessible markdown with `Scrapfly.io`.|✅|❌
+ScrapingAntLoader|Turn an url to LLM accessible markdown with `ScrapingAnt`.|✅|❌
+SeleniumURLLoader|Load `HTML` pages with `Selenium` and parse with `Unstructured`.|❌|❌
+SharePointLoader|Load  from `SharePoint`.|✅|❌
+SitemapLoader|Load a sitemap and its URLs.|✅|✅
+SlackDirectoryLoader|Load from a `Slack` directory dump.|✅|❌
+SnowflakeLoader|Load from `Snowflake` API.|✅|❌
+SpiderLoader|Load web pages as Documents using Spider AI.|✅|❌
+SpreedlyLoader|Load from `Spreedly` API.|❌|❌
+StripeLoader|Load from `Stripe` API.|❌|❌
+SurrealDBLoader|Load SurrealDB documents.|❌|✅
+TelegramChatApiLoader|Load `Telegram` chat json directory dump.|❌|❌
+TelegramChatFileLoader|Load from `Telegram chat` dump.|❌|❌
+TelegramChatLoader|Load from `Telegram chat` dump.|❌|❌
+TencentCOSDirectoryLoader|Load from `Tencent Cloud COS` directory.|✅|❌
+TencentCOSFileLoader|Load from `Tencent Cloud COS` file.|✅|❌
+TensorflowDatasetLoader|Load from `TensorFlow Dataset`.|✅|❌
+TextLoader|Load text file.|✅|❌
+TiDBLoader|Load documents from TiDB.|✅|❌
+ToMarkdownLoader|Load `HTML` using `2markdown API`.|✅|❌
+TomlLoader|Load `TOML` files.|✅|❌
+TrelloLoader|Load cards from a `Trello` board.|✅|❌
+TwitterTweetLoader|Load `Twitter` tweets.|❌|❌
+UnstructuredAPIFileIOLoader|.. deprecated:: 0.2.8 Use ``langchain_unstructured.UnstructuredLoader`` instead.|✅|❌
+UnstructuredAPIFileLoader|.. deprecated:: 0.2.8 Use ``langchain_unstructured.UnstructuredLoader`` instead.|✅|❌
+UnstructuredCHMLoader|Load `CHM` files using `Unstructured`.|✅|❌
+UnstructuredCSVLoader|Load `CSV` files using `Unstructured`.|✅|❌
+UnstructuredEPubLoader|Load `EPub` files using `Unstructured`.|✅|❌
+UnstructuredEmailLoader|Load email files using `Unstructured`.|✅|❌
+UnstructuredExcelLoader|Load Microsoft Excel files using `Unstructured`.|✅|❌
+UnstructuredFileIOLoader|.. deprecated:: 0.2.8 Use ``langchain_unstructured.UnstructuredLoader`` instead.|✅|❌
+UnstructuredFileLoader|.. deprecated:: 0.2.8 Use ``langchain_unstructured.UnstructuredLoader`` instead.|✅|❌
+UnstructuredHTMLLoader|Load `HTML` files using `Unstructured`.|✅|❌
+UnstructuredImageLoader|Load `PNG` and `JPG` files using `Unstructured`.|✅|❌
+UnstructuredMarkdownLoader|Load `Markdown` files using `Unstructured`.|✅|❌
+UnstructuredODTLoader|Load `OpenOffice ODT` files using `Unstructured`.|✅|❌
+UnstructuredOrgModeLoader|Load `Org-Mode` files using `Unstructured`.|✅|❌
+UnstructuredPDFLoader|Load `PDF` files using `Unstructured`.|✅|❌
+UnstructuredPowerPointLoader|Load `Microsoft PowerPoint` files using `Unstructured`.|✅|❌
+UnstructuredRSTLoader|Load `RST` files using `Unstructured`.|✅|❌
+UnstructuredRTFLoader|Load `RTF` files using `Unstructured`.|✅|❌
+UnstructuredTSVLoader|Load `TSV` files using `Unstructured`.|✅|❌
+UnstructuredURLLoader|Load files from remote URLs using `Unstructured`.|❌|❌
+UnstructuredWordDocumentLoader|Load `Microsoft Word` file using `Unstructured`.|✅|❌
+UnstructuredXMLLoader|Load `XML` file using `Unstructured`.|✅|❌
+VsdxLoader||❌|❌
+WeatherDataLoader|Load weather data with `Open Weather Map` API.|✅|❌
+WebBaseLoader|Load HTML pages using `urllib` and parse them with `BeautifulSoup'.|✅|✅
+WhatsAppChatLoader|Load `WhatsApp` messages text file.|✅|❌
+WikipediaLoader|Load from `Wikipedia`.|✅|❌
+XorbitsLoader|Load `Xorbits` DataFrame.|✅|❌
+YoutubeLoader|Load `YouTube` video transcripts.|❌|❌
+YuqueLoader|Load documents from `Yuque`.|❌|❌
+
