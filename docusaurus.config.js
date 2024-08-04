@@ -13,11 +13,11 @@ const baseUrl = "/";
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: "🦜️🔗 LangChain",
+  title: "🦜️🔗 LangChain 中文文档",
   tagline: "LangChain Python Docs",
   favicon: "img/brand/favicon.png",
   // Set the production url of your site here
-  url: "https://python.langchain.com",
+  url: "https://lc-docs.role.fun",
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: baseUrl,
