@@ -4,14 +4,6 @@
   "trailingSlash": true,
   "rewrites": [
     {
-      "source": "/v0.1",
-      "destination": "https://langchain-v01.vercel.app/v0.1"
-    },
-    {
-      "source": "/v0.1/:path(.*/?)*",
-      "destination": "https://langchain-v01.vercel.app/v0.1/:path*"
-    },
-    {
       "source": "/robots.txt(/?)",
       "destination": "/robots.txt/"
     },
