@@ -2,7 +2,7 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/gradient.ipynb
 ---
 
-# 渐变
+# Gradient
 
 `Gradient` 允许通过简单的网页 API 创建 `Embeddings`，并对 LLM 进行微调和获取完成结果。
 

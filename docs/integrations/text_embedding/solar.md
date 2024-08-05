@@ -2,9 +2,9 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/solar.ipynb
 ---
 
-# 太阳能
+# Solar
 
-[太阳能](https://console.upstage.ai/services/embedding) 提供嵌入服务。
+[Solar](https://console.upstage.ai/services/embedding) 提供嵌入服务。
 
 此示例介绍如何使用 LangChain 与 Solar Inference 进行文本嵌入的交互。
 

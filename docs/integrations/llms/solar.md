@@ -2,9 +2,9 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/solar.ipynb
 ---
 
-# 太阳能
+# Solar
 
-*此社区集成已被弃用。您应该使用 [`ChatUpstage`](../../chat/upstage) 来通过聊天模型连接器访问太阳能 LLM。*
+*此社区集成已被弃用。您应该使用 [`ChatUpstage`](../../chat/upstage) 来通过聊天模型连接器访问Solar LLM。*
 
 
 ```python

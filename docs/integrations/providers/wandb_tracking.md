@@ -2,7 +2,7 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/providers/wandb_tracking.ipynb
 ---
 
-# 权重与偏差
+# Weights & Biases
 
 本笔记本介绍了如何将您的 LangChain 实验跟踪到一个集中化的权重与偏差仪表板中。要了解更多关于提示工程和回调的信息，请参考此报告，该报告解释了这两者以及您可以期待看到的结果仪表板。
 

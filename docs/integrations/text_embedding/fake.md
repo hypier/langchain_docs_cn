@@ -2,7 +2,7 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/fake.ipynb
 ---
 
-# 虚假嵌入
+# Fake Embeddings
 
 LangChain 还提供了一个虚假嵌入类。您可以使用它来测试您的管道。
 

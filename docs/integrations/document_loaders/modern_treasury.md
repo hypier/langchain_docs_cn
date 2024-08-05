@@ -2,9 +2,9 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/modern_treasury.ipynb
 ---
 
-# 现代财务
+# Modern Treasury
 
->[现代财务](https://www.moderntreasury.com/) 简化了复杂的支付操作。它是一个统一的平台，用于支持移动资金的产品和流程。
+>[Modern Treasury](https://www.moderntreasury.com/) 简化了复杂的支付操作。它是一个统一的平台，用于支持移动资金的产品和流程。
 >- 连接到银行和支付系统
 >- 实时跟踪交易和余额
 >- 自动化支付操作以实现规模化
@@ -16,7 +16,7 @@ from langchain.indexes import VectorstoreIndexCreator
 from langchain_community.document_loaders import ModernTreasuryLoader
 ```
 
-现代财务 API 需要一个组织 ID 和 API 密钥，这可以在现代财务仪表板的开发者设置中找到。
+Modern Treasury API 需要一个组织 ID 和 API 密钥，这可以在Modern Treasury仪表板的开发者设置中找到。
 
 该文档加载器还需要一个 `resource` 选项，用于定义您想要加载的数据。
 

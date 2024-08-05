@@ -1,4 +1,4 @@
-# 烟花
+# Fireworks
 
 本页介绍如何在 Langchain 中使用 [Fireworks](https://fireworks.ai/) 模型。
 

@@ -162,11 +162,11 @@ const config = {
             type: "docSidebar",
             position: "left",
             sidebarId: "integrations",
-            label: "Integrations",
+            label: "集成",
           },
           {
             href: "https://api.python.langchain.com",
-            label: "API Reference",
+            label: "API参考",
             position: "left",
           },
           {

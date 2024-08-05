@@ -2,7 +2,7 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/replicate.ipynb
 ---
 
-# 复制
+# Replicate
 
 >[Replicate](https://replicate.com/blog/machine-learning-needs-better-tools) 在云中运行机器学习模型。我们拥有一个开源模型库，您可以用几行代码运行。如果您正在构建自己的机器学习模型，Replicate 使其易于大规模部署。
 

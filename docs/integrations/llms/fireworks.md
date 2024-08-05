@@ -2,10 +2,10 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/fireworks.ipynb
 ---
 
-# 烟花
+# Fireworks
 
 :::caution
-您当前正在查看有关使用烟花模型作为 [文本补全模型](/docs/concepts/#llms) 的页面。许多流行的烟花模型是 [聊天补全模型](/docs/concepts/#chat-models)。
+您当前正在查看有关使用Fireworks模型作为 [文本补全模型](/docs/concepts/#llms) 的页面。许多流行的Fireworks模型是 [聊天补全模型](/docs/concepts/#chat-models)。
 
 您可能想查看 [此页面](/docs/integrations/chat/fireworks/)。
 :::

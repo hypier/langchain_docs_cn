@@ -1,6 +1,6 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/fireworks.ipynb
-sidebar_label: 烟花
+sidebar_label: Fireworks
 ---
 
 # ChatFireworks

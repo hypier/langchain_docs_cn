@@ -2,7 +2,7 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/infinity.ipynb
 ---
 
-# 无限
+# Infinity
 
 `Infinity` 允许使用 MIT 许可的嵌入服务器创建 `Embeddings`。
 

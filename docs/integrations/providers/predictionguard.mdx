@@ -1,7 +1,7 @@
-# 预测保护
+# Prediction Guard
 
-本页面介绍如何在 LangChain 中使用预测保护生态系统。
-它分为两个部分：安装和设置，以及对特定预测保护包装器的引用。
+本页面介绍如何在 LangChain 中使用Prediction Guard生态系统。
+它分为两个部分：安装和设置，以及对特定Prediction Guard包装器的引用。
 
 ## 安装和设置
 - 使用 `pip install predictionguard` 安装 Python SDK
@@ -9,12 +9,12 @@
 
 ## LLM Wrapper
 
-存在一个预测保护 LLM 包装器，您可以通过以下方式访问它：
+存在一个Prediction Guard LLM 包装器，您可以通过以下方式访问它：
 ```python
 from langchain_community.llms import PredictionGuard
 ```
 
-在初始化 LLM 时，您可以将预测保护模型的名称作为参数提供：
+在初始化 LLM 时，您可以将Prediction Guard模型的名称作为参数提供：
 ```python
 pgllm = PredictionGuard(model="MPT-7B-Instruct")
 ```

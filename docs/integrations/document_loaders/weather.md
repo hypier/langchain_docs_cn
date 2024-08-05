@@ -2,7 +2,7 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/weather.ipynb
 ---
 
-# 天气
+# Weather
 
 >[OpenWeatherMap](https://openweathermap.org/) 是一个开源天气服务提供商
 

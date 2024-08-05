@@ -2,7 +2,7 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/predictionguard.ipynb
 ---
 
-# 预测保护
+# Prediction Guard
 
 
 ```python

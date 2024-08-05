@@ -2,7 +2,7 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/outline.ipynb
 ---
 
-# 大纲
+# Outline
 
 >[Outline](https://www.getoutline.com/) 是一个开源的协作知识库平台，旨在团队信息共享。
 

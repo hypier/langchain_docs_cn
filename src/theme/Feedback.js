@@ -255,7 +255,7 @@ export default function Feedback() {
         </>
       ) : (
         <>
-          <h4>Was this page helpful?</h4>
+          <h4>此页面是否有帮助？</h4>
           <div style={{ display: "flex", gap: "5px" }}>
             <div
               {...defaultFields}
@@ -298,11 +298,10 @@ export default function Feedback() {
       )}
       <br />
       <h4>
-        You can also leave detailed feedback{" "}
+        您还可以留下详细的反馈{" "}
         <a target="_blank" href={newGithubIssueURL}>
-          on GitHub
+          在 GitHub 上
         </a>
-        .
       </h4>
     </div>
   );

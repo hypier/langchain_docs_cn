@@ -2,7 +2,7 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/providers/aim_tracking.ipynb
 ---
 
-# 目标
+# Aim
 
 Aim 使可视化和调试 LangChain 执行变得非常简单。Aim 跟踪 LLM 和工具的输入和输出，以及代理的操作。
 

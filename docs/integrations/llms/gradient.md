@@ -2,7 +2,7 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/gradient.ipynb
 ---
 
-# 渐变
+# Gradient
 
 `Gradient` 允许通过简单的 web API 对 LLM 进行微调和获取补全。
 

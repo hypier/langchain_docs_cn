@@ -1,9 +1,9 @@
-# 香蕉
+# Banana
 
->[香蕉](https://www.banana.dev/) 提供了无服务器 GPU 推理服务用于 AI 模型， 
+>[Banana](https://www.banana.dev/) 提供了无服务器 GPU 推理服务用于 AI 模型，
 > 以及 CI/CD 构建管道和一个简单的 Python 框架 (`Potassium`) 来服务您的模型。
 
-本页面介绍如何在 LangChain 中使用 [香蕉](https://www.banana.dev) 生态系统。
+本页面介绍如何在 LangChain 中使用 [Banana](https://www.banana.dev) 生态系统。
 
 ## 安装与设置
 
@@ -16,17 +16,17 @@ pip install banana-dev
 - 从 [Banana.dev 控制面板](https://app.banana.dev) 获取一个 Banana API 密钥，并将其设置为环境变量 (`BANANA_API_KEY`)
 - 从模型的详细信息页面获取您的模型密钥和 URL 段。
 
-## 定义您的香蕉模板
+## 定义您的Banana模板
 
-您需要为您的香蕉应用程序设置一个Github仓库。您可以按照[此指南](https://docs.banana.dev/banana-docs/)在5分钟内开始。
+您需要为您的Banana应用程序设置一个Github仓库。您可以按照[此指南](https://docs.banana.dev/banana-docs/)在5分钟内开始。
 
-或者，您可以查看香蕉的[CodeLlama-7B-Instruct-GPTQ](https://github.com/bananaml/demo-codellama-7b-instruct-gptq) GitHub仓库，以获取一个现成的LLM示例。只需分叉它并在香蕉中部署。
+或者，您可以查看Banana的[CodeLlama-7B-Instruct-GPTQ](https://github.com/bananaml/demo-codellama-7b-instruct-gptq) GitHub仓库，以获取一个现成的LLM示例。只需分叉它并在Banana中部署。
 
 其他入门仓库可以在[这里](https://github.com/orgs/bananaml/repositories?q=demo-&type=all&language=&sort=)找到。
 
-## 构建香蕉应用
+## 构建Banana应用
 
-要在 Langchain 中使用香蕉应用，您必须在返回的 json 中包含 `outputs` 键，值必须是字符串。
+要在 Langchain 中使用Banana应用，您必须在返回的 json 中包含 `outputs` 键，值必须是字符串。
 
 ```python
 # Return the results as a dictionary
