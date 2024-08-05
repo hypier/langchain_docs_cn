@@ -1,30 +1,29 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/xata_chat_message_history.ipynb
 ---
+
 # Xata
 
->[Xata](https://xata.io) is a serverless data platform, based on `PostgreSQL` and `Elasticsearch`. It provides a Python SDK for interacting with your database, and a UI for managing your data. With the `XataChatMessageHistory` class, you can use Xata databases for longer-term persistence of chat sessions.
+>[Xata](https://xata.io) 是一个无服务器的数据平台，基于 `PostgreSQL` 和 `Elasticsearch`。它提供了一个用于与数据库交互的 Python SDK，以及一个用于管理数据的用户界面。通过 `XataChatMessageHistory` 类，您可以使用 Xata 数据库来长期保存聊天会话。
 
-This notebook covers:
+本笔记本涵盖：
 
-* A simple example showing what `XataChatMessageHistory` does.
-* A more complex example using a REACT agent that answer questions based on a knowledge based or documentation (stored in Xata as a vector store) and also having a long-term searchable history of its past messages (stored in Xata as a memory store)
+* 一个简单的示例，展示 `XataChatMessageHistory` 的功能。
+* 一个更复杂的示例，使用 REACT 代理，根据知识库或文档（以向量存储形式存储在 Xata 中）回答问题，并且还拥有其过去消息的长期可搜索历史（以内存存储形式存储在 Xata 中）。
 
-## Setup
+## 设置
 
-### Create a database
+### 创建数据库
 
-In the [Xata UI](https://app.xata.io) create a new database. You can name it whatever you want, in this notepad we'll use `langchain`. The Langchain integration can auto-create the table used for storying the memory, and this is what we'll use in this example. If you want to pre-create the table, ensure it has the right schema and set `create_table` to `False` when creating the class. Pre-creating the table saves one round-trip to the database during each session initialization.
+在 [Xata UI](https://app.xata.io) 中创建一个新的数据库。您可以随意命名，在这个记事本中我们将使用 `langchain`。Langchain 集成可以自动创建用于存储记忆的表，这就是我们在本示例中将使用的。如果您想预先创建表，请确保它具有正确的模式，并在创建类时将 `create_table` 设置为 `False`。预先创建表可以在每次会话初始化期间节省一次与数据库的往返。
 
-Let's first install our dependencies:
-
+首先，让我们安装我们的依赖项：
 
 ```python
 %pip install --upgrade --quiet  xata langchain-openai langchain langchain-community
 ```
 
-Next, we need to get the environment variables for Xata. You can create a new API key by visiting your [account settings](https://app.xata.io/settings). To find the database URL, go to the Settings page of the database that you have created. The database URL should look something like this: `https://demo-uni3q8.eu-west-1.xata.sh/db/langchain`.
-
+接下来，我们需要获取 Xata 的环境变量。您可以通过访问您的 [帐户设置](https://app.xata.io/settings) 创建一个新的 API 密钥。要查找数据库 URL，请转到您创建的数据库的设置页面。数据库 URL 应该类似于： `https://demo-uni3q8.eu-west-1.xata.sh/db/langchain`。
 
 ```python
 import getpass
@@ -33,10 +32,9 @@ api_key = getpass.getpass("Xata API key: ")
 db_url = input("Xata database URL (copy it from your DB settings):")
 ```
 
-## Create a simple memory store
+## 创建简单的内存存储
 
-To test the memory store functionality in isolation, let's use the following code snippet:
-
+为了单独测试内存存储功能，我们使用以下代码片段：
 
 ```python
 from langchain_community.chat_message_histories import XataChatMessageHistory
@@ -50,21 +48,19 @@ history.add_user_message("hi!")
 history.add_ai_message("whats up?")
 ```
 
-The above code creates a session with the ID `session-1` and stores two messages in it. After running the above, if you visit the Xata UI, you should see a table named `memory` and the two messages added to it.
+上述代码创建了一个会话，ID 为 `session-1`，并在其中存储了两条消息。运行上述代码后，如果您访问 Xata UI，您应该会看到一个名为 `memory` 的表格，以及添加的两条消息。
 
-You can retrieve the message history for a particular session with the following code:
-
+您可以使用以下代码检索特定会话的消息历史记录：
 
 ```python
 history.messages
 ```
 
-## Conversational Q&A chain on your data with memory
+## 带记忆的数据对话问答链
 
-Let's now see a more complex example in which we combine OpenAI, the Xata Vector Store integration, and the Xata memory store integration to create a Q&A chat bot on your data, with follow-up questions and history.
+现在让我们看看一个更复杂的例子，在这个例子中，我们结合了OpenAI、Xata Vector Store集成和Xata内存存储集成，创建一个基于您数据的问答聊天机器人，支持后续问题和历史记录。
 
-We're going to need to access the OpenAI API, so let's configure the API key:
-
+我们需要访问OpenAI API，因此让我们配置API密钥：
 
 ```python
 import os
@@ -72,13 +68,12 @@ import os
 os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API Key:")
 ```
 
-To store the documents that the chatbot will search for answers, add a table named `docs` to your `langchain` database using the Xata UI, and add the following columns:
+为了存储聊天机器人将搜索答案的文档，请使用Xata UI向您的`langchain`数据库添加一个名为`docs`的表，并添加以下列：
 
-* `content` of type "Text". This is used to store the `Document.pageContent` values.
-* `embedding` of type "Vector". Use the dimension used by the model you plan to use. In this notebook we use OpenAI embeddings, which have 1536 dimensions.
+* `content` 类型为 "Text"。用于存储 `Document.pageContent` 的值。
+* `embedding` 类型为 "Vector"。使用您计划使用的模型所使用的维度。在本笔记本中，我们使用OpenAI嵌入，具有1536个维度。
 
-Let's create the vector store and add some sample docs to it:
-
+让我们创建向量存储并添加一些示例文档：
 
 ```python
 from langchain_community.vectorstores.xata import XataVectorStore
@@ -97,10 +92,9 @@ vector_store = XataVectorStore.from_texts(
 )
 ```
 
-After running the above command, if you go to the Xata UI, you should see the documents loaded together with their embeddings in the `docs` table.
+运行上述命令后，如果您访问Xata UI，您应该会看到文档及其嵌入加载在`docs`表中。
 
-Let's now create a ConversationBufferMemory to store the chat messages from both the user and the AI.
-
+现在让我们创建一个ConversationBufferMemory来存储用户和AI的聊天消息。
 
 ```python
 from uuid import uuid4
@@ -108,7 +102,7 @@ from uuid import uuid4
 from langchain.memory import ConversationBufferMemory
 
 chat_memory = XataChatMessageHistory(
-    session_id=str(uuid4()),  # needs to be unique per user session
+    session_id=str(uuid4()),  # 每个用户会话需要唯一
     api_key=api_key,
     db_url=db_url,
     table_name="memory",
@@ -118,8 +112,7 @@ memory = ConversationBufferMemory(
 )
 ```
 
-Now it's time to create an Agent to use both the vector store and the chat memory together.
-
+现在是时候创建一个Agent，以便将向量存储和聊天记忆结合使用。
 
 ```python
 from langchain.agents import AgentType, initialize_agent
@@ -144,29 +137,25 @@ agent = initialize_agent(
 )
 ```
 
-To test, let's tell the agent our name:
-
+为了测试，让我们告诉代理我们的名字：
 
 ```python
 agent.run(input="My name is bob")
 ```
 
-Now, let's now ask the agent some questions about Xata:
-
+现在，让我们问代理一些关于Xata的问题：
 
 ```python
 agent.run(input="What is xata?")
 ```
 
-Notice that it answers based on the data stored in the document store. And now, let's ask a follow up question:
-
+请注意，它是根据存储在文档存储中的数据进行回答的。现在，让我们问一个后续问题：
 
 ```python
 agent.run(input="Does it support similarity search?")
 ```
 
-And now let's test its memory:
-
+现在让我们测试它的记忆：
 
 ```python
 agent.run(input="Did I tell you my name? What is it?")

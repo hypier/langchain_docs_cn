@@ -1,70 +1,68 @@
-
 # sql-llama2
 
-This template enables a user to interact with a SQL database using natural language. 
+此模板使用户能够使用自然语言与 SQL 数据库进行交互。
 
-It uses LLamA2-13b hosted by [Replicate](https://python.langchain.com/docs/integrations/llms/replicate), but can be adapted to any API that supports LLaMA2 including [Fireworks](https://python.langchain.com/docs/integrations/chat/fireworks). 
+它使用由 [Replicate](https://python.langchain.com/docs/integrations/llms/replicate) 托管的 LLamA2-13b，但可以适配任何支持 LLaMA2 的 API，包括 [Fireworks](https://python.langchain.com/docs/integrations/chat/fireworks)。
 
-The template includes an example database of 2023 NBA rosters. 
+该模板包括 2023 年 NBA 名单的示例数据库。
 
-For more information on how to build this database, see [here](https://github.com/facebookresearch/llama-recipes/blob/main/demo_apps/StructuredLlama.ipynb).
+有关如何构建此数据库的更多信息，请参见 [这里](https://github.com/facebookresearch/llama-recipes/blob/main/demo_apps/StructuredLlama.ipynb)。
 
-## Environment Setup
+## 环境设置
 
-Ensure the `REPLICATE_API_TOKEN` is set in your environment.
+确保在您的环境中设置了 `REPLICATE_API_TOKEN`。
 
-## Usage
+## 使用方法
 
-To use this package, you should first have the LangChain CLI installed:
+要使用此软件包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将此软件包作为唯一的包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package sql-llama2
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，可以直接运行：
 
 ```shell
 langchain app add sql-llama2
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 ```python
 from sql_llama2 import chain as sql_llama2_chain
 
 add_routes(app, sql_llama2_chain, path="/sql-llama2")
 ```
 
-(Optional) Let's now configure LangSmith. 
-LangSmith will help us trace, monitor and debug LangChain applications. 
-You can sign up for LangSmith [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
-
+（可选）现在让我们配置 LangSmith。
+LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接通过以下命令启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server is running locally at 
-[http://localhost:8000](http://localhost:8000)
+这将启动 FastAPI 应用程序，服务器在本地运行，地址为 
+[http://localhost:8000](http://localhost:8000)。
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/sql-llama2/playground](http://127.0.0.1:8000/sql-llama2/playground)  
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板。
+我们可以在 [http://127.0.0.1:8000/sql-llama2/playground](http://127.0.0.1:8000/sql-llama2/playground) 访问游乐场。
 
-We can access the template from code with:
+我们可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable

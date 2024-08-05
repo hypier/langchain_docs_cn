@@ -1,12 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/llmlingua.ipynb
 ---
-# LLMLingua Document Compressor
 
->[LLMLingua](https://github.com/microsoft/LLMLingua) utilizes a compact, well-trained language model (e.g., GPT2-small, LLaMA-7B) to identify and remove non-essential tokens in prompts. This approach enables efficient inference with large language models (LLMs), achieving up to 20x compression with minimal performance loss.
+# LLMLingua 文档压缩器
 
-This notebook shows how to use LLMLingua as a document compressor.
+>[LLMLingua](https://github.com/microsoft/LLMLingua) 利用紧凑、训练良好的语言模型（例如，GPT2-small，LLaMA-7B）来识别和移除提示中的非必要标记。这种方法使得在大型语言模型（LLMs）中实现高效推理，达到最高 20 倍的压缩，同时性能损失最小。
 
+本笔记本展示了如何使用 LLMLingua 作为文档压缩器。
 
 ```python
 %pip install --upgrade --quiet  llmlingua accelerate
@@ -30,9 +30,8 @@ def pretty_print_docs(docs):
     )
 ```
 
-## Set up the base vector store retriever
-Let's start by initializing a simple vector store retriever and storing the 2023 State of the Union speech (in chunks). We can set up the retriever to retrieve a high number (20) of docs.
-
+## 设置基础向量存储检索器
+让我们开始初始化一个简单的向量存储检索器，并存储2023年国情咨文（分块）。我们可以设置检索器以检索大量文档（20）。
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -256,9 +255,9 @@ The United States of America.
 
 May God bless you all. May God protect our troops.
 ```
-## Doing compression with LLMLingua
-Now let’s wrap our base retriever with a `ContextualCompressionRetriever`, using `LLMLinguaCompressor` as a compressor.
 
+## 使用 LLMLingua 进行压缩
+现在让我们用 `ContextualCompressionRetriever` 来包装我们的基础检索器，使用 `LLMLinguaCompressor` 作为压缩器。
 
 ```python
 from langchain.retrievers import ContextualCompressionRetriever
@@ -295,9 +294,10 @@ Document 4:
 <# The Sergeant Class Combat froms widow us toBut burn pits ravaged Heath’s lungs and body. 
 Danielle says Heath was a fighter to the very end.
 ```
-## QA generation with LLMLingua
 
-We can see what it looks like to use this in the generation step now
+## 使用 LLMLingua 生成 QA
+
+我们现在可以看到在生成步骤中使用它的样子
 
 
 ```python
@@ -318,9 +318,7 @@ chain.invoke({"query": query})
  'result': "The President mentioned that Ketanji Brown Jackson is one of the nation's top legal minds and will continue Justice Breyer's legacy of excellence."}
 ```
 
+## 相关
 
-
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

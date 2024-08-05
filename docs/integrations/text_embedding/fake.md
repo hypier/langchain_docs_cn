@@ -1,9 +1,10 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/fake.ipynb
 ---
-# Fake Embeddings
 
-LangChain also provides a fake embedding class. You can use this to test your pipelines.
+# 虚假嵌入
+
+LangChain 还提供了一个虚假嵌入类。您可以使用它来测试您的管道。
 
 
 ```python
@@ -25,8 +26,7 @@ query_result = embeddings.embed_query("foo")
 doc_results = embeddings.embed_documents(["foo"])
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

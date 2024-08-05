@@ -1,26 +1,25 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/callbacks_constructor.ipynb
 ---
-# How to propagate callbacks  constructor
 
-:::info Prerequisites
+# 如何传播回调构造函数
 
-This guide assumes familiarity with the following concepts:
+:::info 前提条件
 
-- [Callbacks](/docs/concepts/#callbacks)
-- [Custom callback handlers](/docs/how_to/custom_callbacks)
+本指南假设您熟悉以下概念：
+
+- [回调](/docs/concepts/#callbacks)
+- [自定义回调处理程序](/docs/how_to/custom_callbacks)
 
 :::
 
-Most LangChain modules allow you to pass `callbacks` directly into the constructor (i.e., initializer). In this case, the callbacks will only be called for that instance (and any nested runs).
+大多数 LangChain 模块允许您直接将 `callbacks` 传递到构造函数（即初始化器）。在这种情况下，回调仅会被调用该实例（以及任何嵌套运行）。
 
 :::warning
-Constructor callbacks are scoped only to the object they are defined on. They are **not** inherited by children of the object. This can lead to confusing behavior,
-and it's generally better to pass callbacks as a run time argument.
+构造函数回调仅限于定义它们的对象。它们**不会**被对象的子类继承。这可能导致困惑的行为，通常更好的做法是将回调作为运行时参数传递。
 :::
 
-Here's an example:
-
+以下是一个示例：
 
 ```python
 from typing import Any, Dict, List
@@ -69,10 +68,10 @@ AIMessage(content='1 + 2 = 3', response_metadata={'id': 'msg_01CdKsRmeS9WRb8BWnH
 ```
 
 
-You can see that we only see events from the chat model run - no chain events from the prompt or broader chain.
+您可以看到，我们只看到聊天模型运行的事件 - 没有来自提示或更广泛链的事件。
 
-## Next steps
+## 下一步
 
-You've now learned how to pass callbacks into a constructor.
+您现在已经学习了如何将回调传递到构造函数中。
 
-Next, check out the other how-to guides in this section, such as how to [pass callbacks at runtime](/docs/how_to/callbacks_runtime).
+接下来，请查看本节中的其他操作指南，例如如何 [在运行时传递回调](/docs/how_to/callbacks_runtime)。

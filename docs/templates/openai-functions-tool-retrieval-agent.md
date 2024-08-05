@@ -1,71 +1,70 @@
 # openai-functions-tool-retrieval-agent
 
-The novel idea introduced in this template is the idea of using retrieval to select the set of tools to use to answer an agent query. This is useful when you have many many tools to select from. You cannot put the description of all the tools in the prompt (because of context length issues) so instead you dynamically select the N tools you do want to consider using at run time.
+在此模板中引入的新颖想法是使用检索来选择用于回答代理查询的一组工具。当您有许多工具可供选择时，这非常有用。您无法在提示中放入所有工具的描述（因为上下文长度问题），因此您可以在运行时动态选择您希望考虑使用的 N 个工具。
 
-In this template we will create a somewhat contrived example. We will have one legitimate tool (search) and then 99 fake tools which are just nonsense. We will then add a step in the prompt template that takes the user input and retrieves tool relevant to the query.
+在此模板中，我们将创建一个有些牵强的示例。我们将有一个合法的工具（搜索），然后有 99 个只是无意义的虚假工具。然后，我们将在提示模板中添加一个步骤，该步骤获取用户输入并检索与查询相关的工具。
 
-This template is based on [this Agent How-To](https://python.langchain.com/v0.2/docs/templates/openai-functions-agent/).
+此模板基于 [此代理使用指南](https://python.langchain.com/v0.2/docs/templates/openai-functions-agent/)。
 
-## Environment Setup
+## 环境设置
 
-The following environment variables need to be set:
+需要设置以下环境变量：
 
-Set the `OPENAI_API_KEY` environment variable to access the OpenAI models.
+设置 `OPENAI_API_KEY` 环境变量以访问 OpenAI 模型。
 
-Set the `TAVILY_API_KEY` environment variable to access Tavily.
+设置 `TAVILY_API_KEY` 环境变量以访问 Tavily。
 
-## Usage
+## 使用方法
 
-To use this package, you should first have the LangChain CLI installed:
+要使用此包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将其作为唯一的包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package openai-functions-tool-retrieval-agent
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，只需运行：
 
 ```shell
 langchain app add openai-functions-tool-retrieval-agent
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 ```python
 from openai_functions_tool_retrieval_agent import agent_executor as openai_functions_tool_retrieval_agent_chain
 
 add_routes(app, openai_functions_tool_retrieval_agent_chain, path="/openai-functions-tool-retrieval-agent")
 ```
 
-(Optional) Let's now configure LangSmith. 
-LangSmith will help us trace, monitor and debug LangChain applications. 
-You can sign up for LangSmith [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
-
+（可选）现在让我们配置 LangSmith。 
+LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。 
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。 
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接通过以下命令启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server is running locally at 
+这将启动 FastAPI 应用程序，服务器在本地运行，地址为 
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/openai-functions-tool-retrieval-agent/playground](http://127.0.0.1:8000/openai-functions-tool-retrieval-agent/playground)  
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板。 
+我们可以在 [http://127.0.0.1:8000/openai-functions-tool-retrieval-agent/playground](http://127.0.0.1:8000/openai-functions-tool-retrieval-agent/playground) 访问游乐场。
 
-We can access the template from code with:
+我们可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable

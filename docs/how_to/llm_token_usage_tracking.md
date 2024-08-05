@@ -1,38 +1,39 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/llm_token_usage_tracking.ipynb
 ---
-# How to track token usage for LLMs
 
-Tracking token usage to calculate cost is an important part of putting your app in production. This guide goes over how to obtain this information from your LangChain model calls.
+# 如何跟踪 LLM 的令牌使用情况
 
-:::info Prerequisites
+跟踪令牌使用情况以计算成本是将应用程序投入生产的重要部分。本指南介绍了如何从您的 LangChain 模型调用中获取此信息。
 
-This guide assumes familiarity with the following concepts:
+:::info 先决条件
+
+本指南假设您对以下概念有所了解：
 
 - [LLMs](/docs/concepts/#llms)
 :::
 
-## Using LangSmith
+## 使用 LangSmith
 
-You can use [LangSmith](https://www.langchain.com/langsmith) to help track token usage in your LLM application. See the [LangSmith quick start guide](https://docs.smith.langchain.com/).
+您可以使用 [LangSmith](https://www.langchain.com/langsmith) 来帮助跟踪您 LLM 应用中的令牌使用情况。请参阅 [LangSmith 快速入门指南](https://docs.smith.langchain.com/)。
 
-## Using callbacks
+## 使用回调
 
-There are some API-specific callback context managers that allow you to track token usage across multiple calls. You'll need to check whether such an integration is available for your particular model.
+有一些特定于 API 的回调上下文管理器，可以让您跟踪多个调用中的令牌使用情况。您需要检查是否有此类集成可用于您的特定模型。
 
-If such an integration is not available for your model, you can create a custom callback manager by adapting the implementation of the [OpenAI callback manager](https://api.python.langchain.com/en/latest/_modules/langchain_community/callbacks/openai_info.html#OpenAICallbackHandler).
+如果您的模型没有此类集成，您可以通过调整 [OpenAI 回调管理器](https://api.python.langchain.com/en/latest/_modules/langchain_community/callbacks/openai_info.html#OpenAICallbackHandler) 的实现来创建自定义回调管理器。
 
 ### OpenAI
 
-Let's first look at an extremely simple example of tracking token usage for a single Chat model call.
+让我们首先看一个非常简单的示例，来跟踪单个 Chat 模型调用的令牌使用情况。
 
 :::danger
 
-The callback handler does not currently support streaming token counts for legacy language models (e.g., `langchain_openai.OpenAI`). For support in a streaming context, refer to the corresponding guide for chat models [here](/docs/how_to/chat_token_usage_tracking).
+回调处理程序目前不支持对传统语言模型（例如，`langchain_openai.OpenAI`）进行流式令牌计数。有关流式上下文的支持，请参考聊天模型的相应指南 [这里](/docs/how_to/chat_token_usage_tracking)。
 
 :::
 
-### Single call
+### 单次调用
 
 
 ```python
@@ -65,9 +66,10 @@ Prompt Tokens: 4
 Completion Tokens: 14
 Total Cost (USD): $3.4e-05
 ```
-### Multiple calls
 
-Anything inside the context manager will get tracked. Here's an example of using it to track multiple calls in sequence to a chain. This will also work for an agent which may use multiple steps.
+### 多次调用
+
+上下文管理器中的任何内容都会被跟踪。以下是使用它跟踪对链的多个顺序调用的示例。这也适用于可能使用多个步骤的代理。
 
 
 ```python
@@ -114,19 +116,19 @@ Prompt Tokens: 12
 Completion Tokens: 38
 Total Cost (USD): $9.400000000000001e-05
 ```
-## Streaming
+
+## 流媒体
 
 :::danger
 
-`get_openai_callback` does not currently support streaming token counts for legacy language models (e.g., `langchain_openai.OpenAI`). If you want to count tokens correctly in a streaming context, there are a number of options:
+`get_openai_callback` 目前不支持旧版语言模型（例如 `langchain_openai.OpenAI`）的流式令牌计数。如果您想在流式上下文中正确计数令牌，有几个选项：
 
-- Use chat models as described in [this guide](/docs/how_to/chat_token_usage_tracking);
-- Implement a [custom callback handler](/docs/how_to/custom_callbacks/) that uses appropriate tokenizers to count the tokens;
-- Use a monitoring platform such as [LangSmith](https://www.langchain.com/langsmith).
+- 使用聊天模型，如 [本指南](/docs/how_to/chat_token_usage_tracking) 中所述；
+- 实现一个 [自定义回调处理程序](/docs/how_to/custom_callbacks/)，使用适当的分词器来计数令牌；
+- 使用监控平台，例如 [LangSmith](https://www.langchain.com/langsmith)。
 :::
 
-Note that when using legacy language models in a streaming context, token counts are not updated:
-
+请注意，在流式上下文中使用旧版语言模型时，令牌计数不会更新：
 
 ```python
 from langchain_community.callbacks import get_openai_callback

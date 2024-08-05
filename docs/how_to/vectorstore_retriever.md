@@ -2,23 +2,23 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/vectorstore_retriever.ipynb
 sidebar_position: 0
 ---
-# How to use a vectorstore as a retriever
 
-A vector store retriever is a retriever that uses a vector store to retrieve documents. It is a lightweight wrapper around the vector store class to make it conform to the retriever interface.
-It uses the search methods implemented by a vector store, like similarity search and MMR, to query the texts in the vector store.
+# 如何使用向量存储作为检索器
 
-In this guide we will cover:
+向量存储检索器是一个使用向量存储来检索文档的检索器。它是一个轻量级的包装器，围绕向量存储类，使其符合检索器接口。
+它使用向量存储实现的搜索方法，如相似性搜索和MMR，来查询向量存储中的文本。
 
-1. How to instantiate a retriever from a vectorstore;
-2. How to specify the search type for the retriever;
-3. How to specify additional search parameters, such as threshold scores and top-k.
+在本指南中，我们将涵盖：
 
-## Creating a retriever from a vectorstore
+1. 如何从向量存储实例化一个检索器；
+2. 如何为检索器指定搜索类型；
+3. 如何指定其他搜索参数，如阈值分数和前k个。
 
-You can build a retriever from a vectorstore using its [.as_retriever](https://api.python.langchain.com/en/latest/vectorstores/langchain_core.vectorstores.VectorStore.html#langchain_core.vectorstores.VectorStore.as_retriever) method. Let's walk through an example.
+## 从向量存储创建检索器
 
-First we instantiate a vectorstore. We will use an in-memory [FAISS](https://api.python.langchain.com/en/latest/vectorstores/langchain_community.vectorstores.faiss.FAISS.html) vectorstore:
+您可以使用其 [.as_retriever](https://api.python.langchain.com/en/latest/vectorstores/langchain_core.vectorstores.VectorStore.html#langchain_core.vectorstores.VectorStore.as_retriever) 方法从向量存储构建检索器。让我们通过一个示例来演示。
 
+首先，我们实例化一个向量存储。我们将使用一个内存中的 [FAISS](https://api.python.langchain.com/en/latest/vectorstores/langchain_community.vectorstores.faiss.FAISS.html) 向量存储：
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -35,43 +35,38 @@ embeddings = OpenAIEmbeddings()
 vectorstore = FAISS.from_documents(texts, embeddings)
 ```
 
-We can then instantiate a retriever:
-
+然后，我们可以实例化一个检索器：
 
 ```python
 retriever = vectorstore.as_retriever()
 ```
 
-This creates a retriever (specifically a [VectorStoreRetriever](https://api.python.langchain.com/en/latest/vectorstores/langchain_core.vectorstores.VectorStoreRetriever.html)), which we can use in the usual way:
-
+这将创建一个检索器（具体来说是一个 [VectorStoreRetriever](https://api.python.langchain.com/en/latest/vectorstores/langchain_core.vectorstores.VectorStoreRetriever.html)），我们可以像往常一样使用它：
 
 ```python
 docs = retriever.invoke("what did the president say about ketanji brown jackson?")
 ```
 
-## Maximum marginal relevance retrieval
-By default, the vector store retriever uses similarity search. If the underlying vector store supports maximum marginal relevance search, you can specify that as the search type.
+## 最大边际相关性检索
+默认情况下，向量存储检索器使用相似性搜索。如果底层向量存储支持最大边际相关性搜索，则可以将其指定为搜索类型。
 
-This effectively specifies what method on the underlying vectorstore is used (e.g., `similarity_search`, `max_marginal_relevance_search`, etc.).
-
+这有效地指定了在底层向量存储上使用的方法（例如，`similarity_search`、`max_marginal_relevance_search`等）。
 
 ```python
 retriever = vectorstore.as_retriever(search_type="mmr")
 ```
 
-
 ```python
 docs = retriever.invoke("what did the president say about ketanji brown jackson?")
 ```
 
-## Passing search parameters
+## 传递搜索参数
 
-We can pass parameters to the underlying vectorstore's search methods using `search_kwargs`.
+我们可以使用 `search_kwargs` 将参数传递给底层的 vectorstore 搜索方法。
 
-### Similarity score threshold retrieval
+### 相似度评分阈值检索
 
-For example, we can set a similarity score threshold and only return documents with a score above that threshold.
-
+例如，我们可以设置一个相似度评分阈值，只返回评分高于该阈值的文档。
 
 ```python
 retriever = vectorstore.as_retriever(
@@ -79,14 +74,13 @@ retriever = vectorstore.as_retriever(
 )
 ```
 
-
 ```python
 docs = retriever.invoke("what did the president say about ketanji brown jackson?")
 ```
 
-### Specifying top k
+### 指定前 k 个
 
-We can also limit the number of documents `k` returned by the retriever.
+我们还可以限制检索器返回的文档数量 `k`。
 
 
 ```python
@@ -104,4 +98,3 @@ len(docs)
 ```output
 1
 ```
-

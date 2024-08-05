@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/example_selectors_ngram.ipynb
 ---
-# How to select examples by n-gram overlap
 
-The `NGramOverlapExampleSelector` selects and orders examples based on which examples are most similar to the input, according to an ngram overlap score. The ngram overlap score is a float between 0.0 and 1.0, inclusive. 
+# 如何通过 n-gram 重叠选择示例
 
-The selector allows for a threshold score to be set. Examples with an ngram overlap score less than or equal to the threshold are excluded. The threshold is set to -1.0, by default, so will not exclude any examples, only reorder them. Setting the threshold to 0.0 will exclude examples that have no ngram overlaps with the input.
+`NGramOverlapExampleSelector` 根据与输入的相似性选择和排序示例，依据 ngram 重叠得分。ngram 重叠得分是一个介于 0.0 和 1.0 之间的浮动值（包括 0.0 和 1.0）。
+
+选择器允许设置一个阈值得分。ngram 重叠得分小于或等于阈值的示例将被排除。默认情况下，阈值设置为 -1.0，因此不会排除任何示例，只会对它们重新排序。将阈值设置为 0.0 将排除与输入没有 ngram 重叠的示例。
 
 
 
@@ -18,7 +19,7 @@ example_prompt = PromptTemplate(
     template="Input: {input}\nOutput: {output}",
 )
 
-# Examples of a fictional translation task.
+# 虚构翻译任务的示例。
 examples = [
     {"input": "See Spot run.", "output": "Ver correr a Spot."},
     {"input": "My dog barks.", "output": "Mi perro ladra."},
@@ -29,26 +30,26 @@ examples = [
 
 ```python
 example_selector = NGramOverlapExampleSelector(
-    # The examples it has available to choose from.
+    # 可供选择的示例。
     examples=examples,
-    # The PromptTemplate being used to format the examples.
+    # 用于格式化示例的 PromptTemplate。
     example_prompt=example_prompt,
-    # The threshold, at which selector stops.
-    # It is set to -1.0 by default.
+    # 选择器停止的阈值。
+    # 默认设置为 -1.0。
     threshold=-1.0,
-    # For negative threshold:
-    # Selector sorts examples by ngram overlap score, and excludes none.
-    # For threshold greater than 1.0:
-    # Selector excludes all examples, and returns an empty list.
-    # For threshold equal to 0.0:
-    # Selector sorts examples by ngram overlap score,
-    # and excludes those with no ngram overlap with input.
+    # 对于负阈值：
+    # 选择器按 ngram 重叠得分对示例进行排序，不排除任何示例。
+    # 对于大于 1.0 的阈值：
+    # 选择器排除所有示例，并返回一个空列表。
+    # 对于等于 0.0 的阈值：
+    # 选择器按 ngram 重叠得分对示例进行排序，
+    # 并排除与输入没有 ngram 重叠的示例。
 )
 dynamic_prompt = FewShotPromptTemplate(
-    # We provide an ExampleSelector instead of examples.
+    # 我们提供一个 ExampleSelector 而不是示例。
     example_selector=example_selector,
     example_prompt=example_prompt,
-    prefix="Give the Spanish translation of every input",
+    prefix="给每个输入提供西班牙语翻译",
     suffix="Input: {sentence}\nOutput:",
     input_variables=["sentence"],
 )
@@ -56,12 +57,11 @@ dynamic_prompt = FewShotPromptTemplate(
 
 
 ```python
-# An example input with large ngram overlap with "Spot can run."
-# and no overlap with "My dog barks."
+# 一个与“Spot can run.”有较大 ngram 重叠且与“My dog barks.”没有重叠的示例输入。
 print(dynamic_prompt.format(sentence="Spot can run fast."))
 ```
 ```output
-Give the Spanish translation of every input
+给每个输入提供西班牙语翻译
 
 Input: Spot can run.
 Output: Spot puede correr.
@@ -77,14 +77,14 @@ Output:
 ```
 
 ```python
-# You can add examples to NGramOverlapExampleSelector as well.
+# 您也可以向 NGramOverlapExampleSelector 添加示例。
 new_example = {"input": "Spot plays fetch.", "output": "Spot juega a buscar."}
 
 example_selector.add_example(new_example)
 print(dynamic_prompt.format(sentence="Spot can run fast."))
 ```
 ```output
-Give the Spanish translation of every input
+给每个输入提供西班牙语翻译
 
 Input: Spot can run.
 Output: Spot puede correr.
@@ -103,16 +103,15 @@ Output:
 ```
 
 ```python
-# You can set a threshold at which examples are excluded.
-# For example, setting threshold equal to 0.0
-# excludes examples with no ngram overlaps with input.
-# Since "My dog barks." has no ngram overlaps with "Spot can run fast."
-# it is excluded.
+# 您可以设置一个阈值，以排除示例。
+# 例如，将阈值设置为 0.0 将排除与输入没有 ngram 重叠的示例。
+# 由于“My dog barks.”与“Spot can run fast.”没有 ngram 重叠，
+# 因此被排除。
 example_selector.threshold = 0.0
 print(dynamic_prompt.format(sentence="Spot can run fast."))
 ```
 ```output
-Give the Spanish translation of every input
+给每个输入提供西班牙语翻译
 
 Input: Spot can run.
 Output: Spot puede correr.
@@ -128,12 +127,12 @@ Output:
 ```
 
 ```python
-# Setting small nonzero threshold
+# 设置小的非零阈值
 example_selector.threshold = 0.09
 print(dynamic_prompt.format(sentence="Spot can play fetch."))
 ```
 ```output
-Give the Spanish translation of every input
+给每个输入提供西班牙语翻译
 
 Input: Spot can run.
 Output: Spot puede correr.
@@ -146,12 +145,12 @@ Output:
 ```
 
 ```python
-# Setting threshold greater than 1.0
+# 设置大于 1.0 的阈值
 example_selector.threshold = 1.0 + 1e-9
 print(dynamic_prompt.format(sentence="Spot can play fetch."))
 ```
 ```output
-Give the Spanish translation of every input
+给每个输入提供西班牙语翻译
 
 Input: Spot can play fetch.
 Output:

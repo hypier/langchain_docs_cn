@@ -1,26 +1,25 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/cassandra.ipynb
 ---
+
 # Apache Cassandra
 
-This page provides a quickstart for using [Apache Cassandra®](https://cassandra.apache.org/) as a Vector Store.
+此页面提供了使用 [Apache Cassandra®](https://cassandra.apache.org/) 作为向量存储的快速入门。
 
-> [Cassandra](https://cassandra.apache.org/) is a NoSQL, row-oriented, highly scalable and highly available database.Starting with version 5.0, the database ships with [vector search capabilities](https://cassandra.apache.org/doc/trunk/cassandra/vector-search/overview.html).
+> [Cassandra](https://cassandra.apache.org/) 是一个 NoSQL、行导向、高度可扩展和高度可用的数据库。从 5.0 版本开始，该数据库配备了 [向量搜索功能](https://cassandra.apache.org/doc/trunk/cassandra/vector-search/overview.html)。
 
-_Note: in addition to access to the database, an OpenAI API Key is required to run the full example._
+_注意：除了访问数据库外，还需要一个 OpenAI API 密钥才能运行完整示例。_
 
-### Setup and general dependencies
+### 设置和一般依赖
 
-Use of the integration requires the following Python package.
-
+使用该集成需要以下 Python 包。
 
 ```python
 %pip install --upgrade --quiet langchain-community "cassio>=0.1.4"
 ```
 
-_Note: depending on your LangChain setup, you may need to install/upgrade other dependencies needed for this demo_
-_(specifically, recent versions of `datasets`, `openai`, `pypdf` and `tiktoken` are required, along with `langchain-community`)._
-
+_注意：根据您的 LangChain 设置，您可能需要安装/升级此演示所需的其他依赖项_  
+_（具体来说，需要最近版本的 `datasets`、`openai`、`pypdf` 和 `tiktoken`，以及 `langchain-community`）。_
 
 ```python
 import os
@@ -38,35 +37,32 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 ```
 
-
 ```python
 os.environ["OPENAI_API_KEY"] = getpass("OPENAI_API_KEY = ")
 ```
-
 
 ```python
 embe = OpenAIEmbeddings()
 ```
 
-## Import the Vector Store
+## 导入向量存储
 
 
 ```python
 from langchain_community.vectorstores import Cassandra
 ```
 
-## Connection parameters
+## 连接参数
 
-The Vector Store integration shown in this page can be used with Cassandra as well as other derived databases, such as Astra DB, which use the CQL (Cassandra Query Language) protocol.
+本页面所示的 Vector Store 集成可以与 Cassandra 以及其他衍生数据库（如使用 CQL（Cassandra 查询语言）协议的 Astra DB）一起使用。
 
-> DataStax [Astra DB](https://docs.datastax.com/en/astra-serverless/docs/vector-search/quickstart.html) is a managed serverless database built on Cassandra, offering the same interface and strengths.
+> DataStax [Astra DB](https://docs.datastax.com/en/astra-serverless/docs/vector-search/quickstart.html) 是一个基于 Cassandra 的托管无服务器数据库，提供相同的接口和优势。
 
-Depending on whether you connect to a Cassandra cluster or to Astra DB through CQL, you will provide different parameters when creating the vector store object.
+根据您是通过 CQL 连接到 Cassandra 集群还是 Astra DB，创建向量存储对象时需要提供不同的参数。
 
-### Connecting to a Cassandra cluster
+### 连接到 Cassandra 集群
 
-You first need to create a `cassandra.cluster.Session` object, as described in the [Cassandra driver documentation](https://docs.datastax.com/en/developer/python-driver/latest/api/cassandra/cluster/#module-cassandra.cluster). The details vary (e.g. with network settings and authentication), but this might be something like:
-
+您首先需要创建一个 `cassandra.cluster.Session` 对象，如 [Cassandra 驱动程序文档](https://docs.datastax.com/en/developer/python-driver/latest/api/cassandra/cluster/#module-cassandra.cluster) 中所述。具体细节可能会有所不同（例如网络设置和身份验证），但这可能类似于：
 
 ```python
 from cassandra.cluster import Cluster
@@ -75,8 +71,7 @@ cluster = Cluster(["127.0.0.1"])
 session = cluster.connect()
 ```
 
-You can now set the session, along with your desired keyspace name, as a global CassIO parameter:
-
+现在，您可以将会话以及您所需的键空间名称设置为全局 CassIO 参数：
 
 ```python
 import cassio
@@ -86,26 +81,25 @@ CASSANDRA_KEYSPACE = input("CASSANDRA_KEYSPACE = ")
 cassio.init(session=session, keyspace=CASSANDRA_KEYSPACE)
 ```
 
-Now you can create the vector store:
-
+现在您可以创建向量存储：
 
 ```python
 vstore = Cassandra(
     embedding=embe,
     table_name="cassandra_vector_demo",
-    # session=None, keyspace=None  # Uncomment on older versions of LangChain
+    # session=None, keyspace=None  # 在较旧版本的 LangChain 上取消注释
 )
 ```
 
-_Note: you can also pass your session and keyspace directly as parameters when creating the vector store. Using the global `cassio.init` setting, however, comes handy if your applications uses Cassandra in several ways (for instance, for vector store, chat memory and LLM response caching), as it allows to centralize credential and DB connection management in one place._
+_注意：您还可以在创建向量存储时直接将会话和键空间作为参数传递。然而，使用全局 `cassio.init` 设置会很方便，如果您的应用程序以多种方式使用 Cassandra（例如，用于向量存储、聊天记忆和 LLM 响应缓存），因为它允许在一个地方集中管理凭据和数据库连接。_
 
-### Connecting to Astra DB through CQL
+### 通过 CQL 连接到 Astra DB
 
-In this case you initialize CassIO with the following connection parameters:
+在这种情况下，您需要使用以下连接参数初始化 CassIO：
 
-- the Database ID, e.g. `01234567-89ab-cdef-0123-456789abcdef`
-- the Token, e.g. `AstraCS:6gBhNmsk135....` (it must be a "Database Administrator" token)
-- Optionally a Keyspace name (if omitted, the default one for the database will be used)
+- 数据库 ID，例如 `01234567-89ab-cdef-0123-456789abcdef`
+- 令牌，例如 `AstraCS:6gBhNmsk135....`（必须是“数据库管理员”令牌）
+- 可选的 Keyspace 名称（如果省略，将使用数据库的默认名称）
 
 
 ```python
@@ -130,21 +124,20 @@ cassio.init(
 )
 ```
 
-Now you can create the vector store:
+现在您可以创建向量存储：
 
 
 ```python
 vstore = Cassandra(
     embedding=embe,
     table_name="cassandra_vector_demo",
-    # session=None, keyspace=None  # Uncomment on older versions of LangChain
+    # session=None, keyspace=None  # 在较旧版本的 LangChain 中取消注释
 )
 ```
 
-## Load a dataset
+## 加载数据集
 
-Convert each entry in the source dataset into a `Document`, then write them into the vector store:
-
+将源数据集中的每个条目转换为 `Document`，然后将它们写入向量存储：
 
 ```python
 philo_dataset = load_dataset("datastax/philosopher-quotes")["train"]
@@ -159,10 +152,9 @@ inserted_ids = vstore.add_documents(docs)
 print(f"\nInserted {len(inserted_ids)} documents.")
 ```
 
-In the above, `metadata` dictionaries are created from the source data and are part of the `Document`.
+在上面，`metadata` 字典是从源数据创建的，并且是 `Document` 的一部分。
 
-Add some more entries, this time with `add_texts`:
-
+添加更多条目，这次使用 `add_texts`：
 
 ```python
 texts = ["I think, therefore I am.", "To the things themselves!"]
@@ -173,13 +165,11 @@ inserted_ids_2 = vstore.add_texts(texts=texts, metadatas=metadatas, ids=ids)
 print(f"\nInserted {len(inserted_ids_2)} documents.")
 ```
 
-_Note: you may want to speed up the execution of `add_texts` and `add_documents` by increasing the concurrency level for_
-_these bulk operations - check out the methods' `batch_size` parameter_
-_for more details. Depending on the network and the client machine specifications, your best-performing choice of parameters may vary._
+_注意：您可能希望通过增加这些批量操作的并发级别来加快 `add_texts` 和 `add_documents` 的执行速度 - 有关更多细节，请查看方法的 `batch_size` 参数。根据网络和客户端机器的规格，您最佳的参数选择可能会有所不同。_
 
-## Run searches
+## 运行搜索
 
-This section demonstrates metadata filtering and getting the similarity scores back:
+本节演示元数据过滤和获取相似度分数的过程：
 
 
 ```python
@@ -206,7 +196,7 @@ for res, score in results:
     print(f"* [SIM={score:3f}] {res.page_content} [{res.metadata}]")
 ```
 
-### MMR (Maximal-marginal-relevance) search
+### MMR (最大边际相关性) 搜索
 
 
 ```python
@@ -219,7 +209,7 @@ for res in results:
     print(f"* {res.page_content} [{res.metadata}]")
 ```
 
-## Deleting stored documents
+## 删除存储的文档
 
 
 ```python
@@ -233,12 +223,12 @@ delete_2 = vstore.delete(inserted_ids[2:5])
 print(f"some_succeeds={delete_2}")  # True, though some IDs were gone already
 ```
 
-## A minimal RAG chain
+## 最小化 RAG 链
 
-The next cells will implement a simple RAG pipeline:
-- download a sample PDF file and load it onto the store;
-- create a RAG chain with LCEL (LangChain Expression Language), with the vector store at its heart;
-- run the question-answering chain.
+接下来的单元将实现一个简单的 RAG 管道：
+- 下载一个示例 PDF 文件并将其加载到存储中；
+- 使用 LCEL（LangChain 表达式语言）创建一个 RAG 链，以向量存储为核心；
+- 运行问答链。
 
 
 ```python
@@ -292,14 +282,13 @@ chain = (
 chain.invoke("How does Russel elaborate on Peirce's idea of the security blanket?")
 ```
 
-For more, check out a complete RAG template using Astra DB through CQL [here](https://github.com/langchain-ai/langchain/tree/master/templates/cassandra-entomology-rag).
+欲了解更多信息，请查看使用 Astra DB 通过 CQL 的完整 RAG 模板 [这里](https://github.com/langchain-ai/langchain/tree/master/templates/cassandra-entomology-rag)。
 
-## Cleanup
+## 清理
 
-the following essentially retrieves the `Session` object from CassIO and runs a CQL `DROP TABLE` statement with it:
+以下内容基本上是从 CassIO 中检索 `Session` 对象并使用它运行 CQL `DROP TABLE` 语句：
 
-_(You will lose the data you stored in it.)_
-
+_(您将丢失存储在其中的数据。)_
 
 ```python
 cassio.config.resolve_session().execute(
@@ -307,17 +296,15 @@ cassio.config.resolve_session().execute(
 )
 ```
 
-### Learn more
+### 了解更多
 
-For more information, extended quickstarts and additional usage examples, please visit the [CassIO documentation](https://cassio.org/frameworks/langchain/about/) for more on using the LangChain `Cassandra` vector store.
+有关更多信息、扩展的快速入门和其他使用示例，请访问 [CassIO 文档](https://cassio.org/frameworks/langchain/about/)，了解更多关于使用 LangChain `Cassandra` 向量存储的内容。
 
-#### Attribution statement
+#### 版权声明
 
-> Apache Cassandra, Cassandra and Apache are either registered trademarks or trademarks of the [Apache Software Foundation](http://www.apache.org/) in the United States and/or other countries.
+> Apache Cassandra、Cassandra 和 Apache 是 [Apache Software Foundation](http://www.apache.org/) 在美国和/或其他国家的注册商标或商标。
 
+## 相关
 
-
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

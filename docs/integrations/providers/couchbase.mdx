@@ -1,46 +1,45 @@
 # Couchbase
 
->[Couchbase](http://couchbase.com/) is an award-winning distributed NoSQL cloud database 
-> that delivers unmatched versatility, performance, scalability, and financial value 
-> for all of your cloud, mobile, AI, and edge computing applications.
+>[Couchbase](http://couchbase.com/) 是一个屡获殊荣的分布式 NoSQL 云数据库， 
+> 为您的所有云、移动、人工智能和边缘计算应用提供无与伦比的灵活性、性能、可扩展性和经济价值。
 
-## Installation and Setup
+## 安装与设置
 
-We have to install the `langchain-couchbase` package.
+我们需要安装 `langchain-couchbase` 包。
 
 ```bash
 pip install langchain-couchbase
 ```
 
-## Vector Store
+## 向量存储
 
-See a [usage example](/docs/integrations/vectorstores/couchbase).
+查看[使用示例](/docs/integrations/vectorstores/couchbase)。
 
 ```python
 from langchain_couchbase import CouchbaseVectorStore
 ```
 
-## Document loader
+## 文档加载器
 
-See a [usage example](/docs/integrations/document_loaders/couchbase).
+查看 [用法示例](/docs/integrations/document_loaders/couchbase)。
 
 ```python
 from langchain_community.document_loaders.couchbase import CouchbaseLoader
 ```
 
-## LLM Caches
+## LLM 缓存
 
 ### CouchbaseCache
-Use Couchbase as a cache for prompts and responses.
+使用Couchbase作为提示和响应的缓存。
 
-See a [usage example](/docs/integrations/llm_caching/#couchbase-cache).
+查看[使用示例](/docs/integrations/llm_caching/#couchbase-cache)。
 
-To import this cache:
+要导入此缓存：
 ```python
 from langchain_couchbase.cache import CouchbaseCache
 ```
 
-To use this cache with your LLMs:
+要将此缓存与您的LLM一起使用：
 ```python
 from langchain_core.globals import set_llm_cache
 
@@ -56,19 +55,18 @@ set_llm_cache(
 )
 ```
 
-
 ### CouchbaseSemanticCache
-Semantic caching allows users to retrieve cached prompts based on the semantic similarity between the user input and previously cached inputs. Under the hood it uses Couchbase as both a cache and a vectorstore.
-The CouchbaseSemanticCache needs a Search Index defined to work. Please look at the [usage example](/docs/integrations/vectorstores/couchbase) on how to set up the index.
+语义缓存允许用户根据用户输入与先前缓存输入之间的语义相似性来检索缓存提示。它在后台使用Couchbase作为缓存和向量存储。
+CouchbaseSemanticCache需要定义搜索索引才能工作。请查看[使用示例](/docs/integrations/vectorstores/couchbase)以了解如何设置索引。
 
-See a [usage example](/docs/integrations/llm_caching/#couchbase-semantic-cache).
+查看[使用示例](/docs/integrations/llm_caching/#couchbase-semantic-cache)。
 
-To import this cache:
+要导入此缓存：
 ```python
 from langchain_couchbase.cache import CouchbaseSemanticCache
 ```
 
-To use this cache with your LLMs:
+要将此缓存与您的LLMs一起使用：
 ```python
 from langchain_core.globals import set_llm_cache
 
@@ -90,12 +88,12 @@ set_llm_cache(
 )
 ```
 
-## Chat Message History
-Use Couchbase as the storage for your chat messages.
+## 聊天消息历史
+使用 Couchbase 作为聊天消息的存储。
 
-See a [usage example](/docs/integrations/memory/couchbase_chat_message_history).
+查看 [使用示例](/docs/integrations/memory/couchbase_chat_message_history)。
 
-To use the chat message history in your applications:
+要在您的应用程序中使用聊天消息历史：
 ```python
 from langchain_couchbase.chat_message_histories import CouchbaseChatMessageHistory
 

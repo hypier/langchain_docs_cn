@@ -1,24 +1,25 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/tiledb.ipynb
 ---
+
 # TileDB
 
-> [TileDB](https://github.com/TileDB-Inc/TileDB) is a powerful engine for indexing and querying dense and sparse multi-dimensional arrays.
+> [TileDB](https://github.com/TileDB-Inc/TileDB) 是一个强大的引擎，用于索引和查询密集和稀疏的多维数组。
 
-> TileDB offers ANN search capabilities using the [TileDB-Vector-Search](https://github.com/TileDB-Inc/TileDB-Vector-Search) module. It provides serverless execution of ANN queries and storage of vector indexes both on local disk and cloud object stores (i.e. AWS S3).
+> TileDB 提供了使用 [TileDB-Vector-Search](https://github.com/TileDB-Inc/TileDB-Vector-Search) 模块的 ANN 搜索功能。它支持无服务器执行 ANN 查询，并在本地磁盘和云对象存储（即 AWS S3）上存储向量索引。
 
-More details in:
--  [Why TileDB as a Vector Database](https://tiledb.com/blog/why-tiledb-as-a-vector-database)
--  [TileDB 101: Vector Search](https://tiledb.com/blog/tiledb-101-vector-search)
+更多详细信息请参见：
+-  [为什么选择 TileDB 作为向量数据库](https://tiledb.com/blog/why-tiledb-as-a-vector-database)
+-  [TileDB 101：向量搜索](https://tiledb.com/blog/tiledb-101-vector-search)
 
-This notebook shows how to use the `TileDB` vector database.
+本笔记本演示了如何使用 `TileDB` 向量数据库。
 
 
 ```python
 %pip install --upgrade --quiet  tiledb-vector-search langchain-community
 ```
 
-## Basic Example
+## 基本示例
 
 
 ```python
@@ -38,12 +39,12 @@ db = TileDB.from_documents(
 
 
 ```python
-query = "What did the president say about Ketanji Brown Jackson"
+query = "总统对凯坦吉·布朗·杰克逊说了什么"
 docs = db.similarity_search(query)
 docs[0].page_content
 ```
 
-### Similarity search by vector
+### 基于向量的相似性搜索
 
 
 ```python
@@ -52,33 +53,29 @@ docs = db.similarity_search_by_vector(embedding_vector)
 docs[0].page_content
 ```
 
-### Similarity search with score
-
+### 相似性搜索及分数
 
 ```python
 docs_and_scores = db.similarity_search_with_score(query)
 docs_and_scores[0]
 ```
 
-## Maximal Marginal Relevance Search (MMR)
+## 最大边际相关性搜索 (MMR)
 
-In addition to using similarity search in the retriever object, you can also use `mmr` as retriever.
-
+除了在检索对象中使用相似性搜索外，您还可以将 `mmr` 用作检索器。
 
 ```python
 retriever = db.as_retriever(search_type="mmr")
 retriever.invoke(query)
 ```
 
-Or use `max_marginal_relevance_search` directly:
-
+或者直接使用 `max_marginal_relevance_search`：
 
 ```python
 db.max_marginal_relevance_search(query, k=2, fetch_k=10)
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

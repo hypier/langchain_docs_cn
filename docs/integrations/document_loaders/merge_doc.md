@@ -1,9 +1,10 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/merge_doc.ipynb
 ---
-# Merge Documents Loader
 
-Merge the documents returned from a set of specified data loaders.
+# 合并文档加载器
+
+合并从一组指定数据加载器返回的文档。
 
 
 ```python
@@ -44,9 +45,7 @@ len(docs_all)
 23
 ```
 
+## 相关
 
-
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

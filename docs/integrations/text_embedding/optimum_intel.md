@@ -1,14 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/optimum_intel.ipynb
 ---
-# Embedding Documents using Optimized and Quantized Embedders
 
-Embedding all documents using Quantized Embedders.
+# 使用优化和量化嵌入器嵌入文档
 
-The embedders are based on optimized models, created by using [optimum-intel](https://github.com/huggingface/optimum-intel.git) and [IPEX](https://github.com/intel/intel-extension-for-pytorch).
+使用量化嵌入器嵌入所有文档。
 
-Example text is based on [SBERT](https://www.sbert.net/docs/pretrained_cross-encoders.html).
+这些嵌入器基于优化模型，使用 [optimum-intel](https://github.com/huggingface/optimum-intel.git) 和 [IPEX](https://github.com/intel/intel-extension-for-pytorch) 创建。
 
+示例文本基于 [SBERT](https://www.sbert.net/docs/pretrained_cross-encoders.html)。
 
 ```python
 from langchain_community.embeddings import QuantizedBiEncoderEmbeddings
@@ -40,10 +40,9 @@ INCConfig {
 
 Using `INCModel` to load a TorchScript model will be deprecated in v1.15.0, to load your model please use `IPEXModel` instead.
 ```
-Lets ask a question, and compare to 2 documents. The first contains the answer to the question, and the second one does not. 
+让我们问一个问题，并与两个文档进行比较。第一个文档包含问题的答案，而第二个文档则不包含。
 
-We can check better suits our query.
-
+我们可以检查哪个更适合我们的查询。
 
 ```python
 question = "How many people live in Berlin?"
@@ -96,10 +95,9 @@ tensor([0.7980, 0.6529])
 ```
 
 
-We can see that indeed the first one ranks higher.
+我们可以看到，确实第一个文档的排名更高。
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

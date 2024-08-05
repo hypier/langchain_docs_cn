@@ -1,48 +1,40 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_transformers/google_docai.ipynb
 ---
+
 # Google Cloud Document AI
 
+Document AI 是 Google Cloud 的文档理解平台，用于将文档中的非结构化数据转化为结构化数据，从而更易于理解、分析和使用。
 
-Document AI is a document understanding platform from Google Cloud to transform unstructured data from documents into structured data, making it easier to understand, analyze, and consume.
+了解更多：
 
-Learn more:
+- [Document AI 概述](https://cloud.google.com/document-ai/docs/overview)
+- [Document AI 视频和实验室](https://cloud.google.com/document-ai/docs/videos)
+- [试试吧！](https://cloud.google.com/document-ai/docs/drag-and-drop)
 
-- [Document AI overview](https://cloud.google.com/document-ai/docs/overview)
-- [Document AI videos and labs](https://cloud.google.com/document-ai/docs/videos)
-- [Try it!](https://cloud.google.com/document-ai/docs/drag-and-drop)
+该模块包含一个基于 Google Cloud DocAI 的 `PDF` 解析器。
 
-
-The module contains a `PDF` parser based on DocAI from Google Cloud.
-
-You need to install two libraries to use this parser:
-
-
+您需要安装两个库以使用此解析器：
 
 ```python
 %pip install --upgrade --quiet  langchain-google-community[docai]
 ```
 
-First, you need to set up a Google Cloud Storage (GCS) bucket and create your own Optical Character Recognition (OCR) processor as described here: https://cloud.google.com/document-ai/docs/create-processor
+首先，您需要设置一个 Google Cloud Storage (GCS) 存储桶，并创建您自己的光学字符识别 (OCR) 处理器，如此处所述：https://cloud.google.com/document-ai/docs/create-processor
 
-The `GCS_OUTPUT_PATH` should be a path to a folder on GCS (starting with `gs://`) and a `PROCESSOR_NAME` should look like `projects/PROJECT_NUMBER/locations/LOCATION/processors/PROCESSOR_ID` or `projects/PROJECT_NUMBER/locations/LOCATION/processors/PROCESSOR_ID/processorVersions/PROCESSOR_VERSION_ID`. You can get it either programmatically or copy from the `Prediction endpoint` section of the `Processor details` tab in the Google Cloud Console.
-
-
+`GCS_OUTPUT_PATH` 应该是 GCS 上一个文件夹的路径（以 `gs://` 开头），而 `PROCESSOR_NAME` 应该类似于 `projects/PROJECT_NUMBER/locations/LOCATION/processors/PROCESSOR_ID` 或 `projects/PROJECT_NUMBER/locations/LOCATION/processors/PROCESSOR_ID/processorVersions/PROCESSOR_VERSION_ID`。您可以通过编程方式获取，或从 Google Cloud Console 的 `Processor details` 标签页中的 `Prediction endpoint` 部分复制。
 
 ```python
 GCS_OUTPUT_PATH = "gs://BUCKET_NAME/FOLDER_PATH"
 PROCESSOR_NAME = "projects/PROJECT_NUMBER/locations/LOCATION/processors/PROCESSOR_ID"
 ```
 
-
 ```python
 from langchain_core.document_loaders.blob_loaders import Blob
 from langchain_google_community import DocAIParser
 ```
 
-Now, create a `DocAIParser`.
-
-
+现在，创建一个 `DocAIParser`。
 
 ```python
 parser = DocAIParser(
@@ -50,13 +42,11 @@ parser = DocAIParser(
 )
 ```
 
-For this example, you can use an Alphabet earnings report that's uploaded to a public GCS bucket.
+在此示例中，您可以使用上传到公共 GCS 存储桶的 Alphabet 财报。
 
 [2022Q1_alphabet_earnings_release.pdf](https://storage.googleapis.com/cloud-samples-data/gen-app-builder/search/alphabet-investor-pdfs/2022Q1_alphabet_earnings_release.pdf)
 
-Pass the document to the `lazy_parse()` method to
-
-
+将文档传递给 `lazy_parse()` 方法以
 
 ```python
 blob = Blob(
@@ -64,9 +54,7 @@ blob = Blob(
 )
 ```
 
-We'll get one document per page, 11 in total:
-
-
+我们将获得每页一个文档，总共 11 个：
 
 ```python
 docs = list(parser.lazy_parse(blob))
@@ -75,9 +63,7 @@ print(len(docs))
 ```output
 11
 ```
-You can run end-to-end parsing of a blob one-by-one. If you have many documents, it might be a better approach to batch them together and maybe even detach parsing from handling the results of parsing.
-
-
+您可以逐一运行 blob 的端到端解析。如果您有许多文档，将它们批量处理可能是更好的方法，甚至可以将解析与处理解析结果分开。
 
 ```python
 operations = parser.docai_parse([blob])
@@ -86,36 +72,25 @@ print([op.operation.name for op in operations])
 ```output
 ['projects/543079149601/locations/us/operations/16447136779727347991']
 ```
-You can check whether operations are finished:
-
-
+您可以检查操作是否完成：
 
 ```python
 parser.is_running(operations)
 ```
-
-
 
 ```output
 True
 ```
 
-
-And when they're finished, you can parse the results:
-
-
+当它们完成时，您可以解析结果：
 
 ```python
 parser.is_running(operations)
 ```
 
-
-
 ```output
 False
 ```
-
-
 
 ```python
 results = parser.get_results(operations)
@@ -124,14 +99,11 @@ print(results[0])
 ```output
 DocAIParsingResults(source_path='gs://vertex-pgt/examples/goog-exhibit-99-1-q1-2023-19.pdf', parsed_path='gs://vertex-pgt/test/run1/16447136779727347991/0')
 ```
-And now we can finally generate Documents from parsed results:
-
-
+现在我们可以最终从解析结果生成文档：
 
 ```python
 docs = list(parser.parse_from_results(results))
 ```
-
 
 ```python
 print(len(docs))

@@ -1,17 +1,18 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/minimax.ipynb
 ---
+
 # Minimax
 
-[Minimax](https://api.minimax.chat) is a Chinese startup that provides natural language processing models for companies and individuals.
+[Minimax](https://api.minimax.chat) 是一家提供自然语言处理模型的中国初创公司，服务于企业和个人。
 
-This example demonstrates using Langchain to interact with Minimax.
+本示例演示了如何使用 Langchain 与 Minimax 进行交互。
 
-# Setup
+# 设置
 
-To run this notebook, you'll need a [Minimax account](https://api.minimax.chat), an [API key](https://api.minimax.chat/user-center/basic-information/interface-key), and a [Group ID](https://api.minimax.chat/user-center/basic-information)
+要运行此笔记本，您需要一个 [Minimax 账户](https://api.minimax.chat)、一个 [API 密钥](https://api.minimax.chat/user-center/basic-information/interface-key) 和一个 [组 ID](https://api.minimax.chat/user-center/basic-information)
 
-# Single model call
+# 单模型调用
 
 
 ```python
@@ -20,17 +21,17 @@ from langchain_community.llms import Minimax
 
 
 ```python
-# Load the model
+# 加载模型
 minimax = Minimax(minimax_api_key="YOUR_API_KEY", minimax_group_id="YOUR_GROUP_ID")
 ```
 
 
 ```python
-# Prompt the model
+# 提示模型
 minimax("What is the difference between panda and bear?")
 ```
 
-# Chained model calls
+# 链式模型调用
 
 
 ```python
@@ -76,8 +77,7 @@ question = "What NBA team won the Championship in the year Jay Zhou was born?"
 llm_chain.run(question)
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

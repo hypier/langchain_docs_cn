@@ -1,33 +1,32 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/llm_rails.ipynb
 ---
+
 # LLMRails
 
->[LLMRails](https://www.llmrails.com/) is a API platform for building GenAI applications. It provides an easy-to-use API for document indexing and querying that is managed by LLMRails and is optimized for performance and accuracy. 
-See the [LLMRails API documentation ](https://docs.llmrails.com/) for more information on how to use the API.
+>[LLMRails](https://www.llmrails.com/) 是一个用于构建 GenAI 应用程序的 API 平台。它提供了一个易于使用的 API，用于文档索引和查询，由 LLMRails 管理，并针对性能和准确性进行了优化。有关如何使用 API 的更多信息，请参见 [LLMRails API 文档](https://docs.llmrails.com/)。
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
+您需要使用 `pip install -qU langchain-community` 安装 `langchain-community` 以使用此集成。
 
-This notebook shows how to use functionality related to the `LLMRails`'s integration with langchain.
-Note that unlike many other integrations in this category, LLMRails provides an end-to-end managed service for retrieval augmented generation, which includes:
-1. A way to extract text from document files and chunk them into sentences.
-2. Its own embeddings model and vector store - each text segment is encoded into a vector embedding and stored in the LLMRails internal vector store
-3. A query service that automatically encodes the query into embedding, and retrieves the most relevant text segments (including support for [Hybrid Search](https://docs.llmrails.com/datastores/search))
+本笔记本展示了如何使用与 `LLMRails` 与 langchain 集成相关的功能。请注意，与此类别中的许多其他集成不同，LLMRails 提供了端到端的管理服务，用于检索增强生成，包括：
+1. 从文档文件中提取文本并将其分块成句子的方式。
+2. 自有的嵌入模型和向量存储 - 每个文本段落都被编码为向量嵌入并存储在 LLMRails 内部向量存储中。
+3. 一个查询服务，自动将查询编码为嵌入，并检索最相关的文本段落（包括对 [混合搜索](https://docs.llmrails.com/datastores/search) 的支持）。
 
-All of these are supported in this LangChain integration.
+所有这些都在此 LangChain 集成中得到支持。
 
-# Setup
+# 设置
 
-You will need a LLMRails account to use LLMRails with LangChain. To get started, use the following steps:
-1. [Sign up](https://console.llmrails.com/signup) for a LLMRails account if you don't already have one.
-2. Next you'll need to create API keys to access the API. Click on the **"API Keys"** tab in the corpus view and then the **"Create API Key"** button. Give your key a name. Click "Create key" and you now have an active API key. Keep this key confidential. 
+您需要一个 LLMRails 帐户才能将 LLMRails 与 LangChain 一起使用。要开始，请按照以下步骤操作：
+1. 如果您还没有帐户，请[注册](https://console.llmrails.com/signup)一个 LLMRails 帐户。
+2. 接下来，您需要创建 API 密钥以访问 API。在语料库视图中单击 **“API Keys”** 选项卡，然后单击 **“Create API Key”** 按钮。给您的密钥命名。单击“Create key”，您现在拥有一个有效的 API 密钥。请保密此密钥。
 
-To use LangChain with LLMRails, you'll need to have this value: api_key.
-You can provide those to LangChain in two ways:
+要将 LangChain 与 LLMRails 一起使用，您需要具有以下值：api_key。
+您可以通过两种方式将其提供给 LangChain：
 
-1. Include in your environment these two variables: `LLM_RAILS_API_KEY`, `LLM_RAILS_DATASTORE_ID`.
+1. 在您的环境中包含这两个变量：`LLM_RAILS_API_KEY`，`LLM_RAILS_DATASTORE_ID`。
 
-> For example, you can set these variables using os.environ and getpass as follows:
+> 例如，您可以使用 os.environ 和 getpass 以如下方式设置这些变量：
 
 ```python
 import os
@@ -37,7 +36,7 @@ os.environ["LLM_RAILS_API_KEY"] = getpass.getpass("LLMRails API Key:")
 os.environ["LLM_RAILS_DATASTORE_ID"] = getpass.getpass("LLMRails Datastore Id:")
 ```
 
-1. Provide them as arguments when creating the LLMRails vectorstore object:
+1. 在创建 LLMRails 向量存储对象时将它们作为参数提供：
 
 ```python
 vectorstore = LLMRails(
@@ -46,11 +45,9 @@ vectorstore = LLMRails(
 )
 ```
 
-## Adding text
+## 添加文本
 
-For adding text to your datastore first you have to go to [Datastores](https://console.llmrails.com/datastores) page and create one. Click Create Datastore button and choose a name and embedding model for your datastore. Then get your datastore id from newly created  datatore settings.
- 
-
+要将文本添加到您的数据存储，首先您需要访问 [Datastores](https://console.llmrails.com/datastores) 页面并创建一个。点击创建数据存储按钮，选择一个名称和嵌入模型。然后从新创建的数据存储设置中获取您的数据存储 ID。
 
 ```python
 %pip install tika
@@ -89,16 +86,14 @@ os.environ["LLM_RAILS_API_KEY"] = "Your API Key"
 llm_rails = LLMRails.from_texts(["Your text here"])
 ```
 
-## Similarity search
+## 相似性搜索
 
-The simplest scenario for using LLMRails is to perform a similarity search. 
-
+使用 LLMRails 的最简单场景是执行相似性搜索。
 
 ```python
 query = "What do you plan to do about national security?"
 found_docs = llm_rails.similarity_search(query, k=5)
 ```
-
 
 ```python
 print(found_docs[0].page_content)
@@ -136,10 +131,10 @@ The scale of these changes grows with each passing year, as do the risks of inac
 
 Although the international environment has become more contested, the United States remains the world’s leading power.
 ```
-## Similarity search with score
 
-Sometimes we might want to perform the search, but also obtain a relevancy score to know how good is a particular result.
+## 相似性搜索与评分
 
+有时我们可能希望执行搜索，同时获得相关性评分，以了解特定结果的优劣。
 
 ```python
 query = "What is your approach to national defense"
@@ -148,7 +143,6 @@ found_docs = llm_rails.similarity_search_with_score(
     k=5,
 )
 ```
-
 
 ```python
 document, score = found_docs[0]
@@ -182,42 +176,26 @@ A combat-credible military is the foundation of deterrence and America’s abili
 
 Score: 0.5040982687179959
 ```
-## LLMRails as a Retriever
 
-LLMRails, as all the other LangChain vectorstores, is most often used as a LangChain Retriever:
+## LLMRails 作为检索器
 
+LLMRails 和其他 LangChain 向量存储一样，最常用作 LangChain 检索器：
 
 ```python
 retriever = llm_rails.as_retriever()
 retriever
 ```
 
-
-
 ```output
 LLMRailsRetriever(vectorstore=<langchain_community.vectorstores.llm_rails.LLMRails object at 0x1235b0e50>)
 ```
-
-
 
 ```python
 query = "What is your approach to national defense"
 retriever.invoke(query)
 ```
 
+## 相关
 
-
-```output
-[Document(page_content='But we will do so as the last resort and only when the objectives and mission are clear and achievable, consistent with our values and laws, alongside non-military tools, and the mission is undertaken with the informed consent of the American people.\n\nOur approach to national defense is described in detail in the 2022 National Defense Strategy.\n\nOur starting premise is that a powerful U.S. military helps advance and safeguard vital U.S. national interests by backstopping diplomacy, confronting aggression, deterring conflict, projecting strength, and protecting the American people and their economic interests.\n\nAmid intensifying competition, the military’s role is to maintain and gain warfighting advantages while limiting those of our competitors.\n\nThe military will act urgently to sustain and strengthen deterrence, with the PRC as its pacing challenge.\n\nWe will make disciplined choices regarding our national defense and focus our attention on the military’s primary responsibilities: to defend the homeland, and deter attacks and aggression against the United States, our allies and partners, while being prepared to fight and win the Nation’s wars should diplomacy and deterrence fail.\n\nTo do so, we will combine our strengths to achieve maximum effect in deterring acts of aggression—an approach we refer to as integrated deterrence (see text box on page 22).\n\nWe will operate our military using a campaigning mindset—sequencing logically linked military activities to advance strategy-aligned priorities.\n\nAnd, we will build a resilient force and defense ecosystem to ensure we can perform these functions for decades to come.\n\nWe ended America’s longest war in Afghanistan, and with it an era of major military operations to remake other societies, even as we have maintained the capacity to address terrorist threats to the American people as they emerge.\n\n20  NATIONAL SECURITY STRATEGY Page 21 \x90\x90\x90\x90\x90\x90\n\nA combat-credible military is the foundation of deterrence and America’s ability to prevail in conflict.', metadata={'type': 'file', 'url': 'https://cdn.llmrails.com/dst_466092be-e79a-49f3-b3e6-50e51ddae186/a63892afdee3469d863520351bd5af9f', 'name': 'Biden-Harris-Administrations-National-Security-Strategy-10.2022.pdf', 'filters': {}}),
- Document(page_content='Your text here', metadata={'type': 'text', 'url': 'https://cdn.llmrails.com/dst_466092be-e79a-49f3-b3e6-50e51ddae186/63c17ac6395e4be1967c63a16356818e', 'name': '71370a91-7f58-4cc7-b2e7-546325960330', 'filters': {}}),
- Document(page_content='Page 1 NATIONAL SECURITY STRATEGY OCTOBER 2022 Page 2 October 12, 2022 From the earliest days of my Presidency, I have argued that our world is at an inflection point.\n\nHow we respond to the tremendous challenges and the unprecedented opportunities we face today will determine the direction of our world and impact the security and prosperity of the American people for generations to come.\n\nThe 2022 National Security Strategy outlines how my Administration will seize this decisive decade to advance America’s vital interests, position the United States to outmaneuver our geopolitical competitors, tackle shared challenges, and set our world firmly on a path toward a brighter and more hopeful tomorrow.\n\nAround the world, the need for American leadership is as great as it has ever been.\n\nWe are in the midst of a strategic competition to shape the future of the international order.\n\nMeanwhile, shared challenges that impact people everywhere demand increased global cooperation and nations stepping up to their responsibilities at a moment when this has become more difficult.\n\nIn response, the United States will lead with our values, and we will work in lockstep with our allies and partners and with all those who share our interests.\n\nWe will not leave our future vulnerable to the whims of those who do not share our vision for a world that is free, open, prosperous, and secure.\n\nAs the world continues to navigate the lingering impacts of the pandemic and global economic uncertainty, there is no nation better positioned to lead with strength and purpose than the United States of America.\n\nFrom the moment I took the oath of office, my Administration has focused on investing in America’s core strategic advantages.\n\nOur economy has added 10 million jobs and unemployment rates have reached near record lows.\n\nManufacturing jobs have come racing back to the United States.\n\nWe’re rebuilding our economy from the bottom up and the middle out.', metadata={'type': 'file', 'url': 'https://cdn.llmrails.com/dst_466092be-e79a-49f3-b3e6-50e51ddae186/a63892afdee3469d863520351bd5af9f', 'name': 'Biden-Harris-Administrations-National-Security-Strategy-10.2022.pdf', 'filters': {}}),
- Document(page_content='Your text here', metadata={'type': 'text', 'url': 'https://cdn.llmrails.com/dst_466092be-e79a-49f3-b3e6-50e51ddae186/8c414a9306e04d47a300f0289ba6e9cf', 'name': 'dacc29f5-8c63-46e0-b5aa-cab2d3c99fb7', 'filters': {}}),
- Document(page_content='To ensure our nuclear deterrent remains responsive to the threats we face, we are modernizing the nuclear Triad, nuclear command, control, and communications, and our nuclear weapons infrastructure, as well as strengthening our extended deterrence commitments to our Allies.\n\nWe remain equally committed to reducing the risks of nuclear war.\n\nThis includes taking further steps to reduce the role of nuclear weapons in our strategy and pursuing realistic goals for mutual, verifiable arms control, which contribute to our deterrence strategy and strengthen the global non-proliferation regime.\n\nThe most important investments are those made in the extraordinary All-Volunteer Force of the Army, Marine Corps, Navy, Air Force, Space Force, Coast Guard—together with our Department of Defense civilian workforce.\n\nOur service members are the backbone of America’s national defense and we are committed to their wellbeing and their families while in service and beyond.\n\nWe will maintain our foundational principle of civilian control of the military, recognizing that healthy civil-military relations rooted in mutual respect are essential to military effectiveness.\n\nWe will strengthen the effectiveness of the force by promoting diversity and inclusion; intensifying our suicide prevention efforts; eliminating the scourges of sexual assault, harassment, and other forms of violence, abuse, and discrimination; and rooting out violent extremism.\n\nWe will also uphold our Nation’s sacred obligation to care for veterans and their families when our troops return home.\n\nNATIONAL SECURITY STRATEGY 21 Page 22 \x90\x90\x90\x90\x90\x90\n\nIntegrated Deterrence The United States has a vital interest in deterring aggression by the PRC, Russia, and other states.\n\nMore capable competitors and new strategies of threatening behavior below and above the traditional threshold of conflict mean we cannot afford to rely solely on conventional forces and nuclear deterrence.\n\nOur defense strategy must sustain and strengthen deterrence, with the PRC as our pacing challenge.', metadata={'type': 'file', 'url': 'https://cdn.llmrails.com/dst_466092be-e79a-49f3-b3e6-50e51ddae186/a63892afdee3469d863520351bd5af9f', 'name': 'Biden-Harris-Administrations-National-Security-Strategy-10.2022.pdf', 'filters': {}})]
-```
-
-
-
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

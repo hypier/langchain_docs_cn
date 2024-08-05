@@ -2,42 +2,41 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/tools_prompting.ipynb
 sidebar_position: 3
 ---
-# How to add ad-hoc tool calling capability to LLMs and Chat Models
+
+# 如何为 LLM 和聊天模型添加临时工具调用能力
 
 :::caution
 
-Some models have been fine-tuned for tool calling and provide a dedicated API for tool calling. Generally, such models are better at tool calling than non-fine-tuned models, and are recommended for use cases that require tool calling. Please see the [how to use a chat model to call tools](/docs/how_to/tool_calling) guide for more information.
+某些模型已经针对工具调用进行了微调，并提供了专用的 API 进行工具调用。通常，这些模型在工具调用方面优于未微调的模型，推荐用于需要工具调用的用例。有关更多信息，请参见 [如何使用聊天模型调用工具](/docs/how_to/tool_calling) 指南。
 
 :::
 
-:::info Prerequisites
+:::info 前提条件
 
-This guide assumes familiarity with the following concepts:
+本指南假设您熟悉以下概念：
 
-- [LangChain Tools](/docs/concepts/#tools)
-- [Function/tool calling](https://python.langchain.com/v0.2/docs/concepts/#functiontool-calling)
-- [Chat models](/docs/concepts/#chat-models)
+- [LangChain 工具](/docs/concepts/#tools)
+- [函数/工具调用](https://python.langchain.com/v0.2/docs/concepts/#functiontool-calling)
+- [聊天模型](/docs/concepts/#chat-models)
 - [LLMs](/docs/concepts/#llms)
 
 :::
 
-In this guide, we'll see how to add **ad-hoc** tool calling support to a chat model. This is an alternative method to invoke tools if you're using a model that does not natively support [tool calling](/docs/how_to/tool_calling).
+在本指南中，我们将看到如何为聊天模型添加 **临时** 工具调用支持。这是一种替代方法，用于调用不原生支持 [工具调用](/docs/how_to/tool_calling) 的模型。
 
-We'll do this by simply writing a prompt that will get the model to invoke the appropriate tools. Here's a diagram of the logic:
+我们将通过简单地编写一个提示来实现这一点，以使模型调用适当的工具。以下是逻辑的图示：
 
 ![chain](../../static/img/tool_chain.svg)
 
-## Setup
+## 设置
 
-We'll need to install the following packages:
-
+我们需要安装以下软件包：
 
 ```python
 %pip install --upgrade --quiet langchain langchain-community
 ```
 
-If you'd like to use LangSmith, uncomment the below:
-
+如果您想使用 LangSmith，请取消下面的注释：
 
 ```python
 import getpass
@@ -46,14 +45,13 @@ import os
 # os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 ```
 
-You can select any of the given models for this how-to guide. Keep in mind that most of these models already [support native tool calling](/docs/integrations/chat/), so using the prompting strategy shown here doesn't make sense for these models, and instead you should follow the [how to use a chat model to call tools](/docs/how_to/tool_calling) guide.
+您可以选择本指南中提供的任何模型。请记住，这些模型大多数已经 [支持原生工具调用](/docs/integrations/chat/)，因此在这里使用的提示策略对这些模型没有意义，您应该遵循 [如何使用聊天模型调用工具](/docs/how_to/tool_calling) 指南。
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
 <ChatModelTabs openaiParams={`model="gpt-4"`} />
 
-To illustrate the idea, we'll use `phi3` via Ollama, which does **NOT** have native support for tool calling. If you'd like to use `Ollama` as well follow [these instructions](/docs/integrations/chat/ollama/).
-
+为了说明这个想法，我们将通过 Ollama 使用 `phi3`，它 **不** 支持原生工具调用。如果您也想使用 `Ollama`，请遵循 [这些说明](/docs/integrations/chat/ollama/)。
 
 ```python
 from langchain_community.llms import Ollama
@@ -61,10 +59,9 @@ from langchain_community.llms import Ollama
 model = Ollama(model="phi3")
 ```
 
-## Create a tool
+## 创建工具
 
-First, let's create an `add` and `multiply` tools. For more information on creating custom tools, please see [this guide](/docs/how_to/custom_tools).
-
+首先，让我们创建一个 `add` 和 `multiply` 工具。有关创建自定义工具的更多信息，请参阅 [此指南](/docs/how_to/custom_tools)。
 
 ```python
 from langchain_core.tools import tool
@@ -112,10 +109,9 @@ multiply.invoke({"x": 4, "y": 5})
 20.0
 ```
 
+## 创建我们的提示
 
-## Creating our prompt
-
-We'll want to write a prompt that specifies the tools the model has access to, the arguments to those tools, and the desired output format of the model. In this case we'll instruct it to output a JSON blob of the form `{"name": "...", "arguments": {...}}`.
+我们希望编写一个提示，指定模型可以访问的工具、这些工具的参数，以及模型所需的输出格式。在这种情况下，我们将指示它输出一种形式为 `{"name": "...", "arguments": {...}}` 的 JSON 数据块。
 
 
 ```python
@@ -127,22 +123,21 @@ rendered_tools = render_text_description(tools)
 print(rendered_tools)
 ```
 ```output
-multiply(x: float, y: float) -> float - Multiply two numbers together.
-add(x: int, y: int) -> int - Add two numbers.
+multiply(x: float, y: float) -> float - 将两个数字相乘。
+add(x: int, y: int) -> int - 将两个数字相加。
 ```
 
 ```python
 system_prompt = f"""\
-You are an assistant that has access to the following set of tools. 
-Here are the names and descriptions for each tool:
+您是一个助手，可以访问以下工具集。 
+以下是每个工具的名称和描述：
 
 {rendered_tools}
 
-Given the user input, return the name and input of the tool to use. 
-Return your response as a JSON blob with 'name' and 'arguments' keys.
+根据用户输入，返回要使用的工具的名称和输入。 
+将您的响应作为一个带有 'name' 和 'arguments' 键的 JSON 数据块返回。
 
-The `arguments` should be a dictionary, with keys corresponding 
-to the argument names and the values corresponding to the requested values.
+`arguments` 应该是一个字典，键对应于参数名称，值对应于请求的值。
 """
 
 prompt = ChatPromptTemplate.from_messages(
@@ -153,13 +148,13 @@ prompt = ChatPromptTemplate.from_messages(
 
 ```python
 chain = prompt | model
-message = chain.invoke({"input": "what's 3 plus 1132"})
+message = chain.invoke({"input": "3 加 1132 是多少"})
 
-# Let's take a look at the output from the model
-# if the model is an LLM (not a chat model), the output will be a string.
+# 让我们看看模型的输出
+# 如果模型是一个 LLM（而不是聊天模型），输出将是一个字符串。
 if isinstance(message, str):
     print(message)
-else:  # Otherwise it's a chat model
+else:  # 否则它是一个聊天模型
     print(message.content)
 ```
 ```output
@@ -171,10 +166,10 @@ else:  # Otherwise it's a chat model
     }
 }
 ```
-## Adding an output parser
 
-We'll use the `JsonOutputParser` for parsing our models output to JSON.
+## 添加输出解析器
 
+我们将使用 `JsonOutputParser` 将模型输出解析为 JSON。
 
 ```python
 from langchain_core.output_parsers import JsonOutputParser
@@ -183,27 +178,22 @@ chain = prompt | model | JsonOutputParser()
 chain.invoke({"input": "what's thirteen times 4"})
 ```
 
-
-
 ```output
 {'name': 'multiply', 'arguments': {'x': 13.0, 'y': 4.0}}
 ```
 
-
 :::important
 
-🎉 Amazing! 🎉 We now instructed our model on how to **request** that a tool be invoked.
+🎉 太棒了！ 🎉 我们现在已经指示我们的模型如何 **请求** 调用一个工具。
 
-Now, let's create some logic to actually run the tool!
+现在，让我们创建一些逻辑来实际运行这个工具！ 
 :::
 
-## Invoking the tool 🏃
+## 调用工具 🏃
 
-Now that the model can request that a tool be invoked, we need to write a function that can actually invoke 
-the tool.
+现在模型可以请求调用工具，我们需要编写一个实际调用工具的函数。
 
-The function will select the appropriate tool by name, and pass to it the arguments chosen by the model.
-
+该函数将根据名称选择适当的工具，并将模型选择的参数传递给它。
 
 ```python
 from typing import Any, Dict, Optional, TypedDict
@@ -212,7 +202,7 @@ from langchain_core.runnables import RunnableConfig
 
 
 class ToolCallRequest(TypedDict):
-    """A typed dict that shows the inputs into the invoke_tool function."""
+    """一个类型字典，显示传入 invoke_tool 函数的输入。"""
 
     name: str
     arguments: Dict[str, Any]
@@ -221,17 +211,17 @@ class ToolCallRequest(TypedDict):
 def invoke_tool(
     tool_call_request: ToolCallRequest, config: Optional[RunnableConfig] = None
 ):
-    """A function that we can use the perform a tool invocation.
+    """一个可以用来执行工具调用的函数。
 
     Args:
-        tool_call_request: a dict that contains the keys name and arguments.
-            The name must match the name of a tool that exists.
-            The arguments are the arguments to that tool.
-        config: This is configuration information that LangChain uses that contains
-            things like callbacks, metadata, etc.See LCEL documentation about RunnableConfig.
+        tool_call_request: 包含键 name 和 arguments 的字典。
+            name 必须与现有工具的名称匹配。
+            arguments 是该工具的参数。
+        config: 这是 LangChain 使用的配置信息，包含
+            回调、元数据等。请参见 LCEL 文档中的 RunnableConfig。
 
     Returns:
-        output from the requested tool
+        请求工具的输出
     """
     tool_name_to_tool = {tool.name: tool for tool in tools}
     name = tool_call_request["name"]
@@ -239,41 +229,32 @@ def invoke_tool(
     return requested_tool.invoke(tool_call_request["arguments"], config=config)
 ```
 
-Let's test this out 🧪!
-
+让我们测试一下 🧪！
 
 ```python
 invoke_tool({"name": "multiply", "arguments": {"x": 3, "y": 5}})
 ```
 
-
-
 ```output
 15.0
 ```
 
+## 我们来整合一下
 
-## Let's put it together
-
-Let's put it together into a chain that creates a calculator with add and multiplication capabilities.
-
+我们将其整合成一个链，创建一个具有加法和乘法功能的计算器。
 
 ```python
 chain = prompt | model | JsonOutputParser() | invoke_tool
 chain.invoke({"input": "what's thirteen times 4.14137281"})
 ```
 
-
-
 ```output
 53.83784653
 ```
 
+## 返回工具输入
 
-## Returning tool inputs
-
-It can be helpful to return not only tool outputs but also tool inputs. We can easily do this with LCEL by `RunnablePassthrough.assign`-ing the tool output. This will take whatever the input is to the RunnablePassrthrough components (assumed to be a dictionary) and add a key to it while still passing through everything that's currently in the input:
-
+返回工具输出时，同时返回工具输入也是很有帮助的。我们可以通过 `RunnablePassthrough.assign` 来轻松实现这一点。这将获取传递给 RunnablePassthrough 组件的输入（假设为字典），并在其上添加一个键，同时仍然传递输入中当前的所有内容：
 
 ```python
 from langchain_core.runnables import RunnablePassthrough
@@ -284,22 +265,19 @@ chain = (
 chain.invoke({"input": "what's thirteen times 4.14137281"})
 ```
 
-
-
 ```output
 {'name': 'multiply',
  'arguments': {'x': 13, 'y': 4.14137281},
  'output': 53.83784653}
 ```
 
+## 接下来是什么？
 
-## What's next?
+本指南展示了当模型正确输出所有所需工具信息时的“理想路径”。
 
-This how-to guide shows the "happy path" when the model correctly outputs all the required tool information.
+实际上，如果您使用更复杂的工具，您将开始遇到模型的错误，尤其是对于那些没有针对工具调用进行微调的模型以及能力较弱的模型。
 
-In reality, if you're using more complex tools, you will start encountering errors from the model, especially for models that have not been fine tuned for tool calling and for less capable models.
+您需要准备好添加策略以改善模型的输出；例如：
 
-You will need to be prepared to add strategies to improve the output from the model; e.g.,
-
-1. Provide few shot examples.
-2. Add error handling (e.g., catch the exception and feed it back to the LLM to ask it to correct its previous output).
+1. 提供少量示例。
+2. 添加错误处理（例如，捕获异常并将其反馈给LLM，要求其纠正之前的输出）。

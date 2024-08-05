@@ -2,23 +2,24 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/upstage.ipynb
 sidebar_label: Upstage
 ---
+
 # UpstageEmbeddings
 
-This notebook covers how to get started with Upstage embedding models.
+本笔记本介绍如何开始使用 Upstage 嵌入模型。
 
-## Installation
+## 安装
 
-Install `langchain-upstage` package.
+安装 `langchain-upstage` 包。
 
 ```bash
 pip install -U langchain-upstage
 ```
 
-## Environment Setup
+## 环境设置
 
-Make sure to set the following environment variables:
+确保设置以下环境变量：
 
-- `UPSTAGE_API_KEY`: Your Upstage API key from [Upstage console](https://console.upstage.ai/).
+- `UPSTAGE_API_KEY`: 您的 Upstage API 密钥来自 [Upstage 控制台](https://console.upstage.ai/)。
 
 
 ```python
@@ -27,10 +28,9 @@ import os
 os.environ["UPSTAGE_API_KEY"] = "YOUR_API_KEY"
 ```
 
+## 用法
 
-## Usage
-
-Initialize `UpstageEmbeddings` class.
+初始化 `UpstageEmbeddings` 类。
 
 
 ```python
@@ -39,7 +39,7 @@ from langchain_upstage import UpstageEmbeddings
 embeddings = UpstageEmbeddings(model="solar-embedding-1-large")
 ```
 
-Use `embed_documents` to embed list of texts or documents. 
+使用 `embed_documents` 嵌入文本或文档列表。
 
 
 ```python
@@ -49,7 +49,7 @@ doc_result = embeddings.embed_documents(
 print(doc_result)
 ```
 
-Use `embed_query` to embed query string.
+使用 `embed_query` 嵌入查询字符串。
 
 
 ```python
@@ -57,7 +57,7 @@ query_result = embeddings.embed_query("What does Sung do?")
 print(query_result)
 ```
 
-Use `aembed_documents` and `aembed_query` for async operations.
+使用 `aembed_documents` 和 `aembed_query` 进行异步操作。
 
 
 ```python
@@ -73,10 +73,9 @@ await embeddings.aembed_documents(
 )
 ```
 
-## Using with vector store
+## 与向量存储一起使用
 
-You can use `UpstageEmbeddings` with vector store component. The following demonstrates a simple example.
-
+您可以将 `UpstageEmbeddings` 与向量存储组件一起使用。以下演示了一个简单的示例。
 
 ```python
 from langchain_community.vectorstores import DocArrayInMemorySearch
@@ -90,8 +89,7 @@ docs = retriever.invoke("Where did Harrison work?")
 print(docs)
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

@@ -1,36 +1,36 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/cube_semantic.ipynb
 ---
-# Cube Semantic Layer
 
-This notebook demonstrates the process of retrieving Cube's data model metadata in a format suitable for passing to LLMs as embeddings, thereby enhancing contextual information.
+# Cube 语义层
 
-### About Cube
+本笔记本演示了以适合传递给 LLM 作为嵌入的格式检索 Cube 数据模型元数据的过程，从而增强上下文信息。
 
-[Cube](https://cube.dev/) is the Semantic Layer for building data apps. It helps data engineers and application developers access data from modern data stores, organize it into consistent definitions, and deliver it to every application.
+### 关于 Cube
 
-Cube’s data model provides structure and definitions that are used as a context for LLM to understand data and generate correct queries. LLM doesn’t need to navigate complex joins and metrics calculations because Cube abstracts those and provides a simple interface that operates on the business-level terminology, instead of SQL table and column names. This simplification helps LLM to be less error-prone and avoid hallucinations.
+[Cube](https://cube.dev/) 是构建数据应用的语义层。它帮助数据工程师和应用开发人员从现代数据存储中访问数据，将其组织成一致的定义，并将其交付给每个应用程序。
 
-### Example
+Cube 的数据模型提供了结构和定义，作为 LLM 理解数据和生成正确查询的上下文。LLM 不需要导航复杂的连接和度量计算，因为 Cube 抽象了这些内容，并提供一个在业务术语层面上操作的简单接口，而不是 SQL 表和列名。这种简化有助于 LLM 减少错误发生的可能性，避免幻觉。
 
-**Input arguments (mandatory)**
+### 示例
 
-`Cube Semantic Loader` requires 2 arguments:
+**输入参数（必填）**
 
-- `cube_api_url`: The URL of your Cube's deployment REST API. Please refer to the [Cube documentation](https://cube.dev/docs/http-api/rest#configuration-base-path) for more information on configuring the base path.
+`Cube Semantic Loader` 需要 2 个参数：
 
-- `cube_api_token`: The authentication token generated based on your Cube's API secret. Please refer to the [Cube documentation](https://cube.dev/docs/security#generating-json-web-tokens-jwt) for instructions on generating JSON Web Tokens (JWT).
+- `cube_api_url`: 您的 Cube 部署 REST API 的 URL。有关配置基本路径的更多信息，请参阅 [Cube 文档](https://cube.dev/docs/http-api/rest#configuration-base-path)。
 
-**Input arguments (optional)**
+- `cube_api_token`: 基于您 Cube 的 API 密钥生成的身份验证令牌。有关生成 JSON Web Tokens (JWT) 的说明，请参阅 [Cube 文档](https://cube.dev/docs/security#generating-json-web-tokens-jwt)。
 
-- `load_dimension_values`: Whether to load dimension values for every string dimension or not.
+**输入参数（可选）**
 
-- `dimension_values_limit`: Maximum number of dimension values to load.
+- `load_dimension_values`: 是否加载每个字符串维度的维度值。
 
-- `dimension_values_max_retries`: Maximum number of retries to load dimension values.
+- `dimension_values_limit`: 要加载的维度值的最大数量。
 
-- `dimension_values_retry_delay`: Delay between retries to load dimension values.
+- `dimension_values_max_retries`: 加载维度值的最大重试次数。
 
+- `dimension_values_retry_delay`: 加载维度值时重试之间的延迟。
 
 ```python
 import jwt
@@ -47,7 +47,7 @@ loader = CubeSemanticLoader(api_url, api_token)
 documents = loader.load()
 ```
 
-Returns a list of documents with the following attributes:
+返回具有以下属性的文档列表：
 
 - `page_content`
 - `metadata`
@@ -58,7 +58,6 @@ Returns a list of documents with the following attributes:
   - `column_description`
   - `column_values`
   - `cube_data_obj_type`
-
 
 ```python
 # Given string containing page content
@@ -86,8 +85,7 @@ metadata = {
 }
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

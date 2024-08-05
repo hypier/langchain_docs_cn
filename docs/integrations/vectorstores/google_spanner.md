@@ -1,50 +1,49 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/google_spanner.ipynb
 ---
+
 # Google Spanner
-> [Spanner](https://cloud.google.com/spanner) is a highly scalable database that combines unlimited scalability with relational semantics, such as secondary indexes, strong consistency, schemas, and SQL providing 99.999% availability in one easy solution.
+> [Spanner](https://cloud.google.com/spanner) 是一个高度可扩展的数据库，结合了无限的可扩展性和关系语义，如二级索引、强一致性、模式和 SQL，在一个简单的解决方案中提供 99.999% 的可用性。
 
-This notebook goes over how to use `Spanner` for Vector Search with `SpannerVectorStore` class.
+本笔记本介绍了如何使用 `Spanner` 通过 `SpannerVectorStore` 类进行向量搜索。
 
-Learn more about the package on [GitHub](https://github.com/googleapis/langchain-google-spanner-python/).
+在 [GitHub](https://github.com/googleapis/langchain-google-spanner-python/) 上了解更多关于该包的信息。
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/googleapis/langchain-google-spanner-python/blob/main/docs/vector_store.ipynb)
 
-## Before You Begin
+## 开始之前
 
-To run this notebook, you will need to do the following:
+要运行此笔记本，您需要执行以下操作：
 
- * [Create a Google Cloud Project](https://developers.google.com/workspace/guides/create-project)
- * [Enable the Cloud Spanner API](https://console.cloud.google.com/flows/enableapi?apiid=spanner.googleapis.com)
- * [Create a Spanner instance](https://cloud.google.com/spanner/docs/create-manage-instances)
- * [Create a Spanner database](https://cloud.google.com/spanner/docs/create-manage-databases)
+ * [创建一个 Google Cloud 项目](https://developers.google.com/workspace/guides/create-project)
+ * [启用 Cloud Spanner API](https://console.cloud.google.com/flows/enableapi?apiid=spanner.googleapis.com)
+ * [创建一个 Spanner 实例](https://cloud.google.com/spanner/docs/create-manage-instances)
+ * [创建一个 Spanner 数据库](https://cloud.google.com/spanner/docs/create-manage-databases)
 
-### 🦜🔗 Library Installation
-The integration lives in its own `langchain-google-spanner` package, so we need to install it.
-
+### 🦜🔗 库安装
+集成位于其自己的 `langchain-google-spanner` 包中，因此我们需要安装它。
 
 ```python
 %pip install --upgrade --quiet langchain-google-spanner
 ```
 ```output
-Note: you may need to restart the kernel to use updated packages.
+注意：您可能需要重新启动内核以使用更新的包。
 ```
-**Colab only:** Uncomment the following cell to restart the kernel or use the button to restart the kernel. For Vertex AI Workbench you can restart the terminal using the button on top.
-
+**仅限 Colab：** 取消注释以下单元以重新启动内核，或使用按钮重新启动内核。对于 Vertex AI Workbench，您可以使用顶部的按钮重新启动终端。
 
 ```python
-# # Automatically restart kernel after installs so that your environment can access the new packages
+# # 自动在安装后重新启动内核，以便您的环境可以访问新包
 # import IPython
 
 # app = IPython.Application.instance()
 # app.kernel.do_shutdown(True)
 ```
 
-### 🔐 Authentication
-Authenticate to Google Cloud as the IAM user logged into this notebook in order to access your Google Cloud Project.
+### 🔐 身份验证
+作为登录到此笔记本的 IAM 用户对 Google Cloud 进行身份验证，以便访问您的 Google Cloud 项目。
 
-* If you are using Colab to run this notebook, use the cell below and continue.
-* If you are using Vertex AI Workbench, check out the setup instructions [here](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env).
+* 如果您使用 Colab 运行此笔记本，请使用下面的单元格并继续。
+* 如果您使用 Vertex AI Workbench，请查看 [这里](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env) 的设置说明。
 
 
 ```python
@@ -53,38 +52,36 @@ from google.colab import auth
 auth.authenticate_user()
 ```
 
-### ☁ Set Your Google Cloud Project
-Set your Google Cloud project so that you can leverage Google Cloud resources within this notebook.
+### ☁ 设置您的 Google Cloud 项目
+设置您的 Google Cloud 项目，以便您可以在此笔记本中利用 Google Cloud 资源。
 
-If you don't know your project ID, try the following:
+如果您不知道您的项目 ID，请尝试以下方法：
 
-* Run `gcloud config list`.
-* Run `gcloud projects list`.
-* See the support page: [Locate the project ID](https://support.google.com/googleapi/answer/7014113).
-
+* 运行 `gcloud config list`。
+* 运行 `gcloud projects list`。
+* 查看支持页面：[查找项目 ID](https://support.google.com/googleapi/answer/7014113)。
 
 ```python
-# @markdown Please fill in the value below with your Google Cloud project ID and then run the cell.
+# @markdown 请在下面填写您的 Google Cloud 项目 ID，然后运行该单元。
 
 PROJECT_ID = "my-project-id"  # @param {type:"string"}
 
-# Set the project id
+# 设置项目 ID
 !gcloud config set project {PROJECT_ID}
 ```
 
-### 💡 API Enablement
-The `langchain-google-spanner` package requires that you [enable the Spanner API](https://console.cloud.google.com/flows/enableapi?apiid=spanner.googleapis.com) in your Google Cloud Project.
-
+### 💡 API 启用
+`langchain-google-spanner` 包要求您在 Google Cloud 项目中 [启用 Spanner API](https://console.cloud.google.com/flows/enableapi?apiid=spanner.googleapis.com)。
 
 ```python
 # enable Spanner API
 !gcloud services enable spanner.googleapis.com
 ```
 
-## Basic Usage
+## 基本用法
 
-### Set Spanner database values
-Find your database values, in the [Spanner Instances page](https://console.cloud.google.com/spanner?_ga=2.223735448.2062268965.1707700487-2088871159.1707257687).
+### 设置 Spanner 数据库值
+在 [Spanner 实例页面](https://console.cloud.google.com/spanner?_ga=2.223735448.2062268965.1707700487-2088871159.1707257687) 查找您的数据库值。
 
 
 ```python
@@ -94,10 +91,10 @@ DATABASE = "my-database"  # @param {type: "string"}
 TABLE_NAME = "vectors_search_data"  # @param {type: "string"}
 ```
 
-### Initialize a table
-The `SpannerVectorStore` class instance requires a database table with id, content and embeddings columns. 
+### 初始化表
+`SpannerVectorStore` 类实例需要一个包含 id、content 和 embeddings 列的数据库表。
 
-The helper method `init_vector_store_table()` that can be used to create a table with the proper schema for you.
+可以使用辅助方法 `init_vector_store_table()` 来为您创建具有适当架构的表。
 
 
 ```python
@@ -118,10 +115,9 @@ SpannerVectorStore.init_vector_store_table(
 )
 ```
 
-### Create an embedding class instance
+### 创建嵌入类实例
 
-You can use any [LangChain embeddings model](/docs/integrations/text_embedding/).
-You may need to enable Vertex AI API to use `VertexAIEmbeddings`. We recommend setting the embedding model's version for production, learn more about the [Text embeddings models](https://cloud.google.com/vertex-ai/docs/generative-ai/model-reference/text-embeddings).
+您可以使用任何 [LangChain 嵌入模型](/docs/integrations/text_embedding/)。您可能需要启用 Vertex AI API 才能使用 `VertexAIEmbeddings`。我们建议在生产环境中设置嵌入模型的版本，了解更多关于 [文本嵌入模型](https://cloud.google.com/vertex-ai/docs/generative-ai/model-reference/text-embeddings) 的信息。
 
 
 ```python
@@ -140,13 +136,12 @@ embeddings = VertexAIEmbeddings(
 
 ### SpannerVectorStore
 
-To initialize the `SpannerVectorStore` class you need to provide 4 required arguments and other arguments are optional and only need to pass if it's different from default ones
+要初始化 `SpannerVectorStore` 类，您需要提供 4 个必需的参数，其他参数是可选的，仅在与默认值不同的情况下需要传递。
 
-1. `instance_id` - The name of the Spanner instance
-1. `database_id` - The name of the Spanner database
-1. `table_name` - The name of the table within the database to store the documents & their embeddings.
-1. `embedding_service` - The Embeddings implementation which is used to generate the embeddings.
-
+1. `instance_id` - Spanner 实例的名称
+1. `database_id` - Spanner 数据库的名称
+1. `table_name` - 数据库中用于存储文档及其嵌入的表名。
+1. `embedding_service` - 用于生成嵌入的 Embeddings 实现。
 
 ```python
 db = SpannerVectorStore(
@@ -159,9 +154,8 @@ db = SpannerVectorStore(
 )
 ```
 
-#### 🔐 Add Documents
-To add documents in the vector store.
-
+#### 🔐 添加文档
+向向量存储中添加文档。
 
 ```python
 import uuid
@@ -174,40 +168,35 @@ documents = loader.load()
 ids = [str(uuid.uuid4()) for _ in range(len(documents))]
 ```
 
-#### 🔐 Search Documents
-To search documents in the vector store with similarity search.
-
+#### 🔐 搜索文档
+使用相似性搜索在向量存储中搜索文档。
 
 ```python
 db.similarity_search(query="Explain me vector store?", k=3)
 ```
 
-#### 🔐 Search Documents
-To search documents in the vector store with max marginal relevance search.
-
+#### 🔐 搜索文档
+使用最大边际相关性搜索在向量存储中搜索文档。
 
 ```python
 db.max_marginal_relevance_search("Testing the langchain integration with spanner", k=3)
 ```
 
-#### 🔐 Delete Documents
-To remove documents from the vector store, use the IDs that correspond to the values in the `row_id`` column when initializing the VectorStore.
-
+#### 🔐 删除文档
+要从向量存储中删除文档，请使用在初始化 VectorStore 时与 `row_id` 列中值对应的 ID。
 
 ```python
 db.delete(ids=["id1", "id2"])
 ```
 
-#### 🔐 Delete Documents
-To remove documents from the vector store, you can utilize the documents themselves. The content column and metadata columns provided during VectorStore initialization will be used to find out the rows corresponding to the documents. Any matching rows will then be deleted.
-
+#### 🔐 删除文档
+要从向量存储中删除文档，您可以利用文档本身。在 VectorStore 初始化时提供的内容列和元数据列将用于找到与文档对应的行。任何匹配的行将被删除。
 
 ```python
 db.delete(documents=[documents[0], documents[1]])
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

@@ -1,28 +1,27 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/baiducloud_vector_search.ipynb
 ---
-# Baidu Cloud ElasticSearch VectorSearch
 
->[Baidu Cloud VectorSearch](https://cloud.baidu.com/doc/BES/index.html?from=productToDoc) is a fully managed, enterprise-level distributed search and analysis service which is 100% compatible to open source. Baidu Cloud VectorSearch provides low-cost, high-performance, and reliable retrieval and analysis platform level product services for structured/unstructured data. As a vector database , it supports multiple index types and similarity distance methods. 
+# 百度云 ElasticSearch 向量搜索
 
->`Baidu Cloud ElasticSearch` provides a privilege management mechanism, for you to  configure the cluster privileges freely, so as to further ensure data security.
+>[百度云向量搜索](https://cloud.baidu.com/doc/BES/index.html?from=productToDoc) 是一项完全托管的企业级分布式搜索和分析服务，100% 兼容开源。百度云向量搜索为结构化/非结构化数据提供低成本、高性能和可靠的检索与分析平台级产品服务。作为一个向量数据库，它支持多种索引类型和相似度距离方法。
 
-This notebook shows how to use functionality related to the `Baidu Cloud ElasticSearch VectorStore`.
-To run, you should have an [Baidu Cloud ElasticSearch](https://cloud.baidu.com/product/bes.html) instance up and running:
+>`Baidu Cloud ElasticSearch` 提供了权限管理机制，允许您自由配置集群权限，以进一步确保数据安全。
 
-Read the [help document](https://cloud.baidu.com/doc/BES/s/8llyn0hh4 ) to quickly familiarize and configure Baidu Cloud ElasticSearch instance.
+本笔记本展示了如何使用与 `Baidu Cloud ElasticSearch VectorStore` 相关的功能。
+要运行，您需要有一个正在运行的 [百度云 ElasticSearch](https://cloud.baidu.com/product/bes.html) 实例：
 
-After the instance is up and running, follow these steps to split documents, get embeddings, connect to the baidu cloud elasticsearch instance, index documents, and perform vector retrieval.
+阅读 [帮助文档](https://cloud.baidu.com/doc/BES/s/8llyn0hh4) 以快速熟悉和配置百度云 ElasticSearch 实例。
 
-We need to install the following Python packages first.
+实例启动并运行后，请按照以下步骤拆分文档、获取嵌入、连接到百度云 ElasticSearch 实例、索引文档并执行向量检索。
 
+我们首先需要安装以下 Python 包。
 
 ```python
 %pip install --upgrade --quiet langchain-community elasticsearch == 7.11.0
 ```
 
-First, we want to use `QianfanEmbeddings` so we have to get the Qianfan AK and SK. Details for QianFan is related to [Baidu Qianfan Workshop](https://cloud.baidu.com/product/wenxinworkshop)
-
+首先，我们想使用 `QianfanEmbeddings`，因此我们必须获取 Qianfan AK 和 SK。有关 QianFan 的详细信息，请参阅 [百度 Qianfan 工作坊](https://cloud.baidu.com/product/wenxinworkshop)
 
 ```python
 import getpass
@@ -32,8 +31,7 @@ os.environ["QIANFAN_AK"] = getpass.getpass("Your Qianfan AK:")
 os.environ["QIANFAN_SK"] = getpass.getpass("Your Qianfan SK:")
 ```
 
-Secondly, split documents and get embeddings.
-
+其次，拆分文档并获取嵌入。
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -49,8 +47,7 @@ from langchain_community.embeddings import QianfanEmbeddingsEndpoint
 embeddings = QianfanEmbeddingsEndpoint()
 ```
 
-Then, create a Baidu ElasticeSearch accessable instance.
-
+然后，创建一个可访问的百度 ElasticSearch 实例。
 
 ```python
 # Create a bes instance and index docs.
@@ -65,8 +62,7 @@ bes = BESVectorStore.from_documents(
 bes.client.indices.refresh(index="your vector index")
 ```
 
-Finally, Query and retrive data
-
+最后，查询并检索数据。
 
 ```python
 query = "What did the president say about Ketanji Brown Jackson"
@@ -74,10 +70,9 @@ docs = bes.similarity_search(query)
 print(docs[0].page_content)
 ```
 
-Please feel free to contact <liuboyao@baidu.com> or <chenweixu01@baidu.com> if you encounter any problems during use, and we will do our best to support you.
+如果在使用过程中遇到任何问题，请随时联系 <liuboyao@baidu.com> 或 <chenweixu01@baidu.com>，我们将尽力为您提供支持。
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

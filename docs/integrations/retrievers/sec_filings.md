@@ -1,21 +1,19 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/sec_filings.ipynb
 ---
-# SEC filing
+
+# SEC备案
 
 
->[SEC filing](https://www.sec.gov/edgar) is a financial statement or other formal document submitted to the U.S. Securities and Exchange Commission (SEC). Public companies, certain insiders, and broker-dealers are required to make regular `SEC filings`. Investors and financial professionals rely on these filings for information about companies they are evaluating for investment purposes.
+>[SEC备案](https://www.sec.gov/edgar) 是提交给美国证券交易委员会（SEC）的财务报表或其他正式文件。上市公司、某些内部人士和经纪交易商需要定期进行 `SEC备案`。投资者和金融专业人士依赖这些备案获取他们评估投资目的的公司的信息。
 >
->`SEC filings` data powered by [Kay.ai](https://kay.ai) and [Cybersyn](https://www.cybersyn.com/) via [Snowflake Marketplace](https://app.snowflake.com/marketplace/providers/GZTSZAS2KCS/Cybersyn%2C%20Inc).
+>`SEC备案` 数据由 [Kay.ai](https://kay.ai) 和 [Cybersyn](https://www.cybersyn.com/) 通过 [Snowflake Marketplace](https://app.snowflake.com/marketplace/providers/GZTSZAS2KCS/Cybersyn%2C%20Inc) 提供。
 
+## 设置
 
-## Setup
+首先，您需要安装 `kay` 包。您还需要一个 API 密钥：您可以在 [https://kay.ai](https://kay.ai/) 免费获取一个。一旦您拥有 API 密钥，就必须将其设置为环境变量 `KAY_API_KEY`。
 
-
-First, you will need to install the `kay` package. You will also need an API key: you can get one for free at [https://kay.ai](https://kay.ai/). Once you have an API key, you must set it as an environment variable `KAY_API_KEY`.
-
-In this example, we're going to use the `KayAiRetriever`. Take a look at the [kay notebook](/docs/integrations/retrievers/kay) for more detailed information for the parameters that it accepts.`
-
+在这个例子中，我们将使用 `KayAiRetriever`。请查看 [kay notebook](/docs/integrations/retrievers/kay) 以获取有关它接受的参数的详细信息。
 
 ```python
 # Setup API keys for Kay and OpenAI
@@ -36,7 +34,7 @@ os.environ["KAY_API_KEY"] = KAY_API_KEY
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 ```
 
-## Example
+## 示例
 
 
 ```python
@@ -54,47 +52,47 @@ qa = ConversationalRetrievalChain.from_llm(model, retriever=retriever)
 
 ```python
 questions = [
-    "What are patterns in Nvidia's spend over the past three quarters?",
-    # "What are some recent challenges faced by the renewable energy sector?",
+    "Nvidia在过去三个季度的支出模式是什么？",
+    # "可再生能源行业最近面临的挑战是什么？",
 ]
 chat_history = []
 
 for question in questions:
     result = qa({"question": question, "chat_history": chat_history})
     chat_history.append((question, result["answer"]))
-    print(f"-> **Question**: {question} \n")
-    print(f"**Answer**: {result['answer']} \n")
+    print(f"-> **问题**: {question} \n")
+    print(f"**回答**: {result['answer']} \n")
 ```
 ```output
--> **Question**: What are patterns in Nvidia's spend over the past three quarters? 
+-> **问题**: Nvidia在过去三个季度的支出模式是什么？ 
 
-**Answer**: Based on the provided information, here are the patterns in NVIDIA's spend over the past three quarters:
+**回答**: 根据提供的信息，以下是NVIDIA在过去三个季度的支出模式：
 
-1. Research and Development Expenses:
-   - Q3 2022: Increased by 34% compared to Q3 2021.
-   - Q1 2023: Increased by 40% compared to Q1 2022.
-   - Q2 2022: Increased by 25% compared to Q2 2021.
+1. 研究与开发费用：
+   - 2022年第三季度：与2021年第三季度相比增加了34%。
+   - 2023年第一季度：与2022年第一季度相比增加了40%。
+   - 2022年第二季度：与2021年第二季度相比增加了25%。
    
-   Overall, research and development expenses have been consistently increasing over the past three quarters.
+   总体而言，研究与开发费用在过去三个季度中持续增加。
 
-2. Sales, General and Administrative Expenses:
-   - Q3 2022: Increased by 8% compared to Q3 2021.
-   - Q1 2023: Increased by 14% compared to Q1 2022.
-   - Q2 2022: Decreased by 16% compared to Q2 2021.
+2. 销售、一般和管理费用：
+   - 2022年第三季度：与2021年第三季度相比增加了8%。
+   - 2023年第一季度：与2022年第一季度相比增加了14%。
+   - 2022年第二季度：与2021年第二季度相比减少了16%。
    
-   The pattern for sales, general and administrative expenses is not as consistent, with some quarters showing an increase and others showing a decrease.
+   销售、一般和管理费用的模式不那么一致，有些季度显示增加，有些季度显示减少。
 
-3. Total Operating Expenses:
-   - Q3 2022: Increased by 25% compared to Q3 2021.
-   - Q1 2023: Increased by 113% compared to Q1 2022.
-   - Q2 2022: Increased by 9% compared to Q2 2021.
+3. 总运营费用：
+   - 2022年第三季度：与2021年第三季度相比增加了25%。
+   - 2023年第一季度：与2022年第一季度相比增加了113%。
+   - 2022年第二季度：与2021年第二季度相比增加了9%。
    
-   Total operating expenses have generally been increasing over the past three quarters, with a significant increase in Q1 2023.
+   总运营费用在过去三个季度中普遍增加，2023年第一季度的增幅显著。
 
-Overall, the pattern indicates a consistent increase in research and development expenses and total operating expenses, while sales, general and administrative expenses show some fluctuations.
+总体而言，模式表明研究与开发费用和总运营费用持续增加，而销售、一般和管理费用则显示出一些波动。
 ```
 
-## Related
+## 相关
 
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

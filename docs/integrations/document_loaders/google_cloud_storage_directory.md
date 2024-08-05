@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/google_cloud_storage_directory.ipynb
 ---
-# Google Cloud Storage Directory
 
->[Google Cloud Storage](https://en.wikipedia.org/wiki/Google_Cloud_Storage) is a managed service for storing unstructured data.
+# Google Cloud Storage 目录
 
-This covers how to load document objects from an `Google Cloud Storage (GCS) directory (bucket)`.
+>[Google Cloud Storage](https://en.wikipedia.org/wiki/Google_Cloud_Storage) 是一种用于存储非结构化数据的托管服务。
+
+这部分内容介绍如何从 `Google Cloud Storage (GCS) 目录 (存储桶)` 加载文档对象。
 
 
 ```python
@@ -38,15 +39,12 @@ loader.load()
 [Document(page_content='Lorem ipsum dolor sit amet.', lookup_str='', metadata={'source': '/var/folders/y6/8_bzdg295ld6s1_97_12m4lr0000gn/T/tmpz37njh7u/fake.docx'}, lookup_index=0)]
 ```
 
-
-## Specifying a prefix
-You can also specify a prefix for more finegrained control over what files to load -including loading all files from a specific folder-.
-
+## 指定前缀
+您还可以指定前缀，以更精细地控制要加载的文件，包括从特定文件夹加载所有文件。
 
 ```python
 loader = GCSDirectoryLoader(project_name="aist", bucket="testing-hwc", prefix="fake")
 ```
-
 
 ```python
 loader.load()
@@ -58,15 +56,12 @@ loader.load()
   warnings.warn(_CLOUD_SDK_CREDENTIALS_WARNING)
 ```
 
-
 ```output
 [Document(page_content='Lorem ipsum dolor sit amet.', lookup_str='', metadata={'source': '/var/folders/y6/8_bzdg295ld6s1_97_12m4lr0000gn/T/tmpylg6291i/fake.docx'}, lookup_index=0)]
 ```
 
-
-## Continue on failure to load a single file
-Files in a GCS bucket may cause errors during processing. Enable the `continue_on_failure=True` argument to allow silent failure. This means failure to process a single file will not break the function, it will log a warning instead. 
-
+## 继续在加载单个文件失败时
+GCS 存储桶中的文件在处理过程中可能会导致错误。启用 `continue_on_failure=True` 参数以允许静默失败。这意味着处理单个文件失败不会中断函数，而是会记录一个警告。 
 
 ```python
 loader = GCSDirectoryLoader(
@@ -74,13 +69,11 @@ loader = GCSDirectoryLoader(
 )
 ```
 
-
 ```python
 loader.load()
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

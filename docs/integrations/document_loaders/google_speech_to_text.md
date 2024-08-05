@@ -1,50 +1,49 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/google_speech_to_text.ipynb
 ---
-# Google Speech-to-Text Audio Transcripts
 
-The `GoogleSpeechToTextLoader` allows to transcribe audio files with the [Google Cloud Speech-to-Text API](https://cloud.google.com/speech-to-text) and loads the transcribed text into documents.
+# Google Speech-to-Text 音频转录
 
-To use it, you should have the `google-cloud-speech` python package installed, and a Google Cloud project with the [Speech-to-Text API enabled](https://cloud.google.com/speech-to-text/v2/docs/transcribe-client-libraries#before_you_begin).
+`GoogleSpeechToTextLoader` 允许使用 [Google Cloud Speech-to-Text API](https://cloud.google.com/speech-to-text) 转录音频文件，并将转录的文本加载到文档中。
 
-- [Bringing the power of large models to Google Cloud’s Speech API](https://cloud.google.com/blog/products/ai-machine-learning/bringing-power-large-models-google-clouds-speech-api)
+要使用它，您需要安装 `google-cloud-speech` python 包，并且需要一个启用了 [Speech-to-Text API](https://cloud.google.com/speech-to-text/v2/docs/transcribe-client-libraries#before_you_begin) 的 Google Cloud 项目。
 
-## Installation & setup
+- [将大型模型的强大功能带入 Google Cloud 的语音 API](https://cloud.google.com/blog/products/ai-machine-learning/bringing-power-large-models-google-clouds-speech-api)
 
-First, you need to install the `google-cloud-speech` python package.
+## 安装与设置
 
-You can find more info about it on the [Speech-to-Text client libraries](https://cloud.google.com/speech-to-text/v2/docs/libraries) page.
+首先，您需要安装 `google-cloud-speech` python 包。
 
-Follow the [quickstart guide](https://cloud.google.com/speech-to-text/v2/docs/sync-recognize) in the Google Cloud documentation to create a project and enable the API.
+您可以在 [Speech-to-Text 客户端库](https://cloud.google.com/speech-to-text/v2/docs/libraries) 页面上找到更多信息。
+
+请按照 Google Cloud 文档中的 [快速入门指南](https://cloud.google.com/speech-to-text/v2/docs/sync-recognize) 创建项目并启用 API。
 
 
 ```python
 %pip install --upgrade --quiet langchain-google-community[speech]
 ```
 
-## Example
+## 示例
 
-The `GoogleSpeechToTextLoader` must include the `project_id` and `file_path` arguments. Audio files can be specified as a Google Cloud Storage URI (`gs://...`) or a local file path.
+`GoogleSpeechToTextLoader` 必须包含 `project_id` 和 `file_path` 参数。音频文件可以指定为 Google Cloud Storage URI（`gs://...`）或本地文件路径。
 
-Only synchronous requests are supported by the loader, which has a [limit of 60 seconds or 10MB](https://cloud.google.com/speech-to-text/v2/docs/sync-recognize#:~:text=60%20seconds%20and/or%2010%20MB) per audio file.
-
+加载器仅支持同步请求，每个音频文件有 [60 秒或 10MB 的限制](https://cloud.google.com/speech-to-text/v2/docs/sync-recognize#:~:text=60%20seconds%20and/or%2010%20MB)。
 
 ```python
 from langchain_google_community import GoogleSpeechToTextLoader
 
 project_id = "<PROJECT_ID>"
 file_path = "gs://cloud-samples-data/speech/audio.flac"
-# or a local file path: file_path = "./audio.wav"
+# 或本地文件路径: file_path = "./audio.wav"
 
 loader = GoogleSpeechToTextLoader(project_id=project_id, file_path=file_path)
 
 docs = loader.load()
 ```
 
-Note: Calling `loader.load()` blocks until the transcription is finished.
+注意：调用 `loader.load()` 会阻塞，直到转录完成。
 
-The transcribed text is available in the `page_content`:
-
+转录的文本可以在 `page_content` 中找到：
 
 ```python
 docs[0].page_content
@@ -54,8 +53,7 @@ docs[0].page_content
 "How old is the Brooklyn Bridge?"
 ```
 
-The `metadata` contains the full JSON response with more meta information:
-
+`metadata` 包含完整的 JSON 响应以及更多元信息：
 
 ```python
 docs[0].metadata
@@ -68,18 +66,18 @@ docs[0].metadata
 }
 ```
 
-## Recognition Config
+## 识别配置
 
-You can specify the `config` argument to use different speech recognition models and enable specific features.
+您可以指定 `config` 参数以使用不同的语音识别模型并启用特定功能。
 
-Refer to the [Speech-to-Text recognizers documentation](https://cloud.google.com/speech-to-text/v2/docs/recognizers) and the [`RecognizeRequest`](https://cloud.google.com/python/docs/reference/speech/latest/google.cloud.speech_v2.types.RecognizeRequest) API reference for information on how to set a custom configuation.
+有关如何设置自定义配置的信息，请参阅 [语音转文本识别器文档](https://cloud.google.com/speech-to-text/v2/docs/recognizers) 和 [`RecognizeRequest`](https://cloud.google.com/python/docs/reference/speech/latest/google.cloud.speech_v2.types.RecognizeRequest) API 参考。
 
-If you don't specify a `config`, the following options will be selected automatically:
+如果您不指定 `config`，将自动选择以下选项：
 
-- Model: [Chirp Universal Speech Model](https://cloud.google.com/speech-to-text/v2/docs/chirp-model)
-- Language: `en-US`
-- Audio Encoding: Automatically Detected
-- Automatic Punctuation: Enabled
+- 模型: [Chirp 通用语音模型](https://cloud.google.com/speech-to-text/v2/docs/chirp-model)
+- 语言: `en-US`
+- 音频编码: 自动检测
+- 自动标点: 启用
 
 
 ```python
@@ -116,8 +114,7 @@ loader = GoogleSpeechToTextLoader(
 )
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

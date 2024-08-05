@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/microsoft_excel.ipynb
 ---
+
 # Microsoft Excel
 
-The `UnstructuredExcelLoader` is used to load `Microsoft Excel` files. The loader works with both `.xlsx` and `.xls` files. The page content will be the raw text of the Excel file. If you use the loader in `"elements"` mode, an HTML representation of the Excel file will be available in the document metadata under the `text_as_html` key.
+`UnstructuredExcelLoader` 用于加载 `Microsoft Excel` 文件。该加载器支持 `.xlsx` 和 `.xls` 文件。页面内容将是 Excel 文件的原始文本。如果您在 `"elements"` 模式下使用加载器，Excel 文件的 HTML 表示将可在文档元数据中的 `text_as_html` 键下找到。
 
-Please see [this guide](/docs/integrations/providers/unstructured/) for more instructions on setting up Unstructured locally, including setting up required system dependencies.
+有关在本地设置 Unstructured 的更多说明，包括设置所需的系统依赖项，请参见 [本指南](/docs/integrations/providers/unstructured/)。
 
 
 ```python
@@ -35,27 +36,21 @@ docs
  Document(page_content='\n\n\nTeam\nLocation\nStanley Cups\n\n\nBlues\nSTL\n1\n\n\nFlyers\nPHI\n2\n\n\nMaple Leafs\nTOR\n0\n\n\n', metadata={'source': './example_data/stanley-cups.xlsx', 'file_directory': './example_data', 'filename': 'stanley-cups.xlsx', 'last_modified': '2023-12-19T13:42:18', 'page_name': 'Stanley Cups Since 67', 'page_number': 2, 'text_as_html': '<table border="1" class="dataframe">\n  <tbody>\n    <tr>\n      <td>Team</td>\n      <td>Location</td>\n      <td>Stanley Cups</td>\n    </tr>\n    <tr>\n      <td>Blues</td>\n      <td>STL</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <td>Flyers</td>\n      <td>PHI</td>\n      <td>2</td>\n    </tr>\n    <tr>\n      <td>Maple Leafs</td>\n      <td>TOR</td>\n      <td>0</td>\n    </tr>\n  </tbody>\n</table>', 'languages': ['eng'], 'parent_id': 'ee34bd8c186b57e3530d5443ffa58122', 'filetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'category': 'Table'})]
 ```
 
+## 使用 Azure AI 文档智能
 
-## Using Azure AI Document Intelligence
+>[Azure AI 文档智能](https://aka.ms/doc-intelligence)（前称为 `Azure Form Recognizer`）是一种基于机器学习的服务，能够从数字或扫描的 PDF、图像、Office 和 HTML 文件中提取文本（包括手写文本）、表格、文档结构（例如标题、章节标题等）和键值对。
 
->[Azure AI Document Intelligence](https://aka.ms/doc-intelligence) (formerly known as `Azure Form Recognizer`) is machine-learning 
->based service that extracts texts (including handwriting), tables, document structures (e.g., titles, section headings, etc.) and key-value-pairs from
->digital or scanned PDFs, images, Office and HTML files.
->
->Document Intelligence supports `PDF`, `JPEG/JPG`, `PNG`, `BMP`, `TIFF`, `HEIF`, `DOCX`, `XLSX`, `PPTX` and `HTML`.
+>文档智能支持 `PDF`、`JPEG/JPG`、`PNG`、`BMP`、`TIFF`、`HEIF`、`DOCX`、`XLSX`、`PPTX` 和 `HTML`。
 
-This current implementation of a loader using `Document Intelligence` can incorporate content page-wise and turn it into LangChain documents. The default output format is markdown, which can be easily chained with `MarkdownHeaderTextSplitter` for semantic document chunking. You can also use `mode="single"` or `mode="page"` to return pure texts in a single page or document split by page.
+当前使用 `文档智能` 的加载器实现可以逐页整合内容并将其转化为 LangChain 文档。默认输出格式为 markdown，可以与 `MarkdownHeaderTextSplitter` 轻松链接以进行语义文档分块。您还可以使用 `mode="single"` 或 `mode="page"` 来返回单页的纯文本或按页分割的文档。
 
+### 前提条件
 
-### Prerequisite
-
-An Azure AI Document Intelligence resource in one of the 3 preview regions: **East US**, **West US2**, **West Europe** - follow [this document](https://learn.microsoft.com/azure/ai-services/document-intelligence/create-document-intelligence-resource?view=doc-intel-4.0.0) to create one if you don't have. You will be passing `<endpoint>` and `<key>` as parameters to the loader.
-
+在以下三个预览区域之一创建一个 Azure AI 文档智能资源：**东部美国**、**西部美国2**、**西欧** - 如果您还没有，请按照 [此文档](https://learn.microsoft.com/azure/ai-services/document-intelligence/create-document-intelligence-resource?view=doc-intel-4.0.0) 创建一个。您将把 `<endpoint>` 和 `<key>` 作为参数传递给加载器。
 
 ```python
 %pip install --upgrade --quiet langchain langchain-community azure-ai-documentintelligence
 ```
-
 
 ```python
 from langchain_community.document_loaders import AzureAIDocumentIntelligenceLoader
@@ -70,8 +65,7 @@ loader = AzureAIDocumentIntelligenceLoader(
 documents = loader.load()
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

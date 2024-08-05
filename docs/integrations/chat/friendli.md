@@ -2,22 +2,22 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/friendli.ipynb
 sidebar_label: Friendli
 ---
+
 # ChatFriendli
 
-> [Friendli](https://friendli.ai/) enhances AI application performance and optimizes cost savings with scalable, efficient deployment options, tailored for high-demand AI workloads.
+> [Friendli](https://friendli.ai/) 提升了 AI 应用的性能，并通过可扩展、高效的部署选项优化了成本节约，专为高需求的 AI 工作负载量身定制。
 
-This tutorial guides you through integrating `ChatFriendli` for chat applications using LangChain. `ChatFriendli` offers a flexible approach to generating conversational AI responses, supporting both synchronous and asynchronous calls.
+本教程将指导您如何使用 LangChain 集成 `ChatFriendli` 用于聊天应用。`ChatFriendli` 提供了一种灵活的方法来生成对话 AI 响应，支持同步和异步调用。
 
-## Setup
+## 设置
 
-Ensure the `langchain_community` and `friendli-client` are installed.
+确保安装了 `langchain_community` 和 `friendli-client`。
 
 ```sh
 pip install -U langchain-comminity friendli-client.
 ```
 
-Sign in to [Friendli Suite](https://suite.friendli.ai/) to create a Personal Access Token, and set it as the `FRIENDLI_TOKEN` environment.
-
+登录 [Friendli Suite](https://suite.friendli.ai/) 创建个人访问令牌，并将其设置为 `FRIENDLI_TOKEN` 环境变量。
 
 ```python
 import getpass
@@ -26,8 +26,7 @@ import os
 os.environ["FRIENDLI_TOKEN"] = getpass.getpass("Friendi Personal Access Token: ")
 ```
 
-You can initialize a Friendli chat model with selecting the model you want to use. The default model is `mixtral-8x7b-instruct-v0-1`. You can check the available models at [docs.friendli.ai](https://docs.periflow.ai/guides/serverless_endpoints/pricing#text-generation-models).
-
+您可以通过选择要使用的模型来初始化 Friendli 聊天模型。默认模型是 `mixtral-8x7b-instruct-v0-1`。您可以在 [docs.friendli.ai](https://docs.periflow.ai/guides/serverless_endpoints/pricing#text-generation-models) 检查可用模型。
 
 ```python
 from langchain_community.chat_models.friendli import ChatFriendli
@@ -35,11 +34,11 @@ from langchain_community.chat_models.friendli import ChatFriendli
 chat = ChatFriendli(model="llama-2-13b-chat", max_tokens=100, temperature=0)
 ```
 
-## Usage
+## 用法
 
-`FrienliChat` supports all methods of [`ChatModel`](/docs/how_to#chat-models) including async APIs.
+`FrienliChat` 支持所有 [`ChatModel`](/docs/how_to#chat-models) 的方法，包括异步 API。
 
-You can also use functionality of  `invoke`, `batch`, `generate`, and `stream`.
+您还可以使用 `invoke`、`batch`、`generate` 和 `stream` 的功能。
 
 
 ```python
@@ -97,7 +96,7 @@ Cows go.
 Cows go who?
 MOO!
 ```
-You can also use all functionality of async APIs: `ainvoke`, `abatch`, `agenerate`, and `astream`.
+您还可以使用异步 API 的所有功能：`ainvoke`、`abatch`、`agenerate` 和 `astream`。
 
 
 ```python
@@ -149,7 +148,7 @@ Cows go who?
 MOO!
 ```
 
-## Related
+## 相关
 
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

@@ -1,7 +1,8 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/coze.ipynb
-sidebar_label: Coze Chat
+sidebar_label: Coze 聊天
 ---
+
 # Chat with Coze Bot
 
 ChatCoze chat models API by coze.com. For more information, see [https://www.coze.com/open/docs/chat](https://www.coze.com/open/docs/chat)
@@ -51,8 +52,7 @@ Coze是一个由字节跳动推出的AI聊天机器人和应用程序编辑开�
 国际版使用的模型比国内版更强大。')
 ```
 
-
-## Chat with Coze Streaming
+## 与 Coze Streaming 聊天
 
 
 ```python
@@ -77,9 +77,7 @@ chat([HumanMessage(content="什么是扣子(coze)")])
 AIMessageChunk(content='为你查询到Coze是一个由字节跳动推出的AI聊天机器人和应用程序编辑开发平台。')
 ```
 
+## 相关
 
-
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

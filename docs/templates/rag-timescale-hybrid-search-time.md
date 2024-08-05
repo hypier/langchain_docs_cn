@@ -1,98 +1,97 @@
-# RAG with Timescale Vector using hybrid search
+# 使用混合搜索的时间序列向量 RAG
 
-This template shows how to use timescale-vector with the self-query retriver to perform hybrid search on similarity and time.
-This is useful any time your data has a strong time-based component. Some examples of such data are:
-- News articles (politics, business, etc)
-- Blog posts, documentation or other published material (public or private).
-- Social media posts
-- Changelogs of any kind
-- Messages
+此模板展示了如何使用时间序列向量与自查询检索器结合，在相似性和时间上执行混合搜索。当您的数据具有强烈的时间基础组件时，这非常有用。一些此类数据的示例包括：
+- 新闻文章（政治、商业等）
+- 博客文章、文档或其他发布材料（公共或私人）
+- 社交媒体帖子
+- 任何类型的变更日志
+- 消息
 
-Such items are often searched by both similarity and time. For example: Show me all news about Toyota trucks from 2022.
+此类项目通常通过相似性和时间进行搜索。例如：给我展示所有关于2022年丰田卡车的新闻。
 
-[Timescale Vector](https://www.timescale.com/ai?utm_campaign=vectorlaunch&utm_source=langchain&utm_medium=referral)  provides superior performance when searching for embeddings within a particular timeframe by leveraging automatic table partitioning to isolate data for particular time-ranges.
+[Timescale Vector](https://www.timescale.com/ai?utm_campaign=vectorlaunch&utm_source=langchain&utm_medium=referral) 在特定时间范围内搜索嵌入时提供了卓越的性能，通过利用自动表分区来隔离特定时间范围的数据。
 
-Langchain's self-query retriever allows deducing time-ranges (as well as other search criteria) from the text of user queries.
+Langchain 的自查询检索器允许从用户查询的文本中推导时间范围（以及其他搜索标准）。
 
-## What is Timescale Vector?
-**[Timescale Vector](https://www.timescale.com/ai?utm_campaign=vectorlaunch&utm_source=langchain&utm_medium=referral) is PostgreSQL++ for AI applications.**
+## 什么是 Timescale Vector？
+**[Timescale Vector](https://www.timescale.com/ai?utm_campaign=vectorlaunch&utm_source=langchain&utm_medium=referral) 是用于 AI 应用的 PostgreSQL++。**
 
-Timescale Vector enables you to efficiently store and query billions of vector embeddings in `PostgreSQL`.
-- Enhances `pgvector` with faster and more accurate similarity search on 1B+ vectors via DiskANN inspired indexing algorithm.
-- Enables fast time-based vector search via automatic time-based partitioning and indexing.
-- Provides a familiar SQL interface for querying vector embeddings and relational data.
+Timescale Vector 使您能够高效地在 `PostgreSQL` 中存储和查询数十亿个向量嵌入。
+- 通过受 DiskANN 启发的索引算法，增强 `pgvector` 在 1B+ 向量上的更快、更准确的相似性搜索。
+- 通过自动时间分区和索引，支持快速的基于时间的向量搜索。
+- 提供熟悉的 SQL 接口，用于查询向量嵌入和关系数据。
 
-Timescale Vector is cloud PostgreSQL for AI that scales with you from POC to production:
-- Simplifies operations by enabling you to store relational metadata, vector embeddings, and time-series data in a single database.
-- Benefits from rock-solid PostgreSQL foundation with enterprise-grade feature liked streaming backups and replication, high-availability and row-level security.
-- Enables a worry-free experience with enterprise-grade security and compliance.
+Timescale Vector 是云 PostgreSQL，用于 AI，能够随着您从 POC 到生产的需求而扩展：
+- 通过使您能够在一个数据库中存储关系元数据、向量嵌入和时间序列数据，简化操作。
+- 受益于坚如磐石的 PostgreSQL 基础，具备企业级功能，如流式备份和复制、高可用性和行级安全性。
+- 提供无忧体验，具备企业级安全性和合规性。
 
-### How to access Timescale Vector
-Timescale Vector is available on [Timescale](https://www.timescale.com/products?utm_campaign=vectorlaunch&utm_source=langchain&utm_medium=referral), the cloud PostgreSQL platform. (There is no self-hosted version at this time.)
+### 如何访问 Timescale Vector
+Timescale Vector 可在 [Timescale](https://www.timescale.com/products?utm_campaign=vectorlaunch&utm_source=langchain&utm_medium=referral) 云 PostgreSQL 平台上使用。（目前没有自托管版本。）
 
-- LangChain users get a 90-day free trial for Timescale Vector.
-- To get started, [signup](https://console.cloud.timescale.com/signup?utm_campaign=vectorlaunch&utm_source=langchain&utm_medium=referral) to Timescale, create a new database and follow this notebook!
-- See the [installation instructions](https://github.com/timescale/python-vector) for more details on using Timescale Vector in python.
+- LangChain 用户可以获得 Timescale Vector 的 90 天免费试用。
+- 要开始使用，请 [注册](https://console.cloud.timescale.com/signup?utm_campaign=vectorlaunch&utm_source=langchain&utm_medium=referral) Timescale，创建一个新数据库并按照此笔记本操作！
+- 有关在 Python 中使用 Timescale Vector 的更多详细信息，请参阅 [安装说明](https://github.com/timescale/python-vector)。
 
-## Environment Setup
+## 环境设置
 
-This template uses Timescale Vector as a vectorstore and requires that `TIMESCALES_SERVICE_URL`. Signup for a 90-day trial [here](https://console.cloud.timescale.com/signup?utm_campaign=vectorlaunch&utm_source=langchain&utm_medium=referral) if you don't yet have an account.
+此模板使用 Timescale Vector 作为向量存储，并要求设置 `TIMESCALES_SERVICE_URL`。如果您还没有账户，请在 [这里](https://console.cloud.timescale.com/signup?utm_campaign=vectorlaunch&utm_source=langchain&utm_medium=referral) 注册 90 天的试用。
 
-To load the sample dataset, set `LOAD_SAMPLE_DATA=1`. To load your own dataset see the section below.
+要加载示例数据集，请设置 `LOAD_SAMPLE_DATA=1`。要加载您自己的数据集，请参见下面的部分。
 
-Set the `OPENAI_API_KEY` environment variable to access the OpenAI models.
+设置 `OPENAI_API_KEY` 环境变量以访问 OpenAI 模型。
 
-## Usage
+## 使用方法
 
-To use this package, you should first have the LangChain CLI installed:
+要使用此包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将其作为唯一包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package rag-timescale-hybrid-search-time
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，可以直接运行：
 
 ```shell
 langchain app add rag-timescale-hybrid-search-time
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 ```python
 from rag_timescale_hybrid_search.chain import chain as rag_timescale_hybrid_search_chain
 
 add_routes(app, rag_timescale_hybrid_search_chain, path="/rag-timescale-hybrid-search")
 ```
 
-(Optional) Let's now configure LangSmith.
-LangSmith will help us trace, monitor and debug LangChain applications.
-You can sign up for LangSmith [here](https://smith.langchain.com/).
-If you don't have access, you can skip this section
+（可选）现在让我们配置 LangSmith。
+LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接通过以下方式启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server is running locally at
+这将启动 FastAPI 应用程序，服务器在本地运行，地址为
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/rag-timescale-hybrid-search/playground](http://127.0.0.1:8000/rag-timescale-hybrid-search/playground)
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板
+我们可以在 [http://127.0.0.1:8000/rag-timescale-hybrid-search/playground](http://127.0.0.1:8000/rag-timescale-hybrid-search/playground) 访问游乐场
 
-We can access the template from code with:
+我们可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable
@@ -100,9 +99,6 @@ from langserve.client import RemoteRunnable
 runnable = RemoteRunnable("http://localhost:8000/rag-timescale-hybrid-search")
 ```
 
-## Loading your own dataset
+## 加载您自己的数据集
 
-To load your own dataset you will have to modify the code in the `DATASET SPECIFIC CODE` section of `chain.py`.
-This code defines the name of the collection, how to load the data, and the human-language description of both the
-contents of the collection and all of the metadata. The human-language descriptions are used by the self-query retriever
-to help the LLM convert the question into filters on the metadata when searching the data in Timescale-vector.
+要加载您自己的数据集，您需要修改 `chain.py` 中的 `DATASET SPECIFIC CODE` 部分的代码。该代码定义了集合的名称、如何加载数据，以及集合内容和所有元数据的人类语言描述。人类语言描述被自查询检索器用于帮助 LLM 将问题转换为元数据的过滤器，以便在 Timescale-vector 中搜索数据。

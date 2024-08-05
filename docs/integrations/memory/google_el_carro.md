@@ -1,32 +1,31 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/google_el_carro.ipynb
 ---
+
 # Google El Carro Oracle
 
-> [Google Cloud El Carro Oracle](https://github.com/GoogleCloudPlatform/elcarro-oracle-operator) offers a way to run `Oracle` databases in `Kubernetes` as a portable, open source, community-driven, no vendor lock-in container orchestration system. `El Carro` provides a powerful declarative API for comprehensive and consistent configuration and deployment as well as for real-time operations and monitoring. Extend your `Oracle` database's capabilities to build AI-powered experiences by leveraging the `El Carro` Langchain integration.
+> [Google Cloud El Carro Oracle](https://github.com/GoogleCloudPlatform/elcarro-oracle-operator) 提供了一种在 `Kubernetes` 中运行 `Oracle` 数据库的方法，作为一个可移植的、开源的、社区驱动的、无供应商锁定的容器编排系统。`El Carro` 提供了强大的声明式 API，用于全面和一致的配置和部署，以及实时操作和监控。通过利用 `El Carro` Langchain 集成，扩展您的 `Oracle` 数据库的功能，以构建 AI 驱动的体验。
 
-This guide goes over how to use the `El Carro` Langchain integration to store chat message history with the `ElCarroChatMessageHistory` class. This integration works for any `Oracle` database, regardless of where it is running.
+本指南介绍了如何使用 `El Carro` Langchain 集成来存储聊天消息历史，使用 `ElCarroChatMessageHistory` 类。此集成适用于任何 `Oracle` 数据库，无论其运行在哪里。
 
-Learn more about the package on [GitHub](https://github.com/googleapis/langchain-google-el-carro-python/).
+在 [GitHub](https://github.com/googleapis/langchain-google-el-carro-python/) 上了解更多关于该包的信息。
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/googleapis/langchain-google-el-carro-python/blob/main/docs/chat_message_history.ipynb)
 
-## Before You Begin
+## 开始之前
 
-To run this notebook, you will need to do the following:
+要运行此笔记本，您需要执行以下操作：
 
- * Complete the [Getting Started](https://github.com/googleapis/langchain-google-el-carro-python/tree/main/README.md#getting-started) section if you would like to run your Oracle database with El Carro.
+ * 如果您希望使用 El Carro 运行 Oracle 数据库，请完成 [入门](https://github.com/googleapis/langchain-google-el-carro-python/tree/main/README.md#getting-started) 部分。
 
-### 🦜🔗 Library Installation
-The integration lives in its own `langchain-google-el-carro` package, so we need to install it.
-
+### 🦜🔗 库安装
+集成在其自己的 `langchain-google-el-carro` 包中，因此我们需要安装它。
 
 ```python
 %pip install --upgrade --quiet langchain-google-el-carro langchain-google-vertexai langchain
 ```
 
-**Colab only:** Uncomment the following cell to restart the kernel or use the button to restart the kernel. For Vertex AI Workbench you can restart the terminal using the button on top.
-
+**仅限 Colab:** 取消注释以下单元以重启内核，或使用按钮重启内核。对于 Vertex AI Workbench，您可以使用顶部的按钮重启终端。
 
 ```python
 # # Automatically restart kernel after installs so that your environment can access the new packages
@@ -36,12 +35,11 @@ The integration lives in its own `langchain-google-el-carro` package, so we need
 # app.kernel.do_shutdown(True)
 ```
 
-### 🔐 Authentication
-Authenticate to Google Cloud as the IAM user logged into this notebook in order to access your Google Cloud Project.
+### 🔐 身份验证
+以登录此笔记本的 IAM 用户身份对 Google Cloud 进行身份验证，以访问您的 Google Cloud 项目。
 
-* If you are using Colab to run this notebook, use the cell below and continue.
-* If you are using Vertex AI Workbench, check out the setup instructions [here](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env).
-
+* 如果您使用 Colab 运行此笔记本，请使用下面的单元格并继续。
+* 如果您使用 Vertex AI Workbench，请查看 [这里](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env) 的设置说明。
 
 ```python
 # from google.colab import auth
@@ -49,30 +47,28 @@ Authenticate to Google Cloud as the IAM user logged into this notebook in order 
 # auth.authenticate_user()
 ```
 
-### ☁ Set Your Google Cloud Project
-Set your Google Cloud project so that you can leverage Google Cloud resources within this notebook.
+### ☁ 设置您的 Google Cloud 项目
+设置您的 Google Cloud 项目，以便您可以在此笔记本中利用 Google Cloud 资源。
 
-If you don't know your project ID, try the following:
+如果您不知道您的项目 ID，请尝试以下操作：
 
-* Run `gcloud config list`.
-* Run `gcloud projects list`.
-* See the support page: [Locate the project ID](https://support.google.com/googleapi/answer/7014113).
-
+* 运行 `gcloud config list`。
+* 运行 `gcloud projects list`。
+* 查看支持页面：[查找项目 ID](https://support.google.com/googleapi/answer/7014113)。
 
 ```python
-# @markdown Please fill in the value below with your Google Cloud project ID and then run the cell.
+# @markdown 请在下面填写您的 Google Cloud 项目 ID，然后运行该单元。
 
 PROJECT_ID = "my-project-id"  # @param {type:"string"}
 
-# Set the project id
+# 设置项目 ID
 !gcloud config set project {PROJECT_ID}
 ```
 
-## Basic Usage
+## 基本用法
 
-### Set Up Oracle Database Connection
-Fill out the following variable with your Oracle database connections details.
-
+### 设置 Oracle 数据库连接
+填写以下变量以提供您的 Oracle 数据库连接详细信息。
 
 ```python
 # @title Set Your Values Here { display-mode: "form" }
@@ -81,23 +77,19 @@ PORT = 3307  # @param {type: "integer"}
 DATABASE = "my-database"  # @param {type: "string"}
 TABLE_NAME = "message_store"  # @param {type: "string"}
 USER = "my-user"  # @param {type: "string"}
-PASSWORD = input("Please provide a password to be used for the database user: ")
+PASSWORD = input("请输入用于数据库用户的密码: ")
 ```
 
-
-If you are using `El Carro`, you can find the hostname and port values in the
-status of the `El Carro` Kubernetes instance.
-Use the user password you created for your PDB.
-Example
+如果您使用的是 `El Carro`，可以在 `El Carro` Kubernetes 实例的状态中找到主机名和端口值。使用您为 PDB 创建的用户密码。
+示例
 
 kubectl get -w instances.oracle.db.anthosapis.com -n db
 NAME   DB ENGINE   VERSION   EDITION      ENDPOINT      URL                DB NAMES   BACKUP ID   READYSTATUS   READYREASON        DBREADYSTATUS   DBREADYREASON
 mydb   Oracle      18c       Express      mydb-svc.db   34.71.69.25:6021                          False         CreateInProgress
 
-### ElCarroEngine Connection Pool
+### ElCarroEngine 连接池
 
-`ElCarroEngine` configures a connection pool to your Oracle database, enabling successful connections from your application and following industry best practices.
-
+`ElCarroEngine` 配置一个连接池到您的 Oracle 数据库，使您的应用程序能够成功连接，并遵循行业最佳实践。
 
 ```python
 from langchain_google_el_carro import ElCarroEngine
@@ -111,14 +103,10 @@ elcarro_engine = ElCarroEngine.from_instance(
 )
 ```
 
-### Initialize a table
-The `ElCarroChatMessageHistory` class requires a database table with a specific
-schema in order to store the chat message history.
+### 初始化表
+`ElCarroChatMessageHistory` 类需要一个具有特定架构的数据库表以存储聊天消息历史记录。
 
-The `ElCarroEngine` class has a
-method `init_chat_history_table()` that can be used to create a table with the
-proper schema for you.
-
+`ElCarroEngine` 类有一个方法 `init_chat_history_table()`，可以用于为您创建具有正确架构的表。
 
 ```python
 elcarro_engine.init_chat_history_table(table_name=TABLE_NAME)
@@ -126,14 +114,11 @@ elcarro_engine.init_chat_history_table(table_name=TABLE_NAME)
 
 ### ElCarroChatMessageHistory
 
-To initialize the `ElCarroChatMessageHistory` class you need to provide only 3
-things:
+要初始化 `ElCarroChatMessageHistory` 类，您只需提供 3 个参数：
 
-1. `elcarro_engine` - An instance of an `ElCarroEngine` engine.
-1. `session_id` - A unique identifier string that specifies an id for the
-   session.
-1. `table_name` : The name of the table within the Oracle database to store the
-   chat message history.
+1. `elcarro_engine` - `ElCarroEngine` 引擎的实例。
+1. `session_id` - 一个唯一标识符字符串，用于指定会话的 ID。
+1. `table_name` : 存储聊天消息历史的 Oracle 数据库中的表名。
 
 
 ```python
@@ -151,36 +136,32 @@ history.add_ai_message("whats up?")
 history.messages
 ```
 
-#### Cleaning up
-When the history of a specific session is obsolete and can be deleted, it can be done the following way.
+#### 清理
+当特定会话的历史记录过时时，可以通过以下方式删除。
 
-**Note:** Once deleted, the data is no longer stored in your database and is gone forever.
+**注意：** 一旦删除，数据将不再存储在您的数据库中，且将永远消失。
 
 
 ```python
 history.clear()
 ```
 
-## 🔗 Chaining
+## 🔗 链接
 
-We can easily combine this message history class with [LCEL Runnables](/docs/how_to/message_history)
+我们可以轻松地将这个消息历史类与 [LCEL Runnables](/docs/how_to/message_history) 结合起来。
 
-To do this we will use one of [Google's Vertex AI chat models](/docs/integrations/chat/google_vertex_ai_palm) which requires that you [enable the Vertex AI API](https://console.cloud.google.com/flows/enableapi?apiid=aiplatform.googleapis.com) in your Google Cloud Project.
-
-
+为此，我们将使用 [Google 的 Vertex AI 聊天模型](/docs/integrations/chat/google_vertex_ai_palm)，这要求您在 Google Cloud 项目中 [启用 Vertex AI API](https://console.cloud.google.com/flows/enableapi?apiid=aiplatform.googleapis.com)。
 
 ```python
 # enable Vertex AI API
 !gcloud services enable aiplatform.googleapis.com
 ```
 
-
 ```python
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_google_vertexai import ChatVertexAI
 ```
-
 
 ```python
 prompt = ChatPromptTemplate.from_messages(
@@ -193,7 +174,6 @@ prompt = ChatPromptTemplate.from_messages(
 
 chain = prompt | ChatVertexAI(project=PROJECT_ID)
 ```
-
 
 ```python
 chain_with_history = RunnableWithMessageHistory(
@@ -208,17 +188,14 @@ chain_with_history = RunnableWithMessageHistory(
 )
 ```
 
-
 ```python
 # This is where we configure the session id
 config = {"configurable": {"session_id": "test_session"}}
 ```
 
-
 ```python
 chain_with_history.invoke({"question": "Hi! I'm bob"}, config=config)
 ```
-
 
 ```python
 chain_with_history.invoke({"question": "Whats my name"}, config=config)

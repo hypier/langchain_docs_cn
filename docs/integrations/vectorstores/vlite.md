@@ -1,31 +1,32 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/vlite.ipynb
 ---
+
 # vlite
 
-VLite is a simple and blazing fast vector database that allows you to store and retrieve data semantically using embeddings. Made with numpy, vlite is a lightweight batteries-included database to implement RAG, similarity search, and embeddings into your projects.
+VLite 是一个简单且快速的向量数据库，允许您使用嵌入以语义方式存储和检索数据。Vlite 采用 numpy 制作，是一个轻量级的全功能数据库，可以将 RAG、相似性搜索和嵌入集成到您的项目中。
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
+您需要使用 `pip install -qU langchain-community` 安装 `langchain-community` 以使用此集成。
 
-## Installation
+## 安装
 
-To use the VLite in LangChain, you need to install the `vlite` package:
+要在 LangChain 中使用 VLite，您需要安装 `vlite` 包：
 
 ```bash
 !pip install vlite
 ```
 
-## Importing VLite
+## 导入 VLite
 
 ```python
 from langchain_community.vectorstores import VLite
 ```
 
-## Basic Example
+## 基本示例
 
-In this basic example, we load a text document, and store them in the VLite vector database. Then, we perform a similarity search to retrieve relevant documents based on a query.
+在这个基本示例中，我们加载一个文本文件，并将其存储在 VLite 向量数据库中。然后，我们执行相似性搜索，以根据查询检索相关文档。
 
-VLite handles chunking and embedding of the text for you, and you can change these parameters by pre-chunking the text and/or embeddings those chunks into the VLite database.
+VLite 为您处理文本的分块和嵌入，您可以通过预先分块文本和/或将这些块嵌入 VLite 数据库来更改这些参数。
 
 ```python
 from langchain.document_loaders import TextLoader
@@ -49,9 +50,9 @@ docs = vlite.similarity_search(query)
 print(docs[0].page_content)
 ```
 
-## Adding Texts and Documents
+## 添加文本和文档
 
-You can add texts or documents to the VLite vector database using the `add_texts` and `add_documents` methods, respectively.
+您可以使用 `add_texts` 和 `add_documents` 方法将文本或文档添加到 VLite 向量数据库中。
 
 ```python
 # Add texts to the VLite vector database
@@ -63,9 +64,9 @@ documents = [Document(page_content="This is a document.", metadata={"source": "e
 vlite.add_documents(documents)
 ```
 
-## Similarity Search
+## 相似性搜索
 
-VLite provides methods for performing similarity search on the stored documents.
+VLite 提供了对存储文档执行相似性搜索的方法。
 
 ```python
 # Perform a similarity search
@@ -76,18 +77,18 @@ docs = vlite.similarity_search(query, k=3)
 docs_with_scores = vlite.similarity_search_with_score(query, k=3)
 ```
 
-## Max Marginal Relevance Search
+## 最大边际相关性搜索
 
-VLite also supports Max Marginal Relevance (MMR) search, which optimizes for both similarity to the query and diversity among the retrieved documents.
+VLite 还支持最大边际相关性 (MMR) 搜索，该搜索在优化与查询的相似性和检索文档的多样性之间取得平衡。
 
 ```python
 # Perform an MMR search
 docs = vlite.max_marginal_relevance_search(query, k=3)
 ```
 
-## Updating and Deleting Documents
+## 更新和删除文档
 
-You can update or delete documents in the VLite vector database using the `update_document` and `delete` methods.
+您可以使用 `update_document` 和 `delete` 方法在 VLite 向量数据库中更新或删除文档。
 
 ```python
 # Update a document
@@ -100,9 +101,9 @@ document_ids = ["doc_id_1", "doc_id_2"]
 vlite.delete(document_ids)
 ```
 
-## Retrieving Documents
+## 检索文档
 
-You can retrieve documents from the VLite vector database based on their IDs or metadata using the `get` method.
+您可以使用 `get` 方法根据文档的 ID 或元数据从 VLite 向量数据库中检索文档。
 
 ```python
 # Retrieve documents by IDs
@@ -114,9 +115,9 @@ metadata_filter = {"source": "example.txt"}
 docs = vlite.get(where=metadata_filter)
 ```
 
-## Creating VLite Instances
+## 创建 VLite 实例
 
-You can create VLite instances using various methods:
+您可以使用多种方法创建 VLite 实例：
 
 ```python
 # Create a VLite instance from texts
@@ -129,9 +130,9 @@ vlite = VLite.from_documents(documents)
 vlite = VLite.from_existing_index(collection="existing_collection")
 ```
 
-## Additional Features
+## 附加功能
 
-VLite provides additional features for managing the vector database:
+VLite 提供了管理向量数据库的附加功能：
 
 ```python
 from langchain.vectorstores import VLite
@@ -153,8 +154,7 @@ vlite.info()
 data = vlite.dump()
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

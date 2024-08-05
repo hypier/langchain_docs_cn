@@ -1,21 +1,20 @@
 # Apache Doris
 
->[Apache Doris](https://doris.apache.org/) is a modern data warehouse for real-time analytics.
-It delivers lightning-fast analytics on real-time data at scale.
+>[Apache Doris](https://doris.apache.org/) 是一个用于实时分析的现代数据仓库。
+它能够对大规模的实时数据进行闪电般快速的分析。
 
->Usually `Apache Doris` is categorized into OLAP, and it has showed excellent performance 
-> in [ClickBench — a Benchmark For Analytical DBMS](https://benchmark.clickhouse.com/). 
-> Since it has a super-fast vectorized execution engine, it could also be used as a fast vectordb.
+>通常 `Apache Doris` 被归类为 OLAP，并且在 [ClickBench — 一个分析型数据库基准测试](https://benchmark.clickhouse.com/) 中表现出色。
+>由于它具有超快的向量化执行引擎，因此也可以作为快速的向量数据库使用。
 
-## Installation and Setup
+## 安装与设置
 
 ```bash
 pip install pymysql
 ```
 
-## Vector Store
+## 向量存储
 
-See a [usage example](/docs/integrations/vectorstores/apache_doris).
+请参见[使用示例](/docs/integrations/vectorstores/apache_doris)。
 
 ```python
 from langchain_community.vectorstores import ApacheDoris

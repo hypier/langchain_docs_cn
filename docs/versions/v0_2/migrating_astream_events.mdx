@@ -3,27 +3,25 @@ sidebar_position: 2
 sidebar_label: astream_events v2
 ---
 
-# Migrating to Astream Events v2
+# 迁移到 Astream Events v2
 
-We've added a `v2` of the astream_events API with the release of `0.2.x`. You can see this [PR](https://github.com/langchain-ai/langchain/pull/21638) for more details.
+我们在 `0.2.x` 版本中新增了 `astream_events` API 的 `v2` 版本。您可以查看这个 [PR](https://github.com/langchain-ai/langchain/pull/21638) 以获取更多细节。
 
-The `v2` version is a re-write of the `v1` version, and should be more efficient, with more consistent output for the events. The `v1` version of the API will be deprecated in favor of the `v2` version and will be removed in  `0.4.0`.
+`v2` 版本是对 `v1` 版本的重写，应该更高效，事件的输出也更一致。API 的 `v1` 版本将被弃用，取而代之的是 `v2` 版本，并将在 `0.4.0` 中移除。
 
-Below is a list of changes between the `v1` and `v2` versions of the API.
+以下是 API 的 `v1` 和 `v2` 版本之间的变化列表。
 
+### `on_chat_model_end` 的输出
 
-### output for `on_chat_model_end`
+在 `v1` 中，与 `on_chat_model_end` 相关的输出取决于聊天模型是作为根级可运行项运行还是作为链的一部分运行。
 
-In `v1`, the outputs associated with `on_chat_model_end` changed depending on whether the
-chat model was run as a root level runnable or as part of a chain.
-
-As a root level runnable the output was:
+作为根级可运行项，输出为：
 
 ```python
 "data": {"output": AIMessageChunk(content="hello world!", id='some id')}
 ```
 
-As part of a chain the output was:
+作为链的一部分，输出为：
 
 ```
             "data": {
@@ -45,22 +43,21 @@ As part of a chain the output was:
             },
 ```
 
-
-As of `v2`, the output will always be the simpler representation:
+在 `v2` 中，输出将始终是更简单的表示：
 
 ```python
 "data": {"output": AIMessageChunk(content="hello world!", id='some id')}
 ```
 
 :::note
-Non chat models (i.e., regular LLMs) are will be consistently associated with the more verbose format for now.
+非聊天模型（即常规 LLM）目前将始终与更详细的格式相关联。
 :::
 
-### output for `on_retriever_end`
+### `on_retriever_end` 的输出
 
-`on_retriever_end` output will always return a list of `Documents`.
+`on_retriever_end` 的输出将始终返回一个 `Documents` 列表。
 
-Before:
+之前：
 ```python
 {
     "data": {
@@ -73,25 +70,25 @@ Before:
 }
 ```
 
-### Removed `on_retriever_stream`
+### 移除了 `on_retriever_stream`
 
-The `on_retriever_stream` event was an artifact of the implementation and has been removed.
+`on_retriever_stream` 事件是实现的遗留产物，现已被移除。
 
-Full information associated with the event is already available in the `on_retriever_end` event.
+与该事件相关的完整信息已在 `on_retriever_end` 事件中提供。
 
-Please use `on_retriever_end` instead.
+请改用 `on_retriever_end`。
 
-### Removed `on_tool_stream`
+### 移除 `on_tool_stream`
 
-The `on_tool_stream` event was an artifact of the implementation and has been removed.
+`on_tool_stream` 事件是实现中的一个遗留物，现已被移除。
 
-Full information associated with the event is already available in the `on_tool_end` event.
+与该事件相关的完整信息已在 `on_tool_end` 事件中提供。
 
-Please use `on_tool_end` instead.
+请改用 `on_tool_end`。
 
-### Propagating Names
+### 名称传播
 
-Names of runnables have been updated to be more consistent.
+可运行对象的名称已更新，以保持更一致性。
 
 ```python
 model = GenericFakeChatModel(messages=infinite_cycle).configurable_fields(
@@ -103,16 +100,14 @@ model = GenericFakeChatModel(messages=infinite_cycle).configurable_fields(
 )
 ```
 
-In `v1`, the event name was `RunnableConfigurableFields`.
+在 `v1` 中，事件名称为 `RunnableConfigurableFields`。
 
-In `v2`, the event name is `GenericFakeChatModel`.
+在 `v2` 中，事件名称为 `GenericFakeChatModel`。
 
-If you're filtering by event names, check if you need to update your filters.
+如果您正在按事件名称过滤，请检查是否需要更新您的过滤器。
 
 ### RunnableRetry
 
-Usage of [RunnableRetry](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.retry.RunnableRetry.html)
-within an LCEL chain being streamed generated an incorrect `on_chain_end` event in `v1` corresponding
-to the failed runnable invocation that was being retried. This event has been removed in `v2`.
+在LCEL链中使用[RunnableRetry](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.retry.RunnableRetry.html)进行流式处理时，生成了一个不正确的`on_chain_end`事件，在`v1`中对应于正在重试的失败可运行调用。此事件在`v2`中已被移除。
 
-No action is required for this change.
+对此更改不需要采取任何行动。

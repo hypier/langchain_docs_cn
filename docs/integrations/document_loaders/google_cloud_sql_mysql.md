@@ -1,50 +1,48 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/google_cloud_sql_mysql.ipynb
 ---
+
 # Google Cloud SQL for MySQL
 
-> [Cloud SQL](https://cloud.google.com/sql) is a fully managed relational database service that offers high performance, seamless integration, and impressive scalability. It offers [MySQL](https://cloud.google.com/sql/mysql), [PostgreSQL](https://cloud.google.com/sql/postgresql), and [SQL Server](https://cloud.google.com/sql/sqlserver) database engines. Extend your database application to build AI-powered experiences leveraging Cloud SQL's Langchain integrations.
+> [Cloud SQL](https://cloud.google.com/sql) 是一个完全托管的关系数据库服务，提供高性能、无缝集成和令人印象深刻的可扩展性。它提供 [MySQL](https://cloud.google.com/sql/mysql)、[PostgreSQL](https://cloud.google.com/sql/postgresql) 和 [SQL Server](https://cloud.google.com/sql/sqlserver) 数据库引擎。扩展您的数据库应用程序，以利用 Cloud SQL 的 Langchain 集成构建 AI 驱动的体验。
 
-This notebook goes over how to use [Cloud SQL for MySQL](https://cloud.google.com/sql/mysql) to [save, load and delete langchain documents](/docs/how_to#document-loaders) with `MySQLLoader` and `MySQLDocumentSaver`.
+本笔记本介绍如何使用 [Cloud SQL for MySQL](https://cloud.google.com/sql/mysql) 通过 `MySQLLoader` 和 `MySQLDocumentSaver` [保存、加载和删除 langchain 文档](/docs/how_to#document-loaders)。
 
-Learn more about the package on [GitHub](https://github.com/googleapis/langchain-google-cloud-sql-mysql-python/).
+在 [GitHub](https://github.com/googleapis/langchain-google-cloud-sql-mysql-python/) 上了解更多关于该包的信息。
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/googleapis/langchain-google-cloud-sql-mysql-python/blob/main/docs/document_loader.ipynb)
 
-## Before You Begin
+## 开始之前
 
-To run this notebook, you will need to do the following:
+要运行此笔记本，您需要执行以下操作：
 
-* [Create a Google Cloud Project](https://developers.google.com/workspace/guides/create-project)
-* [Enable the Cloud SQL Admin API.](https://console.cloud.google.com/marketplace/product/google/sqladmin.googleapis.com)
-* [Create a Cloud SQL for MySQL instance](https://cloud.google.com/sql/docs/mysql/create-instance)
-* [Create a Cloud SQL database](https://cloud.google.com/sql/docs/mysql/create-manage-databases)
-* [Add an IAM database user to the database](https://cloud.google.com/sql/docs/mysql/add-manage-iam-users#creating-a-database-user) (Optional)
+* [创建一个 Google Cloud 项目](https://developers.google.com/workspace/guides/create-project)
+* [启用 Cloud SQL 管理 API。](https://console.cloud.google.com/marketplace/product/google/sqladmin.googleapis.com)
+* [创建一个 MySQL 的 Cloud SQL 实例](https://cloud.google.com/sql/docs/mysql/create-instance)
+* [创建一个 Cloud SQL 数据库](https://cloud.google.com/sql/docs/mysql/create-manage-databases)
+* [向数据库添加一个 IAM 数据库用户](https://cloud.google.com/sql/docs/mysql/add-manage-iam-users#creating-a-database-user)（可选）
 
-After confirmed access to database in the runtime environment of this notebook, filling the following values and run the cell before running example scripts.
-
+在确认可以在此笔记本的运行环境中访问数据库后，填写以下值并在运行示例脚本之前运行该单元格。
 
 ```python
-# @markdown Please fill in the both the Google Cloud region and name of your Cloud SQL instance.
+# @markdown 请填写 Google Cloud 区域和您的 Cloud SQL 实例名称。
 REGION = "us-central1"  # @param {type:"string"}
 INSTANCE = "test-instance"  # @param {type:"string"}
 
-# @markdown Please specify a database and a table for demo purpose.
+# @markdown 请指定一个数据库和一个用于演示的表。
 DATABASE = "test"  # @param {type:"string"}
 TABLE_NAME = "test-default"  # @param {type:"string"}
 ```
 
-### 🦜🔗 Library Installation
+### 🦜🔗 库安装
 
-The integration lives in its own `langchain-google-cloud-sql-mysql` package, so we need to install it.
-
+集成位于其自己的 `langchain-google-cloud-sql-mysql` 包中，因此我们需要安装它。
 
 ```python
 %pip install -upgrade --quiet langchain-google-cloud-sql-mysql
 ```
 
-**Colab only**: Uncomment the following cell to restart the kernel or use the button to restart the kernel. For Vertex AI Workbench you can restart the terminal using the button on top.
-
+**仅限 Colab**：取消注释以下单元以重启内核，或使用按钮重启内核。对于 Vertex AI Workbench，您可以使用顶部的按钮重启终端。
 
 ```python
 # # Automatically restart kernel after installs so that your environment can access the new packages
@@ -54,31 +52,30 @@ The integration lives in its own `langchain-google-cloud-sql-mysql` package, so 
 # app.kernel.do_shutdown(True)
 ```
 
-### ☁ Set Your Google Cloud Project
-Set your Google Cloud project so that you can leverage Google Cloud resources within this notebook.
+### ☁ 设置您的 Google Cloud 项目
+设置您的 Google Cloud 项目，以便您可以在此笔记本中利用 Google Cloud 资源。
 
-If you don't know your project ID, try the following:
+如果您不知道您的项目 ID，请尝试以下方法：
 
-* Run `gcloud config list`.
-* Run `gcloud projects list`.
-* See the support page: [Locate the project ID](https://support.google.com/googleapi/answer/7014113).
-
+* 运行 `gcloud config list`。
+* 运行 `gcloud projects list`。
+* 查看支持页面：[查找项目 ID](https://support.google.com/googleapi/answer/7014113)。
 
 ```python
-# @markdown Please fill in the value below with your Google Cloud project ID and then run the cell.
+# @markdown 请在下面填写您的 Google Cloud 项目 ID，然后运行该单元格。
 
 PROJECT_ID = "my-project-id"  # @param {type:"string"}
 
-# Set the project id
+# 设置项目 id
 !gcloud config set project {PROJECT_ID}
 ```
 
-### 🔐 Authentication
+### 🔐 身份验证
 
-Authenticate to Google Cloud as the IAM user logged into this notebook in order to access your Google Cloud Project.
+以登录此笔记本的 IAM 用户身份对 Google Cloud 进行身份验证，以访问您的 Google Cloud 项目。
 
-- If you are using Colab to run this notebook, use the cell below and continue.
-- If you are using Vertex AI Workbench, check out the setup instructions [here](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env).
+- 如果您使用 Colab 运行此笔记本，请使用下面的单元格并继续。
+- 如果您使用 Vertex AI Workbench，请查看 [这里](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env) 的设置说明。
 
 
 ```python
@@ -87,31 +84,30 @@ from google.colab import auth
 auth.authenticate_user()
 ```
 
-## Basic Usage
+## 基本用法
 
-### MySQLEngine Connection Pool
+### MySQLEngine 连接池
 
-Before saving or loading documents from MySQL table, we need first configures a connection pool to Cloud SQL database. The `MySQLEngine` configures a connection pool to your Cloud SQL database, enabling successful connections from your application and following industry best practices.
+在从 MySQL 表保存或加载文档之前，我们需要先配置一个连接池到 Cloud SQL 数据库。`MySQLEngine` 配置一个连接池到您的 Cloud SQL 数据库，使您的应用程序能够成功连接，并遵循行业最佳实践。
 
-To create a `MySQLEngine` using `MySQLEngine.from_instance()` you need to provide only 4 things:
+要使用 `MySQLEngine.from_instance()` 创建一个 `MySQLEngine`，您只需提供 4 个信息：
 
-1. `project_id` : Project ID of the Google Cloud Project where the Cloud SQL instance is located.
-2. `region` : Region where the Cloud SQL instance is located.
-3. `instance` : The name of the Cloud SQL instance.
-4. `database` : The name of the database to connect to on the Cloud SQL instance.
+1. `project_id` : Cloud SQL 实例所在的 Google Cloud 项目的项目 ID。
+2. `region` : Cloud SQL 实例所在的区域。
+3. `instance` : Cloud SQL 实例的名称。
+4. `database` : 要连接的 Cloud SQL 实例上的数据库名称。
 
-By default, [IAM database authentication](https://cloud.google.com/sql/docs/mysql/iam-authentication#iam-db-auth) will be used as the method of database authentication. This library uses the IAM principal belonging to the [Application Default Credentials (ADC)](https://cloud.google.com/docs/authentication/application-default-credentials) sourced from the envionment.
+默认情况下，将使用 [IAM 数据库身份验证](https://cloud.google.com/sql/docs/mysql/iam-authentication#iam-db-auth) 作为数据库身份验证的方法。该库使用来自环境的 [应用程序默认凭证 (ADC)](https://cloud.google.com/docs/authentication/application-default-credentials) 所属的 IAM 主体。
 
-For more informatin on IAM database authentication please see:
+有关 IAM 数据库身份验证的更多信息，请参见：
 
-* [Configure an instance for IAM database authentication](https://cloud.google.com/sql/docs/mysql/create-edit-iam-instances)
-* [Manage users with IAM database authentication](https://cloud.google.com/sql/docs/mysql/add-manage-iam-users)
+* [为 IAM 数据库身份验证配置实例](https://cloud.google.com/sql/docs/mysql/create-edit-iam-instances)
+* [使用 IAM 数据库身份验证管理用户](https://cloud.google.com/sql/docs/mysql/add-manage-iam-users)
 
-Optionally, [built-in database authentication](https://cloud.google.com/sql/docs/mysql/built-in-authentication) using a username and password to access the Cloud SQL database can also be used. Just provide the optional `user` and `password` arguments to `MySQLEngine.from_instance()`:
+可选地，可以使用 [内置数据库身份验证](https://cloud.google.com/sql/docs/mysql/built-in-authentication) 使用用户名和密码访问 Cloud SQL 数据库。只需将可选的 `user` 和 `password` 参数提供给 `MySQLEngine.from_instance()`：
 
-* `user` : Database user to use for built-in database authentication and login
-* `password` : Database password to use for built-in database authentication and login.
-
+* `user` : 用于内置数据库身份验证和登录的数据库用户
+* `password` : 用于内置数据库身份验证和登录的数据库密码。
 
 ```python
 from langchain_google_cloud_sql_mysql import MySQLEngine
@@ -121,27 +117,25 @@ engine = MySQLEngine.from_instance(
 )
 ```
 
-### Initialize a table
+### 初始化表格
 
-Initialize a table of default schema via `MySQLEngine.init_document_table(<table_name>)`. Table Columns:
+通过 `MySQLEngine.init_document_table(<table_name>)` 初始化默认模式的表格。表格列：
 
-- page_content (type: text)
-- langchain_metadata (type: JSON)
+- page_content (类型: text)
+- langchain_metadata (类型: JSON)
 
-`overwrite_existing=True` flag means the newly initialized table will replace any existing table of the same name.
-
+`overwrite_existing=True` 标志意味着新初始化的表格将替换任何同名的现有表格。
 
 ```python
 engine.init_document_table(TABLE_NAME, overwrite_existing=True)
 ```
 
-### Save documents
+### 保存文档
 
-Save langchain documents with `MySQLDocumentSaver.add_documents(<documents>)`. To initialize `MySQLDocumentSaver` class you need to provide 2 things:
+使用 `MySQLDocumentSaver.add_documents(<documents>)` 保存 langchain 文档。要初始化 `MySQLDocumentSaver` 类，您需要提供两个参数：
 
-1. `engine` - An instance of a `MySQLEngine` engine.
-2. `table_name` - The name of the table within the Cloud SQL database to store langchain documents.
-
+1. `engine` - 一个 `MySQLEngine` 引擎的实例。
+2. `table_name` - 在 Cloud SQL 数据库中存储 langchain 文档的表名。
 
 ```python
 from langchain_core.documents import Document
@@ -165,13 +159,12 @@ saver = MySQLDocumentSaver(engine=engine, table_name=TABLE_NAME)
 saver.add_documents(test_docs)
 ```
 
-### Load documents
+### 加载文档
 
-Load langchain documents with `MySQLLoader.load()` or `MySQLLoader.lazy_load()`. `lazy_load` returns a generator that only queries database during the iteration. To initialize `MySQLLoader` class you need to provide:
+使用 `MySQLLoader.load()` 或 `MySQLLoader.lazy_load()` 加载 langchain 文档。`lazy_load` 返回一个生成器，只有在迭代时才查询数据库。要初始化 `MySQLLoader` 类，您需要提供：
 
-1. `engine` - An instance of a `MySQLEngine` engine.
-2. `table_name` - The name of the table within the Cloud SQL database to store langchain documents.
-
+1. `engine` - 一个 `MySQLEngine` 引擎的实例。
+2. `table_name` - 存储 langchain 文档的 Cloud SQL 数据库中的表名。
 
 ```python
 from langchain_google_cloud_sql_mysql import MySQLLoader
@@ -182,10 +175,9 @@ for doc in docs:
     print("Loaded documents:", doc)
 ```
 
-### Load documents via query
+### 通过查询加载文档
 
-Other than loading documents from a table, we can also choose to load documents from a view generated from a SQL query. For example:
-
+除了从表中加载文档外，我们还可以选择从由 SQL 查询生成的视图中加载文档。例如：
 
 ```python
 from langchain_google_cloud_sql_mysql import MySQLLoader
@@ -198,18 +190,18 @@ onedoc = loader.load()
 onedoc
 ```
 
-The view generated from SQL query can have different schema than default table. In such cases, the behavior of MySQLLoader is the same as loading from table with non-default schema. Please refer to section [Load documents with customized document page content & metadata](#Load-documents-with-customized-document-page-content-&-metadata).
+由 SQL 查询生成的视图可以具有与默认表不同的模式。在这种情况下，MySQLLoader 的行为与从具有非默认模式的表中加载相同。请参阅 [加载具有自定义文档页面内容和元数据的文档](#Load-documents-with-customized-document-page-content-&-metadata) 部分。
 
-### Delete documents
+### 删除文档
 
-Delete a list of langchain documents from MySQL table with `MySQLDocumentSaver.delete(<documents>)`.
+从 MySQL 表中删除一组 langchain 文档，使用 `MySQLDocumentSaver.delete(<documents>)`。
 
-For table with default schema (page_content, langchain_metadata), the deletion criteria is:
+对于具有默认模式的表（page_content, langchain_metadata），删除标准为：
 
-A `row` should be deleted if there exists a `document` in the list, such that
+如果在列表中存在一个 `document`，则应删除 `row`，满足以下条件：
 
-- `document.page_content` equals `row[page_content]`
-- `document.metadata` equals `row[langchain_metadata]`
+- `document.page_content` 等于 `row[page_content]`
+- `document.metadata` 等于 `row[langchain_metadata]`
 
 
 ```python
@@ -222,12 +214,11 @@ saver.delete(onedoc)
 print("Documents after delete:", loader.load())
 ```
 
-## Advanced Usage
+## 高级用法
 
-### Load documents with customized document page content & metadata
+### 使用自定义文档页面内容和元数据加载文档
 
-First we prepare an example table with non-default schema, and populate it with some arbitrary data.
-
+首先，我们准备一个具有非默认模式的示例表，并用一些任意数据填充它。
 
 ```python
 import sqlalchemy
@@ -263,8 +254,7 @@ with engine.connect() as conn:
     conn.commit()
 ```
 
-If we still load langchain documents with default parameters of `MySQLLoader` from this example table, the `page_content` of loaded documents will be the first column of the table, and `metadata` will be consisting of key-value pairs of all the other columns.
-
+如果我们仍然使用默认参数 `MySQLLoader` 从这个示例表加载 langchain 文档，加载文档的 `page_content` 将是表的第一列，而 `metadata` 将由所有其他列的键值对组成。
 
 ```python
 loader = MySQLLoader(
@@ -274,13 +264,12 @@ loader = MySQLLoader(
 loader.load()
 ```
 
-We can specify the content and metadata we want to load by setting the `content_columns` and `metadata_columns` when initializing the `MySQLLoader`.
+我们可以通过在初始化 `MySQLLoader` 时设置 `content_columns` 和 `metadata_columns` 来指定要加载的内容和元数据。
 
-1. `content_columns`: The columns to write into the `page_content` of the document.
-2. `metadata_columns`: The columns to write into the `metadata` of the document.
+1. `content_columns`：要写入文档的 `page_content` 的列。
+2. `metadata_columns`：要写入文档的 `metadata` 的列。
 
-For example here, the values of columns in `content_columns` will be joined together into a space-separated string, as `page_content` of loaded documents, and `metadata` of loaded documents will only contain key-value pairs of columns specified in `metadata_columns`.
-
+例如，在这里，`content_columns` 中列的值将被连接成一个以空格分隔的字符串，作为加载文档的 `page_content`，而加载文档的 `metadata` 将仅包含在 `metadata_columns` 中指定的列的键值对。
 
 ```python
 loader = MySQLLoader(
@@ -297,21 +286,21 @@ loader = MySQLLoader(
 loader.load()
 ```
 
-### Save document with customized page content & metadata
+### 保存带有自定义页面内容和元数据的文档
 
-In order to save langchain document into table with customized metadata fields. We need first create such a table via `MySQLEngine.init_document_table()`, and specify the list of `metadata_columns` we want it to have. In this example, the created table will have table columns:
+为了将 langchain 文档保存到具有自定义元数据字段的表中，我们首先需要通过 `MySQLEngine.init_document_table()` 创建这样一个表，并指定我们希望它拥有的 `metadata_columns` 列表。在这个例子中，创建的表将具有以下列：
 
-- description (type: text): for storing fruit description.
-- fruit_name (type text): for storing fruit name.
-- organic (type tinyint(1)): to tell if the fruit is organic.
-- other_metadata (type: JSON): for storing other metadata information of the fruit.
+- description (类型: text): 用于存储水果描述。
+- fruit_name (类型: text): 用于存储水果名称。
+- organic (类型: tinyint(1)): 用于指示水果是否为有机。
+- other_metadata (类型: JSON): 用于存储水果的其他元数据信息。
 
-We can use the following parameters with `MySQLEngine.init_document_table()` to create the table:
+我们可以使用以下参数与 `MySQLEngine.init_document_table()` 创建表：
 
-1. `table_name`: The name of the table within the Cloud SQL database to store langchain documents.
-2. `metadata_columns`: A list of `sqlalchemy.Column` indicating the list of metadata columns we need.
-3. `content_column`: The name of column to store `page_content` of langchain document. Default: `page_content`.
-4. `metadata_json_column`: The name of JSON column to store extra `metadata` of langchain document. Default: `langchain_metadata`.
+1. `table_name`: 用于存储 langchain 文档的 Cloud SQL 数据库中的表名。
+2. `metadata_columns`: 一个 `sqlalchemy.Column` 的列表，表示我们需要的元数据列列表。
+3. `content_column`: 用于存储 langchain 文档的 `page_content` 的列名。默认: `page_content`。
+4. `metadata_json_column`: 用于存储 langchain 文档额外 `metadata` 的 JSON 列名。默认: `langchain_metadata`。
 
 
 ```python
@@ -337,12 +326,12 @@ engine.init_document_table(
 )
 ```
 
-Save documents with `MySQLDocumentSaver.add_documents(<documents>)`. As you can see in this example, 
+使用 `MySQLDocumentSaver.add_documents(<documents>)` 保存文档。如您在本例中所见，
 
-- `document.page_content` will be saved into `description` column.
-- `document.metadata.fruit_name` will be saved into `fruit_name` column.
-- `document.metadata.organic` will be saved into `organic` column.
-- `document.metadata.fruit_id` will be saved into `other_metadata` column in JSON format.
+- `document.page_content` 将保存到 `description` 列。
+- `document.metadata.fruit_name` 将保存到 `fruit_name` 列。
+- `document.metadata.organic` 将保存到 `organic` 列。
+- `document.metadata.fruit_id` 将以 JSON 格式保存到 `other_metadata` 列。
 
 
 ```python
@@ -369,16 +358,16 @@ with engine.connect() as conn:
     print(result.fetchall())
 ```
 
-### Delete documents with customized page content & metadata
+### 删除具有自定义页面内容和元数据的文档
 
-We can also delete documents from table with customized metadata columns via `MySQLDocumentSaver.delete(<documents>)`. The deletion criteria is:
+我们还可以通过 `MySQLDocumentSaver.delete(<documents>)` 从表中删除具有自定义元数据列的文档。删除标准如下：
 
-A `row` should be deleted if there exists a `document` in the list, such that
+如果列表中存在一个 `document`，则应删除 `row`，满足以下条件：
 
-- `document.page_content` equals `row[page_content]`
-- For every metadata field `k` in `document.metadata`
-    - `document.metadata[k]` equals `row[k]` or `document.metadata[k]` equals `row[langchain_metadata][k]`
-- There no extra metadata field presents in `row` but not in `document.metadata`.
+- `document.page_content` 等于 `row[page_content]`
+- 对于 `document.metadata` 中的每个元数据字段 `k`
+    - `document.metadata[k]` 等于 `row[k]` 或 `document.metadata[k]` 等于 `row[langchain_metadata][k]`
+- `row` 中没有在 `document.metadata` 中不存在的额外元数据字段。
 
 
 
@@ -391,8 +380,7 @@ saver.delete(docs)
 print("Documents after delete:", loader.load())
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

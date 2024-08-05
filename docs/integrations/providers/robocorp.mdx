@@ -1,20 +1,18 @@
 # Robocorp
 
->[Robocorp](https://robocorp.com/) helps build and operate Python workers that run seamlessly anywhere at any scale
+>[Robocorp](https://robocorp.com/) 帮助构建和操作可以在任何地方、任何规模上无缝运行的 Python 工作者
 
+## 安装与设置
 
-## Installation and Setup
-
-You need to install `langchain-robocorp` python package:
+您需要安装 `langchain-robocorp` Python 包：
 
 ```bash
 pip install langchain-robocorp
 ```
 
-You will need a running instance of `Action Server` to communicate with from your agent application. 
-See the [Robocorp Quickstart](https://github.com/robocorp/robocorp#quickstart) on how to setup Action Server and create your Actions.
+您需要一个正在运行的 `Action Server` 实例，以便从您的代理应用程序进行通信。请参阅 [Robocorp 快速入门](https://github.com/robocorp/robocorp#quickstart) 了解如何设置 Action Server 并创建您的 Actions。
 
-You can bootstrap a new project using Action Server `new` command.
+您可以使用 Action Server 的 `new` 命令引导一个新项目。
 
 ```bash
 action-server new
@@ -22,15 +20,15 @@ cd ./your-project-name
 action-server start
 ```
 
-## Tool
+## 工具
 
 ```python
 from langchain_robocorp.toolkits import ActionServerRequestTool
 ```
 
-## Toolkit
+## 工具包
 
-See a [usage example](/docs/integrations/toolkits/robocorp).
+查看 [使用示例](/docs/integrations/toolkits/robocorp)。
 
 ```python
 from langchain_robocorp import ActionServerToolkit

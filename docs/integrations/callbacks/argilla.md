@@ -1,39 +1,38 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/callbacks/argilla.ipynb
 ---
+
 # Argilla
 
->[Argilla](https://argilla.io/) is an open-source data curation platform for LLMs.
-> Using Argilla, everyone can build robust language models through faster data curation 
-> using both human and machine feedback. We provide support for each step in the MLOps cycle, 
-> from data labeling to model monitoring.
+>[Argilla](https://argilla.io/) 是一个开源数据管理平台，专为 LLMs 设计。
+> 使用 Argilla，任何人都可以通过更快的数据管理，结合人类和机器反馈，构建强大的语言模型。我们在 MLOps 生命周期的每个步骤中提供支持，从数据标注到模型监控。
 
 <a target="_blank" href="https://colab.research.google.com/github/langchain-ai/langchain/blob/master/docs/docs/integrations/callbacks/argilla.ipynb">
-  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="在 Colab 中打开"/>
 </a>
 
-In this guide we will demonstrate how to track the inputs and responses of your LLM to generate a dataset in Argilla, using the `ArgillaCallbackHandler`.
+在本指南中，我们将演示如何使用 `ArgillaCallbackHandler` 跟踪您的 LLM 的输入和响应，以便在 Argilla 中生成数据集。
 
-It's useful to keep track of the inputs and outputs of your LLMs to generate datasets for future fine-tuning. This is especially useful when you're using a LLM to generate data for a specific task, such as question answering, summarization, or translation.
+跟踪 LLM 的输入和输出以生成未来微调的数据集是非常有用的。特别是在您使用 LLM 为特定任务生成数据时，例如问答、摘要或翻译。
 
-## Installation and Setup
+## 安装和设置
 
 
 ```python
 %pip install --upgrade --quiet  langchain langchain-openai argilla
 ```
 
-### Getting API Credentials
+### 获取 API 凭证
 
-To get the Argilla API credentials, follow the next steps:
+要获取 Argilla API 凭证，请按照以下步骤操作：
 
-1. Go to your Argilla UI.
-2. Click on your profile picture and go to "My settings".
-3. Then copy the API Key.
+1. 进入您的 Argilla 用户界面。
+2. 点击您的头像，然后转到“我的设置”。
+3. 然后复制 API 密钥。
 
-In Argilla the API URL will be the same as the URL of your Argilla UI.
+在 Argilla 中，API URL 将与您的 Argilla 用户界面的 URL 相同。
 
-To get the OpenAI API credentials, please visit https://platform.openai.com/account/api-keys
+要获取 OpenAI API 凭证，请访问 https://platform.openai.com/account/api-keys
 
 
 ```python
@@ -45,26 +44,23 @@ os.environ["ARGILLA_API_KEY"] = "..."
 os.environ["OPENAI_API_KEY"] = "..."
 ```
 
-### Setup Argilla
+### 设置 Argilla
 
-To use the `ArgillaCallbackHandler` we will need to create a new `FeedbackDataset` in Argilla to keep track of your LLM experiments. To do so, please use the following code:
-
+要使用 `ArgillaCallbackHandler`，我们需要在 Argilla 中创建一个新的 `FeedbackDataset` 以跟踪您的 LLM 实验。为此，请使用以下代码：
 
 ```python
 import argilla as rg
 ```
-
 
 ```python
 from packaging.version import parse as parse_version
 
 if parse_version(rg.__version__) < parse_version("1.8.0"):
     raise RuntimeError(
-        "`FeedbackDataset` is only available in Argilla v1.8.0 or higher, please "
-        "upgrade `argilla` as `pip install argilla --upgrade`."
+        "`FeedbackDataset` 仅在 Argilla v1.8.0 或更高版本中可用，请 "
+        "升级 `argilla`，方法是 `pip install argilla --upgrade`。"
     )
 ```
-
 
 ```python
 dataset = rg.FeedbackDataset(
@@ -75,17 +71,17 @@ dataset = rg.FeedbackDataset(
     questions=[
         rg.RatingQuestion(
             name="response-rating",
-            description="How would you rate the quality of the response?",
+            description="您如何评价该响应的质量？",
             values=[1, 2, 3, 4, 5],
             required=True,
         ),
         rg.TextQuestion(
             name="response-feedback",
-            description="What feedback do you have for the response?",
+            description="您对该响应有什么反馈？",
             required=False,
         ),
     ],
-    guidelines="You're asked to rate the quality of the response and provide feedback.",
+    guidelines="您被要求评价响应的质量并提供反馈。",
 )
 
 rg.init(
@@ -96,12 +92,11 @@ rg.init(
 dataset.push_to_argilla("langchain-dataset")
 ```
 
-> 📌 NOTE: at the moment, just the prompt-response pairs are supported as `FeedbackDataset.fields`, so the `ArgillaCallbackHandler` will just track the prompt i.e. the LLM input, and the response i.e. the LLM output.
+> 📌 注意：目前，仅支持 prompt-response 对作为 `FeedbackDataset.fields`，因此 `ArgillaCallbackHandler` 只会跟踪 prompt，即 LLM 输入，以及 response，即 LLM 输出。
 
-## Tracking
+## 跟踪
 
-To use the `ArgillaCallbackHandler` you can either use the following code, or just reproduce one of the examples presented in the following sections.
-
+要使用 `ArgillaCallbackHandler`，您可以使用以下代码，或者仅重现以下部分中提供的示例。
 
 ```python
 from langchain_community.callbacks.argilla_callback import ArgillaCallbackHandler
@@ -113,9 +108,9 @@ argilla_callback = ArgillaCallbackHandler(
 )
 ```
 
-### Scenario 1: Tracking an LLM
+### 场景 1：跟踪 LLM
 
-First, let's just run a single LLM a few times and capture the resulting prompt-response pairs in Argilla.
+首先，让我们运行一个 LLM 几次，并在 Argilla 中捕获生成的提示-响应对。
 
 
 ```python
@@ -142,9 +137,9 @@ LLMResult(generations=[[Generation(text='\n\nQ: What did the fish say when he hi
 
 ![Argilla UI with LangChain LLM input-response](https://docs.argilla.io/en/latest/_images/llm.png)
 
-### Scenario 2: Tracking an LLM in a chain
+### 场景 2：在链中跟踪 LLM
 
-Then we can create a chain using a prompt template, and then track the initial prompt and the final response in Argilla.
+然后我们可以使用提示模板创建一个链，并在 Argilla 中跟踪初始提示和最终响应。
 
 
 ```python
@@ -190,12 +185,11 @@ Playwright: This is a synopsis for the above play:[0m
 
 ![Argilla UI with LangChain Chain input-response](https://docs.argilla.io/en/latest/_images/chain.png)
 
-### Scenario 3: Using an Agent with Tools
+### 场景 3：使用带工具的代理
 
-Finally, as a more advanced workflow, you can create an agent that uses some tools. So that `ArgillaCallbackHandler` will keep track of the input and the output, but not about the intermediate steps/thoughts, so that given a prompt we log the original prompt and the final response to that given prompt.
+最后，作为一种更高级的工作流程，您可以创建一个使用某些工具的代理。因此，`ArgillaCallbackHandler` 将跟踪输入和输出，但不跟踪中间步骤/思路，因此在给定提示时，我们记录原始提示和对该提示的最终响应。
 
-> Note that for this scenario we'll be using Google Search API (Serp API) so you will need to both install `google-search-results` as `pip install google-search-results`, and to set the Serp API Key as `os.environ["SERPAPI_API_KEY"] = "..."` (you can find it at https://serpapi.com/dashboard), otherwise the example below won't work.
-
+> 请注意，在此场景中，我们将使用 Google Search API（Serp API），因此您需要安装 `google-search-results`，命令为 `pip install google-search-results`，并将 Serp API 密钥设置为 `os.environ["SERPAPI_API_KEY"] = "..."`（您可以在 https://serpapi.com/dashboard 找到它），否则下面的示例将无法工作。
 
 ```python
 from langchain.agents import AgentType, initialize_agent, load_tools

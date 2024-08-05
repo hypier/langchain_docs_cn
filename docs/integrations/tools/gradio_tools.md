@@ -1,20 +1,21 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/gradio_tools.ipynb
 ---
+
 # Gradio
 
-There are many 1000s of `Gradio` apps on `Hugging Face Spaces`. This library puts them at the tips of your LLM's fingers 🦾
+在 `Hugging Face Spaces` 上有成千上万的 `Gradio` 应用程序。这个库将它们置于你的 LLM 指尖之下 🦾
 
-Specifically, `gradio-tools` is a Python library for converting `Gradio` apps into tools that can be leveraged by a large language model (LLM)-based agent to complete its task. For example, an LLM could use a `Gradio` tool to transcribe a voice recording it finds online and then summarize it for you. Or it could use a different `Gradio` tool to apply OCR to a document on your Google Drive and then answer questions about it.
+具体来说，`gradio-tools` 是一个 Python 库，用于将 `Gradio` 应用程序转换为可以被基于大型语言模型（LLM）代理利用的工具，以完成其任务。例如，LLM 可以使用 `Gradio` 工具来转录它在网上找到的语音录音，然后为你总结它。或者，它可以使用另一个 `Gradio` 工具对你 Google Drive 上的文档应用 OCR，然后回答关于它的问题。
 
-It's very easy to create you own tool if you want to use a space that's not one of the pre-built tools. Please see this section of the gradio-tools documentation for information on how to do that. All contributions are welcome!
+如果你想使用一个不是预构建工具的空间，创建自己的工具非常简单。请参见 gradio-tools 文档的这一部分，以获取如何做到这一点的信息。欢迎所有贡献！
 
 
 ```python
 %pip install --upgrade --quiet  gradio_tools langchain-community
 ```
 
-## Using a tool
+## 使用工具
 
 
 ```python
@@ -24,14 +25,14 @@ from gradio_tools.tools import StableDiffusionTool
 
 ```python
 local_file_path = StableDiffusionTool().langchain.run(
-    "Please create a photo of a dog riding a skateboard"
+    "请创建一张狗骑滑板的照片"
 )
 local_file_path
 ```
 ```output
-Loaded as API: https://gradio-client-demos-stable-diffusion.hf.space ✔
+已作为 API 加载: https://gradio-client-demos-stable-diffusion.hf.space ✔
 
-Job Status: Status.STARTING eta: None
+作业状态: Status.STARTING eta: None
 ```
 
 
@@ -57,7 +58,7 @@ from IPython.display import display
 display(im)
 ```
 
-## Using within an agent
+## 在代理中使用
 
 
 ```python
@@ -86,9 +87,9 @@ agent = initialize_agent(
 )
 output = agent.run(
     input=(
-        "Please create a photo of a dog riding a skateboard "
-        "but improve my prompt prior to using an image generator."
-        "Please caption the generated image and create a video for it using the improved prompt."
+        "请创建一张狗骑滑板的照片，"
+        "但在使用图像生成器之前，请改进我的提示。"
+        "请为生成的图像添加说明，并使用改进后的提示为其创建视频。"
     )
 )
 ```
@@ -141,7 +142,7 @@ AI: Here is a video of a painting of a dog sitting on a skateboard.[0m
 [1m> Finished chain.[0m
 ```
 
-## Related
+## 相关
 
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

@@ -1,27 +1,27 @@
 # SingleStoreDB
 
->[SingleStoreDB](https://singlestore.com/) is a high-performance distributed SQL database that supports deployment both in the [cloud](https://www.singlestore.com/cloud/) and on-premises. It provides vector storage, and vector functions including [dot_product](https://docs.singlestore.com/managed-service/en/reference/sql-reference/vector-functions/dot_product.html) and [euclidean_distance](https://docs.singlestore.com/managed-service/en/reference/sql-reference/vector-functions/euclidean_distance.html), thereby supporting AI applications that require text similarity matching. 
+>[SingleStoreDB](https://singlestore.com/) 是一个高性能的分布式 SQL 数据库，支持在 [云端](https://www.singlestore.com/cloud/) 和本地部署。它提供向量存储和向量函数，包括 [dot_product](https://docs.singlestore.com/managed-service/en/reference/sql-reference/vector-functions/dot_product.html) 和 [euclidean_distance](https://docs.singlestore.com/managed-service/en/reference/sql-reference/vector-functions/euclidean_distance.html)，从而支持需要文本相似度匹配的 AI 应用。
 
-## Installation and Setup
+## 安装与设置
 
-There are several ways to establish a [connection](https://singlestoredb-python.labs.singlestore.com/generated/singlestoredb.connect.html) to the database. You can either set up environment variables or pass named parameters to the `SingleStoreDB constructor`. 
-Alternatively, you may provide these parameters to the `from_documents` and `from_texts` methods.
+有几种方法可以建立与数据库的 [连接](https://singlestoredb-python.labs.singlestore.com/generated/singlestoredb.connect.html)。您可以设置环境变量或将命名参数传递给 `SingleStoreDB constructor`。 
+另外，您也可以将这些参数提供给 `from_documents` 和 `from_texts` 方法。
 
 ```bash
 pip install singlestoredb
 ```
 
-## Vector Store
+## 向量存储
 
-See a [usage example](/docs/integrations/vectorstores/singlestoredb).
+查看[使用示例](/docs/integrations/vectorstores/singlestoredb)。
 
 ```python
 from langchain_community.vectorstores import SingleStoreDB
 ```
 
-## Memory
+## 内存
 
-See a [usage example](/docs/integrations/memory/singlestoredb_chat_message_history).
+查看 [用法示例](/docs/integrations/memory/singlestoredb_chat_message_history)。
 
 ```python
 from langchain.memory import SingleStoreDBChatMessageHistory

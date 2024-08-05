@@ -1,15 +1,15 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/embaas.ipynb
 ---
+
 # Embaas
 
-[embaas](https://embaas.io) is a fully managed NLP API service that offers features like embedding generation, document text extraction, document to embeddings and more. You can choose a [variety of pre-trained models](https://embaas.io/docs/models/embeddings).
+[embaas](https://embaas.io) 是一个完全托管的 NLP API 服务，提供嵌入生成、文档文本提取、文档到嵌入等功能。您可以选择多种 [预训练模型](https://embaas.io/docs/models/embeddings)。
 
-In this tutorial, we will show you how to use the embaas Embeddings API to generate embeddings for a given text.
+在本教程中，我们将向您展示如何使用 embaas Embeddings API 为给定文本生成嵌入。
 
-### Prerequisites
-Create your free embaas account at [https://embaas.io/register](https://embaas.io/register) and generate an [API key](https://embaas.io/dashboard/api-keys).
-
+### 前提条件
+在 [https://embaas.io/register](https://embaas.io/register) 创建您的免费 embaas 账户，并生成一个 [API 密钥](https://embaas.io/dashboard/api-keys)。
 
 ```python
 import os
@@ -66,10 +66,9 @@ embeddings = EmbaasEmbeddings(
 )
 ```
 
-For more detailed information about the embaas Embeddings API, please refer to [the official embaas API documentation](https://embaas.io/api-reference).
+有关 embaas Embeddings API 的更详细信息，请参阅 [官方 embaas API 文档](https://embaas.io/api-reference)。
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

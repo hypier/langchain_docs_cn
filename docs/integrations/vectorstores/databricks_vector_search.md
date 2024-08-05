@@ -1,20 +1,21 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/databricks_vector_search.ipynb
 ---
-# Databricks Vector Search
 
-Databricks Vector Search is a serverless similarity search engine that allows you to store a vector representation of your data, including metadata, in a vector database. With Vector Search, you can create auto-updating vector search indexes from Delta tables managed by Unity Catalog and query them with a simple API to return the most similar vectors.
+# Databricks 向量搜索
 
-This notebook shows how to use LangChain with Databricks Vector Search.
+Databricks 向量搜索是一个无服务器的相似性搜索引擎，允许您在向量数据库中存储数据的向量表示，包括元数据。通过向量搜索，您可以从由 Unity Catalog 管理的 Delta 表中创建自动更新的向量搜索索引，并使用简单的 API 查询它们以返回最相似的向量。
 
-Install `databricks-vectorsearch` and related Python packages used in this notebook.
+本笔记本演示了如何将 LangChain 与 Databricks 向量搜索结合使用。
+
+安装本笔记本中使用的 `databricks-vectorsearch` 和相关的 Python 包。
 
 
 ```python
 %pip install --upgrade --quiet  langchain-core databricks-vectorsearch langchain-openai tiktoken
 ```
 
-Use `OpenAIEmbeddings` for the embeddings.
+使用 `OpenAIEmbeddings` 进行嵌入。
 
 
 ```python
@@ -24,7 +25,7 @@ import os
 os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API Key:")
 ```
 
-Split documents and get embeddings.
+拆分文档并获取嵌入。
 
 
 ```python
@@ -41,7 +42,7 @@ embeddings = OpenAIEmbeddings()
 emb_dim = len(embeddings.embed_query("hello"))
 ```
 
-## Setup Databricks Vector Search client
+## 设置 Databricks 向量搜索客户端
 
 
 ```python
@@ -50,17 +51,16 @@ from databricks.vector_search.client import VectorSearchClient
 vsc = VectorSearchClient()
 ```
 
-## Create a Vector Search Endpoint
-This endpoint is used to create and access vector search indexes.
+## 创建向量搜索端点
+此端点用于创建和访问向量搜索索引。
 
 
 ```python
 vsc.create_endpoint(name="vector_search_demo_endpoint", endpoint_type="STANDARD")
 ```
 
-## Create Direct Vector Access Index
-Direct Vector Access Index supports direct read and write of embedding vectors and metadata through a REST API or an SDK. For this index, you manage embedding vectors and index updates yourself.
-
+## 创建直接向量访问索引
+直接向量访问索引支持通过 REST API 或 SDK 直接读取和写入嵌入向量和元数据。对于此索引，您自己管理嵌入向量和索引更新。
 
 ```python
 vector_search_endpoint_name = "vector_search_demo_endpoint"
@@ -83,7 +83,6 @@ index = vsc.create_direct_access_index(
 index.describe()
 ```
 
-
 ```python
 from langchain_community.vectorstores import DatabricksVectorSearch
 
@@ -92,17 +91,15 @@ dvs = DatabricksVectorSearch(
 )
 ```
 
-## Add docs to the index
+## 将文档添加到索引
 
 
 ```python
 dvs.add_documents(docs)
 ```
 
-## Similarity search
-Optional keyword arguments to similarity_search include specifying k number of documents to retrive, 
-a filters dictionary for metadata filtering based on [this syntax](https://docs.databricks.com/en/generative-ai/create-query-vector-search.html#use-filters-on-queries),
-as well as the [query_type](https://api-docs.databricks.com/python/vector-search/databricks.vector_search.html#databricks.vector_search.index.VectorSearchIndex.similarity_search) which can be ANN or HYBRID 
+## 相似性搜索
+可选的关键字参数用于 similarity_search，包括指定要检索的文档数量 k，以及用于基于 [此语法](https://docs.databricks.com/en/generative-ai/create-query-vector-search.html#use-filters-on-queries) 的元数据过滤的 filters 字典，以及可以是 ANN 或 HYBRID 的 [query_type](https://api-docs.databricks.com/python/vector-search/databricks.vector_search.html#databricks.vector_search.index.VectorSearchIndex.similarity_search) 
 
 
 ```python
@@ -111,18 +108,16 @@ dvs.similarity_search(query)
 print(docs[0].page_content)
 ```
 
-## Work with Delta Sync Index
+## 使用 Delta Sync Index
 
-You can also use `DatabricksVectorSearch` to search in a Delta Sync Index. Delta Sync Index automatically syncs from a Delta table. You don't need to call `add_text`/`add_documents` manually. See [Databricks documentation page](https://docs.databricks.com/en/generative-ai/vector-search.html#delta-sync-index-with-managed-embeddings) for more details.
-
+您还可以使用 `DatabricksVectorSearch` 在 Delta Sync Index 中进行搜索。Delta Sync Index 会自动从 Delta 表中同步。您无需手动调用 `add_text`/`add_documents`。有关更多详细信息，请参见 [Databricks 文档页面](https://docs.databricks.com/en/generative-ai/vector-search.html#delta-sync-index-with-managed-embeddings)。
 
 ```python
 dvs_delta_sync = DatabricksVectorSearch("catalog_name.schema_name.delta_sync_index")
 dvs_delta_sync.similarity_search(query)
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

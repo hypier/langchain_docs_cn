@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/lcel_cheatsheet.ipynb
 ---
-# LangChain Expression Language Cheatsheet
 
-This is a quick reference for all the most important LCEL primitives. For more advanced usage see the [LCEL how-to guides](/docs/how_to/#langchain-expression-language-lcel) and the [full API reference](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html).
+# LangChain 表达语言备忘单
 
-### Invoke a runnable
+这是所有最重要的 LCEL 原语的快速参考。有关更高级的用法，请参见 [LCEL 使用指南](/docs/how_to/#langchain-expression-language-lcel) 和 [完整 API 参考](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html)。
+
+### 调用可运行对象
 #### [Runnable.invoke()](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.invoke) / [Runnable.ainvoke()](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.ainvoke)
 
 
@@ -25,8 +26,7 @@ runnable.invoke(5)
 '5'
 ```
 
-
-### Batch a runnable
+### 批处理可运行对象
 #### [Runnable.batch()](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.batch) / [Runnable.abatch()](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.abatch)
 
 
@@ -46,8 +46,7 @@ runnable.batch([7, 8, 9])
 ['7', '8', '9']
 ```
 
-
-### Stream a runnable
+### 流式可运行对象
 #### [Runnable.stream()](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.stream) / [Runnable.astream()](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.astream)
 
 
@@ -76,8 +75,9 @@ for chunk in runnable.stream(range(5)):
 3
 4
 ```
-### Compose runnables
-#### Pipe operator `|`
+
+### 组合可运行对象
+#### 管道操作符 `|`
 
 
 ```python
@@ -97,8 +97,7 @@ chain.invoke(2)
 [{'foo': 2}, {'foo': 2}]
 ```
 
-
-### Invoke runnables in parallel
+### 并行调用可运行对象
 #### [RunnableParallel](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.RunnableParallel.html)
 
 
@@ -119,8 +118,7 @@ chain.invoke(2)
 {'first': {'foo': 2}, 'second': [2, 2]}
 ```
 
-
-### Turn any function into a runnable
+### 将任何函数转换为可运行的
 #### [RunnableLambda](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.RunnableLambda.html)
 
 
@@ -142,8 +140,7 @@ runnable.invoke(2)
 7
 ```
 
-
-### Merge input and output dicts
+### 合并输入和输出字典
 #### [RunnablePassthrough.assign](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.passthrough.RunnablePassthrough.html)
 
 
@@ -163,8 +160,7 @@ chain.invoke({"foo": 10})
 {'foo': 10, 'bar': 17}
 ```
 
-
-### Include input dict in output dict
+### 在输出字典中包含输入字典
 #### [RunnablePassthrough](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.passthrough.RunnablePassthrough.html)
 
 
@@ -188,8 +184,7 @@ chain.invoke({"foo": 10})
 {'bar': 17, 'baz': {'foo': 10}}
 ```
 
-
-### Add default invocation args
+### 添加默认调用参数
 #### [Runnable.bind](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.bind)
 
 
@@ -217,8 +212,7 @@ bound_runnable1.invoke({"bar": "hello"})
 {'bar': 'hello', 'foo': 'bye'}
 ```
 
-
-### Add fallbacks
+### 添加后备选项
 #### [Runnable.with_fallbacks](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.with_fallbacks)
 
 
@@ -239,8 +233,7 @@ chain.invoke(5)
 '5foo'
 ```
 
-
-### Add retries
+### 添加重试
 #### [Runnable.with_retry](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.with_retry)
 
 
@@ -271,8 +264,7 @@ attempt with counter=1
 2.0
 ```
 
-
-### Configure runnable execution
+### 配置可运行执行
 #### [RunnableConfig](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.config.RunnableConfig.html)
 
 
@@ -294,8 +286,7 @@ chain.invoke(7, config={"max_concurrency": 2})
 {'first': {'foo': 7}, 'second': [7, 7], 'third': '7'}
 ```
 
-
-### Add default config to runnable
+### 添加默认配置到可运行对象
 #### [Runnable.with_config](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.with_config)
 
 
@@ -318,8 +309,7 @@ chain.invoke(7)
 {'first': {'foo': 7}, 'second': [7, 7], 'third': '7'}
 ```
 
-
-### Make runnable attributes configurable
+### 使可运行属性可配置
 #### [Runnable.with_configurable_fields](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.RunnableSerializable.html#langchain_core.runnables.base.RunnableSerializable.configurable_fields)
 
 
@@ -373,8 +363,7 @@ configurable_runnable1.invoke({"foo": 10})
 {'bar': 3}
 ```
 
-
-### Make chain components configurable
+### 使链组件可配置
 #### [Runnable.with_configurable_alternatives](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.RunnableSerializable.html#langchain_core.runnables.base.RunnableSerializable.configurable_alternatives)
 
 
@@ -432,9 +421,7 @@ chain.invoke(7)
 [{'foo': 7}]
 ```
 
-
-### Build a chain dynamically based on input
-
+### 根据输入动态构建链
 
 ```python
 from langchain_core.runnables import RunnableLambda, RunnableParallel
@@ -447,26 +434,19 @@ chain = RunnableLambda(lambda x: runnable1 if x > 6 else runnable2)
 chain.invoke(7)
 ```
 
-
-
 ```output
 {'foo': 7}
 ```
-
-
 
 ```python
 chain.invoke(5)
 ```
 
-
-
 ```output
 [5, 5]
 ```
 
-
-### Generate a stream of events
+### 生成事件流
 #### [Runnable.astream_events](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.astream_events)
 
 
@@ -516,9 +496,9 @@ event=on_chain_stream | name=RunnableSequence | data={'chunk': {'foo': 'bar'}}
 event=on_chain_end | name=second | data={'output': {'foo': 'bar'}, 'input': {'foo': 'bar'}}
 event=on_chain_end | name=RunnableSequence | data={'output': {'foo': 'bar'}}
 ```
-### Yield batched outputs as they complete
-#### [Runnable.batch_as_completed](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.batch_as_completed) / [Runnable.abatch_as_completed](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.abatch_as_completed)
 
+### 按完成批次输出
+#### [Runnable.batch_as_completed](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.batch_as_completed) / [Runnable.abatch_as_completed](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.abatch_as_completed)
 
 ```python
 import time
@@ -540,7 +520,8 @@ slept 1
 slept 5
 0 None
 ```
-### Return subset of output dict
+
+### 返回输出字典的子集
 #### [Runnable.pick](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.pick)
 
 
@@ -559,8 +540,7 @@ chain.invoke({"bar": "hi", "baz": 2})
 {'foo': 7, 'bar': 'hi'}
 ```
 
-
-### Declaratively make a batched version of a runnable
+### 声明式地创建可运行的批处理版本
 #### [Runnable.map](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.map)
 
 
@@ -581,8 +561,7 @@ chain.invoke(3)
 [5, 6, 7]
 ```
 
-
-### Get a graph representation of a runnable
+### 获取可运行对象的图形表示
 #### [Runnable.get_graph](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.get_graph)
 
 
@@ -626,7 +605,8 @@ chain.get_graph().print_ascii()
                     | Parallel<second,third>Output |                      
                     +------------------------------+
 ```
-### Get all prompts in a chain
+
+### 获取链中的所有提示
 #### [Runnable.get_prompts](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.get_prompts)
 
 
@@ -656,11 +636,11 @@ for i, prompt in enumerate(chain.get_prompts()):
 ```output
 **prompt i=0**
 
-================================ System Message ================================
+================================ 系统消息 ================================
 
 good ai
 
-================================ Human Message =================================
+================================ 人类消息 =================================
 
 {input}
 
@@ -669,23 +649,24 @@ good ai
 
 **prompt i=1**
 
-================================ System Message ================================
+================================ 系统消息 ================================
 
 really good ai
 
-================================ Human Message =================================
+================================ 人类消息 =================================
 
 {input}
 
-================================== AI Message ==================================
+================================== AI 消息 ==================================
 
 {ai_output}
 
-================================ Human Message =================================
+================================ 人类消息 =================================
 
 {input2}
 ```
-### Add lifecycle listeners
+
+### 添加生命周期监听器
 #### [Runnable.with_listeners](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.with_listeners)
 
 

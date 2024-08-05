@@ -1,15 +1,14 @@
 # sql-pgvector
 
-This template enables user to use `pgvector` for combining postgreSQL with semantic search / RAG. 
+此模板使用户能够使用 `pgvector` 将 PostgreSQL 与语义搜索 / RAG 结合起来。
 
-It uses [PGVector](https://github.com/pgvector/pgvector) extension as shown in the [RAG empowered SQL cookbook](https://github.com/langchain-ai/langchain/blob/master/cookbook/retrieval_in_sql.ipynb)
+它使用 [PGVector](https://github.com/pgvector/pgvector) 扩展，如 [RAG 赋能 SQL 食谱](https://github.com/langchain-ai/langchain/blob/master/cookbook/retrieval_in_sql.ipynb) 中所示。
 
-## Environment Setup
+## 环境设置
 
-If you are using `ChatOpenAI` as your LLM, make sure the `OPENAI_API_KEY` is set in your environment. You can change both the LLM and embeddings model inside `chain.py`
+如果您使用 `ChatOpenAI` 作为您的 LLM，请确保在您的环境中设置 `OPENAI_API_KEY`。您可以在 `chain.py` 中更改 LLM 和嵌入模型。
 
-And you can configure configure the following environment variables
-for use by the template (defaults are in parentheses)
+您可以配置以下环境变量供模板使用（默认值在括号中）：
 
 - `POSTGRES_USER` (postgres)
 - `POSTGRES_PASSWORD` (test)
@@ -17,7 +16,7 @@ for use by the template (defaults are in parentheses)
 - `POSTGRES_HOST` (localhost)
 - `POSTGRES_PORT` (5432)
 
-If you don't have a postgres instance, you can run one locally in docker:
+如果您没有 postgres 实例，可以在 docker 中本地运行一个：
 
 ```bash
 docker run \
@@ -29,74 +28,73 @@ docker run \
   postgres:16
 ```
 
-And to start again later, use the `--name` defined above:
+要稍后再次启动，请使用上面定义的 `--name`：
 ```bash
 docker start some-postgres
 ```
 
-### PostgreSQL Database setup
+### PostgreSQL 数据库设置
 
-Apart from having `pgvector` extension enabled, you will need to do some setup before being able to run semantic search within your SQL queries.
+除了启用 `pgvector` 扩展外，您还需要进行一些设置，以便能够在 SQL 查询中运行语义搜索。
 
-In order to run RAG over your postgreSQL database you will need to generate the embeddings for the specific columns you want. 
+为了在您的 PostgreSQL 数据库上运行 RAG，您需要为您想要的特定列生成嵌入。
 
-This process is covered in the [RAG empowered SQL cookbook](https://github.com/langchain-ai/langchain/blob/master/cookbook/retrieval_in_sql.ipynb), but the overall approach consist of:
-1. Querying for unique values in the column
-2. Generating embeddings for those values
-3. Store the embeddings in a separate column or in an auxiliary table.
+这个过程在 [RAG empowered SQL cookbook](https://github.com/langchain-ai/langchain/blob/master/cookbook/retrieval_in_sql.ipynb) 中有详细介绍，但整体方法包括：
+1. 查询列中的唯一值
+2. 为这些值生成嵌入
+3. 将嵌入存储在单独的列或辅助表中。
 
-## Usage
+## 使用方法
 
-To use this package, you should first have the LangChain CLI installed:
+要使用此软件包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将其作为唯一软件包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package sql-pgvector
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，只需运行：
 
 ```shell
 langchain app add sql-pgvector
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 ```python
 from sql_pgvector import chain as sql_pgvector_chain
 
 add_routes(app, sql_pgvector_chain, path="/sql-pgvector")
 ```
 
-(Optional) Let's now configure LangSmith. 
-LangSmith will help us trace, monitor and debug LangChain applications. 
-You can sign up for LangSmith [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
-
+（可选）现在让我们配置 LangSmith。 
+LangSmith 将帮助我们追踪、监控和调试 LangChain 应用程序。 
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。 
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录内，则可以直接通过以下命令启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server is running locally at 
+这将启动 FastAPI 应用程序，服务器在本地运行于 
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/sql-pgvector/playground](http://127.0.0.1:8000/sql-pgvector/playground)  
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板
+我们可以在 [http://127.0.0.1:8000/sql-pgvector/playground](http://127.0.0.1:8000/sql-pgvector/playground) 访问游乐场  
 
-We can access the template from code with:
+我们可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable

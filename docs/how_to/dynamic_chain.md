@@ -1,17 +1,18 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/dynamic_chain.ipynb
 ---
-# How to create a dynamic (self-constructing) chain
 
-:::info Prerequisites
+# 如何创建动态（自构建）链
 
-This guide assumes familiarity with the following:
-- [LangChain Expression Language (LCEL)](/docs/concepts/#langchain-expression-language)
-- [How to turn any function into a runnable](/docs/how_to/functions)
+:::info 前提条件
+
+本指南假设您熟悉以下内容：
+- [LangChain 表达式语言 (LCEL)](/docs/concepts/#langchain-expression-language)
+- [如何将任何函数转换为可运行的](/docs/how_to/functions)
 
 :::
 
-Sometimes we want to construct parts of a chain at runtime, depending on the chain inputs ([routing](/docs/how_to/routing/) is the most common example of this). We can create dynamic chains like this using a very useful property of RunnableLambda's, which is that if a RunnableLambda returns a Runnable, that Runnable is itself invoked. Let's see an example.
+有时我们希望在运行时根据链的输入构建链的部分（[路由](/docs/how_to/routing/)是最常见的例子）。我们可以利用 RunnableLambda 的一个非常有用的特性来创建动态链，即如果 RunnableLambda 返回一个 Runnable，那么该 Runnable 会被直接调用。让我们看一个例子。
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
@@ -36,7 +37,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import Runnable, RunnablePassthrough, chain
 
-contextualize_instructions = """Convert the latest user question into a standalone question given the chat history. Don't answer the question, return the question and nothing else (no descriptive text)."""
+contextualize_instructions = """根据聊天记录将最新的用户问题转换为独立的问题。不要回答问题，只返回问题，不要有其他描述性文字。"""
 contextualize_prompt = ChatPromptTemplate.from_messages(
     [
         ("system", contextualize_instructions),
@@ -47,7 +48,7 @@ contextualize_prompt = ChatPromptTemplate.from_messages(
 contextualize_question = contextualize_prompt | llm | StrOutputParser()
 
 qa_instructions = (
-    """Answer the user question given the following context:\n\n{context}."""
+    """根据以下上下文回答用户问题：\n\n{context}。"""
 )
 qa_prompt = ChatPromptTemplate.from_messages(
     [("system", qa_instructions), ("human", "{question}")]
@@ -57,7 +58,7 @@ qa_prompt = ChatPromptTemplate.from_messages(
 @chain
 def contextualize_if_needed(input_: dict) -> Runnable:
     if input_.get("chat_history"):
-        # NOTE: This is returning another Runnable, not an actual output.
+        # 注意：这是返回另一个 Runnable，而不是实际输出。
         return contextualize_question
     else:
         return RunnablePassthrough() | itemgetter("question")
@@ -65,7 +66,7 @@ def contextualize_if_needed(input_: dict) -> Runnable:
 
 @chain
 def fake_retriever(input_: dict) -> str:
-    return "egypt's population in 2024 is about 111 million"
+    return "2024年埃及的总人口约为1.11亿"
 
 
 full_chain = (
@@ -79,47 +80,43 @@ full_chain = (
 
 full_chain.invoke(
     {
-        "question": "what about egypt",
+        "question": "埃及怎么样",
         "chat_history": [
-            ("human", "what's the population of indonesia"),
-            ("ai", "about 276 million"),
+            ("human", "印度尼西亚的人口是多少"),
+            ("ai", "大约2.76亿"),
         ],
     }
 )
 ```
 
 
-
 ```output
-"According to the context provided, Egypt's population in 2024 is estimated to be about 111 million."
+"根据提供的上下文，2024年埃及的总人口预计约为1.11亿。"
 ```
 
 
-The key here is that `contextualize_if_needed` returns another Runnable and not an actual output. This returned Runnable is itself run when the full chain is executed.
+关键在于 `contextualize_if_needed` 返回另一个 Runnable，而不是实际输出。这个返回的 Runnable 在执行完整链时会被运行。
 
-Looking at the trace we can see that, since we passed in chat_history, we executed the contextualize_question chain as part of the full chain: https://smith.langchain.com/public/9e0ae34c-4082-4f3f-beed-34a2a2f4c991/r
+查看跟踪记录，我们可以看到，由于传入了 chat_history，我们在完整链中执行了 contextualize_question 链：https://smith.langchain.com/public/9e0ae34c-4082-4f3f-beed-34a2a2f4c991/r
 
-Note that the streaming, batching, etc. capabilities of the returned Runnable are all preserved
+请注意，返回的 Runnable 的流式处理、批处理等能力都得到了保留
 
 
 ```python
 for chunk in contextualize_if_needed.stream(
     {
-        "question": "what about egypt",
+        "question": "埃及怎么样",
         "chat_history": [
-            ("human", "what's the population of indonesia"),
-            ("ai", "about 276 million"),
+            ("human", "印度尼西亚的人口是多少"),
+            ("ai", "大约2.76亿"),
         ],
     }
 ):
     print(chunk)
 ```
 ```output
-What
- is
- the
- population
- of
- Egypt
-?
+埃及的
+人口
+是多少
+？
 ```

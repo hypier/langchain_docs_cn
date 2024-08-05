@@ -1,23 +1,24 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/lantern.ipynb
 ---
+
 # Lantern
 
->[Lantern](https://github.com/lanterndata/lantern) is an open-source vector similarity search for `Postgres`
+>[Lantern](https://github.com/lanterndata/lantern) 是一个开源的 `Postgres` 向量相似性搜索工具
 
-It supports:
-- Exact and approximate nearest neighbor search
-- L2 squared distance, hamming distance, and cosine distance
+它支持：
+- 精确和近似最近邻搜索
+- L2 平方距离、汉明距离和余弦距离
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
+您需要通过 `pip install -qU langchain-community` 安装 `langchain-community` 才能使用此集成
 
-This notebook shows how to use the Postgres vector database (`Lantern`).
+本笔记本展示了如何使用 `Postgres` 向量数据库（`Lantern`）。
 
-See the [installation instruction](https://github.com/lanterndata/lantern#-quick-install).
+请参阅 [安装说明](https://github.com/lanterndata/lantern#-quick-install)。
 
-We want to use `OpenAIEmbeddings` so we have to get the OpenAI API Key.
+我们想使用 `OpenAIEmbeddings`，因此我们需要获取 OpenAI API 密钥。
 
-# Pip install necessary package
+# 安装必要的包
 !pip install openai
 !pip install psycopg2-binary
 !pip install tiktoken
@@ -34,7 +35,7 @@ OpenAI API Key: ········
 ```
 
 ```python
-## Loading Environment Variables
+## 加载环境变量
 from typing import List, Tuple
 
 from dotenv import load_dotenv
@@ -70,11 +71,11 @@ embeddings = OpenAIEmbeddings()
 
 
 ```python
-# Lantern needs the connection string to the database.
-# Example postgresql://postgres:postgres@localhost:5432/postgres
+# Lantern 需要数据库的连接字符串。
+# 示例 postgresql://postgres:postgres@localhost:5432/postgres
 CONNECTION_STRING = getpass.getpass("DB Connection String:")
 
-# # Alternatively, you can create it from environment variables.
+# # 或者，您可以从环境变量中创建它。
 # import os
 
 # CONNECTION_STRING = Lantern.connection_string_from_db_params(
@@ -86,17 +87,17 @@ CONNECTION_STRING = getpass.getpass("DB Connection String:")
 #     password=os.environ.get("LANTERN_PASSWORD", "postgres"),
 # )
 
-# or you can pass it via `LANTERN_CONNECTION_STRING` env variable
+# 或者您可以通过 `LANTERN_CONNECTION_STRING` 环境变量传递它
 ```
 ```output
 DB Connection String: ········
 ```
-## Similarity Search with Cosine Distance (Default)
 
+## 使用余弦距离进行相似性搜索（默认）
 
 ```python
-# The Lantern Module will try to create a table with the name of the collection.
-# So, make sure that the collection name is unique and the user has the permission to create a table.
+# Lantern模块将尝试创建一个与集合名称相同的表。
+# 因此，请确保集合名称是唯一的，并且用户有权限创建表。
 
 COLLECTION_NAME = "state_of_the_union_test"
 
@@ -109,12 +110,10 @@ db = Lantern.from_documents(
 )
 ```
 
-
 ```python
-query = "What did the president say about Ketanji Brown Jackson"
+query = "总统对Ketanji Brown Jackson的评价是什么"
 docs_with_score = db.similarity_search_with_score(query)
 ```
-
 
 ```python
 for doc, score in docs_with_score:
@@ -126,70 +125,69 @@ for doc, score in docs_with_score:
 ```output
 --------------------------------------------------------------------------------
 Score:  0.18440479
-Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And while you’re at it, pass the Disclose Act so Americans can know who is funding our elections. 
+今晚。我呼吁参议院：通过《投票自由法》。通过《约翰·刘易斯投票权法》。同时，通过《披露法》，让美国人知道谁在资助我们的选举。
 
-Tonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. 
+今晚，我想表彰一位为国家奉献一生的人：史蒂芬·布雷耶大法官——一位退伍军人、宪法学者，以及即将退休的美国最高法院大法官。布雷耶大法官，感谢您的服务。
 
-One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. 
+总统最重要的宪法责任之一就是提名某人担任美国最高法院大法官。
 
-And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
+四天前，我提名了巡回上诉法院法官Ketanji Brown Jackson。她是我们国家顶尖的法律人才之一，将继续布雷耶大法官的卓越遗产。
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 Score:  0.21727282
-A former top litigator in private practice. A former federal public defender. And from a family of public school educators and police officers. A consensus builder. Since she’s been nominated, she’s received a broad range of support—from the Fraternal Order of Police to former judges appointed by Democrats and Republicans. 
+一位曾经的顶级私人执业律师。一位前联邦公设辩护人。而且来自一个公共学校教育者和警察的家庭。一个共识建立者。自从她被提名以来，她获得了广泛的支持——从警察兄弟会到由民主党和共和党任命的前法官。
 
-And if we are to advance liberty and justice, we need to secure the Border and fix the immigration system. 
+如果我们要推进自由和正义，就需要确保边界安全并修复移民系统。
 
-We can do both. At our border, we’ve installed new technology like cutting-edge scanners to better detect drug smuggling.  
+我们可以同时做到这两点。在我们的边界，我们安装了新技术，比如尖端扫描仪，以更好地检测毒品走私。
 
-We’ve set up joint patrols with Mexico and Guatemala to catch more human traffickers.  
+我们与墨西哥和危地马拉建立了联合巡逻，以抓捕更多的人贩子。
 
-We’re putting in place dedicated immigration judges so families fleeing persecution and violence can have their cases heard faster. 
+我们正在设立专门的移民法官，以便逃离迫害和暴力的家庭能够更快地得到审理。
 
-We’re securing commitments and supporting partners in South and Central America to host more refugees and secure their own borders.
+我们正在确保承诺并支持南美和中美洲的合作伙伴，接纳更多的难民并确保他们自己的边界安全。
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 Score:  0.22621095
-And for our LGBTQ+ Americans, let’s finally get the bipartisan Equality Act to my desk. The onslaught of state laws targeting transgender Americans and their families is wrong. 
+对于我们的LGBTQ+美国人，让我们终于将两党《平等法案》送到我桌上。针对跨性别美国人及其家庭的州法律攻击是错误的。
 
-As I said last year, especially to our younger transgender Americans, I will always have your back as your President, so you can be yourself and reach your God-given potential. 
+正如我去年所说，尤其是对我们年轻的跨性别美国人，我将永远支持你们，作为你们的总统，让你们能够做自己，发挥上帝赋予的潜力。
 
-While it often appears that we never agree, that isn’t true. I signed 80 bipartisan bills into law last year. From preventing government shutdowns to protecting Asian-Americans from still-too-common hate crimes to reforming military justice. 
+虽然我们似乎总是意见不合，但这并不是真的。我去年签署了80项两党法案。从防止政府停摆到保护亚裔美国人免受仍然过于普遍的仇恨犯罪，再到改革军事司法。
 
-And soon, we’ll strengthen the Violence Against Women Act that I first wrote three decades ago. It is important for us to show the nation that we can come together and do big things. 
+不久之后，我们将加强我三十年前首次起草的《反对对女性暴力法》。我们必须向全国展示，我们能够团结一致，做出重大成就。
 
-So tonight I’m offering a Unity Agenda for the Nation. Four big things we can do together.  
+因此，今晚我提出国家团结议程。我们可以一起做的四件大事。
 
-First, beat the opioid epidemic.
+首先，打击阿片类药物流行病。
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 Score:  0.22654456
-Tonight, I’m announcing a crackdown on these companies overcharging American businesses and consumers. 
+今晚，我宣布对这些向美国企业和消费者收取过高费用的公司进行打击。
 
-And as Wall Street firms take over more nursing homes, quality in those homes has gone down and costs have gone up.  
+随着华尔街公司接管越来越多的养老院，这些养老院的质量下降，费用上升。
 
-That ends on my watch. 
+这在我任期内将结束。
 
-Medicare is going to set higher standards for nursing homes and make sure your loved ones get the care they deserve and expect. 
+医疗保险将为养老院设定更高的标准，确保你的亲人得到他们应得和期待的照顾。
 
-We’ll also cut costs and keep the economy going strong by giving workers a fair shot, provide more training and apprenticeships, hire them based on their skills not degrees. 
+我们还将降低成本，保持经济强劲，通过让工人获得公平的机会，提供更多的培训和学徒，依据技能而非学位来雇用他们。
 
-Let’s pass the Paycheck Fairness Act and paid leave.  
+让我们通过《工资公平法案》和带薪休假。
 
-Raise the minimum wage to $15 an hour and extend the Child Tax Credit, so no one has to raise a family in poverty. 
+将最低工资提高到每小时15美元，并延长儿童税收抵免，以便没有人需要在贫困中养家糊口。
 
-Let’s increase Pell Grants and increase our historic support of HBCUs, and invest in what Jill—our First Lady who teaches full-time—calls America’s best-kept secret: community colleges.
+让我们增加佩尔助学金，并增加我们对历史性黑人大学的支持，投资于我们第一夫人——全职教师Jill所称的美国最被低估的秘密：社区大学。
 --------------------------------------------------------------------------------
 ```
-## Maximal Marginal Relevance Search (MMR)
-Maximal marginal relevance optimizes for similarity to query AND diversity among selected documents.
 
+## 最大边际相关性搜索 (MMR)
+最大边际相关性优化查询的相似性与所选文档之间的多样性。
 
 ```python
 docs_with_score = db.max_marginal_relevance_search_with_score(query)
 ```
 
-
 ```python
 for doc, score in docs_with_score:
     print("-" * 80)
@@ -200,84 +198,83 @@ for doc, score in docs_with_score:
 ```output
 --------------------------------------------------------------------------------
 Score:  0.18440479
-Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And while you’re at it, pass the Disclose Act so Americans can know who is funding our elections. 
+今晚，我呼吁参议院：通过《投票自由法案》。通过《约翰·刘易斯投票权法案》。同时，通过《披露法案》，让美国人知道谁在资助我们的选举。
 
-Tonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. 
+今晚，我想表彰一位为这个国家奉献一生的人：大法官斯蒂芬·布雷耶——一位退伍军人、宪法学者，以及即将退休的美国最高法院大法官。布雷耶法官，感谢您的服务。
 
-One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. 
+总统最重要的宪法责任之一就是提名人选担任美国最高法院法官。
 
-And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
+我在四天前做了这件事，当时我提名了巡回上诉法官凯坦吉·布朗·杰克逊。她是我们国家顶尖的法律人才，将继续布雷耶法官的卓越遗产。
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 Score:  0.23515457
-We can’t change how divided we’ve been. But we can change how we move forward—on COVID-19 and other issues we must face together. 
+我们无法改变我们之间的分歧。但我们可以改变如何向前迈进——在COVID-19和其他我们必须共同面对的问题上。
 
-I recently visited the New York City Police Department days after the funerals of Officer Wilbert Mora and his partner, Officer Jason Rivera. 
+我最近在警员威尔伯特·莫拉和他的搭档杰森·里维拉的葬礼后几天访问了纽约市警察局。
 
-They were responding to a 9-1-1 call when a man shot and killed them with a stolen gun. 
+他们是在响应911电话时被一名用偷来的枪射杀的。
 
-Officer Mora was 27 years old. 
+莫拉警员27岁。
 
-Officer Rivera was 22. 
+里维拉警员22岁。
 
-Both Dominican Americans who’d grown up on the same streets they later chose to patrol as police officers. 
+两位多米尼加裔美国人，他们在后来选择作为警察巡逻的街道上长大。
 
-I spoke with their families and told them that we are forever in debt for their sacrifice, and we will carry on their mission to restore the trust and safety every community deserves. 
+我与他们的家人交谈，并告诉他们我们永远欠下他们的牺牲，我们将继续他们恢复每个社区应有的信任和安全的使命。
 
-I’ve worked on these issues a long time. 
+我在这些问题上工作了很长时间。
 
-I know what works: Investing in crime prevention and community police officers who’ll walk the beat, who’ll know the neighborhood, and who can restore trust and safety.
+我知道什么有效：投资于犯罪预防和社区警察，他们将走上街头，了解邻里，并能够恢复信任和安全。
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 Score:  0.24478757
-One was stationed at bases and breathing in toxic smoke from “burn pits” that incinerated wastes of war—medical and hazard material, jet fuel, and more. 
+其中一位驻扎在基地，吸入了来自“焚烧坑”的有毒烟雾，这些焚烧坑焚烧战争的废物——医疗和危险材料、喷气燃料等。
 
-When they came home, many of the world’s fittest and best trained warriors were never the same. 
+当他们回家时，许多世界上最强壮和训练有素的战士再也不是原来的样子。
 
-Headaches. Numbness. Dizziness. 
+头痛。麻木。头晕。
 
-A cancer that would put them in a flag-draped coffin. 
+一种会让他们躺在裹着国旗的棺材里的癌症。
 
-I know. 
+我知道。
 
-One of those soldiers was my son Major Beau Biden. 
+其中一位士兵是我的儿子博·拜登少校。
 
-We don’t know for sure if a burn pit was the cause of his brain cancer, or the diseases of so many of our troops. 
+我们不确定焚烧坑是否是他脑癌的原因，或者是我们许多部队的疾病。
 
-But I’m committed to finding out everything we can. 
+但我致力于找出我们能知道的一切。
 
-Committed to military families like Danielle Robinson from Ohio. 
+致力于像来自俄亥俄州的丹妮尔·罗宾逊这样的军事家庭。
 
-The widow of Sergeant First Class Heath Robinson.  
+一等军士希斯·罗宾逊的遗孀。
 
-He was born a soldier. Army National Guard. Combat medic in Kosovo and Iraq. 
+他生来就是一名士兵。美国国民警卫队。科索沃和伊拉克的战斗医护兵。
 
-Stationed near Baghdad, just yards from burn pits the size of football fields. 
+驻扎在巴格达附近，距离足球场大小的焚烧坑仅几码远。
 
-Heath’s widow Danielle is here with us tonight. They loved going to Ohio State football games. He loved building Legos with their daughter.
+希斯的遗孀丹妮尔今晚与我们同在。他们喜欢去俄亥俄州立大学的足球比赛。他喜欢和他们的女儿一起搭建乐高。
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 Score:  0.25137997
-And I’m taking robust action to make sure the pain of our sanctions  is targeted at Russia’s economy. And I will use every tool at our disposal to protect American businesses and consumers. 
+我正在采取强有力的行动，以确保我们的制裁带来的痛苦针对俄罗斯的经济。我将利用我们所有的工具来保护美国的企业和消费者。
 
-Tonight, I can announce that the United States has worked with 30 other countries to release 60 Million barrels of oil from reserves around the world.  
+今晚，我可以宣布美国与其他30个国家合作，从全球的储备中释放6000万桶石油。
 
-America will lead that effort, releasing 30 Million barrels from our own Strategic Petroleum Reserve. And we stand ready to do more if necessary, unified with our allies.  
+美国将领导这一努力，从我们自己的战略石油储备中释放3000万桶。如果有必要，我们准备做更多，与我们的盟友团结一致。
 
-These steps will help blunt gas prices here at home. And I know the news about what’s happening can seem alarming. 
+这些措施将有助于缓解国内的油价。我知道关于发生的事情的消息可能令人担忧。
 
-But I want you to know that we are going to be okay. 
+但我想让你知道，我们会没事的。
 
-When the history of this era is written Putin’s war on Ukraine will have left Russia weaker and the rest of the world stronger. 
+当这个时代的历史被书写时，普京对乌克兰的战争将使俄罗斯变得更弱，而世界其他地方则变得更强。
 
-While it shouldn’t have taken something so terrible for people around the world to see what’s at stake now everyone sees it clearly.
+虽然不应该因为如此可怕的事情而让世界各地的人们看到现在的利害关系，但现在每个人都清楚地看到了这一点。
 --------------------------------------------------------------------------------
 ```
-## Working with vectorstore
 
-Above, we created a vectorstore from scratch. However, often times we want to work with an existing vectorstore.
-In order to do that, we can initialize it directly.
+## 使用 vectorstore
 
+上述内容中，我们从头创建了一个 vectorstore。然而，我们经常希望使用现有的 vectorstore。为了做到这一点，我们可以直接初始化它。
 
 ```python
 store = Lantern(
@@ -287,56 +284,41 @@ store = Lantern(
 )
 ```
 
-### Add documents
-We can add documents to the existing vectorstore.
-
+### 添加文档
+我们可以将文档添加到现有的 vectorstore 中。
 
 ```python
 store.add_documents([Document(page_content="foo")])
 ```
 
-
-
 ```output
 ['f8164598-aa28-11ee-a037-acde48001122']
 ```
-
-
 
 ```python
 docs_with_score = db.similarity_search_with_score("foo")
 ```
 
-
 ```python
 docs_with_score[0]
 ```
-
-
 
 ```output
 (Document(page_content='foo'), -1.1920929e-07)
 ```
 
-
-
 ```python
 docs_with_score[1]
 ```
-
-
 
 ```output
 (Document(page_content='And let’s pass the PRO Act when a majority of workers want to form a union—they shouldn’t be stopped.  \n\nWhen we invest in our workers, when we build the economy from the bottom up and the middle out together, we can do something we haven’t done in a long time: build a better America. \n\nFor more than two years, COVID-19 has impacted every decision in our lives and the life of the nation. \n\nAnd I know you’re tired, frustrated, and exhausted. \n\nBut I also know this. \n\nBecause of the progress we’ve made, because of your resilience and the tools we have, tonight I can say  \nwe are moving forward safely, back to more normal routines.  \n\nWe’ve reached a new moment in the fight against COVID-19, with severe cases down to a level not seen since last July.  \n\nJust a few days ago, the Centers for Disease Control and Prevention—the CDC—issued new mask guidelines. \n\nUnder these new guidelines, most Americans in most of the country can now be mask free.', metadata={'source': '../../how_to/state_of_the_union.txt'}),
  0.24038416)
 ```
 
+### 覆盖一个向量存储
 
-### Overriding a vectorstore
-
-If you have an existing collection, you override it by doing `from_documents` and setting `pre_delete_collection` = True 
-This will delete the collection before re-populating it
-
+如果您有一个现有的集合，可以通过执行 `from_documents` 并设置 `pre_delete_collection` = True 来覆盖它。 这将在重新填充集合之前删除该集合。
 
 ```python
 db = Lantern.from_documents(
@@ -348,25 +330,20 @@ db = Lantern.from_documents(
 )
 ```
 
-
 ```python
 docs_with_score = db.similarity_search_with_score("foo")
 ```
 
-
 ```python
 docs_with_score[0]
 ```
-
-
 
 ```output
 (Document(page_content='And let’s pass the PRO Act when a majority of workers want to form a union—they shouldn’t be stopped.  \n\nWhen we invest in our workers, when we build the economy from the bottom up and the middle out together, we can do something we haven’t done in a long time: build a better America. \n\nFor more than two years, COVID-19 has impacted every decision in our lives and the life of the nation. \n\nAnd I know you’re tired, frustrated, and exhausted. \n\nBut I also know this. \n\nBecause of the progress we’ve made, because of your resilience and the tools we have, tonight I can say  \nwe are moving forward safely, back to more normal routines.  \n\nWe’ve reached a new moment in the fight against COVID-19, with severe cases down to a level not seen since last July.  \n\nJust a few days ago, the Centers for Disease Control and Prevention—the CDC—issued new mask guidelines. \n\nUnder these new guidelines, most Americans in most of the country can now be mask free.', metadata={'source': '../../how_to/state_of_the_union.txt'}),
  0.2403456)
 ```
 
-
-### Using a VectorStore as a Retriever
+### 使用 VectorStore 作为检索器
 
 
 ```python
@@ -381,7 +358,7 @@ print(retriever)
 tags=['Lantern', 'OpenAIEmbeddings'] vectorstore=<langchain_community.vectorstores.lantern.Lantern object at 0x11d02f9d0>
 ```
 
-## Related
+## 相关
 
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

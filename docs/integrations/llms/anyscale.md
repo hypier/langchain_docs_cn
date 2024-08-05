@@ -1,25 +1,23 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/anyscale.ipynb
 ---
+
 # Anyscale
 
-[Anyscale](https://www.anyscale.com/) is a fully-managed [Ray](https://www.ray.io/) platform, on which you can build, deploy, and manage scalable AI and Python applications
+[Anyscale](https://www.anyscale.com/) 是一个完全托管的 [Ray](https://www.ray.io/) 平台，您可以在其上构建、部署和管理可扩展的 AI 和 Python 应用程序。
 
-This example goes over how to use LangChain to interact with [Anyscale Endpoint](https://app.endpoints.anyscale.com/). 
-
+本示例介绍如何使用 LangChain 与 [Anyscale Endpoint](https://app.endpoints.anyscale.com/) 进行交互。
 
 ```python
 ##Installing the langchain packages needed to use the integration
 %pip install -qU langchain-community
 ```
 
-
 ```python
 ANYSCALE_API_BASE = "..."
 ANYSCALE_API_KEY = "..."
 ANYSCALE_MODEL_NAME = "..."
 ```
-
 
 ```python
 import os
@@ -28,32 +26,27 @@ os.environ["ANYSCALE_API_BASE"] = ANYSCALE_API_BASE
 os.environ["ANYSCALE_API_KEY"] = ANYSCALE_API_KEY
 ```
 
-
 ```python
 from langchain.chains import LLMChain
 from langchain_community.llms import Anyscale
 from langchain_core.prompts import PromptTemplate
 ```
 
-
 ```python
 template = """Question: {question}
 
 Answer: Let's think step by step."""
-
+  
 prompt = PromptTemplate.from_template(template)
 ```
-
 
 ```python
 llm = Anyscale(model_name=ANYSCALE_MODEL_NAME)
 ```
 
-
 ```python
 llm_chain = prompt | llm
 ```
-
 
 ```python
 question = "When was George Washington president?"
@@ -61,8 +54,7 @@ question = "When was George Washington president?"
 llm_chain.invoke({"question": question})
 ```
 
-With Ray, we can distribute the queries without asynchronized implementation. This not only applies to Anyscale LLM model, but to any other Langchain LLM models which do not have `_acall` or `_agenerate` implemented
-
+使用 Ray，我们可以在没有异步实现的情况下分发查询。这不仅适用于 Anyscale LLM 模型，还适用于任何其他没有实现 `_acall` 或 `_agenerate` 的 Langchain LLM 模型。
 
 ```python
 prompt_list = [
@@ -78,23 +70,19 @@ prompt_list = [
 ]
 ```
 
-
 ```python
 import ray
-
 
 @ray.remote(num_cpus=0.1)
 def send_query(llm, prompt):
     resp = llm.invoke(prompt)
     return resp
 
-
 futures = [send_query.remote(llm, prompt) for prompt in prompt_list]
 results = ray.get(futures)
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

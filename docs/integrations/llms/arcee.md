@@ -1,19 +1,18 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/arcee.ipynb
 ---
-# Arcee
-This notebook demonstrates how to use the `Arcee` class for generating text using Arcee's Domain Adapted Language Models (DALMs).
 
+# Arcee
+本笔记本演示如何使用 `Arcee` 类生成文本，利用 Arcee 的领域适应语言模型（DALMs）。
 
 ```python
 ##Installing the langchain packages needed to use the integration
 %pip install -qU langchain-community
 ```
 
-### Setup
+### 设置
 
-Before using Arcee, make sure the Arcee API key is set as `ARCEE_API_KEY` environment variable. You can also pass the api key as a named parameter.
-
+在使用 Arcee 之前，请确保将 Arcee API 密钥设置为 `ARCEE_API_KEY` 环境变量。您也可以将 API 密钥作为命名参数传递。
 
 ```python
 from langchain_community.llms import Arcee
@@ -25,11 +24,9 @@ arcee = Arcee(
 )
 ```
 
-### Additional Configuration
+### 附加配置
 
-You can also configure Arcee's parameters such as `arcee_api_url`, `arcee_app_url`, and `model_kwargs` as needed.
-Setting the `model_kwargs` at the object initialization uses the parameters as default for all the subsequent calls to the generate response.
-
+您还可以根据需要配置 Arcee 的参数，例如 `arcee_api_url`、`arcee_app_url` 和 `model_kwargs`。在对象初始化时设置 `model_kwargs` 会将这些参数作为所有后续生成响应调用的默认值。
 
 ```python
 arcee = Arcee(
@@ -50,10 +47,9 @@ arcee = Arcee(
 )
 ```
 
-### Generating Text
+### 生成文本
 
-You can generate text from Arcee by providing a prompt. Here's an example:
-
+您可以通过提供提示从 Arcee 生成文本。以下是一个示例：
 
 ```python
 # Generate text
@@ -61,13 +57,9 @@ prompt = "Can AI-driven music therapy contribute to the rehabilitation of patien
 response = arcee(prompt)
 ```
 
-### Additional parameters
+### 附加参数
 
-Arcee allows you to apply `filters` and set the `size` (in terms of count) of retrieved document(s) to aid text generation. Filters help narrow down the results. Here's how to use these parameters:
-
-
-
-
+Arcee 允许您应用 `filters` 并设置检索文档的 `size`（以数量为单位），以帮助文本生成。过滤器有助于缩小结果范围。以下是如何使用这些参数：
 
 ```python
 # Define filters
@@ -80,8 +72,7 @@ filters = [
 response = arcee(prompt, size=5, filters=filters)
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

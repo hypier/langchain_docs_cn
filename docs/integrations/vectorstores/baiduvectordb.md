@@ -1,17 +1,18 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/baiduvectordb.ipynb
 ---
-#  Baidu VectorDB
 
->[Baidu VectorDB](https://cloud.baidu.com/product/vdb.html) is a robust, enterprise-level distributed database service, meticulously developed and fully managed by Baidu Intelligent Cloud. It stands out for its exceptional ability to store, retrieve, and analyze multi-dimensional vector data. At its core, VectorDB operates on Baidu's proprietary "Mochow" vector database kernel, which ensures high performance, availability, and security, alongside remarkable scalability and user-friendliness.
+# 百度 VectorDB
 
->This database service supports a diverse range of index types and similarity calculation methods, catering to various use cases. A standout feature of VectorDB is its capacity to manage an immense vector scale of up to 10 billion, while maintaining impressive query performance, supporting millions of queries per second (QPS) with millisecond-level query latency.
+>[Baidu VectorDB](https://cloud.baidu.com/product/vdb.html) 是一款强大、企业级的分布式数据库服务，由百度智能云精心开发并全面管理。它以卓越的多维向量数据存储、检索和分析能力而脱颖而出。VectorDB 的核心基于百度自主研发的“Mochow”向量数据库内核，确保高性能、高可用性和安全性，同时具备出色的可扩展性和用户友好性。
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
+>该数据库服务支持多种索引类型和相似度计算方法，满足各种使用场景。VectorDB 的一个突出特点是能够管理高达 100 亿的巨大向量规模，同时保持令人印象深刻的查询性能，支持每秒数百万次查询（QPS），并具有毫秒级的查询延迟。
 
-This notebook shows how to use functionality related to the Baidu VectorDB. 
+您需要使用 `pip install -qU langchain-community` 安装 `langchain-community` 才能使用此集成。
 
-To run, you should have a [Database instance.](https://cloud.baidu.com/doc/VDB/s/hlrsoazuf).
+本笔记本展示了如何使用与百度 VectorDB 相关的功能。
+
+要运行，您需要一个 [数据库实例。](https://cloud.baidu.com/doc/VDB/s/hlrsoazuf)
 
 
 ```python
@@ -63,8 +64,7 @@ docs = vector_db.max_marginal_relevance_search(query)
 docs[0].page_content
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

@@ -1,23 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/elastic_search_bm25.ipynb
 ---
+
 # ElasticSearch BM25
 
->[Elasticsearch](https://www.elastic.co/elasticsearch/) is a distributed, RESTful search and analytics engine. It provides a distributed, multitenant-capable full-text search engine with an HTTP web interface and schema-free JSON documents.
+>[ElasticSearch](https://www.elastic.co/elasticsearch/) 是一个分布式的、RESTful的搜索和分析引擎。它提供了一个分布式的、支持多租户的全文搜索引擎，具有HTTP网页接口和无模式的JSON文档。
 
->In information retrieval, [Okapi BM25](https://en.wikipedia.org/wiki/Okapi_BM25) (BM is an abbreviation of best matching) is a ranking function used by search engines to estimate the relevance of documents to a given search query. It is based on the probabilistic retrieval framework developed in the 1970s and 1980s by Stephen E. Robertson, Karen Spärck Jones, and others.
+>在信息检索中，[Okapi BM25](https://en.wikipedia.org/wiki/Okapi_BM25)（BM是最佳匹配的缩写）是搜索引擎用来估计文档与给定搜索查询相关性的一种排名函数。它基于1970年代和1980年代由Stephen E. Robertson、Karen Spärck Jones等人开发的概率检索框架。
 
->The name of the actual ranking function is BM25. The fuller name, Okapi BM25, includes the name of the first system to use it, which was the Okapi information retrieval system, implemented at London's City University in the 1980s and 1990s. BM25 and its newer variants, e.g. BM25F (a version of BM25 that can take document structure and anchor text into account), represent TF-IDF-like retrieval functions used in document retrieval.
+>实际的排名函数名称是BM25。完整名称Okapi BM25包括了第一个使用该函数的系统的名称，即在1980年代和1990年代在伦敦城市大学实现的Okapi信息检索系统。BM25及其更新的变体，例如BM25F（一个可以考虑文档结构和锚文本的BM25版本），代表了用于文档检索的类似TF-IDF的检索函数。
 
-This notebook shows how to use a retriever that uses `ElasticSearch` and `BM25`.
+本笔记本展示了如何使用一个结合了`ElasticSearch`和`BM25`的检索器。
 
-For more information on the details of BM25 see [this blog post](https://www.elastic.co/blog/practical-bm25-part-2-the-bm25-algorithm-and-its-variables).
-
+有关BM25详细信息，请参见[这篇博客文章](https://www.elastic.co/blog/practical-bm25-part-2-the-bm25-algorithm-and-its-variables)。
 
 ```python
 %pip install --upgrade --quiet  elasticsearch
 ```
-
 
 ```python
 from langchain_community.retrievers import (
@@ -25,7 +24,7 @@ from langchain_community.retrievers import (
 )
 ```
 
-## Create New Retriever
+## 创建新的检索器
 
 
 ```python
@@ -35,16 +34,15 @@ retriever = ElasticSearchBM25Retriever.create(elasticsearch_url, "langchain-inde
 
 
 ```python
-# Alternatively, you can load an existing index
+# 或者，您可以加载现有索引
 # import elasticsearch
 # elasticsearch_url="http://localhost:9200"
 # retriever = ElasticSearchBM25Retriever(elasticsearch.Elasticsearch(elasticsearch_url), "langchain-index")
 ```
 
-## Add texts (if necessary)
+## 添加文本（如有必要）
 
-We can optionally add texts to the retriever (if they aren't already in there)
-
+我们可以选择性地将文本添加到检索器中（如果它们尚未存在）
 
 ```python
 retriever.add_texts(["foo", "bar", "world", "hello", "foo bar"])
@@ -60,10 +58,9 @@ retriever.add_texts(["foo", "bar", "world", "hello", "foo bar"])
  'd79f457b-2842-4eab-ae10-77aa420b53d7']
 ```
 
+## 使用检索器
 
-## Use Retriever
-
-We can now use the retriever!
+我们现在可以使用检索器了！
 
 
 ```python
@@ -82,9 +79,7 @@ result
  Document(page_content='foo bar', metadata={})]
 ```
 
+## 相关
 
-
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

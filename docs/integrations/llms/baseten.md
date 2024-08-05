@@ -1,61 +1,58 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/baseten.ipynb
 ---
+
 # Baseten
 
-[Baseten](https://baseten.co) is a [Provider](/docs/integrations/providers/baseten) in the LangChain ecosystem that implements the LLMs component.
+[Baseten](https://baseten.co) 是 LangChain 生态系统中的一个 [Provider](/docs/integrations/providers/baseten)，实现了 LLMs 组件。
 
-This example demonstrates using an LLM — Mistral 7B hosted on Baseten — with LangChain.
+此示例演示了如何使用在 Baseten 上托管的 LLM — Mistral 7B — 与 LangChain。
 
-# Setup
+# 设置
 
-To run this example, you'll need:
+要运行此示例，您需要：
 
-* A [Baseten account](https://baseten.co)
-* An [API key](https://docs.baseten.co/observability/api-keys)
+* 一个 [Baseten 账户](https://baseten.co)
+* 一个 [API 密钥](https://docs.baseten.co/observability/api-keys)
 
-Export your API key to your as an environment variable called `BASETEN_API_KEY`.
+将您的 API 密钥导出为名为 `BASETEN_API_KEY` 的环境变量。
 
 ```sh
 export BASETEN_API_KEY="paste_your_api_key_here"
 ```
 
-# Single model call
+# 单模型调用
 
-First, you'll need to deploy a model to Baseten.
+首先，您需要将模型部署到 Baseten。
 
-You can deploy foundation models like Mistral and Llama 2 with one click from the [Baseten model library](https://app.baseten.co/explore/) or if you have your own model, [deploy it with Truss](https://truss.baseten.co/welcome).
+您可以通过 [Baseten 模型库](https://app.baseten.co/explore/) 一键部署基础模型，如 Mistral 和 Llama 2，或者如果您有自己的模型，可以 [使用 Truss 部署](https://truss.baseten.co/welcome)。
 
-In this example, we'll work with Mistral 7B. [Deploy Mistral 7B here](https://app.baseten.co/explore/mistral_7b_instruct) and follow along with the deployed model's ID, found in the model dashboard.
-
+在这个例子中，我们将使用 Mistral 7B。 [在这里部署 Mistral 7B](https://app.baseten.co/explore/mistral_7b_instruct)，并根据模型仪表板中找到的部署模型 ID 进行操作。
 
 ```python
 ##Installing the langchain packages needed to use the integration
 %pip install -qU langchain-community
 ```
 
-
 ```python
 from langchain_community.llms import Baseten
 ```
-
 
 ```python
 # Load the model
 mistral = Baseten(model="MODEL_ID", deployment="production")
 ```
 
-
 ```python
 # Prompt the model
 mistral("What is the Mistral wind?")
 ```
 
-# Chained model calls
+# 链式模型调用
 
-We can chain together multiple calls to one or multiple models, which is the whole point of Langchain!
+我们可以将对一个或多个模型的多个调用串联起来，这正是Langchain的核心目的！
 
-For example, we can replace GPT with Mistral in this demo of terminal emulation.
+例如，我们可以在这个终端仿真演示中用Mistral替换GPT。
 
 
 ```python
@@ -112,10 +109,9 @@ output = chatgpt_chain.predict(
 print(output)
 ```
 
-As we can see from the final example, which outputs a number that may or may not be correct, the model is only approximating likely terminal output, not actually executing provided commands. Still, the example demonstrates Mistral's ample context window, code generation capabilities, and ability to stay on-topic even in conversational sequences.
+从最后一个示例中可以看出，输出的数字可能是正确的，也可能不是，模型仅仅是在近似可能的终端输出，而并非实际执行提供的命令。不过，这个例子展示了Mistral宽广的上下文窗口、代码生成能力，以及在对话序列中保持主题的能力。
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

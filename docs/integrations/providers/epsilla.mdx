@@ -1,23 +1,21 @@
 # Epsilla
 
-This page covers how to use [Epsilla](https://github.com/epsilla-cloud/vectordb) within LangChain.
-It is broken into two parts: installation and setup, and then references to specific Epsilla wrappers.
+本页面介绍如何在 LangChain 中使用 [Epsilla](https://github.com/epsilla-cloud/vectordb)。内容分为两个部分：安装与设置，以及对特定 Epsilla 包装器的引用。
 
-## Installation and Setup
+## 安装与设置
 
-- Install the Python SDK with `pip/pip3 install pyepsilla`
+- 使用 `pip/pip3 install pyepsilla` 安装 Python SDK
 
-## Wrappers
+## 包装器
 
 ### VectorStore
 
-There exists a wrapper around Epsilla vector databases, allowing you to use it as a vectorstore,
-whether for semantic search or example selection.
+存在一个围绕 Epsilla 向量数据库的封装，使您可以将其用作向量存储，无论是用于语义搜索还是示例选择。
 
-To import this vectorstore:
+要导入此向量存储：
 
 ```python
 from langchain_community.vectorstores import Epsilla
 ```
 
-For a more detailed walkthrough of the Epsilla wrapper, see [this notebook](/docs/integrations/vectorstores/epsilla)
+有关 Epsilla 封装的更详细说明，请参见 [此笔记本](/docs/integrations/vectorstores/epsilla)

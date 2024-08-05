@@ -1,39 +1,34 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/chaindesk.ipynb
 ---
+
 # Chaindesk
 
->[Chaindesk platform](https://docs.chaindesk.ai/introduction) brings data from anywhere (Datsources: Text, PDF, Word, PowerPpoint, Excel, Notion, Airtable, Google Sheets, etc..) into Datastores (container of multiple Datasources).
-Then your Datastores can be connected to ChatGPT via Plugins or any other Large Langue Model (LLM) via the `Chaindesk API`.
+>[Chaindesk 平台](https://docs.chaindesk.ai/introduction) 将来自任何地方的数据（数据源：文本、PDF、Word、PowerPoint、Excel、Notion、Airtable、Google Sheets 等）引入数据存储（多个数据源的容器）。然后，您的数据存储可以通过插件或任何其他大型语言模型（LLM）通过 `Chaindesk API` 连接到 ChatGPT。
 
-This notebook shows how to use [Chaindesk's](https://www.chaindesk.ai/) retriever.
+本笔记本展示了如何使用 [Chaindesk](https://www.chaindesk.ai/) 的检索器。
 
-First, you will need to sign up for Chaindesk, create a datastore, add some data and get your datastore api endpoint url. You need the [API Key](https://docs.chaindesk.ai/api-reference/authentication).
+首先，您需要注册 Chaindesk，创建一个数据存储，添加一些数据并获取您的数据存储 API 端点 URL。您需要 [API 密钥](https://docs.chaindesk.ai/api-reference/authentication)。
 
-## Query
+## 查询
 
-Now that our index is set up, we can set up a retriever and start querying it.
-
+现在我们的索引已经设置好，我们可以设置检索器并开始查询。
 
 ```python
 from langchain_community.retrievers import ChaindeskRetriever
 ```
 
-
 ```python
 retriever = ChaindeskRetriever(
     datastore_url="https://clg1xg2h80000l708dymr0fxc.chaindesk.ai/query",
-    # api_key="CHAINDESK_API_KEY", # optional if datastore is public
-    # top_k=10 # optional
+    # api_key="CHAINDESK_API_KEY", # 如果数据存储是公开的，可以选择不填
+    # top_k=10 # 可选
 )
 ```
 
-
 ```python
-retriever.invoke("What is Daftpage?")
+retriever.invoke("什么是 Daftpage？")
 ```
-
-
 
 ```output
 [Document(page_content='✨ Made with DaftpageOpen main menuPricingTemplatesLoginSearchHelpGetting StartedFeaturesAffiliate ProgramGetting StartedDaftpage is a new type of website builder that works like a doc.It makes website building easy, fun and offers tons of powerful features for free. Just type / in your page to get started!DaftpageCopyright © 2022 Daftpage, Inc.All rights reserved.ProductPricingTemplatesHelp & SupportHelp CenterGetting startedBlogCompanyAboutRoadmapTwitterAffiliate Program👾 Discord', metadata={'source': 'https:/daftpage.com/help/getting-started', 'score': 0.8697265}),
@@ -41,9 +36,7 @@ retriever.invoke("What is Daftpage?")
  Document(page_content=" is the simplest way to create websites for all purposes in seconds. Without knowing how to code, and for free!Get StartedDaftpage is a new type of website builder that works like a doc.It makes website building easy, fun and offers tons of powerful features for free. Just type / in your page to get started!Start here✨ Create your first site🧱 Add blocks🚀 PublishGuides🔖 Add a custom domainFeatures🔥 Drops🎨 Drawings👻 Ghost mode💀 Skeleton modeCant find the answer you're looking for?mail us at support@daftpage.comJoin the awesome Daftpage community on: 👾 DiscordDaftpageCopyright © 2022 Daftpage, Inc.All rights reserved.ProductPricingTemplatesHelp & SupportHelp CenterGetting startedBlogCompanyAboutRoadmapTwitterAffiliate Program👾 Discord", metadata={'source': 'https:/daftpage.com/help', 'score': 0.8645384})]
 ```
 
+## 相关
 
-
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

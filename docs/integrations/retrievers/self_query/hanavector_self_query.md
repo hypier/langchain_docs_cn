@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/self_query/hanavector_self_query.ipynb
 ---
+
 # SAP HANA Cloud Vector Engine
 
-For more information on how to setup the SAP HANA vetor store, take a look at the [documentation](/docs/integrations/vectorstores/sap_hanavector.md).
+有关如何设置 SAP HANA 向量存储的更多信息，请查看 [documentation](/docs/integrations/vectorstores/sap_hanavector.md)。
 
-We use the same setup here:
+我们在这里使用相同的设置：
 
 
 ```python
@@ -26,8 +27,7 @@ connection = dbapi.connect(
 )
 ```
 
-To be able to self query with good performance we create additional metadata fields
-for our vectorstore table in HANA:
+为了能够以良好的性能进行自查询，我们在 HANA 的向量存储表中创建额外的元数据字段：
 
 
 ```python
@@ -46,7 +46,7 @@ cur.execute(
 )
 ```
 
-Let's add some documents.
+让我们添加一些文档。
 
 
 ```python
@@ -84,10 +84,9 @@ db.delete(filter={})
 db.add_documents(docs)
 ```
 
-## Self querying
+## 自查询
 
-Now for the main act: here is how to construct a SelfQueryRetriever for HANA vectorstore:
-
+现在进入主要内容：这是如何为 HANA 向量存储构建 SelfQueryRetriever 的方法：
 
 ```python
 from langchain.chains.query_constructor.base import AttributeInfo
@@ -133,8 +132,7 @@ retriever = SelfQueryRetriever.from_llm(
 )
 ```
 
-Let's use this retriever to prepare a (self) query for a person:
-
+让我们使用这个检索器为一个人准备一个（自）查询：
 
 ```python
 query_prompt = "Which person is not active?"
@@ -145,8 +143,7 @@ for doc in docs:
     print(doc.page_content, " ", doc.metadata)
 ```
 
-We can also take a look at how the query is being constructed:
-
+我们还可以看看查询是如何构建的：
 
 ```python
 from langchain.chains.query_constructor.base import (

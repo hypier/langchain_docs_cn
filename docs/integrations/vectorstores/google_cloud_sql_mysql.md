@@ -1,36 +1,35 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/google_cloud_sql_mysql.ipynb
 ---
+
 # Google Cloud SQL for MySQL
 
-> [Cloud SQL](https://cloud.google.com/sql) is a fully managed relational database service that offers high performance, seamless integration, and impressive scalability. It offers PostgreSQL, MySQL, and SQL Server database engines. Extend your database application to build AI-powered experiences leveraging Cloud SQL's LangChain integrations.
+> [Cloud SQL](https://cloud.google.com/sql) 是一个完全托管的关系数据库服务，提供高性能、无缝集成和令人印象深刻的可扩展性。它提供 PostgreSQL、MySQL 和 SQL Server 数据库引擎。扩展您的数据库应用程序，利用 Cloud SQL 的 LangChain 集成构建 AI 驱动的体验。
 
-This notebook goes over how to use `Cloud SQL for MySQL` to store vector embeddings with the `MySQLVectorStore` class.
+本笔记本介绍了如何使用 `Cloud SQL for MySQL` 通过 `MySQLVectorStore` 类存储向量嵌入。
 
-Learn more about the package on [GitHub](https://github.com/googleapis/langchain-google-cloud-sql-mysql-python/).
+在 [GitHub](https://github.com/googleapis/langchain-google-cloud-sql-mysql-python/) 上了解更多关于该包的信息。
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/googleapis/langchain-google-cloud-sql-mysql-python/blob/main/docs/vector_store.ipynb)
 
-## Before you begin
+## 开始之前
 
-To run this notebook, you will need to do the following:
+要运行此笔记本，您需要执行以下操作：
 
- * [Create a Google Cloud Project](https://developers.google.com/workspace/guides/create-project)
- * [Enable the Cloud SQL Admin API.](https://console.cloud.google.com/flows/enableapi?apiid=sqladmin.googleapis.com)
- * [Create a Cloud SQL instance.](https://cloud.google.com/sql/docs/mysql/connect-instance-auth-proxy#create-instance) (version must be >= **8.0.36** with **cloudsql_vector** database flag configured to "On")
- * [Create a Cloud SQL database.](https://cloud.google.com/sql/docs/mysql/create-manage-databases)
- * [Add a User to the database.](https://cloud.google.com/sql/docs/mysql/create-manage-users)
+ * [创建一个 Google Cloud 项目](https://developers.google.com/workspace/guides/create-project)
+ * [启用 Cloud SQL Admin API。](https://console.cloud.google.com/flows/enableapi?apiid=sqladmin.googleapis.com)
+ * [创建一个 Cloud SQL 实例。](https://cloud.google.com/sql/docs/mysql/connect-instance-auth-proxy#create-instance)（版本必须为 >= **8.0.36**，并将 **cloudsql_vector** 数据库标志配置为 "On"）
+ * [创建一个 Cloud SQL 数据库。](https://cloud.google.com/sql/docs/mysql/create-manage-databases)
+ * [向数据库添加用户。](https://cloud.google.com/sql/docs/mysql/create-manage-users)
 
-### 🦜🔗 Library Installation
-Install the integration library, `langchain-google-cloud-sql-mysql`, and the library for the embedding service, `langchain-google-vertexai`.
-
+### 🦜🔗 库安装
+安装集成库 `langchain-google-cloud-sql-mysql` 和嵌入服务库 `langchain-google-vertexai`。
 
 ```python
 %pip install --upgrade --quiet langchain-google-cloud-sql-mysql langchain-google-vertexai
 ```
 
-**Colab only:** Uncomment the following cell to restart the kernel or use the button to restart the kernel. For Vertex AI Workbench you can restart the terminal using the button on top.
-
+**仅限 Colab:** 取消注释以下单元以重启内核，或使用按钮重启内核。对于 Vertex AI Workbench，您可以使用顶部的按钮重启终端。
 
 ```python
 # # Automatically restart kernel after installs so that your environment can access the new packages
@@ -40,11 +39,11 @@ Install the integration library, `langchain-google-cloud-sql-mysql`, and the lib
 # app.kernel.do_shutdown(True)
 ```
 
-### 🔐 Authentication
-Authenticate to Google Cloud as the IAM user logged into this notebook in order to access your Google Cloud Project.
+### 🔐 身份验证
+以登录此笔记本的 IAM 用户身份对 Google Cloud 进行身份验证，以访问您的 Google Cloud 项目。
 
-* If you are using Colab to run this notebook, use the cell below and continue.
-* If you are using Vertex AI Workbench, check out the setup instructions [here](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env).
+* 如果您使用 Colab 运行此笔记本，请使用下面的单元格并继续。
+* 如果您使用 Vertex AI Workbench，请查看 [此处](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env) 的设置说明。
 
 
 ```python
@@ -53,34 +52,32 @@ from google.colab import auth
 auth.authenticate_user()
 ```
 
-### ☁ Set Your Google Cloud Project
-Set your Google Cloud project so that you can leverage Google Cloud resources within this notebook.
+### ☁ 设置您的 Google Cloud 项目
+设置您的 Google Cloud 项目，以便您可以在此笔记本中利用 Google Cloud 资源。
 
-If you don't know your project ID, try the following:
+如果您不知道您的项目 ID，请尝试以下方法：
 
-* Run `gcloud config list`.
-* Run `gcloud projects list`.
-* See the support page: [Locate the project ID](https://support.google.com/googleapi/answer/7014113).
-
+* 运行 `gcloud config list`。
+* 运行 `gcloud projects list`。
+* 查看支持页面：[定位项目 ID](https://support.google.com/googleapi/answer/7014113)。
 
 ```python
-# @markdown Please fill in the value below with your Google Cloud project ID and then run the cell.
+# @markdown 请在下面填写您的 Google Cloud 项目 ID，然后运行该单元格。
 
 PROJECT_ID = "my-project-id"  # @param {type:"string"}
 
-# Set the project id
+# 设置项目 ID
 !gcloud config set project {PROJECT_ID}
 ```
 
-## Basic Usage
+## 基本用法
 
-### Set Cloud SQL database values
-Find your database values, in the [Cloud SQL Instances page](https://console.cloud.google.com/sql?_ga=2.223735448.2062268965.1707700487-2088871159.1707257687).
+### 设置 Cloud SQL 数据库值
+在 [Cloud SQL 实例页面](https://console.cloud.google.com/sql?_ga=2.223735448.2062268965.1707700487-2088871159.1707257687) 查找您的数据库值。
 
-**Note:** MySQL vector support is only available on MySQL instances with version **>= 8.0.36**.
+**注意：** MySQL 向量支持仅在版本 **>= 8.0.36** 的 MySQL 实例上可用。
 
-For existing instances, you may need to perform a [self-service maintenance update](https://cloud.google.com/sql/docs/mysql/self-service-maintenance) to update your maintenance version to **MYSQL_8_0_36.R20240401.03_00** or greater. Once updated, [configure your database flags](https://cloud.google.com/sql/docs/mysql/flags) to have the new **cloudsql_vector** flag to "On".
-
+对于现有实例，您可能需要执行 [自助维护更新](https://cloud.google.com/sql/docs/mysql/self-service-maintenance) 以将维护版本更新为 **MYSQL_8_0_36.R20240401.03_00** 或更高版本。更新后，请 [配置您的数据库标志](https://cloud.google.com/sql/docs/mysql/flags)，将新的 **cloudsql_vector** 标志设置为“开启”。
 
 ```python
 # @title Set Your Values Here { display-mode: "form" }
@@ -90,28 +87,28 @@ DATABASE = "my-database"  # @param {type: "string"}
 TABLE_NAME = "vector_store"  # @param {type: "string"}
 ```
 
-### MySQLEngine Connection Pool
+### MySQLEngine 连接池
 
-One of the requirements and arguments to establish Cloud SQL as a vector store is a `MySQLEngine` object. The `MySQLEngine` configures a connection pool to your Cloud SQL database, enabling successful connections from your application and following industry best practices.
+建立 Cloud SQL 作为向量存储的一个要求和论点是一个 `MySQLEngine` 对象。`MySQLEngine` 配置一个连接池到您的 Cloud SQL 数据库，使您的应用程序能够成功连接，并遵循行业最佳实践。
 
-To create a `MySQLEngine` using `MySQLEngine.from_instance()` you need to provide only 4 things:
+要使用 `MySQLEngine.from_instance()` 创建一个 `MySQLEngine`，您只需要提供 4 个内容：
 
-1. `project_id` : Project ID of the Google Cloud Project where the Cloud SQL instance is located.
-1. `region` : Region where the Cloud SQL instance is located.
-1. `instance` : The name of the Cloud SQL instance.
-1. `database` : The name of the database to connect to on the Cloud SQL instance.
+1. `project_id` : Cloud SQL 实例所在的 Google Cloud 项目的项目 ID。
+1. `region` : Cloud SQL 实例所在的区域。
+1. `instance` : Cloud SQL 实例的名称。
+1. `database` : 要连接的 Cloud SQL 实例上的数据库名称。
 
-By default, [IAM database authentication](https://cloud.google.com/sql/docs/mysql/iam-authentication#iam-db-auth) will be used as the method of database authentication. This library uses the IAM principal belonging to the [Application Default Credentials (ADC)](https://cloud.google.com/docs/authentication/application-default-credentials) sourced from the envionment.
+默认情况下，将使用 [IAM 数据库身份验证](https://cloud.google.com/sql/docs/mysql/iam-authentication#iam-db-auth) 作为数据库身份验证的方法。该库使用来自环境的 [应用程序默认凭据 (ADC)](https://cloud.google.com/docs/authentication/application-default-credentials) 所属的 IAM 主体。
 
-For more informatin on IAM database authentication please see:
+有关 IAM 数据库身份验证的更多信息，请参见：
 
-* [Configure an instance for IAM database authentication](https://cloud.google.com/sql/docs/mysql/create-edit-iam-instances)
-* [Manage users with IAM database authentication](https://cloud.google.com/sql/docs/mysql/add-manage-iam-users)
+* [为 IAM 数据库身份验证配置实例](https://cloud.google.com/sql/docs/mysql/create-edit-iam-instances)
+* [使用 IAM 数据库身份验证管理用户](https://cloud.google.com/sql/docs/mysql/add-manage-iam-users)
 
-Optionally, [built-in database authentication](https://cloud.google.com/sql/docs/mysql/built-in-authentication) using a username and password to access the Cloud SQL database can also be used. Just provide the optional `user` and `password` arguments to `MySQLEngine.from_instance()`:
+可选地，也可以使用 [内置数据库身份验证](https://cloud.google.com/sql/docs/mysql/built-in-authentication) 通过用户名和密码访问 Cloud SQL 数据库。只需向 `MySQLEngine.from_instance()` 提供可选的 `user` 和 `password` 参数：
 
-* `user` : Database user to use for built-in database authentication and login
-* `password` : Database password to use for built-in database authentication and login.
+* `user` : 用于内置数据库身份验证和登录的数据库用户
+* `password` : 用于内置数据库身份验证和登录的数据库密码。
 
 
 
@@ -123,9 +120,8 @@ engine = MySQLEngine.from_instance(
 )
 ```
 
-### Initialize a table
-The `MySQLVectorStore` class requires a database table. The `MySQLEngine` class has a helper method `init_vectorstore_table()` that can be used to create a table with the proper schema for you.
-
+### 初始化表
+`MySQLVectorStore` 类需要一个数据库表。`MySQLEngine` 类有一个辅助方法 `init_vectorstore_table()`，可以用来为您创建一个具有正确架构的表。
 
 ```python
 engine.init_vectorstore_table(
@@ -134,12 +130,12 @@ engine.init_vectorstore_table(
 )
 ```
 
-### Create an embedding class instance
+### 创建嵌入类实例
 
-You can use any [LangChain embeddings model](/docs/integrations/text_embedding/).
-You may need to enable the Vertex AI API to use `VertexAIEmbeddings`.
+您可以使用任何 [LangChain 嵌入模型](/docs/integrations/text_embedding/)。  
+您可能需要启用 Vertex AI API 以使用 `VertexAIEmbeddings`。
 
-We recommend pinning the embedding model's version for production, learn more about the [Text embeddings models](https://cloud.google.com/vertex-ai/docs/generative-ai/model-reference/text-embeddings).
+我们建议在生产环境中固定嵌入模型的版本，了解更多关于 [文本嵌入模型](https://cloud.google.com/vertex-ai/docs/generative-ai/model-reference/text-embeddings) 的信息。
 
 
 ```python
@@ -156,14 +152,13 @@ embedding = VertexAIEmbeddings(
 )
 ```
 
-### Initialize a default MySQLVectorStore
+### 初始化默认的 MySQLVectorStore
 
-To initialize a `MySQLVectorStore` class you need to provide only 3 things:
+要初始化 `MySQLVectorStore` 类，您只需提供 3 个内容：
 
-1. `engine` - An instance of a `MySQLEngine` engine.
-1. `embedding_service` - An instance of a LangChain embedding model.
-1. `table_name` : The name of the table within the Cloud SQL database to use as the vector store.
-
+1. `engine` - 一个 `MySQLEngine` 引擎的实例。
+1. `embedding_service` - 一个 LangChain 嵌入模型的实例。
+1. `table_name` : 用作向量存储的 Cloud SQL 数据库中的表名。
 
 ```python
 from langchain_google_cloud_sql_mysql import MySQLVectorStore
@@ -175,7 +170,7 @@ store = MySQLVectorStore(
 )
 ```
 
-### Add texts
+### 添加文本
 
 
 ```python
@@ -188,16 +183,16 @@ ids = [str(uuid.uuid4()) for _ in all_texts]
 store.add_texts(all_texts, metadatas=metadatas, ids=ids)
 ```
 
-### Delete texts
+### 删除文本
 
-Delete vectors from the vector store by ID.
+通过 ID 从向量存储中删除向量。
 
 
 ```python
 store.delete([ids[1]])
 ```
 
-### Search for documents
+### 搜索文档
 
 
 ```python
@@ -208,10 +203,10 @@ print(docs[0].page_content)
 ```output
 Pineapple
 ```
-### Search for documents by vector
 
-It is also possible to do a search for documents similar to a given embedding vector using `similarity_search_by_vector` which accepts an embedding vector as a parameter instead of a string.
+### 通过向量搜索文档
 
+还可以使用 `similarity_search_by_vector` 进行与给定嵌入向量相似的文档搜索，该方法接受嵌入向量作为参数，而不是字符串。
 
 ```python
 query_vector = embedding.embed_query(query)
@@ -221,10 +216,11 @@ print(docs)
 ```output
 [Document(page_content='Pineapple', metadata={'len': 9}), Document(page_content='Banana', metadata={'len': 6})]
 ```
-### Add an index
-Speed up vector search queries by applying a vector index. Learn more about [MySQL vector indexes](https://github.com/googleapis/langchain-google-cloud-sql-mysql-python/blob/main/src/langchain_google_cloud_sql_mysql/indexes.py).
 
-**Note:** For IAM database authentication (default usage), the IAM database user will need to be granted the following permissions by a privileged database user for full control of vector indexes.
+### 添加索引
+通过应用向量索引来加速向量搜索查询。了解更多关于 [MySQL 向量索引](https://github.com/googleapis/langchain-google-cloud-sql-mysql-python/blob/main/src/langchain_google_cloud_sql_mysql/indexes.py) 的信息。
+
+**注意：** 对于 IAM 数据库身份验证（默认使用），IAM 数据库用户需要由特权数据库用户授予以下权限，以便完全控制向量索引。
 
 ```
 GRANT EXECUTE ON PROCEDURE mysql.create_vector_index TO '<IAM_DB_USER>'@'%';
@@ -240,21 +236,20 @@ from langchain_google_cloud_sql_mysql import VectorIndex
 store.apply_vector_index(VectorIndex())
 ```
 
-### Remove an index
+### 移除索引
 
 
 ```python
 store.drop_vector_index()
 ```
 
-## Advanced Usage
+## 高级用法
 
-### Create a MySQLVectorStore with custom metadata
+### 创建带有自定义元数据的 MySQLVectorStore
 
-A vector store can take advantage of relational data to filter similarity searches.
+向量存储可以利用关系数据来过滤相似性搜索。
 
-Create a table and `MySQLVectorStore` instance with custom metadata columns.
-
+创建一个表和带有自定义元数据列的 `MySQLVectorStore` 实例。
 
 ```python
 from langchain_google_cloud_sql_mysql import Column
@@ -282,11 +277,11 @@ custom_store = MySQLVectorStore(
 )
 ```
 
-### Search for documents with metadata filter
+### 使用元数据过滤器搜索文档
 
-It can be helpful to narrow down the documents before working with them.
+在处理文档之前，缩小文档范围可能会很有帮助。
 
-For example, documents can be filtered on metadata using the `filter` argument.
+例如，可以使用 `filter` 参数对文档进行元数据过滤。
 
 
 ```python
@@ -308,7 +303,7 @@ print(docs)
 [Document(page_content='Pineapple', metadata={'len': 9}), Document(page_content='Banana', metadata={'len': 6}), Document(page_content='Apples and oranges', metadata={'len': 18}), Document(page_content='Cars and airplanes', metadata={'len': 18})]
 ```
 
-## Related
+## 相关
 
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

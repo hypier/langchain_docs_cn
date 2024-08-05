@@ -1,35 +1,32 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/bagel.ipynb
 ---
-# Bagel
 
-> [Bagel](https://www.bagel.net/) (`Open Inference platform for AI`), is like GitHub for AI data.
-It is a collaborative platform where users can create,
-share, and manage Inference datasets. It can support private projects for independent developers,
-internal collaborations for enterprises, and public contributions for data DAOs.
+# 贝果
 
-### Installation and Setup
+> [贝果](https://www.bagel.net/) (`Open Inference platform for AI`)，类似于 AI 数据的 GitHub。  
+这是一个协作平台，用户可以创建、共享和管理推理数据集。它可以支持独立开发者的私有项目、企业内部合作以及数据 DAO 的公共贡献。
+
+### 安装与设置
 
 ```bash
 pip install bagelML langchain-community
 ```
 
-
-
-## Create VectorStore from texts
+## 从文本创建 VectorStore
 
 
 ```python
 from langchain_community.vectorstores import Bagel
 
 texts = ["hello bagel", "hello langchain", "I love salad", "my car", "a dog"]
-# create cluster and add texts
+# 创建集群并添加文本
 cluster = Bagel.from_texts(cluster_name="testing", texts=texts)
 ```
 
 
 ```python
-# similarity search
+# 相似性搜索
 cluster.similarity_search("bagel", k=3)
 ```
 
@@ -44,7 +41,7 @@ cluster.similarity_search("bagel", k=3)
 
 
 ```python
-# the score is a distance metric, so lower is better
+# 分数是距离度量，因此越低越好
 cluster.similarity_search_with_score("bagel", k=3)
 ```
 
@@ -59,11 +56,11 @@ cluster.similarity_search_with_score("bagel", k=3)
 
 
 ```python
-# delete the cluster
+# 删除集群
 cluster.delete_cluster()
 ```
 
-## Create VectorStore from docs
+## 从文档创建 VectorStore
 
 
 ```python
@@ -78,21 +75,22 @@ docs = text_splitter.split_documents(documents)[:10]
 
 
 ```python
-# create cluster with docs
+# 使用文档创建集群
 cluster = Bagel.from_documents(cluster_name="testing_with_docs", documents=docs)
 ```
 
 
 ```python
-# similarity search
-query = "What did the president say about Ketanji Brown Jackson"
+# 相似性搜索
+query = "总统对 Ketanji Brown Jackson 说了什么"
 docs = cluster.similarity_search(query)
 print(docs[0].page_content[:102])
 ```
 ```output
 Madam Speaker, Madam Vice President, our First Lady and Second Gentleman. Members of Congress and the
 ```
-## Get all text/doc from Cluster
+
+## 从集群中获取所有文本/文档
 
 
 ```python
@@ -103,7 +101,7 @@ cluster_data = cluster.get()
 
 
 ```python
-# all keys
+# 所有键
 cluster_data.keys()
 ```
 
@@ -116,7 +114,7 @@ dict_keys(['ids', 'embeddings', 'metadatas', 'documents'])
 
 
 ```python
-# all values and keys
+# 所有值和键
 cluster_data
 ```
 
@@ -149,7 +147,7 @@ cluster_data
 cluster.delete_cluster()
 ```
 
-## Create cluster with metadata & filter using metadata
+## 使用元数据创建集群并通过元数据过滤
 
 
 ```python
@@ -169,12 +167,11 @@ cluster.similarity_search_with_score("hello bagel", where={"source": "notion"})
 
 
 ```python
-# delete the cluster
+# 删除集群
 cluster.delete_cluster()
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

@@ -1,14 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/adapters/openai-old.ipynb
 ---
-# OpenAI Adapter(Old)
 
-**Please ensure OpenAI library is less than 1.0.0; otherwise, refer to the newer doc [OpenAI Adapter](/docs/integrations/adapters/openai/).**
+# OpenAI 适配器（旧版）
 
-A lot of people get started with OpenAI but want to explore other models. LangChain's integrations with many model providers make this easy to do so. While LangChain has it's own message and model APIs, we've also made it as easy as possible to explore other models by exposing an adapter to adapt LangChain models to the OpenAI api.
+**请确保 OpenAI 库版本低于 1.0.0；否则，请参考更新的文档 [OpenAI 适配器](/docs/integrations/adapters/openai/)。**
 
-At the moment this only deals with output and does not return other information (token counts, stop reasons, etc).
+很多人开始使用 OpenAI，但希望探索其他模型。LangChain 与许多模型提供商的集成使这一点变得容易。虽然 LangChain 自己有消息和模型 API，但我们也尽可能简化了探索其他模型的过程，通过暴露适配器将 LangChain 模型适配到 OpenAI API。
 
+目前，这仅处理输出，不返回其他信息（令牌计数、停止原因等）。
 
 ```python
 import openai
@@ -22,7 +22,7 @@ from langchain_community.adapters import openai as lc_openai
 messages = [{"role": "user", "content": "hi"}]
 ```
 
-Original OpenAI call
+原始 OpenAI 调用
 
 
 ```python
@@ -39,7 +39,7 @@ result["choices"][0]["message"].to_dict_recursive()
 ```
 
 
-LangChain OpenAI wrapper call
+LangChain OpenAI 包装调用
 
 
 ```python
@@ -56,7 +56,7 @@ lc_result["choices"][0]["message"]
 ```
 
 
-Swapping out model providers
+更换模型提供者
 
 
 ```python
@@ -72,10 +72,9 @@ lc_result["choices"][0]["message"]
 {'role': 'assistant', 'content': ' Hello!'}
 ```
 
-
 ## ChatCompletion.stream
 
-Original OpenAI call
+原始 OpenAI 调用
 
 
 ```python
@@ -97,7 +96,7 @@ for c in openai.ChatCompletion.create(
 {'content': '?'}
 {}
 ```
-LangChain OpenAI wrapper call
+LangChain OpenAI 包装调用
 
 
 ```python
@@ -119,7 +118,7 @@ for c in lc_openai.ChatCompletion.create(
 {'content': '?'}
 {}
 ```
-Swapping out model providers
+更换模型提供者
 
 
 ```python

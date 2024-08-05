@@ -2,29 +2,29 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/airbyte_zendesk_support.ipynb
 sidebar_class_name: hidden
 ---
-# Airbyte Zendesk Support (Deprecated)
 
-Note: This connector-specific loader is deprecated. Please use [`AirbyteLoader`](/docs/integrations/document_loaders/airbyte) instead.
+# Airbyte Zendesk Support（已弃用）
 
->[Airbyte](https://github.com/airbytehq/airbyte) is a data integration platform for ELT pipelines from APIs, databases & files to warehouses & lakes. It has the largest catalog of ELT connectors to data warehouses and databases.
+注意：此连接器特定的加载器已弃用。请改用 [`AirbyteLoader`](/docs/integrations/document_loaders/airbyte)。
 
-This loader exposes the Zendesk Support connector as a document loader, allowing you to load various objects as documents.
+>[Airbyte](https://github.com/airbytehq/airbyte) 是一个用于从API、数据库和文件到仓库和数据湖的ELT管道的数据集成平台。它拥有最大的ELT连接器目录，支持数据仓库和数据库。
 
-## Installation
+该加载器将Zendesk Support连接器作为文档加载器暴露，允许您将各种对象加载为文档。
 
-First, you need to install the `airbyte-source-zendesk-support` python package.
+## 安装
 
+首先，您需要安装 `airbyte-source-zendesk-support` python 包。
 
 ```python
 %pip install --upgrade --quiet  airbyte-source-zendesk-support
 ```
 
-## Example
+## 示例
 
-Check out the [Airbyte documentation page](https://docs.airbyte.com/integrations/sources/zendesk-support/) for details about how to configure the reader.
-The JSON schema the config object should adhere to can be found on Github: [https://github.com/airbytehq/airbyte/blob/master/airbyte-integrations/connectors/source-zendesk-support/source_zendesk_support/spec.json](https://github.com/airbytehq/airbyte/blob/master/airbyte-integrations/connectors/source-zendesk-support/source_zendesk_support/spec.json).
+查看 [Airbyte 文档页面](https://docs.airbyte.com/integrations/sources/zendesk-support/) 获取有关如何配置读取器的详细信息。
+配置对象应遵循的 JSON 架构可以在 Github 上找到：[https://github.com/airbytehq/airbyte/blob/master/airbyte-integrations/connectors/source-zendesk-support/source_zendesk_support/spec.json](https://github.com/airbytehq/airbyte/blob/master/airbyte-integrations/connectors/source-zendesk-support/source_zendesk_support/spec.json)。
 
-The general shape looks like this:
+一般结构如下：
 ```python
 {
   "subdomain": "<your zendesk subdomain>",
@@ -37,7 +37,7 @@ The general shape looks like this:
 }
 ```
 
-By default all fields are stored as metadata in the documents and the text is set to an empty string. Construct the text of the document by transforming the documents returned by the reader.
+默认情况下，所有字段作为元数据存储在文档中，文本设置为空字符串。通过转换读取器返回的文档构建文档的文本。
 
 
 ```python
@@ -49,24 +49,24 @@ config = {
 
 loader = AirbyteZendeskSupportLoader(
     config=config, stream_name="tickets"
-)  # check the documentation linked above for a list of all streams
+)  # 检查上面链接的文档以获取所有流的列表
 ```
 
-Now you can load documents the usual way
+现在您可以以通常的方式加载文档
 
 
 ```python
 docs = loader.load()
 ```
 
-As `load` returns a list, it will block until all documents are loaded. To have better control over this process, you can also you the `lazy_load` method which returns an iterator instead:
+由于 `load` 返回一个列表，它将在所有文档加载完成之前阻塞。为了更好地控制此过程，您还可以使用 `lazy_load` 方法，该方法返回一个迭代器：
 
 
 ```python
 docs_iterator = loader.lazy_load()
 ```
 
-Keep in mind that by default the page content is empty and the metadata object contains all the information from the record. To create documents in a different, pass in a record_handler function when creating the loader:
+请记住，默认情况下页面内容为空，元数据对象包含记录中的所有信息。要以不同的方式创建文档，在创建加载器时传入一个 record_handler 函数：
 
 
 ```python
@@ -83,12 +83,11 @@ loader = AirbyteZendeskSupportLoader(
 docs = loader.load()
 ```
 
-## Incremental loads
+## 增量加载
 
-Some streams allow incremental loading, this means the source keeps track of synced records and won't load them again. This is useful for sources that have a high volume of data and are updated frequently.
+某些数据流允许增量加载，这意味着源会跟踪已同步的记录，并且不会再次加载它们。这对于数据量大且更新频繁的源非常有用。
 
-To take advantage of this, store the `last_state` property of the loader and pass it in when creating the loader again. This will ensure that only new records are loaded.
-
+为了利用这一点，存储加载器的 `last_state` 属性，并在再次创建加载器时传递它。这将确保只加载新记录。
 
 ```python
 last_state = loader.last_state  # store safely
@@ -100,8 +99,7 @@ incremental_loader = AirbyteZendeskSupportLoader(
 new_docs = incremental_loader.load()
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

@@ -1,31 +1,31 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/extraction_parse.ipynb
 ---
-# How to use prompting alone (no tool calling) to do extraction
 
-Tool calling features are not required for generating structured output from LLMs. LLMs that are able to follow prompt instructions well can be tasked with outputting information in a given format.
+# 如何单独使用提示（不调用工具）进行提取
 
-This approach relies on designing good prompts and then parsing the output of the LLMs to make them extract information well.
+生成结构化输出不需要调用工具的功能。能够很好地遵循提示指令的LLM可以被要求以给定格式输出信息。
 
-To extract data without tool-calling features: 
+这种方法依赖于设计良好的提示，然后解析LLM的输出，以便更好地提取信息。
 
-1. Instruct the LLM to generate text following an expected format (e.g., JSON with a certain schema);
-2. Use [output parsers](/docs/concepts#output-parsers) to structure the model response into a desired Python object.
+要在没有工具调用功能的情况下提取数据：
 
-First we select a LLM:
+1. 指示LLM生成遵循预期格式的文本（例如，具有特定模式的JSON）；
+2. 使用 [输出解析器](/docs/concepts#output-parsers) 将模型响应结构化为所需的Python对象。
+
+首先我们选择一个LLM：
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
 <ChatModelTabs customVarName="model" />
 
 :::tip
-This tutorial is meant to be simple, but generally should really include reference examples to squeeze out performance!
+本教程旨在简单，但通常应该确实包括参考示例以挖掘性能！
 :::
 
-## Using PydanticOutputParser
+## 使用 PydanticOutputParser
 
-The following example uses the built-in `PydanticOutputParser` to parse the output of a chat model.
-
+以下示例使用内置的 `PydanticOutputParser` 来解析聊天模型的输出。
 
 ```python
 from typing import List, Optional
@@ -36,42 +36,40 @@ from langchain_core.pydantic_v1 import BaseModel, Field, validator
 
 
 class Person(BaseModel):
-    """Information about a person."""
+    """关于一个人的信息。"""
 
-    name: str = Field(..., description="The name of the person")
+    name: str = Field(..., description="这个人的名字")
     height_in_meters: float = Field(
-        ..., description="The height of the person expressed in meters."
+        ..., description="这个人的身高以米为单位。"
     )
 
 
 class People(BaseModel):
-    """Identifying information about all people in a text."""
+    """文本中所有人的识别信息。"""
 
     people: List[Person]
 
 
-# Set up a parser
+# 设置解析器
 parser = PydanticOutputParser(pydantic_object=People)
 
-# Prompt
+# 提示
 prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "Answer the user query. Wrap the output in `json` tags\n{format_instructions}",
+            "回答用户查询。将输出包裹在 `json` 标签中\n{format_instructions}",
         ),
         ("human", "{query}"),
     ]
 ).partial(format_instructions=parser.get_format_instructions())
 ```
 
-Let's take a look at what information is sent to the model
-
+让我们看看发送给模型的信息
 
 ```python
 query = "Anna is 23 years old and she is 6 feet tall"
 ```
-
 
 ```python
 print(prompt.format_prompt(query=query).to_string())
@@ -89,36 +87,31 @@ Here is the output schema:
 ```
 Human: Anna is 23 years old and she is 6 feet tall
 ```
-Having defined our prompt, we simply chain together the prompt, model and output parser:
-
+定义完提示后，我们只需将提示、模型和输出解析器串联在一起：
 
 ```python
 chain = prompt | model | parser
 chain.invoke({"query": query})
 ```
 
-
-
 ```output
 People(people=[Person(name='Anna', height_in_meters=1.83)])
 ```
 
+查看相关的 [Langsmith trace](https://smith.langchain.com/public/92ed52a3-92b9-45af-a663-0a9c00e5e396/r)。
 
-Check out the associated [Langsmith trace](https://smith.langchain.com/public/92ed52a3-92b9-45af-a663-0a9c00e5e396/r).
+注意，模式在两个地方出现：
 
-Note that the schema shows up in two places: 
+1. 在提示中，通过 `parser.get_format_instructions()`；
+2. 在链中，以接收格式化的输出并将其结构化为 Python 对象（在这种情况下，是 Pydantic 对象 `People`）。
 
-1. In the prompt, via `parser.get_format_instructions()`;
-2. In the chain, to receive the formatted output and structure it into a Python object (in this case, the Pydantic object `People`).
+## 自定义解析
 
-## Custom Parsing
+如果需要，可以使用 `LangChain` 和 `LCEL` 轻松创建自定义提示和解析器。
 
-If desired, it's easy to create a custom prompt and parser with `LangChain` and `LCEL`.
+要创建自定义解析器，请定义一个函数，将模型的输出（通常是一个 [AIMessage](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessage.html)）解析为您选择的对象。
 
-To create a custom parser, define a function to parse the output from the model (typically an [AIMessage](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessage.html)) into an object of your choice.
-
-See below for a simple implementation of a JSON parser.
-
+请参见下面的 JSON 解析器的简单实现。
 
 ```python
 import json
@@ -132,56 +125,55 @@ from langchain_core.pydantic_v1 import BaseModel, Field, validator
 
 
 class Person(BaseModel):
-    """Information about a person."""
+    """关于一个人的信息。"""
 
-    name: str = Field(..., description="The name of the person")
+    name: str = Field(..., description="这个人的名字")
     height_in_meters: float = Field(
-        ..., description="The height of the person expressed in meters."
+        ..., description="这个人的身高，以米为单位。"
     )
 
 
 class People(BaseModel):
-    """Identifying information about all people in a text."""
+    """文本中所有人的身份信息。"""
 
     people: List[Person]
 
 
-# Prompt
+# 提示
 prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "Answer the user query. Output your answer as JSON that  "
-            "matches the given schema: ```json\n{schema}\n```. "
-            "Make sure to wrap the answer in ```json and ``` tags",
+            "回答用户查询。将您的答案输出为与给定架构匹配的 JSON：```json\n{schema}\n```. "
+            "确保将答案用 ```json 和 ``` 标签包裹起来",
         ),
         ("human", "{query}"),
     ]
 ).partial(schema=People.schema())
 
 
-# Custom parser
+# 自定义解析器
 def extract_json(message: AIMessage) -> List[dict]:
-    """Extracts JSON content from a string where JSON is embedded between ```json and ``` tags.
+    """从字符串中提取 JSON 内容，该字符串中 JSON 嵌入在 ```json 和 ``` 标签之间。
 
-    Parameters:
-        text (str): The text containing the JSON content.
+    参数：
+        text (str): 包含 JSON 内容的文本。
 
-    Returns:
-        list: A list of extracted JSON strings.
+    返回：
+        list: 提取的 JSON 字符串列表。
     """
     text = message.content
-    # Define the regular expression pattern to match JSON blocks
+    # 定义正则表达式模式以匹配 JSON 块
     pattern = r"```json(.*?)```"
 
-    # Find all non-overlapping matches of the pattern in the string
+    # 在字符串中查找模式的所有不重叠匹配项
     matches = re.findall(pattern, text, re.DOTALL)
 
-    # Return the list of matched JSON strings, stripping any leading or trailing whitespace
+    # 返回匹配的 JSON 字符串列表，去除任何前导或尾随空格
     try:
         return [json.loads(match.strip()) for match in matches]
     except Exception:
-        raise ValueError(f"Failed to parse: {message}")
+        raise ValueError(f"解析失败: {message}")
 ```
 
 
@@ -207,8 +199,6 @@ chain.invoke({"query": query})
 [{'people': [{'name': 'Anna', 'height_in_meters': 1.83}]}]
 ```
 
+## 其他库
 
-## Other Libraries
-
-If you're looking at extracting using a parsing approach, check out the [Kor](https://eyurtsev.github.io/kor/) library. It's written by one of the `LangChain` maintainers and it
-helps to craft a prompt that takes examples into account, allows controlling formats (e.g., JSON or CSV) and expresses the schema in TypeScript. It seems to work pretty!
+如果您正在考虑使用解析方法进行提取，请查看 [Kor](https://eyurtsev.github.io/kor/) 库。它是由 `LangChain` 的维护者之一编写的，帮助构建一个考虑示例的提示，允许控制格式（例如，JSON 或 CSV），并在 TypeScript 中表达模式。它似乎工作得很好！

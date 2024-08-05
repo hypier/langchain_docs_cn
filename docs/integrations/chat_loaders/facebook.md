@@ -1,29 +1,27 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat_loaders/facebook.ipynb
 ---
+
 # Facebook Messenger
 
-This notebook shows how to load data from Facebook in a format you can fine-tune on. The overall steps are:
+此笔记本展示了如何以可微调的格式从 Facebook 加载数据。总体步骤如下：
 
-1. Download your messenger data to disk.
-2. Create the Chat Loader and call `loader.load()` (or `loader.lazy_load()`) to perform the conversion.
-3. Optionally use `merge_chat_runs` to combine message from the same sender in sequence, and/or `map_ai_messages` to convert messages from the specified sender to the "AIMessage" class. Once you've done this, call `convert_messages_for_finetuning` to prepare your data for fine-tuning.
+1. 将您的 Messenger 数据下载到磁盘。
+2. 创建聊天加载器并调用 `loader.load()`（或 `loader.lazy_load()`）以执行转换。
+3. 可选地使用 `merge_chat_runs` 将来自同一发送者的消息按顺序合并，和/或使用 `map_ai_messages` 将指定发送者的消息转换为 "AIMessage" 类。完成后，调用 `convert_messages_for_finetuning` 准备您的数据以进行微调。
 
+完成上述步骤后，您可以微调您的模型。为此，您需要完成以下步骤：
 
-Once this has been done, you can fine-tune your model. To do so you would complete the following steps:
+4. 将您的消息上传到 OpenAI 并运行微调作业。
+6. 在您的 LangChain 应用中使用生成的模型！
 
-4. Upload your messages to OpenAI and run a fine-tuning job.
-6. Use the resulting model in your LangChain app!
+让我们开始吧。
 
+## 1. 下载数据
 
-Let's begin.
+要下载自己的消息数据，请按照[这里](https://www.zapptales.com/en/download-facebook-messenger-chat-history-how-to/)的说明进行操作。重要提示 - 确保以 JSON 格式下载（而不是 HTML）。
 
-
-## 1. Download Data
-
-To download your own messenger data, following instructions [here](https://www.zapptales.com/en/download-facebook-messenger-chat-history-how-to/). IMPORTANT - make sure to download them in JSON format (not HTML).
-
-We are hosting an example dump at [this google drive link](https://drive.google.com/file/d/1rh1s1o2i7B-Sk1v9o8KNgivLVGwJ-osV/view?usp=sharing) that we will use in this walkthrough.
+我们在[这个谷歌云盘链接](https://drive.google.com/file/d/1rh1s1o2i7B-Sk1v9o8KNgivLVGwJ-osV/view?usp=sharing)上托管了一个示例数据包，我们将在本指南中使用它。
 
 
 ```python
@@ -63,15 +61,14 @@ download_and_unzip(url)
 File file.zip downloaded.
 File file.zip has been unzipped.
 ```
-## 2. Create Chat Loader
 
-We have 2 different `FacebookMessengerChatLoader` classes, one for an entire directory of chats, and one to load individual files. We
+## 2. 创建聊天加载器
 
+我们有两个不同的 `FacebookMessengerChatLoader` 类，一个用于整个聊天目录，另一个用于加载单个文件。我们
 
 ```python
 directory_path = "./hogwarts"
 ```
-
 
 ```python
 from langchain_community.chat_loaders.facebook_messenger import (
@@ -80,20 +77,16 @@ from langchain_community.chat_loaders.facebook_messenger import (
 )
 ```
 
-
 ```python
 loader = SingleFileFacebookMessengerChatLoader(
     path="./hogwarts/inbox/HermioneGranger/messages_Hermione_Granger.json",
 )
 ```
 
-
 ```python
 chat_session = loader.load()[0]
 chat_session["messages"][:3]
 ```
-
-
 
 ```output
 [HumanMessage(content="Hi Hermione! How's your summer going so far?", additional_kwargs={'sender': 'Harry Potter'}),
@@ -101,33 +94,26 @@ chat_session["messages"][:3]
  HumanMessage(content="I miss you all too. The Dursleys are being their usual unpleasant selves but I'm getting by. At least I can practice some spells in my room without them knowing. Let me know if you find anything good in your researching!", additional_kwargs={'sender': 'Harry Potter'})]
 ```
 
-
-
 ```python
 loader = FolderFacebookMessengerChatLoader(
     path="./hogwarts",
 )
 ```
 
-
 ```python
 chat_sessions = loader.load()
 len(chat_sessions)
 ```
 
-
-
 ```output
 9
 ```
 
+## 3. 准备微调
 
-## 3. Prepare for fine-tuning
+调用 `load()` 返回我们可以提取的所有聊天消息作为人类消息。在与聊天机器人对话时，谈话通常遵循相对真实对话更严格的交替对话模式。
 
-Calling `load()` returns all the chat messages we could extract as human messages. When conversing with chat bots, conversations typically follow a more strict alternating dialogue pattern relative to real conversations. 
-
-You can choose to merge message "runs" (consecutive messages from the same sender) and select a sender to represent the "AI". The fine-tuned LLM will learn to generate these AI messages.
-
+您可以选择合并消息“运行”（来自同一发送者的连续消息），并选择一个发送者来代表“AI”。微调后的 LLM 将学习生成这些 AI 消息。
 
 ```python
 from langchain_community.chat_loaders.utils import (
@@ -136,20 +122,16 @@ from langchain_community.chat_loaders.utils import (
 )
 ```
 
-
 ```python
 merged_sessions = merge_chat_runs(chat_sessions)
 alternating_sessions = list(map_ai_messages(merged_sessions, "Harry Potter"))
 ```
 
-
 ```python
-# Now all of Harry Potter's messages will take the AI message class
-# which maps to the 'assistant' role in OpenAI's training format
+# 现在所有哈利·波特的消息将采用 AI 消息类
+# 该类映射到 OpenAI 训练格式中的 'assistant' 角色
 alternating_sessions[0]["messages"][:3]
 ```
-
-
 
 ```output
 [AIMessage(content="Professor Snape, I was hoping I could speak with you for a moment about something that's been concerning me lately.", additional_kwargs={'sender': 'Harry Potter'}),
@@ -157,14 +139,11 @@ alternating_sessions[0]["messages"][:3]
  AIMessage(content="I apologize for the interruption, sir. I'll be brief. I've noticed some strange activity around the school grounds at night. I saw a cloaked figure lurking near the Forbidden Forest last night. I'm worried someone may be plotting something sinister.", additional_kwargs={'sender': 'Harry Potter'})]
 ```
 
-
-#### Now we can convert to OpenAI format dictionaries
-
+#### 现在我们可以转换为 OpenAI 格式字典
 
 ```python
 from langchain_community.adapters.openai import convert_messages_for_finetuning
 ```
-
 
 ```python
 training_data = convert_messages_for_finetuning(alternating_sessions)
@@ -178,8 +157,6 @@ Prepared 9 dialogues for training
 training_data[0][:3]
 ```
 
-
-
 ```output
 [{'role': 'assistant',
   'content': "Professor Snape, I was hoping I could speak with you for a moment about something that's been concerning me lately."},
@@ -189,16 +166,13 @@ training_data[0][:3]
   'content': "I apologize for the interruption, sir. I'll be brief. I've noticed some strange activity around the school grounds at night. I saw a cloaked figure lurking near the Forbidden Forest last night. I'm worried someone may be plotting something sinister."}]
 ```
 
+OpenAI 当前要求微调作业至少有 10 个训练示例，尽管他们建议大多数任务在 50-100 之间。由于我们只有 9 个聊天会话，我们可以将它们细分（可选地有一些重叠），使每个训练示例由整个对话的一部分组成。
 
-OpenAI currently requires at least 10 training examples for a fine-tuning job, though they recommend between 50-100 for most tasks. Since we only have 9 chat sessions, we can subdivide them (optionally with some overlap) so that each training example is comprised of a portion of a whole conversation.
-
-Facebook chat sessions (1 per person) often span multiple days and conversations,
-so the long-range dependencies may not be that important to model anyhow.
-
+Facebook 聊天会话（每人 1 个）通常跨越多天和多次对话，因此长距离依赖性可能并不那么重要。
 
 ```python
-# Our chat is alternating, we will make each datapoint a group of 8 messages,
-# with 2 messages overlapping
+# 我们的聊天是交替的，我们将每个数据点设置为 8 条消息的组，
+# 其中 2 条消息重叠
 chunk_size = 8
 overlap = 2
 
@@ -211,17 +185,13 @@ training_examples = [
 len(training_examples)
 ```
 
-
-
 ```output
 100
 ```
 
+## 4. 微调模型
 
-## 4. Fine-tune the model
-
-It's time to fine-tune the model. Make sure you have `openai` installed
-and have set your `OPENAI_API_KEY` appropriately
+现在是微调模型的时候了。确保你已经安装了 `openai` 并且正确设置了 `OPENAI_API_KEY`
 
 
 ```python
@@ -257,7 +227,7 @@ print(f"File {training_file.id} ready after {time.time() - start_time:.2f} secon
 ```output
 File file-ULumAXLEFw3vB6bb9uy6DNVC ready after 0.00 seconds.
 ```
-With the file ready, it's time to kick off a training job.
+文件准备好后，是时候启动训练任务了。
 
 
 ```python
@@ -267,7 +237,7 @@ job = openai.fine_tuning.jobs.create(
 )
 ```
 
-Grab a cup of tea while your model is being prepared. This may take some time!
+在模型准备的过程中，喝杯茶吧。这可能需要一些时间！
 
 
 ```python
@@ -289,10 +259,10 @@ print(job.fine_tuned_model)
 ```output
 ft:gpt-3.5-turbo-0613:personal::8QnAzWMr
 ```
-## 5. Use in LangChain
 
-You can use the resulting model ID directly the `ChatOpenAI` model class.
+## 5. 在 LangChain 中的使用
 
+您可以直接在 `ChatOpenAI` 模型类中使用生成的模型 ID。
 
 ```python
 from langchain_openai import ChatOpenAI
@@ -302,7 +272,6 @@ model = ChatOpenAI(
     temperature=1,
 )
 ```
-
 
 ```python
 from langchain_core.output_parsers import StrOutputParser
@@ -316,7 +285,6 @@ prompt = ChatPromptTemplate.from_messages(
 
 chain = prompt | model | StrOutputParser()
 ```
-
 
 ```python
 for tok in chain.stream({"input": "What classes are you taking?"}):

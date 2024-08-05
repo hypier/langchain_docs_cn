@@ -1,51 +1,52 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/azure_openai.ipynb
 ---
+
 # Azure OpenAI
 
 :::caution
-You are currently on a page documenting the use of Azure OpenAI [text completion models](/docs/concepts/#llms). The latest and most popular Azure OpenAI models are [chat completion models](/docs/concepts/#chat-models).
+您当前正在查看关于使用 Azure OpenAI [文本完成模型](/docs/concepts/#llms) 的页面。最新和最受欢迎的 Azure OpenAI 模型是 [聊天完成模型](/docs/concepts/#chat-models)。
 
-Unless you are specifically using `gpt-3.5-turbo-instruct`, you are probably looking for [this page instead](/docs/integrations/chat/azure_chat_openai/).
+除非您正在特别使用 `gpt-3.5-turbo-instruct`，否则您可能更想查看 [此页面](/docs/integrations/chat/azure_chat_openai/)。
 :::
 
-This page goes over how to use LangChain with [Azure OpenAI](https://aka.ms/azure-openai).
+本页面介绍如何将 LangChain 与 [Azure OpenAI](https://aka.ms/azure-openai) 一起使用。
 
-The Azure OpenAI API is compatible with OpenAI's API.  The `openai` Python package makes it easy to use both OpenAI and Azure OpenAI.  You can call Azure OpenAI the same way you call OpenAI with the exceptions noted below.
+Azure OpenAI API 与 OpenAI 的 API 兼容。`openai` Python 包使得同时使用 OpenAI 和 Azure OpenAI 变得简单。您可以以与调用 OpenAI 相同的方式调用 Azure OpenAI，以下是注意事项。
 
-## API configuration
-You can configure the `openai` package to use Azure OpenAI using environment variables.  The following is for `bash`:
+## API 配置
+您可以通过环境变量配置 `openai` 包以使用 Azure OpenAI。以下是针对 `bash` 的配置：
 
 ```bash
-# The API version you want to use: set this to `2023-12-01-preview` for the released version.
+# 您想要使用的 API 版本：将其设置为 `2023-12-01-preview` 以使用发布版本。
 export OPENAI_API_VERSION=2023-12-01-preview
-# The base URL for your Azure OpenAI resource.  You can find this in the Azure portal under your Azure OpenAI resource.
+# 您的 Azure OpenAI 资源的基础 URL。您可以在 Azure 门户的 Azure OpenAI 资源下找到此信息。
 export AZURE_OPENAI_ENDPOINT=https://your-resource-name.openai.azure.com
-# The API key for your Azure OpenAI resource.  You can find this in the Azure portal under your Azure OpenAI resource.
+# 您的 Azure OpenAI 资源的 API 密钥。您可以在 Azure 门户的 Azure OpenAI 资源下找到此信息。
 export AZURE_OPENAI_API_KEY=<your Azure OpenAI API key>
 ```
 
-Alternatively, you can configure the API right within your running Python environment:
+或者，您可以直接在运行的 Python 环境中配置 API：
 
 ```python
 import os
 os.environ["OPENAI_API_VERSION"] = "2023-12-01-preview"
 ```
 
-## Azure Active Directory Authentication
-There are two ways you can authenticate to Azure OpenAI:
-- API Key
+## Azure Active Directory 认证
+您可以通过两种方式对 Azure OpenAI 进行认证：
+- API 密钥
 - Azure Active Directory (AAD)
 
-Using the API key is the easiest way to get started. You can find your API key in the Azure portal under your Azure OpenAI resource.
+使用 API 密钥是开始的最简单方法。您可以在 Azure 门户的 Azure OpenAI 资源下找到您的 API 密钥。
 
-However, if you have complex security requirements - you may want to use Azure Active Directory. You can find more information on how to use AAD with Azure OpenAI [here](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/managed-identity).
+但是，如果您有复杂的安全需求，您可能希望使用 Azure Active Directory。您可以在 [这里](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/managed-identity) 找到有关如何将 AAD 与 Azure OpenAI 一起使用的更多信息。
 
-If you are developing locally, you will need to have the Azure CLI installed and be logged in. You can install the Azure CLI [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli). Then, run `az login` to log in.
+如果您在本地开发，您需要安装 Azure CLI 并登录。您可以在 [这里](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) 安装 Azure CLI。然后，运行 `az login` 进行登录。
 
-Add a role an Azure role assignment `Cognitive Services OpenAI User` scoped to your Azure OpenAI resource. This will allow you to get a token from AAD to use with Azure OpenAI. You can grant this role assignment to a user, group, service principal, or managed identity. For more information about Azure OpenAI RBAC roles see [here](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/role-based-access-control).
+为 Azure OpenAI 资源添加一个角色的 Azure 角色分配 `Cognitive Services OpenAI User`。这将允许您从 AAD 获取一个令牌以用于 Azure OpenAI。您可以将此角色分配授予用户、组、服务主体或托管身份。有关 Azure OpenAI RBAC 角色的更多信息，请参见 [这里](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/role-based-access-control)。
 
-To use AAD in Python with LangChain, install the `azure-identity` package. Then, set `OPENAI_API_TYPE` to `azure_ad`. Next, use the `DefaultAzureCredential` class to get a token from AAD by calling `get_token` as shown below. Finally, set the `OPENAI_API_KEY` environment variable to the token value.
+要在 Python 中使用 AAD 和 LangChain，请安装 `azure-identity` 包。然后，将 `OPENAI_API_TYPE` 设置为 `azure_ad`。接下来，使用 `DefaultAzureCredential` 类通过调用 `get_token` 从 AAD 获取令牌，如下所示。最后，将 `OPENAI_API_KEY` 环境变量设置为令牌值。
 
 ```python
 import os
@@ -60,7 +61,7 @@ os.environ["OPENAI_API_TYPE"] = "azure_ad"
 os.environ["OPENAI_API_KEY"] = credential.get_token("https://cognitiveservices.azure.com/.default").token
 ```
 
-The `DefaultAzureCredential` class is an easy way to get started with AAD authentication. You can also customize the credential chain if necessary. In the example shown below, we first try Managed Identity, then fall back to the Azure CLI. This is useful if you are running your code in Azure, but want to develop locally.
+`DefaultAzureCredential` 类是开始使用 AAD 认证的简单方法。如果需要，您还可以自定义凭据链。在下面的示例中，我们首先尝试使用托管身份，然后回退到 Azure CLI。这在您在 Azure 中运行代码但希望在本地开发时非常有用。
 
 ```python
 from azure.identity import ChainedTokenCredential, ManagedIdentityCredential, AzureCliCredential
@@ -71,12 +72,12 @@ credential = ChainedTokenCredential(
 )
 ```
 
-## Deployments
-With Azure OpenAI, you set up your own deployments of the common GPT-3 and Codex models.  When calling the API, you need to specify the deployment you want to use.
+## 部署
+使用 Azure OpenAI，您可以设置自己的常见 GPT-3 和 Codex 模型的部署。在调用 API 时，您需要指定要使用的部署。
 
-_**Note**: These docs are for the Azure text completion models. Models like GPT-4 are chat models. They have a slightly different interface, and can be accessed via the `AzureChatOpenAI` class. For docs on Azure chat see [Azure Chat OpenAI documentation](/docs/integrations/chat/azure_chat_openai)._
+_**注意**：这些文档适用于 Azure 文本补全模型。像 GPT-4 这样的模型是聊天模型。它们具有稍微不同的接口，可以通过 `AzureChatOpenAI` 类访问。有关 Azure 聊天的文档，请参见 [Azure Chat OpenAI documentation](/docs/integrations/chat/azure_chat_openai)。_
 
-Let's say your deployment name is `gpt-35-turbo-instruct-prod`.  In the `openai` Python API, you can specify this deployment with the `engine` parameter.  For example:
+假设您的部署名称是 `gpt-35-turbo-instruct-prod`。在 `openai` Python API 中，您可以使用 `engine` 参数指定此部署。例如：
 
 ```python
 import openai
@@ -108,14 +109,14 @@ os.environ["AZURE_OPENAI_API_KEY"] = "..."
 
 
 ```python
-# Import Azure OpenAI
+# 导入 Azure OpenAI
 from langchain_openai import AzureOpenAI
 ```
 
 
 ```python
-# Create an instance of Azure OpenAI
-# Replace the deployment name with your own
+# 创建 Azure OpenAI 的实例
+# 将部署名称替换为您自己的
 llm = AzureOpenAI(
     deployment_name="gpt-35-turbo-instruct-0914",
 )
@@ -123,7 +124,7 @@ llm = AzureOpenAI(
 
 
 ```python
-# Run the LLM
+# 运行 LLM
 llm.invoke("Tell me a joke")
 ```
 
@@ -134,7 +135,7 @@ llm.invoke("Tell me a joke")
 ```
 
 
-We can also print the LLM and see its custom print.
+我们也可以打印 LLM 并查看其自定义打印内容。
 
 
 ```python
@@ -145,7 +146,7 @@ print(llm)
 Params: {'deployment_name': 'gpt-35-turbo-instruct-0914', 'model_name': 'gpt-3.5-turbo-instruct', 'temperature': 0.7, 'top_p': 1, 'frequency_penalty': 0, 'presence_penalty': 0, 'n': 1, 'logit_bias': {}, 'max_tokens': 256}
 ```
 
-## Related
+## 相关
 
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

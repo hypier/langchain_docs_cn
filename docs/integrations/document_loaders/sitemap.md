@@ -1,30 +1,27 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/sitemap.ipynb
 ---
-# Sitemap
 
-Extends from the `WebBaseLoader`, `SitemapLoader` loads a sitemap from a given URL, and then scrape and load all pages in the sitemap, returning each page as a Document.
+# 网站地图
 
-The scraping is done concurrently.  There are reasonable limits to concurrent requests, defaulting to 2 per second.  If you aren't concerned about being a good citizen, or you control the scrapped server, or don't care about load. Note, while this will speed up the scraping process, but it may cause the server to block you.  Be careful!
+扩展自 `WebBaseLoader`，`SitemapLoader` 从给定的 URL 加载网站地图，然后抓取并加载网站地图中的所有页面，返回每个页面作为文档。
 
+抓取是并发进行的。并发请求有合理的限制，默认每秒 2 次。如果你不担心成为一个好公民，或者你控制被抓取的服务器，或者不在乎负载。请注意，虽然这会加快抓取过程，但可能会导致服务器封锁你。请小心！
 
 ```python
 %pip install --upgrade --quiet  nest_asyncio
 ```
 
-
 ```python
-# fixes a bug with asyncio and jupyter
+# 修复 asyncio 和 jupyter 的一个 bug
 import nest_asyncio
 
 nest_asyncio.apply()
 ```
 
-
 ```python
 from langchain_community.document_loaders.sitemap import SitemapLoader
 ```
-
 
 ```python
 sitemap_loader = SitemapLoader(web_path="https://api.python.langchain.com/sitemap.xml")
@@ -32,31 +29,25 @@ sitemap_loader = SitemapLoader(web_path="https://api.python.langchain.com/sitema
 docs = sitemap_loader.load()
 ```
 
-You can change the `requests_per_second` parameter to increase the max concurrent requests. and use `requests_kwargs` to pass kwargs when send requests.
-
+你可以更改 `requests_per_second` 参数以增加最大并发请求，并使用 `requests_kwargs` 在发送请求时传递 kwargs。
 
 ```python
 sitemap_loader.requests_per_second = 2
-# Optional: avoid `[SSL: CERTIFICATE_VERIFY_FAILED]` issue
+# 可选：避免 `[SSL: CERTIFICATE_VERIFY_FAILED]` 问题
 sitemap_loader.requests_kwargs = {"verify": False}
 ```
-
 
 ```python
 docs[0]
 ```
 
-
-
 ```output
 Document(page_content='\n\n\n\n\n\n\n\n\n\nLangChain Python API Reference Documentation.\n\n\nYou will be automatically redirected to the new location of this page.\n\n', metadata={'source': 'https://api.python.langchain.com/en/stable/', 'loc': 'https://api.python.langchain.com/en/stable/', 'lastmod': '2024-02-09T01:10:49.422114+00:00', 'changefreq': 'weekly', 'priority': '1'})
 ```
 
+## 过滤网站地图 URL
 
-## Filtering sitemap URLs
-
-Sitemaps can be massive files, with thousands of URLs.  Often you don't need every single one of them.  You can filter the URLs by passing a list of strings or regex patterns to the `filter_urls` parameter.  Only URLs that match one of the patterns will be loaded.
-
+网站地图可能是庞大的文件，包含成千上万个 URL。通常，您并不需要每一个 URL。您可以通过将字符串列表或正则表达式模式传递给 `filter_urls` 参数来过滤 URL。只有与其中一个模式匹配的 URL 会被加载。
 
 ```python
 loader = SitemapLoader(
@@ -66,31 +57,25 @@ loader = SitemapLoader(
 documents = loader.load()
 ```
 
-
 ```python
 documents[0]
 ```
-
-
 
 ```output
 Document(page_content='\n\n\n\n\n\n\n\n\n\nLangChain Python API Reference Documentation.\n\n\nYou will be automatically redirected to the new location of this page.\n\n', metadata={'source': 'https://api.python.langchain.com/en/latest/', 'loc': 'https://api.python.langchain.com/en/latest/', 'lastmod': '2024-02-12T05:26:10.971077+00:00', 'changefreq': 'daily', 'priority': '0.9'})
 ```
 
+## 添加自定义抓取规则
 
-## Add custom scraping rules
+`SitemapLoader` 使用 `beautifulsoup4` 进行抓取过程，并默认抓取页面上的每个元素。`SitemapLoader` 构造函数接受一个自定义抓取函数。此功能可以帮助您根据特定需求定制抓取过程；例如，您可能希望避免抓取标题或导航元素。
 
-The `SitemapLoader` uses `beautifulsoup4` for the scraping process, and it scrapes every element on the page by default. The `SitemapLoader` constructor accepts a custom scraping function. This feature can be helpful to tailor the scraping process to your specific needs; for example, you might want to avoid scraping headers or navigation elements.
+以下示例展示了如何开发和使用自定义函数以避免导航和标题元素。
 
- The following example shows how to develop and use a custom function to avoid navigation and header elements.
-
-Import the `beautifulsoup4` library and define the custom function.
-
+导入 `beautifulsoup4` 库并定义自定义函数。
 
 ```python
 pip install beautifulsoup4
 ```
-
 
 ```python
 from bs4 import BeautifulSoup
@@ -108,8 +93,7 @@ def remove_nav_and_header_elements(content: BeautifulSoup) -> str:
     return str(content.get_text())
 ```
 
-Add your custom function to the `SitemapLoader` object.
-
+将您的自定义函数添加到 `SitemapLoader` 对象中。
 
 ```python
 loader = SitemapLoader(
@@ -119,10 +103,9 @@ loader = SitemapLoader(
 )
 ```
 
-## Local Sitemap
+## 本地网站地图
 
-The sitemap loader can also be used to load local files.
-
+网站地图加载器也可以用于加载本地文件。
 
 ```python
 sitemap_loader = SitemapLoader(web_path="example_data/sitemap.xml", is_local=True)
@@ -130,8 +113,7 @@ sitemap_loader = SitemapLoader(web_path="example_data/sitemap.xml", is_local=Tru
 docs = sitemap_loader.load()
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

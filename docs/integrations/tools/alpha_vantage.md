@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/alpha_vantage.ipynb
 ---
+
 # Alpha Vantage
 
->[Alpha Vantage](https://www.alphavantage.co) Alpha Vantage provides realtime and historical financial market data through a set of powerful and developer-friendly data APIs and spreadsheets. 
+>[Alpha Vantage](https://www.alphavantage.co) Alpha Vantage 提供实时和历史金融市场数据，通过一套强大且开发者友好的数据 API 和电子表格。
 
-Use the ``AlphaVantageAPIWrapper`` to get currency exchange rates.
+使用 ``AlphaVantageAPIWrapper`` 获取货币汇率。
 
 
 ```python
@@ -41,21 +42,21 @@ alpha_vantage._get_exchange_rate("USD", "JPY")
 ```
 
 
-The `_get_time_series_daily` method returns the date, daily open, daily high, daily low, daily close, and daily volume of the global equity specified, covering the 100 latest data points.
+`_get_time_series_daily` 方法返回指定全球股票的日期、每日开盘、每日最高、每日最低、每日收盘和每日成交量，涵盖最新的 100 个数据点。
 
 
 ```python
 alpha_vantage._get_time_series_daily("IBM")
 ```
 
-The `_get_time_series_weekly` method returns the last trading day of the week, weekly open, weekly high, weekly low, weekly close, and weekly volume of the global equity specified, covering 20+ years of historical data.
+`_get_time_series_weekly` 方法返回指定全球股票的最后一个交易日、每周开盘、每周最高、每周最低、每周收盘和每周成交量，涵盖超过 20 年的历史数据。
 
 
 ```python
 alpha_vantage._get_time_series_weekly("IBM")
 ```
 
-The `_get_quote_endpoint` method is a lightweight alternative to the time series APIs and returns the latest price and volume info for the specified symbol.
+`_get_quote_endpoint` 方法是时间序列 API 的轻量级替代方案，返回指定符号的最新价格和成交量信息。
 
 
 ```python
@@ -78,30 +79,30 @@ alpha_vantage._get_quote_endpoint("IBM")
 ```
 
 
-The `search_symbol` method returns a list of symbols and the matching company information based on the text entered.
+`search_symbol` 方法根据输入的文本返回符号和匹配的公司信息列表。
 
 
 ```python
 alpha_vantage.search_symbols("IB")
 ```
 
-The `_get_market_news_sentiment` method returns live and historical market news sentiment for a given asset.
+`_get_market_news_sentiment` 方法返回给定资产的实时和历史市场新闻情绪。
 
 
 ```python
 alpha_vantage._get_market_news_sentiment("IBM")
 ```
 
-The `_get_top_gainers_losers` method returns the top 20 gainers, losers and most active stocks in the US market.
+`_get_top_gainers_losers` 方法返回美国市场的前 20 名涨幅股、跌幅股和最活跃股票。
 
 
 ```python
 alpha_vantage._get_top_gainers_losers()
 ```
 
-The `run` method of the wrapper takes the following parameters: from_currency, to_currency. 
+包装器的 `run` 方法接受以下参数：from_currency, to_currency。
 
-It Gets the currency exchange rates for the given currency pair.
+它获取给定货币对的货币汇率。
 
 
 ```python
@@ -122,9 +123,7 @@ alpha_vantage.run("USD", "JPY")
  '9. Ask Price': '148.20420000'}
 ```
 
+## 相关
 
-
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

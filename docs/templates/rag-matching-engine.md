@@ -1,17 +1,16 @@
-
 # rag-matching-engine
 
-This template performs RAG using Google Cloud Platform's Vertex AI with the matching engine.
+此模板使用 Google Cloud Platform 的 Vertex AI 和匹配引擎执行 RAG。
 
-It will utilize a previously created index to retrieve relevant documents or contexts based on user-provided questions. 
+它将利用先前创建的索引，根据用户提供的问题检索相关文档或上下文。
 
-## Environment Setup
+## 环境设置
 
-An index should be created before running the code. 
+在运行代码之前，应创建一个索引。
 
-The process to create this index can be found [here](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/language/use-cases/document-qa/question_answering_documents_langchain_matching_engine.ipynb).
+创建此索引的过程可以在[这里](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/language/use-cases/document-qa/question_answering_documents_langchain_matching_engine.ipynb)找到。
 
-Environment variables for Vertex should be set:
+应设置 Vertex 的环境变量：
 ```
 PROJECT_ID
 ME_REGION
@@ -20,57 +19,57 @@ ME_INDEX_ID
 ME_ENDPOINT_ID
 ```
 
-## Usage
+## 使用方法
 
-To use this package, you should first have the LangChain CLI installed:
+要使用此包，您应该首先安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将其作为唯一包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package rag-matching-engine
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，只需运行：
 
 ```shell
 langchain app add rag-matching-engine
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 ```python
 from rag_matching_engine import chain as rag_matching_engine_chain
 
 add_routes(app, rag_matching_engine_chain, path="/rag-matching-engine")
 ```
 
-(Optional) Let's now configure LangSmith. 
-LangSmith will help us trace, monitor and debug LangChain applications. 
-You can sign up for LangSmith [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
+（可选）现在让我们配置 LangSmith。 
+LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。 
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。 
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接通过以下方式启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server is running locally at 
+这将启动 FastAPI 应用程序，服务器在本地运行，地址为 
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/rag-matching-engine/playground](http://127.0.0.1:8000/rag-matching-engine/playground)  
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板
+我们可以在 [http://127.0.0.1:8000/rag-matching-engine/playground](http://127.0.0.1:8000/rag-matching-engine/playground) 访问游乐场  
 
-We can access the template from code with:
+我们可以通过以下代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable
@@ -78,4 +77,4 @@ from langserve.client import RemoteRunnable
 runnable = RemoteRunnable("http://localhost:8000/rag-matching-engine")
 ```
 
-For more details on how to connect to the template, refer to the Jupyter notebook `rag_matching_engine`.
+有关如何连接到模板的更多详细信息，请参考 Jupyter notebook `rag_matching_engine`。

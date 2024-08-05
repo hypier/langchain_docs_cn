@@ -1,21 +1,21 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/asknews.ipynb
 ---
+
 # AskNews
 
-> [AskNews](https://asknews.app) infuses any LLM with the latest global news (or historical news), using a single natural language query. Specifically, AskNews is enriching over 300k articles per day by translating, summarizing, extracting entities, and indexing them into hot and cold vector databases. AskNews puts these vector databases on a low-latency endpoint for you. When you query AskNews, you get back a prompt-optimized string that contains all the most pertinent enrichments (e.g. entities, classifications, translation, summarization). This means that you do not need to manage your own news RAG, and you do not need to worry about how to properly convey news information in a condensed way to your LLM.
-> AskNews is also committed to transparency, which is why our coverage is monitored and diversified across hundreds of countries, 13 languages, and 50 thousand sources. If you'd like to track our source coverage, you can visit our [transparency dashboard](https://asknews.app/en/transparency).
+> [AskNews](https://asknews.app) 通过单一自然语言查询为任何 LLM 注入最新的全球新闻（或历史新闻）。具体来说，AskNews 每天丰富超过 30 万篇文章，通过翻译、总结、提取实体并将其索引到热和冷向量数据库中。AskNews 将这些向量数据库放置在低延迟的端点供您使用。当您查询 AskNews 时，您将获得一个经过优化的字符串，其中包含所有最相关的丰富信息（例如：实体、分类、翻译、总结）。这意味着您不需要管理自己的新闻 RAG，也不需要担心如何以简洁的方式向您的 LLM 传达新闻信息。
+> AskNews 还致力于透明度，这就是为什么我们的覆盖范围在数百个国家、13 种语言和 5 万个来源之间进行监控和多样化。如果您想跟踪我们的来源覆盖情况，可以访问我们的 [透明度仪表板](https://asknews.app/en/transparency)。
 
-## Setup
+## 设置
 
-The integration lives in the `langchain-community` package. We also need to install the `asknews` package itself.
+该集成位于 `langchain-community` 包中。我们还需要安装 `asknews` 包本身。
 
 ```bash
 pip install -U langchain-community asknews
 ```
 
-We also need to set our AskNews API credentials, which can be generated at the [AskNews console](https://my.asknews.app).
-
+我们还需要设置我们的 AskNews API 凭证，这些凭证可以在 [AskNews 控制台](https://my.asknews.app) 上生成。
 
 ```python
 import getpass
@@ -25,15 +25,14 @@ os.environ["ASKNEWS_CLIENT_ID"] = getpass.getpass()
 os.environ["ASKNEWS_CLIENT_SECRET"] = getpass.getpass()
 ```
 
-It's also helpful (but not needed) to set up [LangSmith](https://smith.langchain.com/) for best-in-class observability
-
+设置 [LangSmith](https://smith.langchain.com/) 以获得最佳的可观察性也是有帮助的（但不是必需的）。
 
 ```python
 # os.environ["LANGCHAIN_TRACING_V2"] = "true"
 # os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 ```
 
-## Usage
+## 使用方法
 
 
 ```python
@@ -81,11 +80,9 @@ retriever.invoke("federal reserve S&P500")
  Document(page_content="[3]:\ntitle: US Stocks End Week with Slight Gain Despite Inflation Concerns\nsummary: The US stock market ended the week with a slight gain, despite inflation expectations and skepticism from Federal Reserve members about potential interest rate cuts. The Dow Jones Industrial Average rose 0.24% to 39,480.38, while the S&P 500 gained 0.07% to 5,217.67. The Nasdaq 100 also rose 0.15% to 18,140.02. The week's performance was driven by a number of factors, including the release of inflation expectations and the comments of Federal Reserve members. The University of Michigan's consumer sentiment survey also showed a decline in May, with consumer inflation expectations rising. The stock of 3M, the best-performing Dow stock, rose 2% after analysts at HSBC upgraded it to \nsource: Yahoo\npublished: May 10 2024 18:11\nLocation: US\nOrganization: University of Michigan, 3M, HSBC, Federal Reserve\nQuantity: 39,480.38, 5,217.67\nDate: May\nclassification: Business\nsentiment: 0", metadata={'title': 'Aktien New York: Knapp im Plus gegen Ende einer starken Börsenwoche', 'source': 'https://de.finance.yahoo.com/nachrichten/aktien-new-york-knapp-plus-181143398.html', 'images': 'https://s.yimg.com/cv/apiv2/social/images/yahoo_default_logo-1200x1200.png'})]
 ```
 
+## 链接
 
-## Chaining
-
-We can easily combine this retriever in to a chain.
-
+我们可以轻松地将这个检索器组合成一个链。
 
 ```python
 import getpass
@@ -93,7 +90,6 @@ import os
 
 os.environ["OPENAI_API_KEY"] = getpass.getpass()
 ```
-
 
 ```python
 from langchain_core.output_parsers import StrOutputParser
@@ -118,20 +114,15 @@ chain = (
 )
 ```
 
-
 ```python
 chain.invoke({"question": "What is the impact of fed policy on the tech sector?"})
 ```
-
-
 
 ```output
 "According to the information provided in the second news article, the impact of Federal Reserve policy on the technology sector has been negative. The article mentions that due to expectations that interest rates will remain high for a longer period, the US stock market has experienced a significant decline. This rise in interest rates has particularly affected the technology sector, with companies such as Intel and Microsoft experiencing declines. High interest rates can lead to increased borrowing costs for businesses, which can dampen investment and spending. In the technology sector, where companies often rely on borrowing to fund research and development and other growth initiatives, higher rates can be especially challenging.\n\nTherefore, the Federal Reserve's policy of maintaining high interest rates has had a detrimental effect on tech stocks, contributing to a decrease in their market valuations."
 ```
 
+## 相关
 
-
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

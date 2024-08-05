@@ -1,10 +1,11 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/tool_artifacts.ipynb
 ---
-# How to return artifacts from a tool
 
-:::info Prerequisites
-This guide assumes familiarity with the following concepts:
+# 如何从工具返回工件
+
+:::info 先决条件
+本指南假设您熟悉以下概念：
 
 - [ToolMessage](/docs/concepts/#toolmessage)
 - [Tools](/docs/concepts/#tools)
@@ -12,25 +13,23 @@ This guide assumes familiarity with the following concepts:
 
 :::
 
-Tools are utilities that can be called by a model, and whose outputs are designed to be fed back to a model. Sometimes, however, there are artifacts of a tool's execution that we want to make accessible to downstream components in our chain or agent, but that we don't want to expose to the model itself. For example if a tool returns a custom object, a dataframe or an image, we may want to pass some metadata about this output to the model without passing the actual output to the model. At the same time, we may want to be able to access this full output elsewhere, for example in downstream tools.
+工具是可以被模型调用的实用程序，其输出旨在反馈给模型。然而，有时我们希望将工具执行的工件提供给链或代理中的下游组件，但又不想将其暴露给模型本身。例如，如果一个工具返回一个自定义对象、数据框或图像，我们可能希望将一些关于该输出的元数据传递给模型，而不传递实际输出。同时，我们可能希望能够在其他地方访问这个完整的输出，例如在下游工具中。
 
-The Tool and [ToolMessage](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.tool.ToolMessage.html) interfaces make it possible to distinguish between the parts of the tool output meant for the model (this is the ToolMessage.content) and those parts which are meant for use outside the model (ToolMessage.artifact).
+Tool 和 [ToolMessage](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.tool.ToolMessage.html) 接口使我们能够区分工具输出中用于模型的部分（这是 ToolMessage.content）和用于模型外部的部分（ToolMessage.artifact）。
 
-:::info Requires ``langchain-core >= 0.2.19``
+:::info 需要 ``langchain-core >= 0.2.19``
 
-This functionality was added in ``langchain-core == 0.2.19``. Please make sure your package is up to date.
+此功能是在 ``langchain-core == 0.2.19`` 中添加的。请确保您的软件包是最新的。
 
 :::
 
-## Defining the tool
+## 定义工具
 
-If we want our tool to distinguish between message content and other artifacts, we need to specify `response_format="content_and_artifact"` when defining our tool and make sure that we return a tuple of (content, artifact):
-
+如果我们希望我们的工具区分消息内容和其他工件，我们需要在定义工具时指定 `response_format="content_and_artifact"`，并确保返回一个元组 (content, artifact)：
 
 ```python
 %pip install -qU "langchain-core>=0.2.19"
 ```
-
 
 ```python
 import random
@@ -47,9 +46,9 @@ def generate_random_ints(min: int, max: int, size: int) -> Tuple[str, List[int]]
     return content, array
 ```
 
-## Invoking the tool with ToolCall
+## 使用 ToolCall 调用工具
 
-If we directly invoke our tool with just the tool arguments, you'll notice that we only get back the content part of the Tool output:
+如果我们仅使用工具参数直接调用我们的工具，您会注意到我们只会收到工具输出的内容部分：
 
 
 ```python
@@ -65,7 +64,7 @@ generate_random_ints.invoke({"min": 0, "max": 9, "size": 10})
 ```output
 Failed to batch ingest runs: LangSmithRateLimitError('Rate limit exceeded for https://api.smith.langchain.com/runs/batch. HTTPError(\'429 Client Error: Too Many Requests for url: https://api.smith.langchain.com/runs/batch\', \'{"detail":"Monthly unique traces usage limit exceeded"}\')')
 ```
-In order to get back both the content and the artifact, we need to invoke our model with a ToolCall (which is just a dictionary with "name", "args", "id" and "type" keys), which has additional info needed to generate a ToolMessage like the tool call ID:
+为了同时获取内容和工件，我们需要使用 ToolCall 调用我们的模型（这只是一个包含 "name"、"args"、"id" 和 "type" 键的字典），它包含生成 ToolMessage 所需的额外信息，例如工具调用 ID：
 
 
 ```python
@@ -85,10 +84,9 @@ generate_random_ints.invoke(
 ToolMessage(content='Successfully generated array of 10 random ints in [0, 9].', name='generate_random_ints', tool_call_id='123', artifact=[2, 8, 0, 6, 0, 0, 1, 5, 0, 0])
 ```
 
+## 使用模型
 
-## Using with a model
-
-With a [tool-calling model](/docs/how_to/tool_calling/), we can easily use a model to call our Tool and generate ToolMessages:
+使用 [tool-calling model](/docs/how_to/tool_calling/)，我们可以轻松地使用模型调用我们的工具并生成 ToolMessages：
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
@@ -126,7 +124,7 @@ ToolMessage(content='Successfully generated array of 6 random ints in [1, 24].',
 ```
 
 
-If we just pass in the tool call args, we'll only get back the content:
+如果我们只传入工具调用参数，我们将只获得内容：
 
 
 ```python
@@ -140,7 +138,7 @@ generate_random_ints.invoke(ai_msg.tool_calls[0]["args"])
 ```
 
 
-If we wanted to declaratively create a chain, we could do this:
+如果我们想要声明性地创建一个链，我们可以这样做：
 
 
 ```python
@@ -157,11 +155,9 @@ chain.invoke("give me a random number between 1 and 5")
 [ToolMessage(content='Successfully generated array of 1 random ints in [1, 5].', name='generate_random_ints', tool_call_id='toolu_01FwYhnkwDPJPbKdGq4ng6uD', artifact=[5])]
 ```
 
+## 从 BaseTool 类创建对象
 
-## Creating from BaseTool class
-
-If you want to create a BaseTool object directly, instead of decorating a function with `@tool`, you can do so like this:
-
+如果您想直接创建一个 BaseTool 对象，而不是用 `@tool` 装饰一个函数，可以这样做：
 
 ```python
 from langchain_core.tools import BaseTool
@@ -169,7 +165,7 @@ from langchain_core.tools import BaseTool
 
 class GenerateRandomFloats(BaseTool):
     name: str = "generate_random_floats"
-    description: str = "Generate size random floats in the range [min, max]."
+    description: str = "在范围 [min, max] 内生成 size 个随机浮点数。"
     response_format: str = "content_and_artifact"
 
     ndigits: int = 2
@@ -180,10 +176,10 @@ class GenerateRandomFloats(BaseTool):
             round(min + (range_ * random.random()), ndigits=self.ndigits)
             for _ in range(size)
         ]
-        content = f"Generated {size} floats in [{min}, {max}], rounded to {self.ndigits} decimals."
+        content = f"生成了 {size} 个浮点数在 [{min}, {max}]，四舍五入到 {self.ndigits} 位小数。"
         return content, array
 
-    # Optionally define an equivalent async method
+    # 可选地定义一个等效的异步方法
 
     # async def _arun(self, min: float, max: float, size: int) -> Tuple[str, List[float]]:
     #     ...
@@ -198,7 +194,7 @@ rand_gen.invoke({"min": 0.1, "max": 3.3333, "size": 3})
 
 
 ```output
-'Generated 3 floats in [0.1, 3.3333], rounded to 4 decimals.'
+'生成了 3 个浮点数在 [0.1, 3.3333]，四舍五入到 4 位小数。'
 ```
 
 
@@ -217,6 +213,5 @@ rand_gen.invoke(
 
 
 ```output
-ToolMessage(content='Generated 3 floats in [0.1, 3.3333], rounded to 4 decimals.', name='generate_random_floats', tool_call_id='123', artifact=[1.5789, 2.464, 2.2719])
+ToolMessage(content='生成了 3 个浮点数在 [0.1, 3.3333]，四舍五入到 4 位小数。', name='generate_random_floats', tool_call_id='123', artifact=[1.5789, 2.464, 2.2719])
 ```
-

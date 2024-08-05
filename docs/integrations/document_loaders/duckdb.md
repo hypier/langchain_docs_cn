@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/duckdb.ipynb
 ---
+
 # DuckDB
 
->[DuckDB](https://duckdb.org/) is an in-process SQL OLAP database management system.
+>[DuckDB](https://duckdb.org/) 是一个内嵌式 SQL OLAP 数据库管理系统。
 
-Load a `DuckDB` query with one document per row.
+加载一个每行一个文档的 `DuckDB` 查询。
 
 
 ```python
@@ -41,7 +42,8 @@ print(data)
 ```output
 [Document(page_content='Team: Nationals\nPayroll: 81.34', metadata={}), Document(page_content='Team: Reds\nPayroll: 82.2', metadata={})]
 ```
-## Specifying Which Columns are Content vs Metadata
+
+## 指定哪些列为内容与元数据
 
 
 ```python
@@ -61,7 +63,8 @@ print(data)
 ```output
 [Document(page_content='Team: Nationals', metadata={'Payroll': 81.34}), Document(page_content='Team: Reds', metadata={'Payroll': 82.2})]
 ```
-## Adding Source to Metadata
+
+## 将源添加到元数据
 
 
 ```python
@@ -81,7 +84,7 @@ print(data)
 [Document(page_content='Team: Nationals\nPayroll: 81.34\nsource: Nationals', metadata={'source': 'Nationals'}), Document(page_content='Team: Reds\nPayroll: 82.2\nsource: Reds', metadata={'source': 'Reds'})]
 ```
 
-## Related
+## 相关
 
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

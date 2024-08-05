@@ -3,25 +3,25 @@ custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs
 sidebar_position: 6
 keywords: [RunnablePassthrough, assign, LCEL]
 ---
-# How to add values to a chain's state
 
-:::info Prerequisites
+# 如何向链的状态添加值
 
-This guide assumes familiarity with the following concepts:
-- [LangChain Expression Language (LCEL)](/docs/concepts/#langchain-expression-language)
-- [Chaining runnables](/docs/how_to/sequence/)
-- [Calling runnables in parallel](/docs/how_to/parallel/)
-- [Custom functions](/docs/how_to/functions/)
-- [Passing data through](/docs/how_to/passthrough)
+:::info 前提条件
+
+本指南假设您熟悉以下概念：
+- [LangChain 表达式语言 (LCEL)](/docs/concepts/#langchain-expression-language)
+- [链式可运行任务](/docs/how_to/sequence/)
+- [并行调用可运行任务](/docs/how_to/parallel/)
+- [自定义函数](/docs/how_to/functions/)
+- [数据传递](/docs/how_to/passthrough)
 
 :::
 
-An alternate way of [passing data through](/docs/how_to/passthrough) steps of a chain is to leave the current values of the chain state unchanged while assigning a new value under a given key. The [`RunnablePassthrough.assign()`](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.passthrough.RunnablePassthrough.html#langchain_core.runnables.passthrough.RunnablePassthrough.assign) static method takes an input value and adds the extra arguments passed to the assign function.
+另一种在链的步骤中[传递数据](/docs/how_to/passthrough)的方法是保持链状态的当前值不变，同时在给定的键下分配一个新值。 [`RunnablePassthrough.assign()`](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.passthrough.RunnablePassthrough.html#langchain_core.runnables.passthrough.RunnablePassthrough.assign)静态方法接受一个输入值，并添加传递给 assign 函数的额外参数。
 
-This is useful in the common [LangChain Expression Language](/docs/concepts/#langchain-expression-language) pattern of additively creating a dictionary to use as input to a later step.
+这在常见的[LangChain 表达式语言](/docs/concepts/#langchain-expression-language)模式中很有用，该模式是以加法方式创建一个字典，以便用作后续步骤的输入。
 
-Here's an example:
-
+以下是一个示例：
 
 ```python
 %pip install --upgrade --quiet langchain langchain-openai
@@ -31,7 +31,6 @@ from getpass import getpass
 
 os.environ["OPENAI_API_KEY"] = getpass()
 ```
-
 
 ```python
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough
@@ -44,26 +43,22 @@ runnable = RunnableParallel(
 runnable.invoke({"num": 1})
 ```
 
-
-
 ```output
 {'extra': {'num': 1, 'mult': 3}, 'modified': 2}
 ```
 
+让我们分解一下这里发生的事情。
 
-Let's break down what's happening here.
+- 链的输入是 `{"num": 1}`。这个输入被传递给 `RunnableParallel`，它并行调用传入的可运行任务。
+- `extra` 键下的值被调用。`RunnablePassthrough.assign()` 保持输入字典中的原始键 (`{"num": 1}`)，并分配一个名为 `mult` 的新键。值为 `lambda x: x["num"] * 3)`，结果为 `3`。因此，结果为 `{"num": 1, "mult": 3}`。
+- `{"num": 1, "mult": 3}` 被返回给 `RunnableParallel` 调用，并被设置为键 `extra` 的值。
+- 与此同时，`modified` 键被调用。结果为 `2`，因为 lambda 从其输入中提取一个名为 `"num"` 的键并加一。
 
-- The input to the chain is `{"num": 1}`. This is passed into a `RunnableParallel`, which invokes the runnables it is passed in parallel with that input.
-- The value under the `extra` key is invoked. `RunnablePassthrough.assign()` keeps the original keys in the input dict (`{"num": 1}`), and assigns a new key called `mult`. The value is `lambda x: x["num"] * 3)`, which is `3`. Thus, the result is `{"num": 1, "mult": 3}`.
-- `{"num": 1, "mult": 3}` is returned to the `RunnableParallel` call, and is set as the value to the key `extra`.
-- At the same time, the `modified` key is called. The result is `2`, since the lambda extracts a key called `"num"` from its input and adds one.
+因此，结果是 `{'extra': {'num': 1, 'mult': 3}, 'modified': 2}`。
 
-Thus, the result is `{'extra': {'num': 1, 'mult': 3}, 'modified': 2}`.
+## 流式处理
 
-## Streaming
-
-One convenient feature of this method is that it allows values to pass through as soon as they are available. To show this off, we'll use `RunnablePassthrough.assign()` to immediately return source docs in a retrieval chain:
-
+这种方法的一个方便特性是，它允许值在可用时立即通过。为了展示这一点，我们将使用 `RunnablePassthrough.assign()` 立即返回检索链中的源文档：
 
 ```python
 from langchain_community.vectorstores import FAISS
@@ -109,10 +104,10 @@ for chunk in stream:
 {'output': '.'}
 {'output': ''}
 ```
-We can see that the first chunk contains the original `"question"` since that is immediately available. The second chunk contains `"context"` since the retriever finishes second. Finally, the output from the `generation_chain` streams in chunks as soon as it is available.
+我们可以看到，第一个数据块包含原始的 `"question"`，因为它是立即可用的。第二个数据块包含 `"context"`，因为检索器第二个完成。最后，`generation_chain` 的输出在可用时以数据块的形式流出。
 
-## Next steps
+## 下一步
 
-Now you've learned how to pass data through your chains to help to help format the data flowing through your chains.
+现在您已经了解了如何通过链条传递数据，以帮助格式化流经链条的数据。
 
-To learn more, see the other how-to guides on runnables in this section.
+要了解更多信息，请参阅本节中有关可运行项的其他操作指南。

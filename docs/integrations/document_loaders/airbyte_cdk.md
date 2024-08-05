@@ -2,37 +2,36 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/airbyte_cdk.ipynb
 sidebar_class_name: hidden
 ---
-# Airbyte CDK (Deprecated)
 
-Note: `AirbyteCDKLoader` is deprecated. Please use [`AirbyteLoader`](/docs/integrations/document_loaders/airbyte) instead.
+# Airbyte CDK（已弃用）
 
->[Airbyte](https://github.com/airbytehq/airbyte) is a data integration platform for ELT pipelines from APIs, databases & files to warehouses & lakes. It has the largest catalog of ELT connectors to data warehouses and databases.
+注意：`AirbyteCDKLoader` 已弃用。请使用 [`AirbyteLoader`](/docs/integrations/document_loaders/airbyte) 代替。
 
-A lot of source connectors are implemented using the [Airbyte CDK](https://docs.airbyte.com/connector-development/cdk-python/). This loader allows to run any of these connectors and return the data as documents.
+>[Airbyte](https://github.com/airbytehq/airbyte) 是一个用于从 API、数据库和文件到数据仓库和数据湖的 ELT 管道的数据集成平台。它拥有最大的数据仓库和数据库的 ELT 连接器目录。
 
-## Installation
+许多源连接器是使用 [Airbyte CDK](https://docs.airbyte.com/connector-development/cdk-python/) 实现的。该加载器允许运行这些连接器中的任何一个，并将数据作为文档返回。
 
-First, you need to install the `airbyte-cdk` python package.
+## 安装
 
+首先，您需要安装 `airbyte-cdk` python 包。
 
 ```python
 %pip install --upgrade --quiet  airbyte-cdk
 ```
 
-Then, either install an existing connector from the [Airbyte Github repository](https://github.com/airbytehq/airbyte/tree/master/airbyte-integrations/connectors) or create your own connector using the [Airbyte CDK](https://docs.airbyte.io/connector-development/connector-development).
+然后，您可以从 [Airbyte Github 仓库](https://github.com/airbytehq/airbyte/tree/master/airbyte-integrations/connectors) 安装现有连接器，或者使用 [Airbyte CDK](https://docs.airbyte.io/connector-development/connector-development) 创建您自己的连接器。
 
-For example, to install the Github connector, run
-
+例如，要安装 Github 连接器，请运行
 
 ```python
 %pip install --upgrade --quiet  "source_github@git+https://github.com/airbytehq/airbyte.git@master#subdirectory=airbyte-integrations/connectors/source-github"
 ```
 
-Some sources are also published as regular packages on PyPI
+一些源也作为常规包在 PyPI 上发布。
 
-## Example
+## 示例
 
-Now you can create an `AirbyteCDKLoader` based on the imported source. It takes a `config` object that's passed to the connector. You also have to pick the stream you want to retrieve records from by name (`stream_name`). Check the connectors documentation page and spec definition for more information on the config object and available streams. For the Github connectors these are:
+现在您可以基于导入的源创建一个 `AirbyteCDKLoader`。它接受一个传递给连接器的 `config` 对象。您还需要通过名称 (`stream_name`) 选择要检索记录的流。有关 `config` 对象和可用流的更多信息，请查看连接器文档页面和规格定义。对于 Github 连接器，这些是：
 
 * [https://github.com/airbytehq/airbyte/blob/master/airbyte-integrations/connectors/source-github/source_github/spec.json](https://github.com/airbytehq/airbyte/blob/master/airbyte-integrations/connectors/source-github/source_github/spec.json).
 * [https://docs.airbyte.com/integrations/sources/github/](https://docs.airbyte.com/integrations/sources/github/)
@@ -54,21 +53,21 @@ issues_loader = AirbyteCDKLoader(
 )
 ```
 
-Now you can load documents the usual way
+现在您可以按照通常的方式加载文档
 
 
 ```python
 docs = issues_loader.load()
 ```
 
-As `load` returns a list, it will block until all documents are loaded. To have better control over this process, you can also you the `lazy_load` method which returns an iterator instead:
+由于 `load` 返回一个列表，它将在所有文档加载完成之前阻塞。为了更好地控制这个过程，您还可以使用 `lazy_load` 方法，它返回一个迭代器：
 
 
 ```python
 docs_iterator = issues_loader.lazy_load()
 ```
 
-Keep in mind that by default the page content is empty and the metadata object contains all the information from the record. To create documents in a different, pass in a record_handler function when creating the loader:
+请记住，默认情况下页面内容是空的，元数据对象包含来自记录的所有信息。要以不同的方式创建文档，请在创建加载器时传入一个 `record_handler` 函数：
 
 
 ```python
@@ -92,12 +91,11 @@ issues_loader = AirbyteCDKLoader(
 docs = issues_loader.load()
 ```
 
-## Incremental loads
+## 增量加载
 
-Some streams allow incremental loading, this means the source keeps track of synced records and won't load them again. This is useful for sources that have a high volume of data and are updated frequently.
+某些数据流允许增量加载，这意味着数据源会跟踪已同步的记录，并且不会再次加载它们。这对于数据量大且更新频繁的数据源非常有用。
 
-To take advantage of this, store the `last_state` property of the loader and pass it in when creating the loader again. This will ensure that only new records are loaded.
-
+为了利用这一点，存储加载器的 `last_state` 属性，并在再次创建加载器时传递它。这将确保仅加载新记录。
 
 ```python
 last_state = issues_loader.last_state  # store safely
@@ -109,8 +107,7 @@ incremental_issue_loader = AirbyteCDKLoader(
 new_docs = incremental_issue_loader.load()
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

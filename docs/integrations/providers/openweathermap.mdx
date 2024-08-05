@@ -1,44 +1,44 @@
 # OpenWeatherMap
 
->[OpenWeatherMap](https://openweathermap.org/api/) provides all essential weather data for a specific location:
->- Current weather
->- Minute forecast for 1 hour
->- Hourly forecast for 48 hours
->- Daily forecast for 8 days
->- National weather alerts
->- Historical weather data for 40+ years back
+>[OpenWeatherMap](https://openweathermap.org/api/) 提供特定位置的所有基本天气数据：
+>- 当前天气
+>- 1小时的分钟预报
+>- 48小时的每小时预报
+>- 8天的每日预报
+>- 国家天气警报
+>- 超过40年的历史天气数据
 
-This page covers how to use the `OpenWeatherMap API` within LangChain.
+本页面介绍如何在 LangChain 中使用 `OpenWeatherMap API`。
 
-## Installation and Setup
+## 安装与设置
 
-- Install requirements with
+- 使用以下命令安装依赖
 ```bash
 pip install pyowm
 ```
-- Go to OpenWeatherMap and sign up for an account to get your API key [here](https://openweathermap.org/api/)
-- Set your API key as `OPENWEATHERMAP_API_KEY` environment variable
+- 前往 OpenWeatherMap 注册账号以获取您的 API 密钥 [这里](https://openweathermap.org/api/)
+- 将您的 API 密钥设置为 `OPENWEATHERMAP_API_KEY` 环境变量
 
-## Wrappers
+## 包装器
 
-### Utility
+### 实用工具
 
-There exists a OpenWeatherMapAPIWrapper utility which wraps this API. To import this utility:
+存在一个 OpenWeatherMapAPIWrapper 工具，用于封装此 API。要导入此工具：
 
 ```python
 from langchain_community.utilities.openweathermap import OpenWeatherMapAPIWrapper
 ```
 
-For a more detailed walkthrough of this wrapper, see [this notebook](/docs/integrations/tools/openweathermap).
+有关此包装器的更详细的操作指南，请参见 [此笔记本](/docs/integrations/tools/openweathermap)。
 
-### Tool
+### 工具
 
-You can also easily load this wrapper as a Tool (to use with an Agent).
-You can do this with:
+您也可以轻松地将此包装器加载为工具（以便与代理一起使用）。
+您可以这样做：
 
 ```python
 from langchain.agents import load_tools
 tools = load_tools(["openweathermap-api"])
 ```
 
-For more information on tools, see [this page](/docs/how_to/tools_builtin).
+有关工具的更多信息，请参见 [此页面](/docs/how_to/tools_builtin)。

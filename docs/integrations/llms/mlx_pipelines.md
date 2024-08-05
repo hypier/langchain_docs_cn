@@ -1,25 +1,24 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/mlx_pipelines.ipynb
 ---
-# MLX Local Pipelines
 
-MLX models can be run locally through the `MLXPipeline` class.
+# MLX 本地管道
 
-The [MLX Community](https://huggingface.co/mlx-community) hosts over 150 models, all open source and publicly available on Hugging Face Model Hub a online platform where people can easily collaborate and build ML together.
+MLX 模型可以通过 `MLXPipeline` 类在本地运行。
 
-These can be called from LangChain either through this local pipeline wrapper or by calling their hosted inference endpoints through the MlXPipeline class. For more information on mlx, see the [examples repo](https://github.com/ml-explore/mlx-examples/tree/main/llms) notebook.
+[MLX 社区](https://huggingface.co/mlx-community) 托管了超过 150 个模型，所有模型都是开源的，并且可以在 Hugging Face Model Hub 上公开获取，这是一个人们可以轻松协作并共同构建机器学习的平台。
 
-To use, you should have the ``mlx-lm`` python [package installed](https://pypi.org/project/mlx-lm/), as well as [transformers](https://pypi.org/project/transformers/). You can also install `huggingface_hub`.
+这些模型可以通过 LangChain 调用，既可以通过这个本地管道包装器，也可以通过 MlXPipeline 类调用它们的托管推理端点。有关 mlx 的更多信息，请参见 [示例库](https://github.com/ml-explore/mlx-examples/tree/main/llms) 笔记本。
 
+要使用它，您需要安装 ``mlx-lm`` python [包](https://pypi.org/project/mlx-lm/)，以及 [transformers](https://pypi.org/project/transformers/)。您还可以安装 `huggingface_hub`。
 
 ```python
 %pip install --upgrade --quiet  mlx-lm transformers huggingface_hub
 ```
 
-### Model Loading
+### 模型加载
 
-Models can be loaded by specifying the model parameters using the `from_model_id` method.
-
+可以通过使用 `from_model_id` 方法指定模型参数来加载模型。
 
 ```python
 from langchain_community.llms.mlx_pipeline import MLXPipeline
@@ -30,8 +29,7 @@ pipe = MLXPipeline.from_model_id(
 )
 ```
 
-They can also be loaded by passing in an existing `transformers` pipeline directly
-
+也可以通过直接传入现有的 `transformers` 管道来加载模型。
 
 ```python
 from mlx_lm import load
@@ -40,11 +38,9 @@ model, tokenizer = load("mlx-community/quantized-gemma-2b-it")
 pipe = MLXPipeline(model=model, tokenizer=tokenizer)
 ```
 
-### Create Chain
+### 创建链
 
-With the model loaded into memory, you can compose it with a prompt to
-form a chain.
-
+模型加载到内存后，您可以通过提示将其组合形成链。
 
 ```python
 from langchain_core.prompts import PromptTemplate
@@ -61,8 +57,7 @@ question = "What is electroencephalography?"
 print(chain.invoke({"question": question}))
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

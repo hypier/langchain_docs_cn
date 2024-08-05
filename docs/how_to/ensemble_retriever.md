@@ -1,23 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/ensemble_retriever.ipynb
 ---
-# How to combine results from multiple retrievers
 
-The [EnsembleRetriever](https://api.python.langchain.com/en/latest/retrievers/langchain.retrievers.ensemble.EnsembleRetriever.html) supports ensembling of results from multiple retrievers. It is initialized with a list of [BaseRetriever](https://api.python.langchain.com/en/latest/retrievers/langchain_core.retrievers.BaseRetriever.html) objects. EnsembleRetrievers rerank the results of the constituent retrievers based on the [Reciprocal Rank Fusion](https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf) algorithm.
+# 如何结合多个检索器的结果
 
-By leveraging the strengths of different algorithms, the `EnsembleRetriever` can achieve better performance than any single algorithm. 
+[EnsembleRetriever](https://api.python.langchain.com/en/latest/retrievers/langchain.retrievers.ensemble.EnsembleRetriever.html) 支持多个检索器结果的集成。它通过一个 [BaseRetriever](https://api.python.langchain.com/en/latest/retrievers/langchain_core.retrievers.BaseRetriever.html) 对象的列表进行初始化。EnsembleRetrievers 根据 [Reciprocal Rank Fusion](https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf) 算法对组成检索器的结果进行重新排序。
 
-The most common pattern is to combine a sparse retriever (like BM25) with a dense retriever (like embedding similarity), because their strengths are complementary. It is also known as "hybrid search". The sparse retriever is good at finding relevant documents based on keywords, while the dense retriever is good at finding relevant documents based on semantic similarity.
+通过利用不同算法的优势，`EnsembleRetriever` 可以实现比任何单一算法更好的性能。
 
-## Basic usage
+最常见的模式是将稀疏检索器（如 BM25）与密集检索器（如嵌入相似度）结合，因为它们的优势是互补的。这也被称为“混合检索”。稀疏检索器擅长根据关键词查找相关文档，而密集检索器则擅长根据语义相似性查找相关文档。
 
-Below we demonstrate ensembling of a [BM25Retriever](https://api.python.langchain.com/en/latest/retrievers/langchain_community.retrievers.bm25.BM25Retriever.html) with a retriever derived from the [FAISS vector store](https://api.python.langchain.com/en/latest/vectorstores/langchain_community.vectorstores.faiss.FAISS.html).
+## 基本用法
 
+下面我们展示如何将 [BM25Retriever](https://api.python.langchain.com/en/latest/retrievers/langchain_community.retrievers.bm25.BM25Retriever.html) 与来自 [FAISS 向量存储](https://api.python.langchain.com/en/latest/vectorstores/langchain_community.vectorstores.faiss.FAISS.html) 的检索器进行集成。
 
 ```python
 %pip install --upgrade --quiet  rank_bm25 > /dev/null
 ```
-
 
 ```python
 from langchain.retrievers import EnsembleRetriever
@@ -31,7 +30,7 @@ doc_list_1 = [
     "Apples and oranges are fruits",
 ]
 
-# initialize the bm25 retriever and faiss retriever
+# 初始化 bm25 检索器和 faiss 检索器
 bm25_retriever = BM25Retriever.from_texts(
     doc_list_1, metadatas=[{"source": 1}] * len(doc_list_1)
 )
@@ -48,19 +47,16 @@ faiss_vectorstore = FAISS.from_texts(
 )
 faiss_retriever = faiss_vectorstore.as_retriever(search_kwargs={"k": 2})
 
-# initialize the ensemble retriever
+# 初始化集成检索器
 ensemble_retriever = EnsembleRetriever(
     retrievers=[bm25_retriever, faiss_retriever], weights=[0.5, 0.5]
 )
 ```
 
-
 ```python
 docs = ensemble_retriever.invoke("apples")
 docs
 ```
-
-
 
 ```output
 [Document(page_content='I like apples', metadata={'source': 1}),
@@ -69,11 +65,9 @@ docs
  Document(page_content='You like oranges', metadata={'source': 2})]
 ```
 
+## 运行时配置
 
-## Runtime Configuration
-
-We can also configure the individual retrievers at runtime using [configurable fields](/docs/how_to/configure). Below we update the "top-k" parameter for the FAISS retriever specifically:
-
+我们还可以使用 [configurable fields](/docs/how_to/configure) 在运行时配置各个检索器。下面我们专门更新 FAISS 检索器的 "top-k" 参数：
 
 ```python
 from langchain_core.runnables import ConfigurableField
@@ -93,14 +87,11 @@ ensemble_retriever = EnsembleRetriever(
 )
 ```
 
-
 ```python
 config = {"configurable": {"search_kwargs_faiss": {"k": 1}}}
 docs = ensemble_retriever.invoke("apples", config=config)
 docs
 ```
-
-
 
 ```output
 [Document(page_content='I like apples', metadata={'source': 1}),
@@ -108,5 +99,4 @@ docs
  Document(page_content='Apples and oranges are fruits', metadata={'source': 1})]
 ```
 
-
-Notice that this only returns one source from the FAISS retriever, because we pass in the relevant configuration at run time
+请注意，这仅从 FAISS 检索器返回一个来源，因为我们在运行时传入了相关配置。

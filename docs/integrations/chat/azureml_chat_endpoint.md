@@ -1,44 +1,44 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/azureml_chat_endpoint.ipynb
-sidebar_label: Azure ML Endpoint
+sidebar_label: Azure ML 端点
 ---
+
 # AzureMLChatOnlineEndpoint
 
->[Azure Machine Learning](https://azure.microsoft.com/en-us/products/machine-learning/) is a platform used to build, train, and deploy machine learning models. Users can explore the types of models to deploy in the Model Catalog, which provides foundational and general purpose models from different providers.
+>[Azure Machine Learning](https://azure.microsoft.com/en-us/products/machine-learning/) 是一个用于构建、训练和部署机器学习模型的平台。用户可以在模型目录中探索可以部署的模型类型，该目录提供来自不同提供商的基础和通用模型。
 >
->In general, you need to deploy models in order to consume its predictions (inference). In `Azure Machine Learning`, [Online Endpoints](https://learn.microsoft.com/en-us/azure/machine-learning/concept-endpoints) are used to deploy these models with a real-time serving. They are based on the ideas of `Endpoints` and `Deployments` which allow you to decouple the interface of your production workload from the implementation that serves it.
+>通常，您需要部署模型以便消费其预测（推理）。在 `Azure Machine Learning` 中，[在线端点](https://learn.microsoft.com/en-us/azure/machine-learning/concept-endpoints) 用于实时服务地部署这些模型。它们基于 `Endpoints` 和 `Deployments` 的理念，允许您将生产工作负载的接口与提供该接口的实现解耦。
 
-This notebook goes over how to use a chat model hosted on an `Azure Machine Learning Endpoint`.
+本笔记本介绍了如何使用托管在 `Azure Machine Learning Endpoint` 上的聊天模型。
 
 
 ```python
 from langchain_community.chat_models.azureml_endpoint import AzureMLChatOnlineEndpoint
 ```
 
-## Set up
+## 设置
 
-You must [deploy a model on Azure ML](https://learn.microsoft.com/en-us/azure/machine-learning/how-to-use-foundation-models?view=azureml-api-2#deploying-foundation-models-to-endpoints-for-inferencing) or [to Azure AI studio](https://learn.microsoft.com/en-us/azure/ai-studio/how-to/deploy-models-open) and obtain the following parameters:
+您必须 [在 Azure ML 上部署模型](https://learn.microsoft.com/en-us/azure/machine-learning/how-to-use-foundation-models?view=azureml-api-2#deploying-foundation-models-to-endpoints-for-inferencing) 或 [部署到 Azure AI Studio](https://learn.microsoft.com/en-us/azure/ai-studio/how-to/deploy-models-open)，并获取以下参数：
 
-* `endpoint_url`: The REST endpoint url provided by the endpoint.
-* `endpoint_api_type`: Use `endpoint_type='dedicated'` when deploying models to **Dedicated endpoints** (hosted managed infrastructure). Use `endpoint_type='serverless'` when deploying models using the **Pay-as-you-go** offering (model as a service).
-* `endpoint_api_key`: The API key provided by the endpoint
+* `endpoint_url`: 由端点提供的 REST 端点 URL。
+* `endpoint_api_type`: 在将模型部署到 **专用端点**（托管的管理基础设施）时使用 `endpoint_type='dedicated'`。在使用 **按需付费** 提供的服务（模型即服务）部署模型时使用 `endpoint_type='serverless'`。
+* `endpoint_api_key`: 由端点提供的 API 密钥。
 
-## Content Formatter
+## 内容格式化器
 
-The `content_formatter` parameter is a handler class for transforming the request and response of an AzureML endpoint to match with required schema. Since there are a wide range of models in the model catalog, each of which may process data differently from one another, a `ContentFormatterBase` class is provided to allow users to transform data to their liking. The following content formatters are provided:
+`content_formatter` 参数是一个处理类，用于将 AzureML 端点的请求和响应转换为所需的模式。由于模型目录中有各种各样的模型，每个模型可能以不同的方式处理数据，因此提供了 `ContentFormatterBase` 类，以便用户可以根据自己的需要转换数据。提供了以下内容格式化器：
 
-* `CustomOpenAIChatContentFormatter`: Formats request and response data for models like LLaMa2-chat that follow the OpenAI API spec for request and response.
+* `CustomOpenAIChatContentFormatter`：为遵循 OpenAI API 规范的请求和响应的模型（如 LLaMa2-chat）格式化请求和响应数据。
 
-*Note: `langchain.chat_models.azureml_endpoint.LlamaChatContentFormatter` is being deprecated and replaced with `langchain.chat_models.azureml_endpoint.CustomOpenAIChatContentFormatter`.*
+*注意：`langchain.chat_models.azureml_endpoint.LlamaChatContentFormatter` 正在被弃用，并被 `langchain.chat_models.azureml_endpoint.CustomOpenAIChatContentFormatter` 替代。*
 
-You can implement custom content formatters specific for your model deriving from the class `langchain_community.llms.azureml_endpoint.ContentFormatterBase`.
+您可以实现特定于您的模型的自定义内容格式化器，派生自类 `langchain_community.llms.azureml_endpoint.ContentFormatterBase`。
 
-## Examples
+## 示例
 
-The following section contains examples about how to use this class:
+以下部分包含有关如何使用此类的示例：
 
-### Example: Chat completions with real-time endpoints
-
+### 示例：使用实时端点的聊天完成
 
 ```python
 from langchain_community.chat_models.azureml_endpoint import (
@@ -54,20 +54,16 @@ chat = AzureMLChatOnlineEndpoint(
     content_formatter=CustomOpenAIChatContentFormatter(),
 )
 response = chat.invoke(
-    [HumanMessage(content="Will the Collatz conjecture ever be solved?")]
+    [HumanMessage(content="Collatz 猜想是否会被解决？")]
 )
 response
 ```
-
-
 
 ```output
 AIMessage(content='  The Collatz Conjecture is one of the most famous unsolved problems in mathematics, and it has been the subject of much study and research for many years. While it is impossible to predict with certainty whether the conjecture will ever be solved, there are several reasons why it is considered a challenging and important problem:\n\n1. Simple yet elusive: The Collatz Conjecture is a deceptively simple statement that has proven to be extraordinarily difficult to prove or disprove. Despite its simplicity, the conjecture has eluded some of the brightest minds in mathematics, and it remains one of the most famous open problems in the field.\n2. Wide-ranging implications: The Collatz Conjecture has far-reaching implications for many areas of mathematics, including number theory, algebra, and analysis. A solution to the conjecture could have significant impacts on these fields and potentially lead to new insights and discoveries.\n3. Computational evidence: While the conjecture remains unproven, extensive computational evidence supports its validity. In fact, no counterexample to the conjecture has been found for any starting value up to 2^64 (a number', additional_kwargs={}, example=False)
 ```
 
-
-### Example: Chat completions with pay-as-you-go deployments (model as a service)
-
+### 示例：按需部署的聊天补全（作为服务的模型）
 
 ```python
 chat = AzureMLChatOnlineEndpoint(
@@ -82,8 +78,7 @@ response = chat.invoke(
 response
 ```
 
-If you need to pass additional parameters to the model, use `model_kwargs` argument:
-
+如果需要向模型传递额外参数，请使用 `model_kwargs` 参数：
 
 ```python
 chat = AzureMLChatOnlineEndpoint(
@@ -95,8 +90,7 @@ chat = AzureMLChatOnlineEndpoint(
 )
 ```
 
-Parameters can also be passed during invocation:
-
+参数也可以在调用时传递：
 
 ```python
 response = chat.invoke(
@@ -106,8 +100,7 @@ response = chat.invoke(
 response
 ```
 
+## 相关
 
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

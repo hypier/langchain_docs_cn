@@ -1,44 +1,45 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/custom_chat_model.ipynb
 ---
-# How to create a custom chat model class
 
-:::info Prerequisites
+# 如何创建自定义聊天模型类
 
-This guide assumes familiarity with the following concepts:
-- [Chat models](/docs/concepts/#chat-models)
+:::info 先决条件
+
+本指南假设您对以下概念有一定了解：
+- [聊天模型](/docs/concepts/#chat-models)
 
 :::
 
-In this guide, we'll learn how to create a custom chat model using LangChain abstractions.
+在本指南中，我们将学习如何使用 LangChain 抽象创建自定义聊天模型。
 
-Wrapping your LLM with the standard [`BaseChatModel`](https://api.python.langchain.com/en/latest/language_models/langchain_core.language_models.chat_models.BaseChatModel.html) interface allow you to use your LLM in existing LangChain programs with minimal code modifications!
+使用标准 [`BaseChatModel`](https://api.python.langchain.com/en/latest/language_models/langchain_core.language_models.chat_models.BaseChatModel.html) 接口包装您的 LLM，可以让您在现有的 LangChain 程序中以最小的代码修改使用您的 LLM！
 
-As an bonus, your LLM will automatically become a LangChain `Runnable` and will benefit from some optimizations out of the box (e.g., batch via a threadpool), async support, the `astream_events` API, etc.
+作为额外好处，您的 LLM 将自动成为 LangChain `Runnable`，并将受益于一些开箱即用的优化（例如，通过线程池批处理）、异步支持、`astream_events` API 等。
 
-## Inputs and outputs
+## 输入和输出
 
-First, we need to talk about **messages**, which are the inputs and outputs of chat models.
+首先，我们需要讨论一下 **消息**，它们是聊天模型的输入和输出。
 
-### Messages
+### 消息
 
-Chat models take messages as inputs and return a message as output. 
+聊天模型将消息作为输入，并返回消息作为输出。
 
-LangChain has a few [built-in message types](/docs/concepts/#message-types):
+LangChain 有几种 [内置消息类型](/docs/concepts/#message-types)：
 
-| Message Type          | Description                                                                                     |
+| 消息类型              | 描述                                                                                          |
 |-----------------------|-------------------------------------------------------------------------------------------------|
-| `SystemMessage`       | Used for priming AI behavior, usually passed in as the first of a sequence of input messages.   |
-| `HumanMessage`        | Represents a message from a person interacting with the chat model.                             |
-| `AIMessage`           | Represents a message from the chat model. This can be either text or a request to invoke a tool.|
-| `FunctionMessage` / `ToolMessage` | Message for passing the results of tool invocation back to the model.               |
-| `AIMessageChunk` / `HumanMessageChunk` / ... | Chunk variant of each type of message. |
+| `SystemMessage`       | 用于初始化 AI 行为，通常作为输入消息序列中的第一个传入。                                         |
+| `HumanMessage`        | 代表与聊天模型互动的人的消息。                                                                |
+| `AIMessage`           | 代表来自聊天模型的消息。这可以是文本或请求调用工具。                                          |
+| `FunctionMessage` / `ToolMessage` | 用于将工具调用的结果传回模型的消息。                                      |
+| `AIMessageChunk` / `HumanMessageChunk` / ... | 每种消息类型的块变体。 |
 
 
 ::: {.callout-note}
-`ToolMessage` and `FunctionMessage` closely follow OpenAI's `function` and `tool` roles.
+`ToolMessage` 和 `FunctionMessage` 紧密遵循 OpenAI 的 `function` 和 `tool` 角色。
 
-This is a rapidly developing field and as more models add function calling capabilities. Expect that there will be additions to this schema.
+这是一个快速发展的领域，随着更多模型添加功能调用能力，预计该架构将会有新增内容。
 :::
 
 
@@ -53,10 +54,9 @@ from langchain_core.messages import (
 )
 ```
 
-### Streaming Variant
+### 流式变体
 
-All the chat messages have a streaming variant that contains `Chunk` in the name.
-
+所有聊天消息都有一个流式变体，其名称中包含 `Chunk`。
 
 ```python
 from langchain_core.messages import (
@@ -68,8 +68,7 @@ from langchain_core.messages import (
 )
 ```
 
-These chunks are used when streaming output from chat models, and they all define an additive property!
-
+这些块在从聊天模型流式输出时使用，它们都定义了一个可加属性！
 
 ```python
 AIMessageChunk(content="Hello") + AIMessageChunk(content=" World!")
@@ -81,30 +80,29 @@ AIMessageChunk(content="Hello") + AIMessageChunk(content=" World!")
 AIMessageChunk(content='Hello World!')
 ```
 
+## 基础聊天模型
 
-## Base Chat Model
+让我们实现一个聊天模型，它会回显提示中最后一条消息的前 `n` 个字符！
 
-Let's implement a chat model that echoes back the first `n` characters of the last message in the prompt!
+为此，我们将继承 `BaseChatModel`，并需要实现以下内容：
 
-To do so, we will inherit from `BaseChatModel` and we'll need to implement the following:
-
-| Method/Property                    | Description                                                       | Required/Optional  |
+| 方法/属性                           | 描述                                                             | 必需/可选          |
 |------------------------------------|-------------------------------------------------------------------|--------------------|
-| `_generate`                        | Use to generate a chat result from a prompt                       | Required           |
-| `_llm_type` (property)             | Used to uniquely identify the type of the model. Used for logging.| Required           |
-| `_identifying_params` (property)   | Represent model parameterization for tracing purposes.            | Optional           |
-| `_stream`                          | Use to implement streaming.                                       | Optional           |
-| `_agenerate`                       | Use to implement a native async method.                           | Optional           |
-| `_astream`                         | Use to implement async version of `_stream`.                      | Optional           |
+| `_generate`                        | 用于从提示生成聊天结果                                           | 必需               |
+| `_llm_type` (属性)                 | 用于唯一识别模型类型。用于日志记录。                             | 必需               |
+| `_identifying_params` (属性)       | 表示模型参数化以便追踪目的。                                     | 可选               |
+| `_stream`                          | 用于实现流式传输。                                               | 可选               |
+| `_agenerate`                       | 用于实现原生异步方法。                                           | 可选               |
+| `_astream`                         | 用于实现 `_stream` 的异步版本。                                  | 可选               |
 
 
 :::tip
-The `_astream` implementation uses `run_in_executor` to launch the sync `_stream` in a separate thread if `_stream` is implemented, otherwise it fallsback to use `_agenerate`.
+`_astream` 实现使用 `run_in_executor` 在单独的线程中启动同步的 `_stream`，如果已实现 `_stream`，否则回退使用 `_agenerate`。
 
-You can use this trick if you want to reuse the `_stream` implementation, but if you're able to implement code that's natively async that's a better solution since that code will run with less overhead.
+如果您想重用 `_stream` 实现，可以使用这个技巧，但如果您能够实现原生异步的代码，那将是更好的解决方案，因为该代码的运行开销更小。
 :::
 
-### Implementation
+### 实现
 
 
 ```python
@@ -121,14 +119,12 @@ from langchain_core.runnables import run_in_executor
 
 
 class CustomChatModelAdvanced(BaseChatModel):
-    """A custom chat model that echoes the first `n` characters of the input.
+    """一个自定义聊天模型，回显输入的前 `n` 个字符。
 
-    When contributing an implementation to LangChain, carefully document
-    the model including the initialization parameters, include
-    an example of how to initialize the model and include any relevant
-    links to the underlying models documentation or API.
+    在向 LangChain 提交实现时，仔细记录模型，包括初始化参数，
+    包括如何初始化模型的示例，并包含任何相关的底层模型文档或 API 的链接。
 
-    Example:
+    示例：
 
         .. code-block:: python
 
@@ -139,9 +135,9 @@ class CustomChatModelAdvanced(BaseChatModel):
     """
 
     model_name: str
-    """The name of the model"""
+    """模型的名称"""
     n: int
-    """The number of characters from the last message of the prompt to be echoed."""
+    """要回显的提示最后一条消息的字符数。"""
 
     def _generate(
         self,
@@ -150,29 +146,27 @@ class CustomChatModelAdvanced(BaseChatModel):
         run_manager: Optional[CallbackManagerForLLMRun] = None,
         **kwargs: Any,
     ) -> ChatResult:
-        """Override the _generate method to implement the chat model logic.
+        """重写 _generate 方法以实现聊天模型逻辑。
 
-        This can be a call to an API, a call to a local model, or any other
-        implementation that generates a response to the input prompt.
+        这可以是对 API 的调用、对本地模型的调用或任何其他
+        生成对输入提示的响应的实现。
 
-        Args:
-            messages: the prompt composed of a list of messages.
-            stop: a list of strings on which the model should stop generating.
-                  If generation stops due to a stop token, the stop token itself
-                  SHOULD BE INCLUDED as part of the output. This is not enforced
-                  across models right now, but it's a good practice to follow since
-                  it makes it much easier to parse the output of the model
-                  downstream and understand why generation stopped.
-            run_manager: A run manager with callbacks for the LLM.
+        参数：
+            messages: 由消息列表组成的提示。
+            stop: 模型应停止生成的字符串列表。
+                  如果由于停止标记而停止生成，则停止标记本身
+                  应该作为输出的一部分包含。这在目前的模型中没有强制执行，
+                  但遵循这一良好实践可以使后续解析模型输出
+                  更加容易，并理解生成停止的原因。
+            run_manager: 带有回调的 LLM 运行管理器。
         """
-        # Replace this with actual logic to generate a response from a list
-        # of messages.
+        # 用实际逻辑替换此处，以从消息列表生成响应。
         last_message = messages[-1]
         tokens = last_message.content[: self.n]
         message = AIMessage(
             content=tokens,
-            additional_kwargs={},  # Used to add additional payload (e.g., function calling request)
-            response_metadata={  # Use for response metadata
+            additional_kwargs={},  # 用于添加额外的负载（例如，函数调用请求）
+            response_metadata={  # 用于响应元数据
                 "time_in_seconds": 3,
             },
         )
@@ -188,22 +182,20 @@ class CustomChatModelAdvanced(BaseChatModel):
         run_manager: Optional[CallbackManagerForLLMRun] = None,
         **kwargs: Any,
     ) -> Iterator[ChatGenerationChunk]:
-        """Stream the output of the model.
+        """流式输出模型的结果。
 
-        This method should be implemented if the model can generate output
-        in a streaming fashion. If the model does not support streaming,
-        do not implement it. In that case streaming requests will be automatically
-        handled by the _generate method.
+        如果模型可以以流式方式生成输出，则应实现此方法。
+        如果模型不支持流式处理，则不应实现它。在这种情况下，流式请求将自动
+        由 _generate 方法处理。
 
-        Args:
-            messages: the prompt composed of a list of messages.
-            stop: a list of strings on which the model should stop generating.
-                  If generation stops due to a stop token, the stop token itself
-                  SHOULD BE INCLUDED as part of the output. This is not enforced
-                  across models right now, but it's a good practice to follow since
-                  it makes it much easier to parse the output of the model
-                  downstream and understand why generation stopped.
-            run_manager: A run manager with callbacks for the LLM.
+        参数：
+            messages: 由消息列表组成的提示。
+            stop: 模型应停止生成的字符串列表。
+                  如果由于停止标记而停止生成，则停止标记本身
+                  应该作为输出的一部分包含。这在目前的模型中没有强制执行，
+                  但遵循这一良好实践可以使后续解析模型输出
+                  更加容易，并理解生成停止的原因。
+            run_manager: 带有回调的 LLM 运行管理器。
         """
         last_message = messages[-1]
         tokens = last_message.content[: self.n]
@@ -212,46 +204,44 @@ class CustomChatModelAdvanced(BaseChatModel):
             chunk = ChatGenerationChunk(message=AIMessageChunk(content=token))
 
             if run_manager:
-                # This is optional in newer versions of LangChain
-                # The on_llm_new_token will be called automatically
+                # 这是在较新版本的 LangChain 中是可选的
+                # on_llm_new_token 将自动被调用
                 run_manager.on_llm_new_token(token, chunk=chunk)
 
             yield chunk
 
-        # Let's add some other information (e.g., response metadata)
+        # 让我们添加一些其他信息（例如，响应元数据）
         chunk = ChatGenerationChunk(
             message=AIMessageChunk(content="", response_metadata={"time_in_sec": 3})
         )
         if run_manager:
-            # This is optional in newer versions of LangChain
-            # The on_llm_new_token will be called automatically
+            # 这是在较新版本的 LangChain 中是可选的
+            # on_llm_new_token 将自动被调用
             run_manager.on_llm_new_token(token, chunk=chunk)
         yield chunk
 
     @property
     def _llm_type(self) -> str:
-        """Get the type of language model used by this chat model."""
+        """获取此聊天模型使用的语言模型类型。"""
         return "echoing-chat-model-advanced"
 
     @property
     def _identifying_params(self) -> Dict[str, Any]:
-        """Return a dictionary of identifying parameters.
+        """返回识别参数的字典。
 
-        This information is used by the LangChain callback system, which
-        is used for tracing purposes make it possible to monitor LLMs.
+        此信息由 LangChain 回调系统使用，用于跟踪目的，使监控 LLM 成为可能。
         """
         return {
-            # The model name allows users to specify custom token counting
-            # rules in LLM monitoring applications (e.g., in LangSmith users
-            # can provide per token pricing for their model and monitor
-            # costs for the given LLM.)
+            # 模型名称允许用户在 LLM 监控应用程序中指定自定义令牌计数
+            # 规则（例如，在 LangSmith 中，用户可以为其模型提供每个令牌的定价并监控
+            # 给定 LLM 的成本。）
             "model_name": self.model_name,
         }
 ```
 
-### Let's test it 🧪
+### 让我们测试一下 🧪
 
-The chat model will implement the standard `Runnable` interface of LangChain which many of the LangChain abstractions support!
+聊天模型将实现 LangChain 的标准 `Runnable` 接口，许多 LangChain 抽象都支持该接口！
 
 
 ```python
@@ -306,7 +296,7 @@ for chunk in model.stream("cat"):
 ```output
 c|a|t||
 ```
-Please see the implementation of `_astream` in the model! If you do not implement it, then no output will stream.!
+请查看模型中 `_astream` 的实现！如果您没有实现它，则不会有输出流。！
 
 
 ```python
@@ -316,7 +306,7 @@ async for chunk in model.astream("cat"):
 ```output
 c|a|t||
 ```
-Let's try to use the astream events API which will also help double check that all the callbacks were implemented!
+让我们尝试使用 astream 事件 API，这也将帮助双重检查所有回调是否已实现！
 
 
 ```python
@@ -331,53 +321,51 @@ async for event in model.astream_events("cat", version="v1"):
 {'event': 'on_chat_model_stream', 'run_id': '125a2a16-b9cd-40de-aa08-8aa9180b07d0', 'tags': [], 'metadata': {}, 'name': 'CustomChatModelAdvanced', 'data': {'chunk': AIMessageChunk(content='', response_metadata={'time_in_sec': 3}, id='run-125a2a16-b9cd-40de-aa08-8aa9180b07d0')}}
 {'event': 'on_chat_model_end', 'name': 'CustomChatModelAdvanced', 'run_id': '125a2a16-b9cd-40de-aa08-8aa9180b07d0', 'tags': [], 'metadata': {}, 'data': {'output': AIMessageChunk(content='cat', response_metadata={'time_in_sec': 3}, id='run-125a2a16-b9cd-40de-aa08-8aa9180b07d0')}}
 ``````output
-/home/eugene/src/langchain/libs/core/langchain_core/_api/beta_decorator.py:87: LangChainBetaWarning: This API is in beta and may change in the future.
+/home/eugene/src/langchain/libs/core/langchain_core/_api/beta_decorator.py:87: LangChainBetaWarning: 此 API 处于测试阶段，未来可能会更改。
   warn_beta(
 ```
-## Contributing
 
-We appreciate all chat model integration contributions. 
+## 贡献
 
-Here's a checklist to help make sure your contribution gets added to LangChain:
+我们非常感谢所有聊天模型集成的贡献。
 
-Documentation:
+以下是一个清单，以帮助确保您的贡献被添加到 LangChain 中：
 
-* The model contains doc-strings for all initialization arguments, as these will be surfaced in the [APIReference](https://api.python.langchain.com/en/stable/langchain_api_reference.html).
-* The class doc-string for the model contains a link to the model API if the model is powered by a service.
+文档：
 
-Tests:
+* 模型包含所有初始化参数的文档字符串，因为这些将在 [APIReference](https://api.python.langchain.com/en/stable/langchain_api_reference.html) 中显示。
+* 如果模型由服务提供支持，则模型的类文档字符串包含指向模型 API 的链接。
 
-* [ ] Add unit or integration tests to the overridden methods. Verify that `invoke`, `ainvoke`, `batch`, `stream` work if you've over-ridden the corresponding code.
+测试：
 
+* [ ] 为重写的方法添加单元测试或集成测试。如果您重写了相应的代码，请验证 `invoke`、`ainvoke`、`batch`、`stream` 是否正常工作。
 
-Streaming (if you're implementing it):
+流式传输（如果您正在实现）：
 
-* [ ] Implement the _stream method to get streaming working
+* [ ] 实现 _stream 方法以使流式传输正常工作。
 
-Stop Token Behavior:
+停止标记行为：
 
-* [ ] Stop token should be respected
-* [ ] Stop token should be INCLUDED as part of the response
+* [ ] 应尊重停止标记。
+* [ ] 停止标记应作为响应的一部分包含在内。
 
-Secret API Keys:
+秘密 API 密钥：
 
-* [ ] If your model connects to an API it will likely accept API keys as part of its initialization. Use Pydantic's `SecretStr` type for secrets, so they don't get accidentally printed out when folks print the model.
+* [ ] 如果您的模型连接到 API，它可能会在初始化时接受 API 密钥。使用 Pydantic 的 `SecretStr` 类型来处理秘密，以便在有人打印模型时不会意外打印出来。
 
+识别参数：
 
-Identifying Params:
+* [ ] 在识别参数中包含 `model_name`。
 
-* [ ] Include a `model_name` in identifying params
+优化：
 
+考虑提供原生异步支持，以减少模型的开销！
 
-Optimizations:
+* [ ] 提供 `_agenerate` 的原生异步支持（用于 `ainvoke`）。
+* [ ] 提供 `_astream` 的原生异步支持（用于 `astream`）。
 
-Consider providing native async support to reduce the overhead from the model!
- 
-* [ ] Provided a native async of `_agenerate` (used by `ainvoke`)
-* [ ] Provided a native async of `_astream` (used by `astream`)
+## 下一步
 
-## Next steps
+您现在已经学习了如何创建自己的自定义聊天模型。
 
-You've now learned how to create your own custom chat models.
-
-Next, check out the other how-to guides chat models in this section, like [how to get a model to return structured output](/docs/how_to/structured_output) or [how to track chat model token usage](/docs/how_to/chat_token_usage_tracking).
+接下来，请查看本节中其他关于聊天模型的操作指南，例如 [如何让模型返回结构化输出](/docs/how_to/structured_output) 或 [如何跟踪聊天模型的令牌使用情况](/docs/how_to/chat_token_usage_tracking)。

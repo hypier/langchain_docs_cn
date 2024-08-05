@@ -2,33 +2,32 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/tutorials/data_generation.ipynb
 sidebar_class_name: hidden
 ---
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/langchain-ai/langchain/blob/master/docs/docs/use_cases/data_generation.ipynb)
+[![在 Colab 中打开](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/langchain-ai/langchain/blob/master/docs/docs/use_cases/data_generation.ipynb)
 
-# Generate Synthetic Data
+# 生成合成数据
 
-Synthetic data is artificially generated data, rather than data collected from real-world events. It's used to simulate real data without compromising privacy or encountering real-world limitations. 
+合成数据是人工生成的数据，而不是从现实世界事件中收集的数据。它用于模拟真实数据，而不会侵犯隐私或遇到现实世界的限制。
 
-Benefits of Synthetic Data:
+合成数据的好处：
 
-1. **Privacy and Security**: No real personal data at risk of breaches.
-2. **Data Augmentation**: Expands datasets for machine learning.
-3. **Flexibility**: Create specific or rare scenarios.
-4. **Cost-effective**: Often cheaper than real-world data collection.
-5. **Regulatory Compliance**: Helps navigate strict data protection laws.
-6. **Model Robustness**: Can lead to better generalizing AI models.
-7. **Rapid Prototyping**: Enables quick testing without real data.
-8. **Controlled Experimentation**: Simulate specific conditions.
-9. **Access to Data**: Alternative when real data isn't available.
+1. **隐私和安全**：没有真实的个人数据面临泄露风险。
+2. **数据增强**：扩展机器学习的数据集。
+3. **灵活性**：创建特定或稀有的场景。
+4. **成本效益**：通常比现实世界的数据收集便宜。
+5. **合规性**：帮助应对严格的数据保护法律。
+6. **模型鲁棒性**：可以导致更好的通用化AI模型。
+7. **快速原型制作**：无需真实数据即可快速测试。
+8. **受控实验**：模拟特定条件。
+9. **数据访问**：在真实数据不可用时的替代方案。
 
-Note: Despite the benefits, synthetic data should be used carefully, as it may not always capture real-world complexities.
+注意：尽管有这些好处，合成数据应谨慎使用，因为它可能并不总是能够捕捉现实世界的复杂性。
 
-## Quickstart
+## 快速入门
 
-In this notebook, we'll dive deep into generating synthetic medical billing records using the langchain library. This tool is particularly useful when you want to develop or test algorithms but don't want to use real patient data due to privacy concerns or data availability issues.
+在本笔记本中，我们将深入探讨如何使用 langchain 库生成合成医疗账单记录。当您想要开发或测试算法，但由于隐私问题或数据可用性问题不想使用真实患者数据时，这个工具特别有用。
 
-### Setup
-First, you'll need to have the langchain library installed, along with its dependencies. Since we're using the OpenAI generator chain, we'll install that as well. Since this is an experimental lib, we'll need to include `langchain_experimental` in our installs. We'll then import the necessary modules.
-
+### 设置
+首先，您需要安装 langchain 库及其依赖项。由于我们使用的是 OpenAI 生成器链，因此也需要安装它。由于这是一个实验性库，我们需要在安装中包含 `langchain_experimental`。然后我们将导入必要的模块。
 
 ```python
 %pip install --upgrade --quiet  langchain langchain_experimental langchain-openai
@@ -49,9 +48,8 @@ from langchain_experimental.tabular_synthetic_data.prompts import (
 from langchain_openai import ChatOpenAI
 ```
 
-## 1. Define Your Data Model
-Every dataset has a structure or a "schema". The MedicalBilling class below serves as our schema for the synthetic data. By defining this, we're informing our synthetic data generator about the shape and nature of data we expect.
-
+## 1. 定义您的数据模型
+每个数据集都有一个结构或“模式”。下面的 MedicalBilling 类作为我们合成数据的模式。通过定义这一点，我们在向合成数据生成器说明我们期望的数据的形状和性质。
 
 ```python
 class MedicalBilling(BaseModel):
@@ -63,13 +61,12 @@ class MedicalBilling(BaseModel):
     insurance_claim_amount: float
 ```
 
-For instance, every record will have a `patient_id` that's an integer, a `patient_name` that's a string, and so on.
+例如，每条记录将具有一个整数类型的 `patient_id`，一个字符串类型的 `patient_name`，等等。
 
-## 2. Sample Data
-To guide the synthetic data generator, it's useful to provide it with a few real-world-like examples. These examples serve as a "seed" - they're representative of the kind of data you want, and the generator will use them to create more data that looks similar.
+## 2. 示例数据
+为了指导合成数据生成器，提供一些类似真实世界的示例是很有用的。这些示例作为“种子” - 它们代表了您想要的数据类型，生成器将使用它们创建更多看起来相似的数据。
 
-Here are some fictional medical billing records:
-
+以下是一些虚构的医疗账单记录：
 
 ```python
 examples = [
@@ -88,9 +85,8 @@ examples = [
 ]
 ```
 
-## 3. Craft a Prompt Template
-The generator doesn't magically know how to create our data; we need to guide it. We do this by creating a prompt template. This template helps instruct the underlying language model on how to produce synthetic data in the desired format.
-
+## 3. 创建提示模板
+生成器并不是凭空知道如何创建我们的数据；我们需要引导它。我们通过创建一个提示模板来实现这一点。这个模板帮助指导底层语言模型如何以所需格式生成合成数据。
 
 ```python
 OPENAI_TEMPLATE = PromptTemplate(input_variables=["example"], template="{example}")
@@ -104,16 +100,15 @@ prompt_template = FewShotPromptTemplate(
 )
 ```
 
-The `FewShotPromptTemplate` includes:
+`FewShotPromptTemplate` 包含：
 
-- `prefix` and `suffix`: These likely contain guiding context or instructions.
-- `examples`: The sample data we defined earlier.
-- `input_variables`: These variables ("subject", "extra") are placeholders you can dynamically fill later. For instance, "subject" might be filled with "medical_billing" to guide the model further.
-- `example_prompt`: This prompt template is the format we want each example row to take in our prompt.
+- `prefix` 和 `suffix`：这些可能包含指导上下文或指令。
+- `examples`：我们之前定义的示例数据。
+- `input_variables`：这些变量（"subject", "extra"）是您可以动态填充的占位符。例如，"subject" 可能填充为 "medical_billing"，以进一步引导模型。
+- `example_prompt`：这个提示模板是我们希望每个示例行在提示中采用的格式。
 
-## 4. Creating the Data Generator
-With the schema and the prompt ready, the next step is to create the data generator. This object knows how to communicate with the underlying language model to get synthetic data.
-
+## 4. 创建数据生成器
+在准备好模式和提示后，下一步是创建数据生成器。这个对象知道如何与底层语言模型进行通信以获取合成数据。
 
 ```python
 synthetic_data_generator = create_openai_data_generator(
@@ -125,8 +120,8 @@ synthetic_data_generator = create_openai_data_generator(
 )
 ```
 
-## 5. Generate Synthetic Data
-Finally, let's get our synthetic data!
+## 5. 生成合成数据
+最后，让我们获取我们的合成数据！
 
 
 ```python
@@ -137,9 +132,9 @@ synthetic_results = synthetic_data_generator.generate(
 )
 ```
 
-This command asks the generator to produce 10 synthetic medical billing records. The results are stored in `synthetic_results`. The output will be a list of the MedicalBilling pydantic models.
+此命令要求生成器生成 10 条合成的医疗账单记录。结果存储在 `synthetic_results` 中。输出将是一个 MedicalBilling pydantic 模型的列表。
 
-### Other implementations
+### 其他实现
 
 
 
@@ -168,7 +163,7 @@ chain({"fields": ["blue", "yellow"], "preferences": {}})
 ```output
 {'fields': ['blue', 'yellow'],
  'preferences': {},
- 'text': 'The vibrant blue sky contrasted beautifully with the bright yellow sun, creating a stunning display of colors that instantly lifted the spirits of all who gazed upon it.'}
+ 'text': '生动的蓝天与明亮的黄太阳形成了美丽的对比，创造出令人惊叹的色彩展示，瞬间提升了所有凝视它的人的精神。'}
 ```
 
 
@@ -177,7 +172,7 @@ chain({"fields": ["blue", "yellow"], "preferences": {}})
 chain(
     {
         "fields": {"colors": ["blue", "yellow"]},
-        "preferences": {"style": "Make it in a style of a weather forecast."},
+        "preferences": {"style": "以天气预报的风格呈现。"},
     }
 )
 ```
@@ -186,8 +181,8 @@ chain(
 
 ```output
 {'fields': {'colors': ['blue', 'yellow']},
- 'preferences': {'style': 'Make it in a style of a weather forecast.'},
- 'text': "Good morning! Today's weather forecast brings a beautiful combination of colors to the sky, with hues of blue and yellow gently blending together like a mesmerizing painting."}
+ 'preferences': {'style': '以天气预报的风格呈现。'},
+ 'text': "早上好！今天的天气预报为天空带来了美丽的色彩组合，蓝色和黄色的色调轻柔地融合在一起，就像一幅迷人的画作。"}
 ```
 
 
@@ -206,7 +201,7 @@ chain(
 ```output
 {'fields': {'actor': 'Tom Hanks', 'movies': ['Forrest Gump', 'Green Mile']},
  'preferences': None,
- 'text': 'Tom Hanks, the renowned actor known for his incredible versatility and charm, has graced the silver screen in unforgettable movies such as "Forrest Gump" and "Green Mile".'}
+ 'text': '汤姆·汉克斯，这位以其惊人多才多艺和魅力而闻名的演员，在《阿甘正传》和《绿里奇迹》等令人难忘的电影中闪耀着银幕。'}
 ```
 
 
@@ -218,7 +213,7 @@ chain(
             {"actor": "Tom Hanks", "movies": ["Forrest Gump", "Green Mile"]},
             {"actor": "Mads Mikkelsen", "movies": ["Hannibal", "Another round"]},
         ],
-        "preferences": {"minimum_length": 200, "style": "gossip"},
+        "preferences": {"minimum_length": 200, "style": "八卦"},
     }
 )
 ```
@@ -228,15 +223,14 @@ chain(
 ```output
 {'fields': [{'actor': 'Tom Hanks', 'movies': ['Forrest Gump', 'Green Mile']},
   {'actor': 'Mads Mikkelsen', 'movies': ['Hannibal', 'Another round']}],
- 'preferences': {'minimum_length': 200, 'style': 'gossip'},
- 'text': 'Did you know that Tom Hanks, the beloved Hollywood actor known for his roles in "Forrest Gump" and "Green Mile", has shared the screen with the talented Mads Mikkelsen, who gained international acclaim for his performances in "Hannibal" and "Another round"? These two incredible actors have brought their exceptional skills and captivating charisma to the big screen, delivering unforgettable performances that have enthralled audiences around the world. Whether it\'s Hanks\' endearing portrayal of Forrest Gump or Mikkelsen\'s chilling depiction of Hannibal Lecter, these movies have solidified their places in cinematic history, leaving a lasting impact on viewers and cementing their status as true icons of the silver screen.'}
+ 'preferences': {'minimum_length': 200, 'style': '八卦'},
+ 'text': '你知道吗，汤姆·汉克斯，这位因在《阿甘正传》和《绿里奇迹》中的角色而备受喜爱的好莱坞演员，曾与才华横溢的麦ads·米克尔森同台演出，后者因在《汉尼拔》和《另一轮》中出色的表演而获得国际认可？这两位杰出的演员将他们卓越的技能和迷人的魅力带到了大银幕上，呈现了令人难忘的表演，吸引了全世界的观众。无论是汉克斯对阿甘的动人演绎，还是米克尔森对汉尼拔·莱克特的令人毛骨悚然的刻画，这些电影都巩固了他们在电影史上的地位，对观众产生了深远的影响，使他们成为真正的银幕偶像。'}
 ```
 
 
-As we can see created examples are diversified and possess information we wanted them to have. Also, their style reflects the given preferences quite well.
+可以看出，创建的示例多样化，并具备我们希望它们拥有的信息。同时，它们的风格很好地反映了给定的偏好。
 
-## Generating exemplary dataset for extraction benchmarking purposes
-
+## 生成示例数据集以进行提取基准测试
 
 ```python
 inp = [
@@ -266,12 +260,9 @@ generator = DatasetGenerator(model, {"style": "informal", "minimal length": 500}
 dataset = generator(inp)
 ```
 
-
 ```python
 dataset
 ```
-
-
 
 ```output
 [{'fields': {'Actor': 'Tom Hanks',
@@ -281,7 +272,7 @@ dataset
     'Toy Story',
     'Catch Me If You Can']},
   'preferences': {'style': 'informal', 'minimal length': 500},
-  'text': 'Tom Hanks, the versatile and charismatic actor, has graced the silver screen in numerous iconic films including the heartwarming and inspirational "Forrest Gump," the intense and gripping war drama "Saving Private Ryan," the emotionally charged and thought-provoking "The Green Mile," the beloved animated classic "Toy Story," and the thrilling and captivating true story adaptation "Catch Me If You Can." With his impressive range and genuine talent, Hanks continues to captivate audiences worldwide, leaving an indelible mark on the world of cinema.'},
+  'text': '汤姆·汉克斯，这位多才多艺且富有魅力的演员，曾在无数经典影片中闪耀银幕，包括温暖人心且激励人心的《阿甘正传》，紧张刺激的战争剧《拯救大兵瑞恩》，情感丰富且发人深省的《绿里奇迹》，深受喜爱的动画经典《玩具总动员》，以及令人兴奋且引人入胜的真实故事改编《大追捕》。凭借他令人印象深刻的表演范围和真诚的才华，汉克斯继续吸引全球观众，给电影界留下不可磨灭的印记。'},
  {'fields': {'Actor': 'Tom Hardy',
    'Film': ['Inception',
     'The Dark Knight Rises',
@@ -289,12 +280,11 @@ dataset
     'The Revenant',
     'Dunkirk']},
   'preferences': {'style': 'informal', 'minimal length': 500},
-  'text': 'Tom Hardy, the versatile actor known for his intense performances, has graced the silver screen in numerous iconic films, including "Inception," "The Dark Knight Rises," "Mad Max: Fury Road," "The Revenant," and "Dunkirk." Whether he\'s delving into the depths of the subconscious mind, donning the mask of the infamous Bane, or navigating the treacherous wasteland as the enigmatic Max Rockatansky, Hardy\'s commitment to his craft is always evident. From his breathtaking portrayal of the ruthless Eames in "Inception" to his captivating transformation into the ferocious Max in "Mad Max: Fury Road," Hardy\'s dynamic range and magnetic presence captivate audiences and leave an indelible mark on the world of cinema. In his most physically demanding role to date, he endured the harsh conditions of the freezing wilderness as he portrayed the rugged frontiersman John Fitzgerald in "The Revenant," earning him critical acclaim and an Academy Award nomination. In Christopher Nolan\'s war epic "Dunkirk," Hardy\'s stoic and heroic portrayal of Royal Air Force pilot Farrier showcases his ability to convey deep emotion through nuanced performances. With his chameleon-like ability to inhabit a wide range of characters and his unwavering commitment to his craft, Tom Hardy has undoubtedly solidified his place as one of the most talented and sought-after actors of his generation.'}]
+  'text': '汤姆·哈迪，这位以其强烈表演而闻名的多才多艺演员，曾在无数经典影片中闪耀银幕，包括《盗梦空间》，《黑暗骑士崛起》，《疯狂麦克斯：狂怒道》，《荒野猎人》，以及《敦刻尔克》。无论是深入潜意识的深处，还是化身臭名昭著的贝恩，亦或是在神秘的麦克斯·洛卡坦斯基身上穿越危险的荒原，哈迪对其艺术的执着始终显而易见。从他在《盗梦空间》中对无情的伊姆斯的惊人演绎，到他在《疯狂麦克斯：狂怒道》中对凶猛麦克斯的迷人转变，哈迪的多样表演范围和迷人气质吸引了观众，并在电影界留下了不可磨灭的印记。在他迄今为止最具身体挑战性的角色中，他在《荒野猎人》中忍受了冰冷荒野的严酷条件，成功塑造了粗犷的边疆人约翰·菲茨杰拉德，赢得了评论界的赞誉和奥斯卡提名。在克里斯托弗·诺兰的战争史诗《敦刻尔克》中，哈迪对皇家空军飞行员法里尔的冷静而英勇的演绎展示了他通过细腻的表演传达深刻情感的能力。凭借其像变色龙般的能力去塑造各种角色以及对艺术的坚定承诺，汤姆·哈迪无疑巩固了自己作为当代最有才华和最受追捧的演员之一的地位。'}]
 ```
 
-
-## Extraction from generated examples
-Okay, let's see if we can now extract output from this generated data and how it compares with our case!
+## 从生成的示例中提取
+好的，让我们看看我们是否可以从这个生成的数据中提取输出，以及它与我们的案例的比较情况！
 
 
 ```python
@@ -314,7 +304,7 @@ class Actor(BaseModel):
     Film: List[str] = Field(description="list of names of films they starred in")
 ```
 
-### Parsers
+### 解析器
 
 
 ```python
@@ -322,7 +312,7 @@ llm = OpenAI()
 parser = PydanticOutputParser(pydantic_object=Actor)
 
 prompt = PromptTemplate(
-    template="Extract fields from a given text.\n{format_instructions}\n{text}\n",
+    template="从给定文本中提取字段。\n{format_instructions}\n{text}\n",
     input_variables=["text"],
     partial_variables={"format_instructions": parser.get_format_instructions()},
 )
@@ -352,8 +342,7 @@ Actor(Actor='Tom Hanks', Film=['Forrest Gump', 'Saving Private Ryan', 'The Green
 True
 ```
 
-
-### Extractors
+### 提取器
 
 
 ```python
@@ -379,4 +368,3 @@ extracted
 ```output
 True
 ```
-

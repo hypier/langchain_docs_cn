@@ -1,47 +1,45 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/google_spanner.ipynb
 ---
+
 # Google Spanner
 
-> [Spanner](https://cloud.google.com/spanner) is a highly scalable database that combines unlimited scalability with relational semantics, such as secondary indexes, strong consistency, schemas, and SQL providing 99.999% availability in one easy solution.
+> [Spanner](https://cloud.google.com/spanner) 是一个高度可扩展的数据库，它将无限的可扩展性与关系语义相结合，例如二级索引、强一致性、模式和 SQL，提供 99.999% 的可用性，提供一个简单的解决方案。
 
-This notebook goes over how to use [Spanner](https://cloud.google.com/spanner) to [save, load and delete langchain documents](/docs/how_to#document-loaders) with `SpannerLoader` and `SpannerDocumentSaver`.
+本笔记本介绍了如何使用 [Spanner](https://cloud.google.com/spanner) 通过 `SpannerLoader` 和 `SpannerDocumentSaver` [保存、加载和删除 langchain 文档](/docs/how_to#document-loaders)。
 
-Learn more about the package on [GitHub](https://github.com/googleapis/langchain-google-spanner-python/).
+在 [GitHub](https://github.com/googleapis/langchain-google-spanner-python/) 上了解更多关于该包的信息。
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/googleapis/langchain-google-spanner-python/blob/main/docs/document_loader.ipynb)
 
-## Before You Begin
+## 开始之前
 
-To run this notebook, you will need to do the following:
+要运行此笔记本，您需要执行以下操作：
 
-* [Create a Google Cloud Project](https://developers.google.com/workspace/guides/create-project)
-* [Enable the Cloud Spanner API](https://console.cloud.google.com/flows/enableapi?apiid=spanner.googleapis.com)
-* [Create a Spanner instance](https://cloud.google.com/spanner/docs/create-manage-instances)
-* [Create a Spanner database](https://cloud.google.com/spanner/docs/create-manage-databases)
-* [Create a Spanner table](https://cloud.google.com/spanner/docs/create-query-database-console#create-schema)
+* [创建一个 Google Cloud 项目](https://developers.google.com/workspace/guides/create-project)
+* [启用 Cloud Spanner API](https://console.cloud.google.com/flows/enableapi?apiid=spanner.googleapis.com)
+* [创建一个 Spanner 实例](https://cloud.google.com/spanner/docs/create-manage-instances)
+* [创建一个 Spanner 数据库](https://cloud.google.com/spanner/docs/create-manage-databases)
+* [创建一个 Spanner 表](https://cloud.google.com/spanner/docs/create-query-database-console#create-schema)
 
-After confirmed access to database in the runtime environment of this notebook, filling the following values and run the cell before running example scripts.
-
+在确认对该笔记本运行时环境中的数据库的访问权限后，填写以下值并在运行示例脚本之前运行该单元格。
 
 ```python
-# @markdown Please specify an instance id, a database, and a table for demo purpose.
+# @markdown 请指定一个实例 ID、一个数据库和一个表以供演示使用。
 INSTANCE_ID = "test_instance"  # @param {type:"string"}
 DATABASE_ID = "test_database"  # @param {type:"string"}
 TABLE_NAME = "test_table"  # @param {type:"string"}
 ```
 
-### 🦜🔗 Library Installation
+### 🦜🔗 库安装
 
-The integration lives in its own `langchain-google-spanner` package, so we need to install it.
-
+集成位于其自己的 `langchain-google-spanner` 包中，因此我们需要安装它。
 
 ```python
 %pip install -upgrade --quiet langchain-google-spanner langchain
 ```
 
-**Colab only**: Uncomment the following cell to restart the kernel or use the button to restart the kernel. For Vertex AI Workbench you can restart the terminal using the button on top.
-
+**仅限 Colab**：取消注释以下单元以重新启动内核，或使用按钮重新启动内核。对于 Vertex AI Workbench，您可以使用顶部的按钮重新启动终端。
 
 ```python
 # # Automatically restart kernel after installs so that your environment can access the new packages
@@ -51,31 +49,30 @@ The integration lives in its own `langchain-google-spanner` package, so we need 
 # app.kernel.do_shutdown(True)
 ```
 
-### ☁ Set Your Google Cloud Project
-Set your Google Cloud project so that you can leverage Google Cloud resources within this notebook.
+### ☁ 设置您的 Google Cloud 项目
+设置您的 Google Cloud 项目，以便您可以在此笔记本中利用 Google Cloud 资源。
 
-If you don't know your project ID, try the following:
+如果您不知道您的项目 ID，请尝试以下方法：
 
-* Run `gcloud config list`.
-* Run `gcloud projects list`.
-* See the support page: [Locate the project ID](https://support.google.com/googleapi/answer/7014113).
-
+* 运行 `gcloud config list`。
+* 运行 `gcloud projects list`。
+* 查看支持页面：[查找项目 ID](https://support.google.com/googleapi/answer/7014113)。
 
 ```python
-# @markdown Please fill in the value below with your Google Cloud project ID and then run the cell.
+# @markdown 请输入您的 Google Cloud 项目 ID，然后运行该单元格。
 
 PROJECT_ID = "my-project-id"  # @param {type:"string"}
 
-# Set the project id
+# 设置项目 ID
 !gcloud config set project {PROJECT_ID}
 ```
 
-### 🔐 Authentication
+### 🔐 身份验证
 
-Authenticate to Google Cloud as the IAM user logged into this notebook in order to access your Google Cloud Project.
+以已登录此笔记本的 IAM 用户身份对 Google Cloud 进行身份验证，以便访问您的 Google Cloud 项目。
 
-- If you are using Colab to run this notebook, use the cell below and continue.
-- If you are using Vertex AI Workbench, check out the setup instructions [here](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env).
+- 如果您正在使用 Colab 运行此笔记本，请使用下面的单元格并继续。
+- 如果您正在使用 Vertex AI Workbench，请查看 [这里](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env) 的设置说明。
 
 
 ```python
@@ -84,16 +81,15 @@ from google.colab import auth
 auth.authenticate_user()
 ```
 
-## Basic Usage
+## 基本用法
 
-### Save documents
+### 保存文档
 
-Save langchain documents with `SpannerDocumentSaver.add_documents(<documents>)`. To initialize `SpannerDocumentSaver` class you need to provide 3 things:
+使用 `SpannerDocumentSaver.add_documents(<documents>)` 保存 langchain 文档。要初始化 `SpannerDocumentSaver` 类，您需要提供 3 个参数：
 
-1. `instance_id` - An instance of Spanner to load data from.
-1. `database_id` - An instance of Spanner database to load data from.
-1. `table_name` - The name of the table within the Spanner database to store langchain documents.
-
+1. `instance_id` - 用于加载数据的 Spanner 实例。
+1. `database_id` - 用于加载数据的 Spanner 数据库实例。
+1. `table_name` - 在 Spanner 数据库中存储 langchain 文档的表名。
 
 ```python
 from langchain_core.documents import Document
@@ -122,18 +118,17 @@ saver = SpannerDocumentSaver(
 saver.add_documents(test_docs)
 ```
 
-### Querying for Documents from Spanner
+### 从 Spanner 查询文档
 
-For more details on connecting to a Spanner table, please check the [Python SDK documentation](https://cloud.google.com/python/docs/reference/spanner/latest).
+有关连接到 Spanner 表的更多详细信息，请查看 [Python SDK 文档](https://cloud.google.com/python/docs/reference/spanner/latest)。
 
-#### Load documents from table
+#### 从表中加载文档
 
-Load langchain documents with `SpannerLoader.load()` or `SpannerLoader.lazy_load()`. `lazy_load` returns a generator that only queries database during the iteration. To initialize `SpannerLoader` class you need to provide:
+使用 `SpannerLoader.load()` 或 `SpannerLoader.lazy_load()` 加载 langchain 文档。`lazy_load` 返回一个生成器，该生成器在迭代期间仅查询数据库。要初始化 `SpannerLoader` 类，您需要提供：
 
-1. `instance_id` - An instance of Spanner to load data from.
-1. `database_id` - An instance of Spanner database to load data from.
-1. `query` - A query of the database dialect.
-
+1. `instance_id` - 要加载数据的 Spanner 实例。
+1. `database_id` - 要加载数据的 Spanner 数据库实例。
+1. `query` - 数据库方言的查询。
 
 ```python
 from langchain_google_spanner import SpannerLoader
@@ -150,9 +145,9 @@ for doc in loader.lazy_load():
     break
 ```
 
-### Delete documents
+### 删除文档
 
-Delete a list of langchain documents from the table with `SpannerDocumentSaver.delete(<documents>)`.
+使用 `SpannerDocumentSaver.delete(<documents>)` 从表中删除一系列 langchain 文档。
 
 
 ```python
@@ -164,12 +159,11 @@ saver.delete([doc])
 print("Documents after delete:", loader.load())
 ```
 
-## Advanced Usage
+## 高级用法
 
-### Custom client
+### 自定义客户端
 
-The client created by default is the default client. To pass in `credentials` and `project` explicitly, a custom client can be passed to the constructor.
-
+默认创建的客户端是默认客户端。要显式传入 `credentials` 和 `project`，可以将自定义客户端传递给构造函数。
 
 ```python
 from google.cloud import spanner
@@ -185,13 +179,13 @@ loader = SpannerLoader(
 )
 ```
 
-### Customize Document Page Content & Metadata
+### 自定义文档页面内容和元数据
 
-The loader will returns a list of Documents with page content from a specific data columns. All other data columns will be added to metadata. Each row becomes a document.
+加载器将返回一个包含特定数据列页面内容的文档列表。所有其他数据列将被添加到元数据中。每一行变成一个文档。
 
-#### Customize page content format
+#### 自定义页面内容格式
 
-The SpannerLoader assumes there is a column called `page_content`. These defaults can be changed like so:
+SpannerLoader 假设有一个名为 `page_content` 的列。这些默认值可以这样更改：
 
 
 ```python
@@ -200,11 +194,11 @@ custom_content_loader = SpannerLoader(
 )
 ```
 
-If multiple columns are specified, the page content's string format will default to `text` (space-separated string concatenation). There are other format that user can specify, including `text`, `JSON`, `YAML`, `CSV`.
+如果指定多个列，页面内容的字符串格式将默认为 `text`（以空格分隔的字符串连接）。用户可以指定其他格式，包括 `text`、`JSON`、`YAML`、`CSV`。
 
-#### Customize metadata format
+#### 自定义元数据格式
 
-The SpannerLoader assumes there is a metadata column called `langchain_metadata` that store JSON data. The metadata column will be used as the base dictionary. By default, all other column data will be added and may overwrite the original value. These defaults can be changed like so:
+SpannerLoader 假设有一个名为 `langchain_metadata` 的元数据列，用于存储 JSON 数据。元数据列将用作基础字典。默认情况下，所有其他列的数据将被添加，并可能覆盖原始值。这些默认值可以这样更改：
 
 
 ```python
@@ -213,9 +207,9 @@ custom_metadata_loader = SpannerLoader(
 )
 ```
 
-#### Customize JSON metadata column name
+#### 自定义 JSON 元数据列名称
 
-By default, the loader uses `langchain_metadata` as the base dictionary. This can be customized to select a JSON column to use as base dictionary for the Document's metadata.
+默认情况下，加载器使用 `langchain_metadata` 作为基础字典。这可以自定义以选择一个 JSON 列作为文档元数据的基础字典。 
 
 
 ```python
@@ -224,10 +218,9 @@ custom_metadata_json_loader = SpannerLoader(
 )
 ```
 
-### Custom staleness
+### 自定义陈旧性
 
-The default [staleness](https://cloud.google.com/python/docs/reference/spanner/latest/snapshot-usage#beginning-a-snapshot) is 15s. This can be customized by specifying a weaker bound (which can either be to perform all reads as of a given timestamp), or as of a given duration in the past.
-
+默认的 [陈旧性](https://cloud.google.com/python/docs/reference/spanner/latest/snapshot-usage#beginning-a-snapshot) 为 15 秒。可以通过指定较弱的边界进行自定义（这可以是以给定时间戳进行的所有读取），或者是过去给定持续时间的读取。
 
 ```python
 import datetime
@@ -241,7 +234,6 @@ custom_timestamp_loader = SpannerLoader(
 )
 ```
 
-
 ```python
 duration = 20.0
 custom_duration_loader = SpannerLoader(
@@ -252,10 +244,9 @@ custom_duration_loader = SpannerLoader(
 )
 ```
 
-### Turn on data boost
+### 开启数据增强
 
-By default, the loader will not use [data boost](https://cloud.google.com/spanner/docs/databoost/databoost-overview) since it has additional costs associated, and require additional IAM permissions. However, user can choose to turn it on.
-
+默认情况下，加载器不会使用 [数据增强](https://cloud.google.com/spanner/docs/databoost/databoost-overview)，因为这会产生额外的费用，并且需要额外的 IAM 权限。不过，用户可以选择开启它。
 
 ```python
 custom_databoost_loader = SpannerLoader(
@@ -266,10 +257,9 @@ custom_databoost_loader = SpannerLoader(
 )
 ```
 
-### Custom client
+### 自定义客户端
 
-The client created by default is the default client. To pass in `credentials` and `project` explicitly, a custom client can be passed to the constructor.
-
+默认创建的客户端是默认客户端。要显式传入 `credentials` 和 `project`，可以将自定义客户端传递给构造函数。
 
 ```python
 from google.cloud import spanner
@@ -283,16 +273,15 @@ saver = SpannerDocumentSaver(
 )
 ```
 
-### Custom initialization for SpannerDocumentSaver
+### SpannerDocumentSaver 的自定义初始化
 
-The SpannerDocumentSaver allows custom initialization. This allows user to specify how the Document is saved into the table.
+SpannerDocumentSaver 允许自定义初始化。这使用户可以指定如何将文档保存到表中。
 
+content_column: 这将作为文档页面内容的列名。默认为 `page_content`。
 
-content_column: This will be used as the column name for the Document's page content. Defaulted to `page_content`.
+metadata_columns: 如果文档的元数据中存在键，这些元数据将被保存到特定的列中。
 
-metadata_columns: These metadata will be saved into specific columns if the key exists in the Document's metadata.
-
-metadata_json_column: This will be the column name for the spcial JSON column. Defaulted to `langchain_metadata`.
+metadata_json_column: 这将是特殊 JSON 列的列名。默认为 `langchain_metadata`。
 
 
 ```python
@@ -306,9 +295,9 @@ custom_saver = SpannerDocumentSaver(
 )
 ```
 
-### Initialize custom schema for Spanner
+### 初始化 Spanner 的自定义模式
 
-The SpannerDocumentSaver will have a `init_document_table` method to create a new table to store docs with custom schema.
+SpannerDocumentSaver 将有一个 `init_document_table` 方法来创建一个新的表以存储具有自定义模式的文档。
 
 
 ```python
@@ -328,8 +317,7 @@ SpannerDocumentSaver.init_document_table(
 )
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

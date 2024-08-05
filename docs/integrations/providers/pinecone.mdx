@@ -4,32 +4,29 @@ keywords: [pinecone]
 
 # Pinecone
 
->[Pinecone](https://docs.pinecone.io/docs/overview) is a vector database with broad functionality.
+>[Pinecone](https://docs.pinecone.io/docs/overview) 是一个功能广泛的向量数据库。
 
+## 安装和设置
 
-## Installation and Setup
-
-Install the Python SDK:
+安装 Python SDK：
 
 ```bash
 pip install langchain-pinecone
 ```
 
+## 向量存储
 
-## Vector store
-
-There exists a wrapper around Pinecone indexes, allowing you to use it as a vectorstore,
-whether for semantic search or example selection.
+存在一个围绕 Pinecone 索引的封装，允许您将其用作向量存储，无论是用于语义搜索还是示例选择。
 
 ```python
 from langchain_pinecone import PineconeVectorStore
 ```
 
-For a more detailed walkthrough of the Pinecone vectorstore, see [this notebook](/docs/integrations/vectorstores/pinecone)
+有关 Pinecone 向量存储的更详细指南，请参见 [此笔记本](/docs/integrations/vectorstores/pinecone)
 
-## Retrievers
+## 检索器
 
-### Pinecone Hybrid Search
+### Pinecone 混合搜索
 
 ```bash
 pip install pinecone-client pinecone-text
@@ -41,11 +38,10 @@ from langchain_community.retrievers import (
 )
 ```
 
-For more detailed information, see [this notebook](/docs/integrations/retrievers/pinecone_hybrid_search).
+有关更详细的信息，请参见 [此笔记本](/docs/integrations/retrievers/pinecone_hybrid_search).
 
+### 自查询检索器
 
-### Self Query retriever
+Pinecone 向量存储可以用作自查询的检索器。
 
-Pinecone vector store can be used as a retriever for self-querying.
-
-For more detailed information, see [this notebook](/docs/integrations/retrievers/self_query/pinecone).
+有关更详细的信息，请参阅 [此笔记本](/docs/integrations/retrievers/self_query/pinecone)。

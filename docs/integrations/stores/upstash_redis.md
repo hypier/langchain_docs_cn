@@ -2,29 +2,30 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/stores/upstash_redis.ipynb
 sidebar_label: Upstash Redis
 ---
+
 # UpstashRedisByteStore
 
-This will help you get started with Upstash redis [key-value stores](/docs/concepts/#key-value-stores). For detailed documentation of all `UpstashRedisByteStore` features and configurations head to the [API reference](https://api.python.langchain.com/en/latest/storage/langchain_community.storage.upstash_redis.UpstashRedisByteStore.html).
+这将帮助您开始使用 Upstash redis [键值存储](/docs/concepts/#key-value-stores)。有关所有 `UpstashRedisByteStore` 功能和配置的详细文档，请访问 [API 参考](https://api.python.langchain.com/en/latest/storage/langchain_community.storage.upstash_redis.UpstashRedisByteStore.html)。
 
-## Overview
+## 概述
 
-The `UpstashRedisStore` is an implementation of `ByteStore` that stores everything in your [Upstash](https://upstash.com/)-hosted Redis instance.
+`UpstashRedisStore` 是 `ByteStore` 的一个实现，它将所有内容存储在您的 [Upstash](https://upstash.com/)-托管的 Redis 实例中。
 
-To use the base `RedisStore` instead, see [this guide](/docs/integrations/stores/redis/).
+要使用基础的 `RedisStore`，请参阅 [本指南](/docs/integrations/stores/redis/)。
 
-### Integration details
+### 集成细节
 
-| Class | Package | Local | [JS support](https://js.langchain.com/v0.2/docs/integrations/stores/upstash_redis_storage) | Package downloads | Package latest |
+| 类 | 包 | 本地 | [JS 支持](https://js.langchain.com/v0.2/docs/integrations/stores/upstash_redis_storage) | 包下载量 | 包最新版本 |
 | :--- | :--- | :---: | :---: |  :---: | :---: |
 | [UpstashRedisByteStore](https://api.python.langchain.com/en/latest/storage/langchain_community.storage.upstash_redis.UpstashRedisByteStore.html) | [langchain_community](https://api.python.langchain.com/en/latest/community_api_reference.html) | ❌ | ✅ | ![PyPI - Downloads](https://img.shields.io/pypi/dm/langchain_community?style=flat-square&label=%20) | ![PyPI - Version](https://img.shields.io/pypi/v/langchain_community?style=flat-square&label=%20) |
 
-## Setup
+## 设置
 
-You'll first need to [sign up for an Upstash account](https://upstash.com/docs/redis/overall/getstarted). Next, you'll need to create a Redis database to connect to.
+您首先需要 [注册一个 Upstash 账户](https://upstash.com/docs/redis/overall/getstarted)。接下来，您需要创建一个 Redis 数据库以进行连接。
 
-### Credentials
+### 凭证
 
-Once you've created your database, get your database URL (don't forget the `https://`!) and token:
+创建数据库后，获取您的数据库 URL（别忘了 `https://`！）和令牌：
 
 
 ```python
@@ -34,18 +35,18 @@ URL = getpass("Enter your Upstash URL")
 TOKEN = getpass("Enter your Upstash REST token")
 ```
 
-### Installation
+### 安装
 
-The LangChain Upstash integration lives in the `langchain_community` package. You'll also need to install the `upstash-redis` package as a peer dependency:
+LangChain Upstash 集成位于 `langchain_community` 包中。您还需要安装 `upstash-redis` 包作为对等依赖：
 
 
 ```python
 %pip install -qU langchain_community upstash-redis
 ```
 
-## Instantiation
+## 实例化
 
-Now we can instantiate our byte store:
+现在我们可以实例化我们的字节存储：
 
 
 ```python
@@ -56,9 +57,9 @@ redis_client = Redis(url=URL, token=TOKEN)
 kv_store = UpstashRedisByteStore(client=redis_client, ttl=None, namespace="test-ns")
 ```
 
-## Usage
+## 用法
 
-You can set data under keys like this using the `mset` method:
+您可以使用 `mset` 方法在键下设置数据，如下所示：
 
 
 ```python
@@ -84,7 +85,7 @@ kv_store.mget(
 ```
 
 
-And you can delete data using the `mdelete` method:
+您可以使用 `mdelete` 方法删除数据：
 
 
 ```python
@@ -109,12 +110,10 @@ kv_store.mget(
 [None, None]
 ```
 
+## API 参考
 
-## API reference
+有关所有 `UpstashRedisByteStore` 功能和配置的详细文档，请访问 API 参考： https://api.python.langchain.com/en/latest/storage/langchain_community.storage.upstash_redis.UpstashRedisByteStore.html
 
-For detailed documentation of all `UpstashRedisByteStore` features and configurations, head to the API reference: https://api.python.langchain.com/en/latest/storage/langchain_community.storage.upstash_redis.UpstashRedisByteStore.html
+## 相关
 
-
-## Related
-
-- [Key-value store conceptual guide](/docs/concepts/#key-value-stores)
+- [键值存储概念指南](/docs/concepts/#key-value-stores)

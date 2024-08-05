@@ -1,38 +1,36 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/huggingface_endpoint.ipynb
 ---
-# Huggingface Endpoints
 
->The [Hugging Face Hub](https://huggingface.co/docs/hub/index) is a platform with over 120k models, 20k datasets, and 50k demo apps (Spaces), all open source and publicly available, in an online platform where people can easily collaborate and build ML together.
+# Huggingface 端点
 
-The `Hugging Face Hub` also offers various endpoints to build ML applications.
-This example showcases how to connect to the different Endpoints types.
+> [Hugging Face Hub](https://huggingface.co/docs/hub/index) 是一个平台，拥有超过 120,000 个模型、20,000 个数据集和 50,000 个演示应用（Spaces），所有内容均为开源和公开可用，提供一个人们可以轻松协作和共同构建机器学习的在线平台。
 
-In particular, text generation inference is powered by [Text Generation Inference](https://github.com/huggingface/text-generation-inference): a custom-built Rust, Python and gRPC server for blazing-faset text generation inference.
+`Hugging Face Hub` 还提供各种端点来构建机器学习应用。
+本示例展示了如何连接到不同的端点类型。
+
+特别地，文本生成推理由 [Text Generation Inference](https://github.com/huggingface/text-generation-inference) 提供支持：一个定制构建的 Rust、Python 和 gRPC 服务器，用于超快速的文本生成推理。
 
 
 ```python
 from langchain_huggingface import HuggingFaceEndpoint
 ```
 
-## Installation and Setup
+## 安装与设置
 
-To use, you should have the ``huggingface_hub`` python [package installed](https://huggingface.co/docs/huggingface_hub/installation).
-
+要使用此功能，您需要安装 ``huggingface_hub`` python [包](https://huggingface.co/docs/huggingface_hub/installation)。
 
 ```python
 %pip install --upgrade --quiet huggingface_hub
 ```
 
-
 ```python
-# get a token: https://huggingface.co/docs/api-inference/quicktour#get-your-api-token
+# 获取令牌: https://huggingface.co/docs/api-inference/quicktour#get-your-api-token
 
 from getpass import getpass
 
 HUGGINGFACEHUB_API_TOKEN = getpass()
 ```
-
 
 ```python
 import os
@@ -40,7 +38,7 @@ import os
 os.environ["HUGGINGFACEHUB_API_TOKEN"] = HUGGINGFACEHUB_API_TOKEN
 ```
 
-## Prepare Examples
+## 准备示例
 
 
 ```python
@@ -64,10 +62,9 @@ Answer: Let's think step by step."""
 prompt = PromptTemplate.from_template(template)
 ```
 
-## Examples
+## 示例
 
-Here is an example of how you can access `HuggingFaceEndpoint` integration of the free [Serverless Endpoints](https://huggingface.co/inference-endpoints/serverless) API.
-
+以下是如何访问免费的 [Serverless Endpoints](https://huggingface.co/inference-endpoints/serverless) API 的 `HuggingFaceEndpoint` 集成的示例。
 
 ```python
 repo_id = "mistralai/Mistral-7B-Instruct-v0.2"
@@ -82,22 +79,16 @@ llm_chain = prompt | llm
 print(llm_chain.invoke({"question": question}))
 ```
 
-## Dedicated Endpoint
+## 专用端点
 
+免费的无服务器 API 让您可以快速实现解决方案和迭代，但对于重负载使用情况，可能会受到速率限制，因为负载与其他请求共享。
 
-The free serverless API lets you implement solutions and iterate in no time, but it may be rate limited for heavy use cases, since the loads are shared with other requests.
-
-For enterprise workloads, the best is to use [Inference Endpoints - Dedicated](https://huggingface.co/inference-endpoints/dedicated).
-This gives access to a fully managed infrastructure that offer more flexibility and speed. These resoucres come with continuous support and uptime guarantees, as well as options like AutoScaling
-
-
-
+对于企业工作负载，最佳选择是使用 [Inference Endpoints - Dedicated](https://huggingface.co/inference-endpoints/dedicated)。这提供了一个完全托管的基础设施，提供更多的灵活性和速度。这些资源提供持续的支持和正常运行时间保证，以及自动扩展等选项。
 
 ```python
 # Set the url to your Inference Endpoint below
 your_endpoint_url = "https://fayjubiy2xqn36z0.us-east-1.aws.endpoints.huggingface.cloud"
 ```
-
 
 ```python
 llm = HuggingFaceEndpoint(
@@ -112,7 +103,7 @@ llm = HuggingFaceEndpoint(
 llm("What did foo say about bar?")
 ```
 
-### Streaming
+### 流式传输
 
 
 ```python
@@ -132,8 +123,7 @@ llm = HuggingFaceEndpoint(
 llm("What did foo say about bar?", callbacks=[StreamingStdOutCallbackHandler()])
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

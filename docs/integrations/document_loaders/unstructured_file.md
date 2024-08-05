@@ -1,29 +1,26 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/unstructured_file.ipynb
 ---
+
 # Unstructured
 
-This notebook covers how to use `Unstructured` package to load files of many types. `Unstructured` currently supports loading of text files, powerpoints, html, pdfs, images, and more.
+本笔记本介绍如何使用 `Unstructured` 包加载多种类型的文件。`Unstructured` 目前支持加载文本文件、PowerPoint、HTML、PDF、图像等。
 
-Please see [this guide](/docs/integrations/providers/unstructured/) for more instructions on setting up Unstructured locally, including setting up required system dependencies.
-
+请参阅 [此指南](/docs/integrations/providers/unstructured/) 获取有关本地设置 Unstructured 的更多说明，包括设置所需的系统依赖项。
 
 ```python
 # Install package, compatible with API partitioning
 %pip install --upgrade --quiet "langchain-unstructured"
 ```
 
-### Local Partitioning (Optional)
+### 本地分区（可选）
 
-By default, `langchain-unstructured` installs a smaller footprint that requires
-offloading of the partitioning logic to the Unstructured API, which requires an `api_key`. For
-partitioning using the API, refer to the Unstructured API section below.
+默认情况下，`langchain-unstructured` 安装了一个较小的版本，需要将分区逻辑卸载到 Unstructured API，这需要一个 `api_key`。有关使用 API 进行分区的详细信息，请参阅下面的 Unstructured API 部分。
 
-If you would like to run the partitioning logic locally, you will need to install
-a combination of system dependencies, as outlined in the 
-[Unstructured documentation here](https://docs.unstructured.io/open-source/installation/full-installation).
+如果您希望在本地运行分区逻辑，您需要安装一组合系统依赖项，如 
+[Unstructured 文档中所述](https://docs.unstructured.io/open-source/installation/full-installation)。
 
-For example, on Macs you can install the required dependencies with:
+例如，在 Mac 上，您可以通过以下命令安装所需的依赖项：
 
 ```bash
 # base dependencies
@@ -33,17 +30,16 @@ brew install libmagic poppler tesseract
 brew install libxml2 libxslt
 ```
 
-You can install the required `pip` dependencies with:
+您可以通过以下命令安装所需的 `pip` 依赖项：
 
 ```bash
 pip install "langchain-unstructured[local]"
 ```
 
-### Quickstart
+### 快速开始
 
-To simply load a file as a document, you can use the LangChain `DocumentLoader.load` 
-interface:
-
+要简单地将文件加载为文档，您可以使用 LangChain `DocumentLoader.load` 
+接口：
 
 ```python
 from langchain_unstructured import UnstructuredLoader
@@ -53,7 +49,7 @@ loader = UnstructuredLoader("./example_data/state_of_the_union.txt")
 docs = loader.load()
 ```
 
-### Load list of files
+### 加载文件列表
 
 
 ```python
@@ -73,22 +69,16 @@ print(docs[-1].metadata.get("filename"), ": ", docs[-1].page_content[:100])
 whatsapp_chat.txt :  1/22/23, 6:30 PM - User 1: Hi! Im interested in your bag. Im offering $50. Let me know if you are in
 state_of_the_union.txt :  May God bless you all. May God protect our troops.
 ```
-## PDF Example
 
-Processing PDF documents works exactly the same way. Unstructured detects the file type and extracts the same types of elements.
+## PDF 示例
 
-### Define a Partitioning Strategy
+处理 PDF 文档的方式完全相同。Unstructured 检测文件类型并提取相同类型的元素。
 
-Unstructured document loader allow users to pass in a `strategy` parameter that lets Unstructured
-know how to partition pdf and other OCR'd documents. Currently supported strategies are `"auto"`,
-`"hi_res"`, `"ocr_only"`, and `"fast"`. Learn more about the different strategies
-[here](https://docs.unstructured.io/open-source/core-functionality/partitioning#partition-pdf). 
+### 定义分区策略
 
-Not all document types have separate hi res and fast partitioning strategies. For those document types, the `strategy` kwarg is
-ignored. In some cases, the high res strategy will fallback to fast if there is a dependency missing
-(i.e. a model for document partitioning). You can see how to apply a strategy to an
-`UnstructuredLoader` below.
+Unstructured文档加载器允许用户传入`strategy`参数，告诉Unstructured如何对pdf和其他OCR文档进行分区。目前支持的策略有`"auto"`、`"hi_res"`、`"ocr_only"`和`"fast"`。了解更多不同策略的信息，请访问[这里](https://docs.unstructured.io/open-source/core-functionality/partitioning#partition-pdf)。
 
+并非所有文档类型都有单独的高分辨率和快速分区策略。对于这些文档类型，`strategy`关键字参数将被忽略。在某些情况下，如果缺少依赖项（即文档分区模型），高分辨率策略将回退为快速策略。您可以在下面查看如何将策略应用于`UnstructuredLoader`。
 
 ```python
 from langchain_unstructured import UnstructuredLoader
@@ -100,8 +90,6 @@ docs = loader.load()
 docs[5:10]
 ```
 
-
-
 ```output
 [Document(metadata={'source': './example_data/layout-parser-paper.pdf', 'coordinates': {'points': ((16.34, 393.9), (16.34, 560.0), (36.34, 560.0), (36.34, 393.9)), 'system': 'PixelSpace', 'layout_width': 612, 'layout_height': 792}, 'file_directory': './example_data', 'filename': 'layout-parser-paper.pdf', 'languages': ['eng'], 'last_modified': '2024-02-27T15:49:27', 'page_number': 1, 'parent_id': '89565df026a24279aaea20dc08cedbec', 'filetype': 'application/pdf', 'category': 'UncategorizedText', 'element_id': 'e9fa370aef7ee5c05744eb7bb7d9981b'}, page_content='2 v 8 4 3 5 1 . 3 0 1 2 : v i X r a'),
  Document(metadata={'source': './example_data/layout-parser-paper.pdf', 'coordinates': {'points': ((157.62199999999999, 114.23496279999995), (157.62199999999999, 146.5141628), (457.7358962799999, 146.5141628), (457.7358962799999, 114.23496279999995)), 'system': 'PixelSpace', 'layout_width': 612, 'layout_height': 792}, 'file_directory': './example_data', 'filename': 'layout-parser-paper.pdf', 'languages': ['eng'], 'last_modified': '2024-02-27T15:49:27', 'page_number': 1, 'filetype': 'application/pdf', 'category': 'Title', 'element_id': 'bde0b230a1aa488e3ce837d33015181b'}, page_content='LayoutParser: A Uniﬁed Toolkit for Deep Learning Based Document Image Analysis'),
@@ -110,12 +98,9 @@ docs[5:10]
  Document(metadata={'source': './example_data/layout-parser-paper.pdf', 'coordinates': {'points': ((162.779, 338.45008160000003), (162.779, 566.8455408), (454.0372021523199, 566.8455408), (454.0372021523199, 338.45008160000003)), 'system': 'PixelSpace', 'layout_width': 612, 'layout_height': 792}, 'file_directory': './example_data', 'filename': 'layout-parser-paper.pdf', 'languages': ['eng'], 'last_modified': '2024-02-27T15:49:27', 'links': [{'text': ':// layout - parser . github . io', 'url': 'https://layout-parser.github.io', 'start_index': 1477}], 'page_number': 1, 'parent_id': 'bde0b230a1aa488e3ce837d33015181b', 'filetype': 'application/pdf', 'category': 'NarrativeText', 'element_id': 'cfc957c94fe63c8fd7c7f4bcb56e75a7'}, page_content='Abstract. Recent advances in document image analysis (DIA) have been primarily driven by the application of neural networks. Ideally, research outcomes could be easily deployed in production and extended for further investigation. However, various factors like loosely organized codebases and sophisticated model conﬁgurations complicate the easy reuse of im- portant innovations by a wide audience. Though there have been on-going eﬀorts to improve reusability and simplify deep learning (DL) model development in disciplines like natural language processing and computer vision, none of them are optimized for challenges in the domain of DIA. This represents a major gap in the existing toolkit, as DIA is central to academic research across a wide range of disciplines in the social sciences and humanities. This paper introduces LayoutParser, an open-source library for streamlining the usage of DL in DIA research and applica- tions. The core LayoutParser library comes with a set of simple and intuitive interfaces for applying and customizing DL models for layout de- tection, character recognition, and many other document processing tasks. To promote extensibility, LayoutParser also incorporates a community platform for sharing both pre-trained models and full document digiti- zation pipelines. We demonstrate that LayoutParser is helpful for both lightweight and large-scale digitization pipelines in real-word use cases. The library is publicly available at https://layout-parser.github.io.')]
 ```
 
+## 后处理
 
-## Post Processing
-
-If you need to post process the `unstructured` elements after extraction, you can pass in a list of
-`str` -> `str` functions to the `post_processors` kwarg when you instantiate the `UnstructuredLoader`. This applies to other Unstructured loaders as well. Below is an example.
-
+如果您需要在提取后对 `unstructured` 元素进行后处理，可以在实例化 `UnstructuredLoader` 时将 `str` -> `str` 函数的列表传递给 `post_processors` 参数。这同样适用于其他 Unstructured 加载器。以下是一个示例。
 
 ```python
 from langchain_unstructured import UnstructuredLoader
@@ -131,8 +116,6 @@ docs = loader.load()
 docs[5:10]
 ```
 
-
-
 ```output
 [Document(metadata={'source': './example_data/layout-parser-paper.pdf', 'coordinates': {'points': ((16.34, 393.9), (16.34, 560.0), (36.34, 560.0), (36.34, 393.9)), 'system': 'PixelSpace', 'layout_width': 612, 'layout_height': 792}, 'file_directory': './example_data', 'filename': 'layout-parser-paper.pdf', 'languages': ['eng'], 'last_modified': '2024-02-27T15:49:27', 'page_number': 1, 'parent_id': '89565df026a24279aaea20dc08cedbec', 'filetype': 'application/pdf', 'category': 'UncategorizedText', 'element_id': 'e9fa370aef7ee5c05744eb7bb7d9981b'}, page_content='2 v 8 4 3 5 1 . 3 0 1 2 : v i X r a'),
  Document(metadata={'source': './example_data/layout-parser-paper.pdf', 'coordinates': {'points': ((157.62199999999999, 114.23496279999995), (157.62199999999999, 146.5141628), (457.7358962799999, 146.5141628), (457.7358962799999, 114.23496279999995)), 'system': 'PixelSpace', 'layout_width': 612, 'layout_height': 792}, 'file_directory': './example_data', 'filename': 'layout-parser-paper.pdf', 'languages': ['eng'], 'last_modified': '2024-02-27T15:49:27', 'page_number': 1, 'filetype': 'application/pdf', 'category': 'Title', 'element_id': 'bde0b230a1aa488e3ce837d33015181b'}, page_content='LayoutParser: A Uniﬁed Toolkit for Deep Learning Based Document Image Analysis'),
@@ -141,20 +124,13 @@ docs[5:10]
  Document(metadata={'source': './example_data/layout-parser-paper.pdf', 'coordinates': {'points': ((162.779, 338.45008160000003), (162.779, 566.8455408), (454.0372021523199, 566.8455408), (454.0372021523199, 338.45008160000003)), 'system': 'PixelSpace', 'layout_width': 612, 'layout_height': 792}, 'file_directory': './example_data', 'filename': 'layout-parser-paper.pdf', 'languages': ['eng'], 'last_modified': '2024-02-27T15:49:27', 'links': [{'text': ':// layout - parser . github . io', 'url': 'https://layout-parser.github.io', 'start_index': 1477}], 'page_number': 1, 'parent_id': 'bde0b230a1aa488e3ce837d33015181b', 'filetype': 'application/pdf', 'category': 'NarrativeText', 'element_id': 'cfc957c94fe63c8fd7c7f4bcb56e75a7'}, page_content='Abstract. Recent advances in document image analysis (DIA) have been primarily driven by the application of neural networks. Ideally, research outcomes could be easily deployed in production and extended for further investigation. However, various factors like loosely organized codebases and sophisticated model conﬁgurations complicate the easy reuse of im- portant innovations by a wide audience. Though there have been on-going eﬀorts to improve reusability and simplify deep learning (DL) model development in disciplines like natural language processing and computer vision, none of them are optimized for challenges in the domain of DIA. This represents a major gap in the existing toolkit, as DIA is central to academic research across a wide range of disciplines in the social sciences and humanities. This paper introduces LayoutParser, an open-source library for streamlining the usage of DL in DIA research and applica- tions. The core LayoutParser library comes with a set of simple and intuitive interfaces for applying and customizing DL models for layout de- tection, character recognition, and many other document processing tasks. To promote extensibility, LayoutParser also incorporates a community platform for sharing both pre-trained models and full document digiti- zation pipelines. We demonstrate that LayoutParser is helpful for both lightweight and large-scale digitization pipelines in real-word use cases. The library is publicly available at https://layout-parser.github.io.')]
 ```
 
-
 ## Unstructured API
 
-If you want to get up and running with smaller packages and get the most up-to-date partitioning you can `pip install
-unstructured-client` and `pip install langchain-unstructured`. For
-more information about the `UnstructuredLoader`, refer to the
-[Unstructured provider page](https://python.langchain.com/v0.1/docs/integrations/document_loaders/unstructured_file/).
+如果您想快速开始使用较小的包并获取最新的分区信息，可以使用 `pip install unstructured-client` 和 `pip install langchain-unstructured`。有关 `UnstructuredLoader` 的更多信息，请参考 [Unstructured provider page](https://python.langchain.com/v0.1/docs/integrations/document_loaders/unstructured_file/)。
 
-The loader will process your document using the hosted Unstructured serverless API when you pass in
-your `api_key` and set `partition_via_api=True`. You can generate a free
-Unstructured API key [here](https://unstructured.io/api-key/).
+当您传入 `api_key` 并设置 `partition_via_api=True` 时，加载器将使用托管的 Unstructured 无服务器 API 处理您的文档。您可以在 [这里](https://unstructured.io/api-key/) 生成免费的 Unstructured API 密钥。
 
-Check out the instructions [here](https://github.com/Unstructured-IO/unstructured-api#dizzy-instructions-for-using-the-docker-image)
-if you’d like to self-host the Unstructured API or run it locally.
+如果您想自托管 Unstructured API 或在本地运行，请查看 [这里](https://github.com/Unstructured-IO/unstructured-api#dizzy-instructions-for-using-the-docker-image) 的说明。
 
 
 ```python
@@ -194,7 +170,7 @@ Document(metadata={'source': 'example_data/fake.docx', 'category_depth': 0, 'fil
 ```
 
 
-You can also batch multiple files through the Unstructured API in a single API using `UnstructuredLoader`.
+您还可以通过 Unstructured API 在单个 API 中批量处理多个文件，使用 `UnstructuredLoader`。
 
 
 ```python
@@ -222,15 +198,14 @@ INFO: Successfully partitioned the document.
 fake.docx :  Lorem ipsum dolor sit amet.
 fake-email.eml :  Violets are blue
 ```
-### Unstructured SDK Client
 
-Partitioning with the Unstructured API relies on the [Unstructured SDK
-Client](https://docs.unstructured.io/api-reference/api-services/sdk).
+### 非结构化 SDK 客户端
 
-Below is an example showing how you can customize some features of the client and use your own `requests.Session()`, pass in an alternative `server_url`, or customize the `RetryConfig` object for more control over how failed requests are handled.
+使用非结构化 API 进行分区依赖于 [非结构化 SDK 客户端](https://docs.unstructured.io/api-reference/api-services/sdk)。
 
-Note that the example below may not use the latest version of the UnstructuredClient and there could be breaking changes in future releases. For the latest examples, refer to the [Unstructured Python SDK](https://docs.unstructured.io/api-reference/api-services/sdk-python) docs.
+以下示例展示了如何自定义客户端的一些功能，使用您自己的 `requests.Session()`，传入替代的 `server_url`，或自定义 `RetryConfig` 对象，以便更好地控制失败请求的处理方式。
 
+请注意，下面的示例可能未使用最新版本的 UnstructuredClient，并且未来版本可能会有破坏性更改。有关最新示例，请参考 [非结构化 Python SDK](https://docs.unstructured.io/api-reference/api-services/sdk-python) 文档。
 
 ```python
 import requests
@@ -241,7 +216,7 @@ from unstructured_client.utils import BackoffStrategy, RetryConfig
 client = UnstructuredClient(
     api_key_auth=os.getenv(
         "UNSTRUCTURED_API_KEY"
-    ),  # Note: the client API param is "api_key_auth" instead of "api_key"
+    ),  # 注意：客户端 API 参数为 "api_key_auth" 而不是 "api_key"
     client=requests.Session(),
     server_url="https://api.unstructuredapp.io/general/v0/general",
     retry_config=RetryConfig(
@@ -287,22 +262,12 @@ INFO: Successfully partitioned the document.
 ``````output
 layout-parser-paper.pdf :  LayoutParser: A Uniﬁed Toolkit for Deep Learning Based Document Image Analysis
 ```
+
 ## Chunking
 
-The `UnstructuredLoader` does not support `mode` as parameter for grouping text like the older
-loader `UnstructuredFileLoader` and others did. It instead supports "chunking". Chunking in
-unstructured differs from other chunking mechanisms you may be familiar with that form chunks based
-on plain-text features--character sequences like "\n\n" or "\n" that might indicate a paragraph
-boundary or list-item boundary. Instead, all documents are split using specific knowledge about each
-document format to partition the document into semantic units (document elements) and we only need to
-resort to text-splitting when a single element exceeds the desired maximum chunk size. In general,
-chunking combines consecutive elements to form chunks as large as possible without exceeding the
-maximum chunk size. Chunking produces a sequence of CompositeElement, Table, or TableChunk elements.
-Each “chunk” is an instance of one of these three types.
+`UnstructuredLoader` 不支持 `mode` 作为参数来对文本进行分组，像旧版的加载器 `UnstructuredFileLoader` 和其他加载器那样。它支持“分块”。在非结构化数据中，分块与您可能熟悉的基于纯文本特征形成块的其他分块机制有所不同——例如，像 "\n\n" 或 "\n" 这样的字符序列可能表示段落边界或列表项边界。相反，所有文档都是使用关于每种文档格式的特定知识进行拆分，以将文档划分为语义单元（文档元素），只有在单个元素超过所需的最大块大小时，我们才需要 resort to text-splitting。一般来说，分块会将连续的元素组合在一起，以尽可能大而不超过最大块大小的方式形成块。分块生成一系列 CompositeElement、Table 或 TableChunk 元素。每个“块”都是这三种类型之一的实例。
 
-See this [page](https://docs.unstructured.io/open-source/core-functionality/chunking) for more
-details about chunking options, but to reproduce the same behavior as `mode="single"`, you can set
-`chunking_strategy="basic"`, `max_characters=<some-really-big-number>`, and `include_orig_elements=False`.
+有关分块选项的更多详细信息，请参见此 [页面](https://docs.unstructured.io/open-source/core-functionality/chunking)，但要重现与 `mode="single"` 相同的行为，您可以设置 `chunking_strategy="basic"`、`max_characters=<some-really-big-number>` 和 `include_orig_elements=False`。
 
 
 ```python
@@ -327,7 +292,7 @@ Number of LangChain documents: 1
 Length of text in the document: 42772
 ```
 
-## Related
+## 相关
 
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

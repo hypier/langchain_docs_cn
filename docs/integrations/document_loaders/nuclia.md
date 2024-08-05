@@ -1,35 +1,32 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/nuclia.ipynb
 ---
+
 # Nuclia
 
->[Nuclia](https://nuclia.com) automatically indexes your unstructured data from any internal and external source, providing optimized search results and generative answers. It can handle video and audio transcription, image content extraction, and document parsing.
+>[Nuclia](https://nuclia.com) 自动索引来自任何内部和外部来源的非结构化数据，提供优化的搜索结果和生成的答案。它可以处理视频和音频转录、图像内容提取和文档解析。
 
->The `Nuclia Understanding API` supports the processing of unstructured data, including text, web pages, documents, and audio/video contents. It extracts all texts wherever they are (using speech-to-text or OCR when needed), it also extracts metadata, embedded files (like images in a PDF), and web links. If machine learning is enabled, it identifies entities, provides a summary of the content and generates embeddings for all the sentences.
+> `Nuclia Understanding API` 支持非结构化数据的处理，包括文本、网页、文档和音频/视频内容。它提取所有文本，无论它们在哪里（在需要时使用语音转文本或OCR），还提取元数据、嵌入文件（如PDF中的图像）和网页链接。如果启用机器学习，它会识别实体，提供内容摘要并为所有句子生成嵌入。
 
+## 设置
 
-## Setup
-
-To use the `Nuclia Understanding API`, you need to have a Nuclia account. You can create one for free at [https://nuclia.cloud](https://nuclia.cloud), and then [create a NUA key](https://docs.nuclia.dev/docs/docs/using/understanding/intro).
-
+要使用 `Nuclia Understanding API`，您需要拥有一个 Nuclia 账户。您可以在 [https://nuclia.cloud](https://nuclia.cloud) 免费创建一个账户，然后 [创建一个 NUA 密钥](https://docs.nuclia.dev/docs/docs/using/understanding/intro)。
 
 ```python
 %pip install --upgrade --quiet  protobuf
 %pip install --upgrade --quiet  nucliadb-protos
 ```
 
-
 ```python
 import os
 
-os.environ["NUCLIA_ZONE"] = "<YOUR_ZONE>"  # e.g. europe-1
+os.environ["NUCLIA_ZONE"] = "<YOUR_ZONE>"  # 例如：europe-1
 os.environ["NUCLIA_NUA_KEY"] = "<YOUR_API_KEY>"
 ```
 
-## Example
+## 示例
 
-To use the Nuclia document loader, you need to instantiate a `NucliaUnderstandingAPI` tool:
-
+要使用 Nuclia 文档加载器，您需要实例化一个 `NucliaUnderstandingAPI` 工具：
 
 ```python
 from langchain_community.tools.nuclia import NucliaUnderstandingAPI
@@ -37,15 +34,13 @@ from langchain_community.tools.nuclia import NucliaUnderstandingAPI
 nua = NucliaUnderstandingAPI(enable_ml=False)
 ```
 
-
 ```python
 from langchain_community.document_loaders.nuclia import NucliaLoader
 
 loader = NucliaLoader("./interview.mp4", nua)
 ```
 
-You can now call the `load` the document in a loop until you get the document.
-
+您现在可以在循环中调用 `load` 文档，直到获取到文档。
 
 ```python
 import time
@@ -62,27 +57,25 @@ while pending:
         print("waiting...")
 ```
 
-## Retrieved information
+## 检索到的信息
 
-Nuclia returns the following information:
+Nuclia 返回以下信息：
 
-- file metadata
-- extracted text
-- nested text (like text in an embedded image)
-- paragraphs and sentences splitting (defined by the position of their first and last characters, plus start time and end time for a video or audio file)
-- links
-- a thumbnail
-- embedded files
+- 文件元数据
+- 提取的文本
+- 嵌套文本（如嵌入图像中的文本）
+- 段落和句子的拆分（由其第一个和最后一个字符的位置定义，以及视频或音频文件的开始时间和结束时间）
+- 链接
+- 缩略图
+- 嵌入文件
 
-Note:
+注意：
 
-  Generated files (thumbnail, extracted embedded files, etc.) are provided as a token. You can download them with the [`/processing/download` endpoint](https://docs.nuclia.dev/docs/api#operation/Download_binary_file_processing_download_get).
+  生成的文件（缩略图、提取的嵌入文件等）作为一个令牌提供。您可以通过 [`/processing/download` 端点](https://docs.nuclia.dev/docs/api#operation/Download_binary_file_processing_download_get) 下载它们。
 
-  Also at any level, if an attribute exceeds a certain size, it will be put in a downloadable file and will be replaced in the document by a file pointer. This will consist of `{"file": {"uri": "JWT_TOKEN"}}`. The rule is that if the size of the message is greater than 1000000 characters, the biggest parts will be moved to downloadable files. First, the compression process will target vectors. If that is not enough, it will target large field metadata, and finally it will target extracted text.
+  在任何层级，如果某个属性超过一定大小，它将被放入可下载文件中，并在文档中由文件指针替换。其内容将是 `{"file": {"uri": "JWT_TOKEN"}}`。规则是如果消息的大小超过 1000000 个字符，将会把最大的部分移动到可下载文件中。首先，压缩过程将针对向量。如果这还不够，它将针对大字段元数据，最后将针对提取的文本。
 
+## 相关
 
-
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

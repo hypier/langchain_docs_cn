@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/sqlite.ipynb
 ---
+
 # SQLite
 
->[SQLite](https://en.wikipedia.org/wiki/SQLite) is a database engine written in the C programming language. It is not a standalone app; rather, it is a library that software developers embed in their apps. As such, it belongs to the family of embedded databases. It is the most widely deployed database engine, as it is used by several of the top web browsers, operating systems, mobile phones, and other embedded systems.
+>[SQLite](https://en.wikipedia.org/wiki/SQLite) 是一个用 C 编程语言编写的数据库引擎。它不是一个独立的应用程序；而是一个软件开发者嵌入到他们应用程序中的库。因此，它属于嵌入式数据库的范畴。它是最广泛部署的数据库引擎，因为它被多个顶级网页浏览器、操作系统、手机和其他嵌入式系统使用。
 
-In this walkthrough we'll create a simple conversation chain which uses `ConversationEntityMemory` backed by a `SqliteEntityStore`.
+在本教程中，我们将创建一个简单的对话链，使用 `ConversationEntityMemory`，并由 `SqliteEntityStore` 支持。
 
 
 ```python
@@ -13,12 +14,12 @@ In this walkthrough we'll create a simple conversation chain which uses `Convers
 # os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 ```
 
-## Usage
+## 用法
 
-To use the storage you need to provide only 2 things:
+要使用存储，您只需提供两个信息：
 
-1. Session Id - a unique identifier of the session, like user name, email, chat id etc.
-2. Connection string - a string that specifies the database connection. For SQLite, that string is `slqlite:///` followed by the name of the database file.  If that file doesn't exist, it will be created.
+1. 会话 ID - 会话的唯一标识符，如用户名、电子邮件、聊天 ID 等。
+2. 连接字符串 - 指定数据库连接的字符串。对于 SQLite，该字符串为 `slqlite:///`，后面跟着数据库文件的名称。如果该文件不存在，将会创建它。
 
 
 ```python
@@ -43,12 +44,11 @@ chat_message_history.messages
 [HumanMessage(content='Hello'), AIMessage(content='Hi')]
 ```
 
+## 链接
 
-## Chaining
+我们可以轻松地将此消息历史类与 [LCEL Runnables](/docs/how_to/message_history) 结合起来。
 
-We can easily combine this message history class with [LCEL Runnables](/docs/how_to/message_history)
-
-To do this we will want to use OpenAI, so we need to install that.  We will also need to set the OPENAI_API_KEY environment variable to your OpenAI key.
+为此，我们需要使用 OpenAI，因此需要安装它。我们还需要将 OPENAI_API_KEY 环境变量设置为您的 OpenAI 密钥。
 
 ```bash
 pip install -U langchain-openai
@@ -116,4 +116,3 @@ chain_with_history.invoke({"question": "Whats my name"}, config=config)
 ```output
 AIMessage(content='Your name is Bob! Is there anything specific you would like assistance with, Bob?')
 ```
-

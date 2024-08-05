@@ -1,14 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_transformers/cross_encoder_reranker.ipynb
 ---
+
 # Cross Encoder Reranker
 
-This notebook shows how to implement reranker in a retriever with your own cross encoder from [Hugging Face cross encoder models](https://huggingface.co/cross-encoder) or Hugging Face models that implements cross encoder function ([example: BAAI/bge-reranker-base](https://huggingface.co/BAAI/bge-reranker-base)). `SagemakerEndpointCrossEncoder` enables you to use these HuggingFace models loaded on Sagemaker.
+本笔记本展示了如何在检索器中实现重排名器，使用您自己的来自 [Hugging Face cross encoder models](https://huggingface.co/cross-encoder) 的 cross encoder 或实现 cross encoder 功能的 Hugging Face 模型（[示例：BAAI/bge-reranker-base](https://huggingface.co/BAAI/bge-reranker-base)）。`SagemakerEndpointCrossEncoder` 使您能够使用这些在 Sagemaker 上加载的 HuggingFace 模型。
 
-This builds on top of ideas in the [ContextualCompressionRetriever](/docs/how_to/contextual_compression). Overall structure of this document came from [Cohere Reranker documentation](/docs/integrations/retrievers/cohere-reranker).
+这基于 [ContextualCompressionRetriever](/docs/how_to/contextual_compression) 中的思想。本文档的整体结构来自 [Cohere Reranker documentation](/docs/integrations/retrievers/cohere-reranker)。
 
-For more about why cross encoder can be used as reranking mechanism in conjunction with embeddings for better retrieval, refer to [Hugging Face Cross-Encoders documentation](https://www.sbert.net/examples/applications/cross-encoder/README.html).
-
+有关为什么 cross encoder 可以与嵌入结合用作更好检索的重排名机制，请参阅 [Hugging Face Cross-Encoders documentation](https://www.sbert.net/examples/applications/cross-encoder/README.html)。
 
 ```python
 #!pip install faiss sentence_transformers
@@ -31,9 +31,8 @@ def pretty_print_docs(docs):
     )
 ```
 
-## Set up the base vector store retriever
-Let's start by initializing a simple vector store retriever and storing the 2023 State of the Union speech (in chunks). We can set up the retriever to retrieve a high number (20) of docs.
-
+## 设置基础向量存储检索器
+让我们开始初始化一个简单的向量存储检索器，并存储2023年国情咨文（以块的形式）。我们可以设置检索器以检索大量文档（20个）。
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -56,9 +55,8 @@ docs = retriever.invoke(query)
 pretty_print_docs(docs)
 ```
 
-## Doing reranking with CrossEncoderReranker
-Now let's wrap our base retriever with a `ContextualCompressionRetriever`. `CrossEncoderReranker` uses `HuggingFaceCrossEncoder` to rerank the returned results.
-
+## 使用 CrossEncoderReranker 进行重排序
+现在让我们用 `ContextualCompressionRetriever` 包装我们的基础检索器。`CrossEncoderReranker` 使用 `HuggingFaceCrossEncoder` 对返回的结果进行重排序。
 
 ```python
 from langchain.retrievers import ContextualCompressionRetriever
@@ -119,12 +117,12 @@ More infrastructure and innovation in America.
 
 More goods moving faster and cheaper in America.
 ```
-## Uploading Hugging Face model to SageMaker endpoint
 
-Here is a sample `inference.py` for creating an endpoint that works with `SagemakerEndpointCrossEncoder`. For more details with step-by-step guidance, refer to [this article](https://huggingface.co/blog/kchoe/deploy-any-huggingface-model-to-sagemaker). 
+## 将 Hugging Face 模型上传到 SageMaker 端点
 
-It downloads Hugging Face model on the fly, so you do not need to keep the model artifacts such as `pytorch_model.bin` in your `model.tar.gz`.
+这是一个示例 `inference.py`，用于创建与 `SagemakerEndpointCrossEncoder` 配合使用的端点。有关逐步指导的更多详细信息，请参阅 [这篇文章](https://huggingface.co/blog/kchoe/deploy-any-huggingface-model-to-sagemaker)。
 
+它会动态下载 Hugging Face 模型，因此您无需在 `model.tar.gz` 中保留模型工件，例如 `pytorch_model.bin`。
 
 ```python
 import json

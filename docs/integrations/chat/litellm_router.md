@@ -1,12 +1,13 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/litellm_router.ipynb
-sidebar_label: LiteLLM Router
+sidebar_label: LiteLLM 路由器
 ---
+
 # ChatLiteLLMRouter
 
-[LiteLLM](https://github.com/BerriAI/litellm) is a library that simplifies calling Anthropic, Azure, Huggingface, Replicate, etc. 
+[LiteLLM](https://github.com/BerriAI/litellm) 是一个简化调用 Anthropic、Azure、Huggingface、Replicate 等的库。
 
-This notebook covers how to get started with using Langchain + the LiteLLM Router I/O library. 
+本笔记本介绍如何开始使用 Langchain + LiteLLM Router I/O 库。
 
 
 ```python
@@ -57,26 +58,19 @@ chat(messages)
 AIMessage(content="J'aime programmer.")
 ```
 
-
-## `ChatLiteLLMRouter` also supports async and streaming functionality:
-
+## `ChatLiteLLMRouter` 还支持异步和流式功能：
 
 ```python
 from langchain_core.callbacks import CallbackManager, StreamingStdOutCallbackHandler
 ```
 
-
 ```python
 await chat.agenerate([messages])
 ```
 
-
-
 ```output
 LLMResult(generations=[[ChatGeneration(text="J'adore programmer.", generation_info={'finish_reason': 'stop'}, message=AIMessage(content="J'adore programmer."))]], llm_output={'token_usage': {'completion_tokens': 6, 'prompt_tokens': 19, 'total_tokens': 25}, 'model_name': None}, run=[RunInfo(run_id=UUID('75003ec9-1e2b-43b7-a216-10dcc0f75e00'))])
 ```
-
-
 
 ```python
 chat = ChatLiteLLMRouter(
@@ -91,14 +85,11 @@ chat(messages)
 J'adore programmer.
 ```
 
-
 ```output
 AIMessage(content="J'adore programmer.")
 ```
 
+## 相关
 
-
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

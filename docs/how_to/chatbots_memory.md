@@ -2,25 +2,25 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/chatbots_memory.ipynb
 sidebar_position: 1
 ---
-# How to add memory to chatbots
 
-A key feature of chatbots is their ability to use content of previous conversation turns as context. This state management can take several forms, including:
+# 如何为聊天机器人添加记忆
 
-- Simply stuffing previous messages into a chat model prompt.
-- The above, but trimming old messages to reduce the amount of distracting information the model has to deal with.
-- More complex modifications like synthesizing summaries for long running conversations.
+聊天机器人的一个关键特性是它们能够使用先前对话轮次的内容作为上下文。这种状态管理可以采取几种形式，包括：
 
-We'll go into more detail on a few techniques below!
+- 简单地将先前的消息塞入聊天模型提示中。
+- 以上方法，但修剪旧消息以减少模型需要处理的干扰信息量。
+- 更复杂的修改，例如为长时间运行的对话合成摘要。
 
-## Setup
+我们将在下面详细介绍几种技术！
 
-You'll need to install a few packages, and have your OpenAI API key set as an environment variable named `OPENAI_API_KEY`:
+## 设置
 
+您需要安装一些软件包，并将您的 OpenAI API 密钥设置为名为 `OPENAI_API_KEY` 的环境变量：
 
 ```python
 %pip install --upgrade --quiet langchain langchain-openai
 
-# Set env var OPENAI_API_KEY or load from a .env file:
+# 设置环境变量 OPENAI_API_KEY 或从 .env 文件加载：
 import dotenv
 
 dotenv.load_dotenv()
@@ -37,8 +37,7 @@ True
 ```
 
 
-Let's also set up a chat model that we'll use for the below examples.
-
+让我们还设置一个聊天模型，以便在下面的示例中使用。
 
 ```python
 from langchain_openai import ChatOpenAI
@@ -46,10 +45,9 @@ from langchain_openai import ChatOpenAI
 chat = ChatOpenAI(model="gpt-3.5-turbo-0125")
 ```
 
-## Message passing
+## 消息传递
 
-The simplest form of memory is simply passing chat history messages into a chain. Here's an example:
-
+内存的最简单形式就是将聊天历史消息传递到一个链中。以下是一个示例：
 
 ```python
 from langchain_core.prompts import ChatPromptTemplate
@@ -83,14 +81,13 @@ print(ai_msg.content)
 ```output
 I said "J'adore la programmation," which means "I love programming" in French.
 ```
-We can see that by passing the previous conversation into a chain, it can use it as context to answer questions. This is the basic concept underpinning chatbot memory - the rest of the guide will demonstrate convenient techniques for passing or reformatting messages.
+我们可以看到，通过将之前的对话传递到一个链中，它可以将其作为上下文来回答问题。这是聊天机器人记忆的基本概念——本指南的其余部分将演示传递或重新格式化消息的便捷技术。
 
-## Chat history
+## 聊天历史
 
-It's perfectly fine to store and pass messages directly as an array, but we can use LangChain's built-in [message history class](https://api.python.langchain.com/en/latest/langchain_api_reference.html#module-langchain.memory) to store and load messages as well. Instances of this class are responsible for storing and loading chat messages from persistent storage. LangChain integrates with many providers - you can see a [list of integrations here](/docs/integrations/memory) - but for this demo we will use an ephemeral demo class.
+直接将消息存储并作为数组传递是完全可以的，但我们可以使用 LangChain 内置的 [消息历史类](https://api.python.langchain.com/en/latest/langchain_api_reference.html#module-langchain.memory) 来存储和加载消息。该类的实例负责从持久存储中存储和加载聊天消息。LangChain 与许多提供商集成 - 您可以在这里查看 [集成列表](/docs/integrations/memory) - 但在此演示中，我们将使用一个短暂的演示类。
 
-Here's an example of the API:
-
+以下是 API 的示例：
 
 ```python
 from langchain_community.chat_message_histories import ChatMessageHistory
@@ -106,16 +103,12 @@ demo_ephemeral_chat_history.add_ai_message("J'adore la programmation.")
 demo_ephemeral_chat_history.messages
 ```
 
-
-
 ```output
 [HumanMessage(content='Translate this sentence from English to French: I love programming.'),
  AIMessage(content="J'adore la programmation.")]
 ```
 
-
-We can use it directly to store conversation turns for our chain:
-
+我们可以直接使用它来存储我们链中的对话轮次：
 
 ```python
 demo_ephemeral_chat_history = ChatMessageHistory()
@@ -143,19 +136,15 @@ chain.invoke(
 )
 ```
 
-
-
 ```output
 AIMessage(content='You just asked me to translate the sentence "I love programming" from English to French.', response_metadata={'token_usage': {'completion_tokens': 18, 'prompt_tokens': 61, 'total_tokens': 79}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-5cbb21c2-9c30-4031-8ea8-bfc497989535-0', usage_metadata={'input_tokens': 61, 'output_tokens': 18, 'total_tokens': 79})
 ```
 
+## 自动历史管理
 
-## Automatic history management
+之前的示例明确地将消息传递给链。这是一种完全可以接受的方法，但确实需要对新消息进行外部管理。LangChain 还包含一个用于 LCEL 链的包装器，可以自动处理此过程，称为 `RunnableWithMessageHistory`。
 
-The previous examples pass messages to the chain explicitly. This is a completely acceptable approach, but it does require external management of new messages. LangChain also includes an wrapper for LCEL chains that can handle this process automatically called `RunnableWithMessageHistory`.
-
-To show how it works, let's slightly modify the above prompt to take a final `input` variable that populates a `HumanMessage` template after the chat history. This means that we will expect a `chat_history` parameter that contains all messages BEFORE the current messages instead of all messages:
-
+为了展示它的工作原理，让我们稍微修改一下上面的提示，以在聊天历史之后获取一个最终的 `input` 变量，该变量填充 `HumanMessage` 模板。这意味着我们将期待一个 `chat_history` 参数，该参数包含当前消息之前的所有消息，而不是所有消息：
 
 ```python
 prompt = ChatPromptTemplate.from_messages(
@@ -172,10 +161,9 @@ prompt = ChatPromptTemplate.from_messages(
 chain = prompt | chat
 ```
 
- We'll pass the latest input to the conversation here and let the `RunnableWithMessageHistory` class wrap our chain and do the work of appending that `input` variable to the chat history.
- 
- Next, let's declare our wrapped chain:
+我们将在这里将最新的输入传递给对话，并让 `RunnableWithMessageHistory` 类包装我们的链并完成将该 `input` 变量附加到聊天历史的工作。
 
+接下来，让我们声明我们的包装链：
 
 ```python
 from langchain_core.runnables.history import RunnableWithMessageHistory
@@ -190,15 +178,14 @@ chain_with_message_history = RunnableWithMessageHistory(
 )
 ```
 
-This class takes a few parameters in addition to the chain that we want to wrap:
+这个类除了我们想要包装的链之外，还接受几个参数：
 
-- A factory function that returns a message history for a given session id. This allows your chain to handle multiple users at once by loading different messages for different conversations.
-- An `input_messages_key` that specifies which part of the input should be tracked and stored in the chat history. In this example, we want to track the string passed in as `input`.
-- A `history_messages_key` that specifies what the previous messages should be injected into the prompt as. Our prompt has a `MessagesPlaceholder` named `chat_history`, so we specify this property to match.
-- (For chains with multiple outputs) an `output_messages_key` which specifies which output to store as history. This is the inverse of `input_messages_key`.
+- 一个工厂函数，该函数返回给定会话 ID 的消息历史。这允许您的链同时处理多个用户，通过为不同对话加载不同的消息。
+- 一个 `input_messages_key`，指定输入的哪个部分应该被跟踪并存储在聊天历史中。在这个例子中，我们想要跟踪作为 `input` 传入的字符串。
+- 一个 `history_messages_key`，指定之前的消息应该作为什么注入到提示中。我们的提示有一个名为 `chat_history` 的 `MessagesPlaceholder`，因此我们指定这个属性以匹配。
+- （对于具有多个输出的链）一个 `output_messages_key`，指定要存储为历史记录的输出。这是 `input_messages_key` 的逆。
 
-We can invoke this new chain as normal, with an additional `configurable` field that specifies the particular `session_id` to pass to the factory function. This is unused for the demo, but in real-world chains, you'll want to return a chat history corresponding to the passed session:
-
+我们可以像正常一样调用这个新链，增加一个 `configurable` 字段，指定要传递给工厂函数的特定 `session_id`。在演示中未使用，但在实际链中，您将希望返回与传递的会话相对应的聊天历史：
 
 ```python
 chain_with_message_history.invoke(
@@ -231,15 +218,13 @@ Parent run cc14b9d8-c59e-40db-a523-d6ab3fc2fa4f not found for run 5b75e25c-131e-
 AIMessage(content='You asked me to translate the sentence "I love programming" from English to French.', response_metadata={'token_usage': {'completion_tokens': 17, 'prompt_tokens': 63, 'total_tokens': 80}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-5950435c-1dc2-43a6-836f-f989fd62c95e-0', usage_metadata={'input_tokens': 63, 'output_tokens': 17, 'total_tokens': 80})
 ```
 
+## 修改聊天记录
 
-## Modifying chat history
+修改存储的聊天消息可以帮助您的聊天机器人处理各种情况。以下是一些示例：
 
-Modifying stored chat messages can help your chatbot handle a variety of situations. Here are some examples:
+### 修剪消息
 
-### Trimming messages
-
-LLMs and chat models have limited context windows, and even if you're not directly hitting limits, you may want to limit the amount of distraction the model has to deal with. One solution is trim the historic messages before passing them to the model. Let's use an example history with some preloaded messages:
-
+LLMs 和聊天模型的上下文窗口有限，即使您没有直接触及限制，您可能也希望限制模型需要处理的干扰信息。一个解决方案是在将历史消息传递给模型之前修剪它们。让我们使用一些预加载消息的示例历史记录：
 
 ```python
 demo_ephemeral_chat_history = ChatMessageHistory()
@@ -252,8 +237,6 @@ demo_ephemeral_chat_history.add_ai_message("Fine thanks!")
 demo_ephemeral_chat_history.messages
 ```
 
-
-
 ```output
 [HumanMessage(content="Hey there! I'm Nemo."),
  AIMessage(content='Hello!'),
@@ -261,9 +244,7 @@ demo_ephemeral_chat_history.messages
  AIMessage(content='Fine thanks!')]
 ```
 
-
-Let's use this message history with the `RunnableWithMessageHistory` chain we declared above:
-
+让我们使用这个消息历史记录与我们上面声明的 `RunnableWithMessageHistory` 链：
 
 ```python
 chain_with_message_history = RunnableWithMessageHistory(
@@ -282,16 +263,13 @@ chain_with_message_history.invoke(
 Parent run 7ff2d8ec-65e2-4f67-8961-e498e2c4a591 not found for run 3881e990-6596-4326-84f6-2b76949e0657. Treating as a root run.
 ```
 
-
 ```output
 AIMessage(content='Your name is Nemo.', response_metadata={'token_usage': {'completion_tokens': 6, 'prompt_tokens': 66, 'total_tokens': 72}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-f8aabef8-631a-4238-a39b-701e881fbe47-0', usage_metadata={'input_tokens': 66, 'output_tokens': 6, 'total_tokens': 72})
 ```
 
+我们可以看到链记住了预加载的名字。
 
-We can see the chain remembers the preloaded name.
-
-But let's say we have a very small context window, and we want to trim the number of messages passed to the chain to only the 2 most recent ones. We can use the built in [trim_messages](/docs/how_to/trim_messages/) util to trim messages based on their token count before they reach our prompt. In this case we'll count each message as 1 "token" and keep only the last two messages:
-
+但假设我们有一个非常小的上下文窗口，我们希望将传递给链的消息数量修剪到仅保留最近的 2 条消息。我们可以使用内置的 [trim_messages](/docs/how_to/trim_messages/) 工具，根据它们的令牌计数在到达我们的提示之前修剪消息。在这种情况下，我们将每条消息计为 1 个“令牌”，并只保留最后两条消息：
 
 ```python
 from operator import itemgetter
@@ -315,8 +293,7 @@ chain_with_trimmed_history = RunnableWithMessageHistory(
 )
 ```
 
-Let's call this new chain and check the messages afterwards:
-
+让我们调用这个新链并检查之后的消息：
 
 ```python
 chain_with_trimmed_history.invoke(
@@ -328,18 +305,13 @@ chain_with_trimmed_history.invoke(
 Parent run 775cde65-8d22-4c44-80bb-f0b9811c32ca not found for run 5cf71d0e-4663-41cd-8dbe-e9752689cfac. Treating as a root run.
 ```
 
-
 ```output
 AIMessage(content='P. Sherman is a fictional character from the animated movie "Finding Nemo" who lives at 42 Wallaby Way, Sydney.', response_metadata={'token_usage': {'completion_tokens': 27, 'prompt_tokens': 53, 'total_tokens': 80}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-5642ef3a-fdbe-43cf-a575-d1785976a1b9-0', usage_metadata={'input_tokens': 53, 'output_tokens': 27, 'total_tokens': 80})
 ```
 
-
-
 ```python
 demo_ephemeral_chat_history.messages
 ```
-
-
 
 ```output
 [HumanMessage(content="Hey there! I'm Nemo."),
@@ -352,9 +324,7 @@ demo_ephemeral_chat_history.messages
  AIMessage(content='P. Sherman is a fictional character from the animated movie "Finding Nemo" who lives at 42 Wallaby Way, Sydney.', response_metadata={'token_usage': {'completion_tokens': 27, 'prompt_tokens': 53, 'total_tokens': 80}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-5642ef3a-fdbe-43cf-a575-d1785976a1b9-0', usage_metadata={'input_tokens': 53, 'output_tokens': 27, 'total_tokens': 80})]
 ```
 
-
-And we can see that our history has removed the two oldest messages while still adding the most recent conversation at the end. The next time the chain is called, `trim_messages` will be called again, and only the two most recent messages will be passed to the model. In this case, this means that the model will forget the name we gave it the next time we invoke it:
-
+我们可以看到我们的历史记录已经移除了两条最旧的消息，同时仍然在末尾添加了最近的对话。下次调用链时，`trim_messages` 将再次被调用，只有最近的两条消息将被传递给模型。在这种情况下，这意味着模型在下次调用时将忘记我们给它的名字：
 
 ```python
 chain_with_trimmed_history.invoke(
@@ -366,18 +336,15 @@ chain_with_trimmed_history.invoke(
 Parent run fde7123f-6fd3-421a-a3fc-2fb37dead119 not found for run 061a4563-2394-470d-a3ed-9bf1388ca431. Treating as a root run.
 ```
 
-
 ```output
 AIMessage(content="I'm sorry, but I don't have access to your personal information, so I don't know your name. How else may I assist you today?", response_metadata={'token_usage': {'completion_tokens': 31, 'prompt_tokens': 74, 'total_tokens': 105}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-0ab03495-1f7c-4151-9070-56d2d1c565ff-0', usage_metadata={'input_tokens': 74, 'output_tokens': 31, 'total_tokens': 105})
 ```
 
+查看我们的 [修剪消息指南](/docs/how_to/trim_messages/) 以获取更多信息。
 
-Check out our [how to guide on trimming messages](/docs/how_to/trim_messages/) for more.
+### 摘要记忆
 
-### Summary memory
-
-We can use this same pattern in other ways too. For example, we could use an additional LLM call to generate a summary of the conversation before calling our chain. Let's recreate our chat history and chatbot chain:
-
+我们也可以以其他方式使用相同的模式。例如，我们可以使用额外的 LLM 调用在调用我们的链之前生成对话的摘要。让我们重建我们的聊天历史和聊天机器人链：
 
 ```python
 demo_ephemeral_chat_history = ChatMessageHistory()
@@ -390,8 +357,6 @@ demo_ephemeral_chat_history.add_ai_message("Fine thanks!")
 demo_ephemeral_chat_history.messages
 ```
 
-
-
 ```output
 [HumanMessage(content="Hey there! I'm Nemo."),
  AIMessage(content='Hello!'),
@@ -399,9 +364,7 @@ demo_ephemeral_chat_history.messages
  AIMessage(content='Fine thanks!')]
 ```
 
-
-We'll slightly modify the prompt to make the LLM aware that will receive a condensed summary instead of a chat history:
-
+我们将稍微修改提示，以使 LLM 知道将收到一个简化的摘要，而不是聊天历史：
 
 ```python
 prompt = ChatPromptTemplate.from_messages(
@@ -425,8 +388,7 @@ chain_with_message_history = RunnableWithMessageHistory(
 )
 ```
 
-And now, let's create a function that will distill previous interactions into a summary. We can add this one to the front of the chain too:
-
+现在，让我们创建一个函数，将之前的交互提炼成摘要。我们也可以将这个函数添加到链的前面：
 
 ```python
 def summarize_messages(chain_input):
@@ -451,16 +413,18 @@ def summarize_messages(chain_input):
     demo_ephemeral_chat_history.add_message(summary_message)
 
     return True
+```
 
+带摘要的链是：
 
+```python
 chain_with_summarization = (
     RunnablePassthrough.assign(messages_summarized=summarize_messages)
     | chain_with_message_history
 )
 ```
 
-Let's see if it remembers the name we gave it:
-
+让我们看看它是否记得我们给它的名字：
 
 ```python
 chain_with_summarization.invoke(
@@ -469,19 +433,13 @@ chain_with_summarization.invoke(
 )
 ```
 
-
-
 ```output
 AIMessage(content='You introduced yourself as Nemo. How can I assist you today, Nemo?')
 ```
 
-
-
 ```python
 demo_ephemeral_chat_history.messages
 ```
-
-
 
 ```output
 [AIMessage(content='The conversation is between Nemo and an AI. Nemo introduces himself and the AI responds with a greeting. Nemo then asks the AI how it is doing, and the AI responds that it is fine.'),
@@ -489,5 +447,4 @@ demo_ephemeral_chat_history.messages
  AIMessage(content='You introduced yourself as Nemo. How can I assist you today, Nemo?')]
 ```
 
-
-Note that invoking the chain again will generate another summary generated from the initial summary plus new messages and so on. You could also design a hybrid approach where a certain number of messages are retained in chat history while others are summarized.
+请注意，再次调用链将生成另一个摘要，该摘要是从初始摘要加上新消息生成的，依此类推。您还可以设计一种混合方法，在聊天历史中保留一定数量的消息，而将其他消息进行摘要。

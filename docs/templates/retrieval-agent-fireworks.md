@@ -1,70 +1,66 @@
 # retrieval-agent-fireworks
 
-This package uses open source models hosted on FireworksAI to do retrieval using an agent architecture. By default, this does retrieval over Arxiv.
+该软件包使用托管在FireworksAI上的开源模型，通过代理架构进行检索。默认情况下，它对Arxiv进行检索。
 
-We will use `Mixtral8x7b-instruct-v0.1`, which is shown in this blog to yield reasonable
-results with function calling even though it is not fine tuned for this task: https://huggingface.co/blog/open-source-llms-as-agents
+我们将使用`Mixtral8x7b-instruct-v0.1`，该模型在这篇博客中显示出即使没有针对该任务进行微调，仍能产生合理的结果：https://huggingface.co/blog/open-source-llms-as-agents
 
+## 环境设置
 
-## Environment Setup
+有多种优秀的方法来运行OSS模型。我们将使用FireworksAI作为运行模型的简单方法。有关更多信息，请参见 [这里](https://python.langchain.com/docs/integrations/providers/fireworks)。
 
-There are various great ways to run OSS models. We will use FireworksAI as an easy way to run the models. See [here](https://python.langchain.com/docs/integrations/providers/fireworks) for more information.
+设置 `FIREWORKS_API_KEY` 环境变量以访问Fireworks。
 
-Set the `FIREWORKS_API_KEY` environment variable to access Fireworks.
+## 使用方法
 
-
-## Usage
-
-To use this package, you should first have the LangChain CLI installed:
+要使用此包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将其作为唯一包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package retrieval-agent-fireworks
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，只需运行：
 
 ```shell
 langchain app add retrieval-agent-fireworks
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 ```python
 from retrieval_agent_fireworks import chain as retrieval_agent_fireworks_chain
 
 add_routes(app, retrieval_agent_fireworks_chain, path="/retrieval-agent-fireworks")
 ```
 
-(Optional) Let's now configure LangSmith. 
-LangSmith will help us trace, monitor and debug LangChain applications. 
-You can sign up for LangSmith [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
-
+（可选）现在让我们配置 LangSmith。 
+LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。 
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。 
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录内，则可以直接通过以下方式启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server is running locally at 
+这将启动 FastAPI 应用程序，服务器在本地运行，地址为 
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/retrieval-agent-fireworks/playground](http://127.0.0.1:8000/retrieval-agent-fireworks/playground)  
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板
+我们可以在 [http://127.0.0.1:8000/retrieval-agent-fireworks/playground](http://127.0.0.1:8000/retrieval-agent-fireworks/playground) 访问游乐场  
 
-We can access the template from code with:
+我们可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable

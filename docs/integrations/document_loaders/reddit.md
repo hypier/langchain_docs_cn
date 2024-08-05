@@ -1,62 +1,56 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/reddit.ipynb
 ---
+
 # Reddit
 
->[Reddit](https://www.reddit.com) is an American social news aggregation, content rating, and discussion website.
+>[Reddit](https://www.reddit.com) 是一个美国社交新闻聚合、内容评分和讨论网站。
 
+该加载器使用 `praw` Python 包从子版块或 Reddit 用户的帖子中获取文本。
 
-This loader fetches the text from the Posts of Subreddits or Reddit users, using the `praw` Python package.
-
-Make a [Reddit Application](https://www.reddit.com/prefs/apps/) and initialize the loader with with your Reddit API credentials.
-
+创建一个 [Reddit 应用](https://www.reddit.com/prefs/apps/)，并使用您的 Reddit API 凭据初始化加载器。
 
 ```python
 from langchain_community.document_loaders import RedditPostsLoader
 ```
 
-
 ```python
 %pip install --upgrade --quiet  praw
 ```
 
-
 ```python
-# load using 'subreddit' mode
+# 使用 'subreddit' 模式加载
 loader = RedditPostsLoader(
     client_id="YOUR CLIENT ID",
     client_secret="YOUR CLIENT SECRET",
     user_agent="extractor by u/Master_Ocelot8179",
-    categories=["new", "hot"],  # List of categories to load posts from
+    categories=["new", "hot"],  # 要加载帖子类别的列表
     mode="subreddit",
     search_queries=[
         "investing",
         "wallstreetbets",
-    ],  # List of subreddits to load posts from
-    number_posts=20,  # Default value is 10
+    ],  # 要加载帖子子版块的列表
+    number_posts=20,  # 默认值为 10
 )
 
-# # or load using 'username' mode
+# # 或使用 'username' 模式加载
 # loader = RedditPostsLoader(
 #     client_id="YOUR CLIENT ID",
 #     client_secret="YOUR CLIENT SECRET",
 #     user_agent="extractor by u/Master_Ocelot8179",
 #     categories=['new', 'hot'],
 #     mode = 'username',
-#     search_queries=['ga3far', 'Master_Ocelot8179'],         # List of usernames to load posts from
+#     search_queries=['ga3far', 'Master_Ocelot8179'],         # 要加载帖子用户名的列表
 #     number_posts=20
 #     )
 
-# Note: Categories can be only of following value - "controversial" "hot" "new" "rising" "top"
+# 注意：类别只能是以下值 - "controversial" "hot" "new" "rising" "top"
 ```
-
 
 ```python
 documents = loader.load()
 documents[:5]
 ```
-
-
 
 ```output
 [Document(page_content='Hello, I am not looking for investment advice. I will apply my own due diligence. However, I am interested if anyone knows as a UK resident how fees and exchange rate differences would impact performance?\n\nI am planning to create a pie of index funds (perhaps UK, US, europe) or find a fund with a good track record of long term growth at low rates. \n\nDoes anyone have any ideas?', metadata={'post_subreddit': 'r/investing', 'post_category': 'new', 'post_title': 'Long term retirement funds fees/exchange rate query', 'post_score': 1, 'post_id': '130pa6m', 'post_url': 'https://www.reddit.com/r/investing/comments/130pa6m/long_term_retirement_funds_feesexchange_rate_query/', 'post_author': Redditor(name='Badmanshiz')}),
@@ -66,9 +60,7 @@ documents[:5]
  Document(page_content='Hello everyone,\n\nI would really like to invest in an ETF that follows spy or another big index, as I think this form of investment suits me best. \n\nThe problem is, that I live in Denmark where ETFs and funds are taxed annually on unrealised gains at quite a steep rate. This means that an ETF growing say 10% per year will only grow about 6%, which really ruins the long term effects of compounding interest.\n\nHowever stocks are only taxed on realised gains which is why they look more interesting to hold long term.\n\nI do not like the lack of diversification this brings, as I am looking to spend tonnes of time picking the right long term stocks.\n\nIt would be ideal to find a few stocks that over the long term somewhat follows the indexes. Does anyone have suggestions?\n\nI have looked at Nasdaq Inc. which quite closely follows Nasdaq 100. \n\nI really appreciate any help.', metadata={'post_subreddit': 'r/investing', 'post_category': 'new', 'post_title': 'Stocks that track an index', 'post_score': 7, 'post_id': '130auvj', 'post_url': 'https://www.reddit.com/r/investing/comments/130auvj/stocks_that_track_an_index/', 'post_author': Redditor(name='LeAlbertP')})]
 ```
 
+## 相关
 
-
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

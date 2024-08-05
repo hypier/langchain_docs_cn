@@ -1,16 +1,16 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/dingo.ipynb
 ---
+
 # DingoDB
 
->[DingoDB](https://dingodb.readthedocs.io/en/latest/) is a distributed multi-mode vector database, which combines the characteristics of data lakes and vector databases, and can store data of any type and size (Key-Value, PDF, audio, video, etc.). It has real-time low-latency processing capabilities to achieve rapid insight and response, and can efficiently conduct instant analysis and process multi-modal data.
+>[DingoDB](https://dingodb.readthedocs.io/en/latest/) 是一个分布式多模态向量数据库，结合了数据湖和向量数据库的特性，可以存储任何类型和大小的数据（键值对、PDF、音频、视频等）。它具有实时低延迟处理能力，以实现快速洞察和响应，并能够高效地进行即时分析和处理多模态数据。
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
+您需要使用 `pip install -qU langchain-community` 安装 `langchain-community` 以使用此集成。
 
-This notebook shows how to use functionality related to the DingoDB vector database.
+本笔记本展示了如何使用与 DingoDB 向量数据库相关的功能。
 
-To run, you should have a [DingoDB instance up and running](https://github.com/dingodb/dingo-deploy/blob/main/README.md).
-
+要运行此代码，您应确保 [DingoDB 实例已启动并运行](https://github.com/dingodb/dingo-deploy/blob/main/README.md)。
 
 ```python
 %pip install --upgrade --quiet  dingodb
@@ -18,8 +18,7 @@ To run, you should have a [DingoDB instance up and running](https://github.com/d
 %pip install --upgrade --quiet  git+https://git@github.com/dingodb/pydingo.git
 ```
 
-We want to use OpenAIEmbeddings so we have to get the OpenAI API Key.
-
+我们想使用 OpenAIEmbeddings，因此我们需要获取 OpenAI API 密钥。
 
 ```python
 import getpass
@@ -38,7 +37,6 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import CharacterTextSplitter
 ```
 
-
 ```python
 from langchain_community.document_loaders import TextLoader
 
@@ -49,7 +47,6 @@ docs = text_splitter.split_documents(documents)
 
 embeddings = OpenAIEmbeddings()
 ```
-
 
 ```python
 from dingodb import DingoDB
@@ -73,7 +70,6 @@ docsearch = Dingo.from_documents(
 )
 ```
 
-
 ```python
 from langchain_community.document_loaders import TextLoader
 from langchain_community.vectorstores import Dingo
@@ -81,20 +77,18 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import CharacterTextSplitter
 ```
 
-
 ```python
 query = "What did the president say about Ketanji Brown Jackson"
 docs = docsearch.similarity_search(query)
 ```
 
-
 ```python
 print(docs[0].page_content)
 ```
 
-### Adding More Text to an Existing Index
+### 向现有索引添加更多文本
 
-More text can embedded and upserted to an existing Dingo index using the `add_texts` function
+可以使用 `add_texts` 函数将更多文本嵌入并更新到现有的 Dingo 索引中
 
 
 ```python
@@ -103,10 +97,9 @@ vectorstore = Dingo(embeddings, "text", client=dingo_client, index_name=index_na
 vectorstore.add_texts(["More text!"])
 ```
 
-### Maximal Marginal Relevance Searches
+### 最大边际相关性搜索
 
-In addition to using similarity search in the retriever object, you can also use `mmr` as retriever.
-
+除了在检索器对象中使用相似性搜索外，您还可以将 `mmr` 作为检索器使用。
 
 ```python
 retriever = docsearch.as_retriever(search_type="mmr")
@@ -116,8 +109,7 @@ for i, d in enumerate(matched_docs):
     print(d.page_content)
 ```
 
-Or use `max_marginal_relevance_search` directly:
-
+或者直接使用 `max_marginal_relevance_search`：
 
 ```python
 found_docs = docsearch.max_marginal_relevance_search(query, k=2, fetch_k=10)
@@ -125,8 +117,7 @@ for i, doc in enumerate(found_docs):
     print(f"{i + 1}.", doc.page_content, "\n")
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

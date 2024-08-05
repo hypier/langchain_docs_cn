@@ -1,15 +1,16 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/deepinfra.ipynb
 ---
+
 # DeepInfra
 
-[DeepInfra](https://deepinfra.com/?utm_source=langchain) is a serverless inference as a service that provides access to a [variety of LLMs](https://deepinfra.com/models?utm_source=langchain) and [embeddings models](https://deepinfra.com/models?type=embeddings&utm_source=langchain). This notebook goes over how to use LangChain with DeepInfra for language models.
+[DeepInfra](https://deepinfra.com/?utm_source=langchain) 是一种无服务器推理服务，提供对各种 [LLMs](https://deepinfra.com/models?utm_source=langchain) 和 [嵌入模型](https://deepinfra.com/models?type=embeddings&utm_source=langchain) 的访问。此笔记本介绍如何将 LangChain 与 DeepInfra 一起使用以进行语言模型。
 
-## Set the Environment API Key
-Make sure to get your API key from DeepInfra. You have to [Login](https://deepinfra.com/login?from=%2Fdash) and get a new token.
+## 设置环境 API 密钥
+确保从 DeepInfra 获取您的 API 密钥。您需要 [登录](https://deepinfra.com/login?from=%2Fdash) 并获取一个新令牌。
 
-You are given a 1 hour free of serverless GPU compute to test different models. (see [here](https://github.com/deepinfra/deepctl#deepctl))
-You can print your token with `deepctl auth token`
+您可以获得 1 小时的无服务器 GPU 计算免费时间来测试不同的模型。（请参见 [这里](https://github.com/deepinfra/deepctl#deepctl)）
+您可以使用 `deepctl auth token` 打印您的令牌
 
 
 ```python
@@ -29,9 +30,8 @@ import os
 os.environ["DEEPINFRA_API_TOKEN"] = DEEPINFRA_API_TOKEN
 ```
 
-## Create the DeepInfra instance
-You can also use our open-source [deepctl tool](https://github.com/deepinfra/deepctl#deepctl) to manage your model deployments. You can view a list of available parameters [here](https://deepinfra.com/databricks/dolly-v2-12b#API).
-
+## 创建 DeepInfra 实例
+您还可以使用我们的开源 [deepctl 工具](https://github.com/deepinfra/deepctl#deepctl) 来管理您的模型部署。您可以在 [这里](https://deepinfra.com/databricks/dolly-v2-12b#API) 查看可用参数的列表。
 
 ```python
 from langchain_community.llms import DeepInfra
@@ -45,27 +45,20 @@ llm.model_kwargs = {
 }
 ```
 
-
 ```python
-# run inferences directly via wrapper
+# 通过包装器直接运行推理
 llm("Who let the dogs out?")
 ```
-
-
 
 ```output
 'This is a question that has puzzled many people'
 ```
 
-
-
 ```python
-# run streaming inference
+# 运行流式推理
 for chunk in llm.stream("Who let the dogs out?"):
     print(chunk)
 ```
-
-
 
 ```output
  Will
@@ -73,10 +66,8 @@ for chunk in llm.stream("Who let the dogs out?"):
 .
 ```
 
-
-## Create a Prompt Template
-We will create a prompt template for Question and Answer.
-
+## 创建一个提示模板
+我们将为问答创建一个提示模板。
 
 ```python
 from langchain_core.prompts import PromptTemplate
@@ -88,7 +79,7 @@ Answer: Let's think step by step."""
 prompt = PromptTemplate.from_template(template)
 ```
 
-## Initiate the LLMChain
+## 初始化 LLMChain
 
 
 ```python
@@ -97,9 +88,8 @@ from langchain.chains import LLMChain
 llm_chain = LLMChain(prompt=prompt, llm=llm)
 ```
 
-## Run the LLMChain
-Provide a question and run the LLMChain.
-
+## 运行 LLMChain
+提供一个问题并运行 LLMChain。
 
 ```python
 question = "Can penguins reach the North pole?"
@@ -107,15 +97,11 @@ question = "Can penguins reach the North pole?"
 llm_chain.run(question)
 ```
 
-
-
 ```output
 "Penguins are found in Antarctica and the surrounding islands, which are located at the southernmost tip of the planet. The North Pole is located at the northernmost tip of the planet, and it would be a long journey for penguins to get there. In fact, penguins don't have the ability to fly or migrate over such long distances. So, no, penguins cannot reach the North Pole. "
 ```
 
+## 相关
 
-
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

@@ -1,39 +1,38 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/hybrid.ipynb
 ---
-# Hybrid Search
 
-The standard search in LangChain is done by vector similarity. However, a number of vectorstores implementations (Astra DB, ElasticSearch, Neo4J, AzureSearch, Qdrant...) also support more advanced search combining vector similarity search and other search techniques (full-text, BM25, and so on). This is generally referred to as "Hybrid" search.
+# 混合搜索
 
-**Step 1: Make sure the vectorstore you are using supports hybrid search**
+LangChain 中的标准搜索是通过向量相似性完成的。然而，一些向量存储实现（如 Astra DB、ElasticSearch、Neo4J、AzureSearch、Qdrant 等）也支持更高级的搜索，结合了向量相似性搜索和其他搜索技术（全文搜索、BM25 等）。这通常被称为“混合”搜索。
 
-At the moment, there is no unified way to perform hybrid search in LangChain. Each vectorstore may have their own way to do it. This is generally exposed as a keyword argument that is passed in during `similarity_search`.
+**步骤 1：确保您使用的向量存储支持混合搜索**
 
-By reading the documentation or source code, figure out whether the vectorstore you are using supports hybrid search, and, if so, how to use it.
+目前，在 LangChain 中没有统一的方式来执行混合搜索。每个向量存储可能有自己实现的方法。通常，这会作为一个关键字参数在 `similarity_search` 时传入。
 
-**Step 2: Add that parameter as a configurable field for the chain**
+通过阅读文档或源代码，弄清楚您使用的向量存储是否支持混合搜索，如果支持，如何使用它。
 
-This will let you easily call the chain and configure any relevant flags at runtime. See [this documentation](/docs/how_to/configure) for more information on configuration.
+**步骤 2：将该参数添加为链的可配置字段**
 
-**Step 3: Call the chain with that configurable field**
+这将使您能够轻松调用链并在运行时配置任何相关标志。有关配置的更多信息，请参见 [此文档](/docs/how_to/configure)。
 
-Now, at runtime you can call this chain with configurable field.
+**步骤 3：使用该可配置字段调用链**
 
-## Code Example
+现在，在运行时，您可以使用可配置字段调用此链。
 
-Let's see a concrete example of what this looks like in code. We will use the Cassandra/CQL interface of Astra DB for this example.
+## 代码示例
 
-Install the following Python package:
+让我们看看在代码中这是什么样子的具体示例。我们将使用 Astra DB 的 Cassandra/CQL 接口来进行这个示例。
 
+安装以下 Python 包：
 
 ```python
 !pip install "cassio>=0.1.7"
 ```
 
-Get the [connection secrets](https://docs.datastax.com/en/astra/astra-db-vector/get-started/quickstart.html).
+获取 [连接密钥](https://docs.datastax.com/en/astra/astra-db-vector/get-started/quickstart.html)。
 
-Initialize cassio:
-
+初始化 cassio：
 
 ```python
 import cassio
@@ -45,8 +44,7 @@ cassio.init(
 )
 ```
 
-Create the Cassandra VectorStore with a standard [index analyzer](https://docs.datastax.com/en/astra/astra-db-vector/cql/use-analyzers-with-cql.html). The index analyzer is needed to enable term matching.
-
+使用标准 [索引分析器](https://docs.datastax.com/en/astra/astra-db-vector/cql/use-analyzers-with-cql.html) 创建 Cassandra VectorStore。索引分析器是启用词匹配所必需的。
 
 ```python
 from cassio.table.cql import STANDARD_ANALYZER
@@ -71,14 +69,11 @@ vectorstore.add_texts(
 )
 ```
 
-If we do a standard similarity search, we get all the documents:
-
+如果我们进行标准相似性搜索，我们会得到所有文档：
 
 ```python
 vectorstore.as_retriever().invoke("What city did I visit last?")
 ```
-
-
 
 ```output
 [Document(page_content='In 2022, I visited New York'),
@@ -86,9 +81,7 @@ Document(page_content='In 2023, I visited Paris'),
 Document(page_content='In 2021, I visited New Orleans')]
 ```
 
-
-The Astra DB vectorstore `body_search` argument can be used to filter the search on the term `new`.
-
+Astra DB vectorstore 的 `body_search` 参数可用于根据术语 `new` 过滤搜索。
 
 ```python
 vectorstore.as_retriever(search_kwargs={"body_search": "new"}).invoke(
@@ -96,16 +89,12 @@ vectorstore.as_retriever(search_kwargs={"body_search": "new"}).invoke(
 )
 ```
 
-
-
 ```output
 [Document(page_content='In 2022, I visited New York'),
 Document(page_content='In 2021, I visited New Orleans')]
 ```
 
-
-We can now create the chain that we will use to do question-answering over
-
+我们现在可以创建将用于问答的链
 
 ```python
 from langchain_core.output_parsers import StrOutputParser
@@ -117,8 +106,7 @@ from langchain_core.runnables import (
 from langchain_openai import ChatOpenAI
 ```
 
-This is basic question-answering chain set up.
-
+这是基本的问答链设置。
 
 ```python
 template = """Answer the question based only on the following context:
@@ -132,8 +120,7 @@ model = ChatOpenAI()
 retriever = vectorstore.as_retriever()
 ```
 
-Here we mark the retriever as having a configurable field. All vectorstore retrievers have `search_kwargs` as a field. This is just a dictionary, with vectorstore specific fields
-
+在这里，我们将检索器标记为具有可配置字段。所有 vectorstore 检索器都有 `search_kwargs` 作为字段。这只是一个字典，包含特定于 vectorstore 的字段。
 
 ```python
 configurable_retriever = retriever.configurable_fields(
@@ -145,8 +132,7 @@ configurable_retriever = retriever.configurable_fields(
 )
 ```
 
-We can now create the chain using our configurable retriever
-
+我们现在可以使用我们的可配置检索器创建链。
 
 ```python
 chain = (
@@ -157,20 +143,15 @@ chain = (
 )
 ```
 
-
 ```python
 chain.invoke("What city did I visit last?")
 ```
-
-
 
 ```output
 Paris
 ```
 
-
-We can now invoke the chain with configurable options. `search_kwargs` is the id of the configurable field. The value is the search kwargs to use for Astra DB.
-
+我们现在可以使用可配置选项调用链。`search_kwargs` 是可配置字段的 ID。该值是用于 Astra DB 的搜索 kwargs。
 
 ```python
 chain.invoke(
@@ -179,9 +160,6 @@ chain.invoke(
 )
 ```
 
-
-
 ```output
 New York
 ```
-

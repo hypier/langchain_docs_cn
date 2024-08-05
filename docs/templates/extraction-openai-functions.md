@@ -1,72 +1,70 @@
-
 # extraction-openai-functions
 
-This template uses [OpenAI function calling](https://python.langchain.com/docs/modules/chains/how_to/openai_functions) for extraction of structured output from unstructured input text.
+此模板使用 [OpenAI 函数调用](https://python.langchain.com/docs/modules/chains/how_to/openai_functions) 从非结构化输入文本中提取结构化输出。
 
-The extraction output schema can be set in `chain.py`. 
+提取输出模式可以在 `chain.py` 中设置。
 
-## Environment Setup
+## 环境设置
 
-Set the `OPENAI_API_KEY` environment variable to access the OpenAI models.
+设置 `OPENAI_API_KEY` 环境变量以访问 OpenAI 模型。
 
-## Usage
+## 用法
 
-To use this package, you should first have the LangChain CLI installed:
+要使用此包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将其作为唯一包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package extraction-openai-functions
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，只需运行：
 
 ```shell
 langchain app add extraction-openai-functions
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 ```python
 from extraction_openai_functions import chain as extraction_openai_functions_chain
 
 add_routes(app, extraction_openai_functions_chain, path="/extraction-openai-functions")
 ```
 
-(Optional) Let's now configure LangSmith. 
-LangSmith will help us trace, monitor and debug LangChain applications. 
-You can sign up for LangSmith [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
-
+（可选）现在让我们配置 LangSmith。
+LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接通过以下方式启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server is running locally at 
+这将启动 FastAPI 应用程序，服务器在本地运行，地址为 
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/extraction-openai-functions/playground](http://127.0.0.1:8000/extraction-openai-functions/playground)  
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板
+我们可以在 [http://127.0.0.1:8000/extraction-openai-functions/playground](http://127.0.0.1:8000/extraction-openai-functions/playground) 访问游乐场  
 
-We can access the template from code with:
+我们可以通过以下代码从代码中访问模板：
 
 ```python
 from langserve.client import RemoteRunnable
 
 runnable = RemoteRunnable("http://localhost:8000/extraction-openai-functions")
 ```
-By default, this package is set to extract the title and author of papers, as specified in the `chain.py` file. 
+默认情况下，此包设置为提取论文的标题和作者，如 `chain.py` 文件中所指定。
 
-LLM is leveraged by the OpenAI function by default.
+默认情况下，LLM 由 OpenAI 函数提供支持。

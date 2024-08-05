@@ -2,36 +2,37 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/airbyte_json.ipynb
 sidebar_class_name: hidden
 ---
-# Airbyte JSON (Deprecated)
 
-Note: `AirbyteJSONLoader` is deprecated. Please use [`AirbyteLoader`](/docs/integrations/document_loaders/airbyte) instead.
+# Airbyte JSON（已弃用）
 
->[Airbyte](https://github.com/airbytehq/airbyte) is a data integration platform for ELT pipelines from APIs, databases & files to warehouses & lakes. It has the largest catalog of ELT connectors to data warehouses and databases.
+注意：`AirbyteJSONLoader`已弃用。请使用[`AirbyteLoader`](/docs/integrations/document_loaders/airbyte)代替。
 
-This covers how to load any source from Airbyte into a local JSON file that can be read in as a document
+>[Airbyte](https://github.com/airbytehq/airbyte)是一个用于从API、数据库和文件到数据仓库和湖泊的ELT管道的数据集成平台。它拥有最大的ELT连接器目录，支持数据仓库和数据库。
 
-Prereqs:
-Have docker desktop installed
+这部分介绍如何将Airbyte中的任何源加载到可以作为文档读取的本地JSON文件中。
 
-Steps:
+前提条件：
+已安装Docker Desktop。
 
-1) Clone Airbyte from GitHub - `git clone https://github.com/airbytehq/airbyte.git`
+步骤：
 
-2) Switch into Airbyte directory - `cd airbyte`
+1) 从GitHub克隆Airbyte - `git clone https://github.com/airbytehq/airbyte.git`
 
-3) Start Airbyte - `docker compose up`
+2) 切换到Airbyte目录 - `cd airbyte`
 
-4) In your browser, just visit http://localhost:8000. You will be asked for a username and password. By default, that's username `airbyte` and password `password`.
+3) 启动Airbyte - `docker compose up`
 
-5) Setup any source you wish.
+4) 在浏览器中访问 http://localhost:8000。系统会要求输入用户名和密码。默认情况下，用户名为 `airbyte`，密码为 `password`。
 
-6) Set destination as Local JSON, with specified destination path - lets say `/json_data`. Set up manual sync.
+5) 设置您希望的任何源。
 
-7) Run the connection.
+6) 将目标设置为本地JSON，并指定目标路径 - 比如说 `/json_data`。设置为手动同步。
 
-7) To see what files are create, you can navigate to: `file:///tmp/airbyte_local`
+7) 运行连接。
 
-8) Find your data and copy path. That path should be saved in the file variable below. It should start with `/tmp/airbyte_local`
+8) 要查看创建了哪些文件，您可以导航到： `file:///tmp/airbyte_local`
+
+9) 找到您的数据并复制路径。该路径应保存在下面的文件变量中。应以 `/tmp/airbyte_local` 开头。
 
 
 
@@ -102,7 +103,7 @@ version:
 n
 ```
 
-## Related
+## 相关
 
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

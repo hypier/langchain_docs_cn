@@ -1,18 +1,17 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/toolkits/airbyte_structured_qa.ipynb
 ---
-# Airbyte Question Answering
-This notebook shows how to do question answering over structured data, in this case using the `AirbyteStripeLoader`.
 
-Vectorstores often have a hard time answering questions that requires computing, grouping and filtering structured data so the high level idea is to use a `pandas` dataframe to help with these types of questions. 
+# Airbyte 问答
+本笔记展示了如何在结构化数据上进行问答，这里使用 `AirbyteStripeLoader`。
 
+向量存储通常在回答需要计算、分组和过滤结构化数据的问题时会遇到困难，因此高层次的想法是使用 `pandas` 数据框来帮助处理这些类型的问题。
 
 ```python
 %pip install -qU langchain-community
 ```
 
-1. Load data from Stripe using Airbyte. user the `record_handler` paramater to return a JSON from the data loader.
-
+1. 使用 Airbyte 从 Stripe 加载数据。使用 `record_handler` 参数从数据加载器返回 JSON。
 
 ```python
 import os
@@ -43,16 +42,13 @@ loader = AirbyteStripeLoader(
 data = loader.load()
 ```
 
-2. Pass the data to `pandas` dataframe.
-
+2. 将数据传递给 `pandas` 数据框。
 
 ```python
 df = pd.DataFrame(data)
 ```
 
-3. Pass the dataframe `df` to the `create_pandas_dataframe_agent` and invoke
-
-
+3. 将数据框 `df` 传递给 `create_pandas_dataframe_agent` 并调用。
 
 ```python
 agent = create_pandas_dataframe_agent(
@@ -63,8 +59,7 @@ agent = create_pandas_dataframe_agent(
 )
 ```
 
-4. Run the agent
-
+4. 运行代理。
 
 ```python
 output = agent.run("How many rows are there?")

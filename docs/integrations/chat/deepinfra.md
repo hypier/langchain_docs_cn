@@ -1,15 +1,16 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/deepinfra.ipynb
 ---
+
 # DeepInfra
 
-[DeepInfra](https://deepinfra.com/?utm_source=langchain) is a serverless inference as a service that provides access to a [variety of LLMs](https://deepinfra.com/models?utm_source=langchain) and [embeddings models](https://deepinfra.com/models?type=embeddings&utm_source=langchain). This notebook goes over how to use LangChain with DeepInfra for chat models.
+[DeepInfra](https://deepinfra.com/?utm_source=langchain) 是一种无服务器推理服务，提供对各种 [LLMs](https://deepinfra.com/models?utm_source=langchain) 和 [嵌入模型](https://deepinfra.com/models?type=embeddings&utm_source=langchain) 的访问。此笔记本介绍了如何将 LangChain 与 DeepInfra 一起用于聊天模型。
 
-## Set the Environment API Key
-Make sure to get your API key from DeepInfra. You have to [Login](https://deepinfra.com/login?from=%2Fdash) and get a new token.
+## 设置环境 API 密钥
+确保从 DeepInfra 获取您的 API 密钥。您需要 [登录](https://deepinfra.com/login?from=%2Fdash) 并获取一个新令牌。
 
-You are given a 1 hour free of serverless GPU compute to test different models. (see [here](https://github.com/deepinfra/deepctl#deepctl))
-You can print your token with `deepctl auth token`
+您可以获得 1 小时的无服务器 GPU 计算免费体验，以测试不同的模型。（请参见 [这里](https://github.com/deepinfra/deepctl#deepctl)）
+您可以使用 `deepctl auth token` 打印您的令牌
 
 
 ```python
@@ -36,7 +37,7 @@ messages = [
 chat.invoke(messages)
 ```
 
-## `ChatDeepInfra` also supports async and streaming functionality:
+## `ChatDeepInfra` 还支持异步和流式功能：
 
 
 ```python
@@ -58,12 +59,11 @@ chat = ChatDeepInfra(
 chat.invoke(messages)
 ```
 
-# Tool Calling
+# 工具调用
 
-DeepInfra currently supports only invoke and async invoke tool calling.
+DeepInfra 目前仅支持调用和异步调用工具。
 
-For a complete list of models that support tool calling, please refer to our [tool calling documentation](https://deepinfra.com/docs/advanced/function_calling).
-
+有关支持工具调用的模型的完整列表，请参阅我们的 [工具调用文档](https://deepinfra.com/docs/advanced/function_calling)。
 
 ```python
 import asyncio
@@ -79,19 +79,19 @@ model_name = "meta-llama/Meta-Llama-3-70B-Instruct"
 _ = load_dotenv(find_dotenv())
 
 
-# Langchain tool
+# Langchain 工具
 @tool
 def foo(something):
     """
-    Called when foo
+    当调用 foo 时
     """
     pass
 
 
-# Pydantic class
+# Pydantic 类
 class Bar(BaseModel):
     """
-    Called when Bar
+    当调用 Bar 时
     """
 
     pass
@@ -101,7 +101,7 @@ llm = ChatDeepInfra(model=model_name)
 tools = [foo, Bar]
 llm_with_tools = llm.bind_tools(tools)
 messages = [
-    HumanMessage("Foo and bar, please."),
+    HumanMessage("请调用 Foo 和 Bar。"),
 ]
 
 response = llm_with_tools.invoke(messages)
@@ -114,13 +114,12 @@ async def call_ainvoke():
     print(result.tool_calls)
 
 
-# Async call
+# 异步调用
 asyncio.run(call_ainvoke())
 # [{'name': 'foo', 'args': {'something': None}, 'id': 'call_ZH7FetmgSot4LHcMU6CEb8tI'}, {'name': 'Bar', 'args': {}, 'id': 'call_2MQhDifAJVoijZEvH8PeFSVB'}]
 ```
 
+## 相关
 
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

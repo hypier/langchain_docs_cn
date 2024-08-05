@@ -1,29 +1,27 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/sagemaker.ipynb
 ---
+
 # SageMakerEndpoint
 
-[Amazon SageMaker](https://aws.amazon.com/sagemaker/) is a system that can build, train, and deploy machine learning (ML) models for any use case with fully managed infrastructure, tools, and workflows.
+[Amazon SageMaker](https://aws.amazon.com/sagemaker/) 是一个可以构建、训练和部署机器学习（ML）模型的系统，适用于任何用例，提供完全托管的基础设施、工具和工作流程。
 
-This notebooks goes over how to use an LLM hosted on a `SageMaker endpoint`.
-
+本笔记本介绍了如何使用托管在 `SageMaker endpoint` 上的 LLM。
 
 ```python
 !pip3 install langchain boto3
 ```
 
-## Set up
+## 设置
 
-You have to set up following required parameters of the `SagemakerEndpoint` call:
-- `endpoint_name`: The name of the endpoint from the deployed Sagemaker model.
-    Must be unique within an AWS Region.
-- `credentials_profile_name`: The name of the profile in the ~/.aws/credentials or ~/.aws/config files, which
-    has either access keys or role information specified.
-    If not specified, the default credential profile or, if on an EC2 instance,
-    credentials from IMDS will be used.
-    See: https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html
+您需要设置以下 `SagemakerEndpoint` 调用的必要参数：
+- `endpoint_name`: 已部署的 Sagemaker 模型的端点名称。
+    必须在 AWS 区域内唯一。
+- `credentials_profile_name`: ~/.aws/credentials 或 ~/.aws/config 文件中配置文件的名称，该文件中指定了访问密钥或角色信息。
+    如果未指定，将使用默认凭证配置文件，或者如果在 EC2 实例上，将使用 IMDS 中的凭证。
+    参见：https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html
 
-## Example
+## 示例
 
 
 ```python
@@ -33,9 +31,9 @@ from langchain_core.documents import Document
 
 ```python
 example_doc_1 = """
-Peter and Elizabeth took a taxi to attend the night party in the city. While in the party, Elizabeth collapsed and was rushed to the hospital.
-Since she was diagnosed with a brain injury, the doctor told Peter to stay besides her until she gets well.
-Therefore, Peter stayed with her at the hospital for 3 days without leaving.
+Peter 和 Elizabeth 乘出租车前往市区参加晚会。在派对上，Elizabeth 突然晕倒，被紧急送往医院。
+由于她被诊断出脑部受伤，医生告诉 Peter 要陪在她身边，直到她康复。
+因此，Peter 在医院陪伴她 3 天，没有离开。
 """
 
 docs = [
@@ -45,10 +43,9 @@ docs = [
 ]
 ```
 
-## Example to initialize with external boto3 session
+## 使用外部 boto3 会话进行初始化的示例
 
-### for cross account scenarios
-
+### 跨账户场景
 
 ```python
 import json
@@ -60,15 +57,15 @@ from langchain_community.llms import SagemakerEndpoint
 from langchain_community.llms.sagemaker_endpoint import LLMContentHandler
 from langchain_core.prompts import PromptTemplate
 
-query = """How long was Elizabeth hospitalized?
+query = """Elizabeth住院多久？
 """
 
-prompt_template = """Use the following pieces of context to answer the question at the end.
+prompt_template = """使用以下上下文来回答最后的问题。
 
 {context}
 
-Question: {question}
-Answer:"""
+问题: {question}
+答案:"""
 PROMPT = PromptTemplate(
     template=prompt_template, input_variables=["context", "question"]
 )
@@ -126,15 +123,15 @@ from langchain_community.llms import SagemakerEndpoint
 from langchain_community.llms.sagemaker_endpoint import LLMContentHandler
 from langchain_core.prompts import PromptTemplate
 
-query = """How long was Elizabeth hospitalized?
+query = """Elizabeth住院多久？
 """
 
-prompt_template = """Use the following pieces of context to answer the question at the end.
+prompt_template = """使用以下上下文来回答最后的问题。
 
 {context}
 
-Question: {question}
-Answer:"""
+问题: {question}
+答案:"""
 PROMPT = PromptTemplate(
     template=prompt_template, input_variables=["context", "question"]
 )
@@ -169,8 +166,7 @@ chain = load_qa_chain(
 chain({"input_documents": docs, "question": query}, return_only_outputs=True)
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

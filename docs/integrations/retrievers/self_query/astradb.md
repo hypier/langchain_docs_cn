@@ -1,24 +1,23 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/self_query/astradb.ipynb
 ---
+
 # Astra DB (Cassandra)
 
->[DataStax Astra DB](https://docs.datastax.com/en/astra/home/astra.html) is a serverless vector-capable database built on `Cassandra` and made conveniently available through an easy-to-use JSON API.
+>[DataStax Astra DB](https://docs.datastax.com/en/astra/home/astra.html) 是一个无服务器的向量数据库，基于 `Cassandra` 构建，并通过易于使用的 JSON API 方便地提供。
 
-In the walkthrough, we'll demo the `SelfQueryRetriever` with an `Astra DB` vector store.
+在本演示中，我们将展示使用 `Astra DB` 向量存储的 `SelfQueryRetriever`。
 
-## Creating an Astra DB vector store
-First we'll want to create an Astra DB VectorStore and seed it with some data. We've created a small demo set of documents that contain summaries of movies.
+## 创建 Astra DB 向量存储
+首先，我们需要创建一个 Astra DB VectorStore，并用一些数据进行初始化。我们创建了一小组包含电影摘要的演示文档。
 
-NOTE: The self-query retriever requires you to have `lark` installed (`pip install lark`). We also need the `astrapy` package.
-
+注意：自查询检索器需要安装 `lark`（`pip install lark`）。我们还需要 `astrapy` 包。
 
 ```python
 %pip install --upgrade --quiet lark astrapy langchain-openai
 ```
 
-We want to use `OpenAIEmbeddings` so we have to get the OpenAI API Key.
-
+我们想使用 `OpenAIEmbeddings`，所以我们必须获取 OpenAI API 密钥。
 
 ```python
 import os
@@ -27,21 +26,19 @@ from getpass import getpass
 from langchain_openai.embeddings import OpenAIEmbeddings
 
 os.environ["OPENAI_API_KEY"] = getpass("OpenAI API Key:")
-
+    
 embeddings = OpenAIEmbeddings()
 ```
 
-Create the Astra DB VectorStore:
+创建 Astra DB VectorStore：
 
-- the API Endpoint looks like `https://01234567-89ab-cdef-0123-456789abcdef-us-east1.apps.astra.datastax.com`
-- the Token looks like `AstraCS:6gBhNmsk135....`
-
+- API 端点看起来像 `https://01234567-89ab-cdef-0123-456789abcdef-us-east1.apps.astra.datastax.com`
+- 令牌看起来像 `AstraCS:6gBhNmsk135....`
 
 ```python
 ASTRA_DB_API_ENDPOINT = input("ASTRA_DB_API_ENDPOINT = ")
 ASTRA_DB_APPLICATION_TOKEN = getpass("ASTRA_DB_APPLICATION_TOKEN = ")
 ```
-
 
 ```python
 from langchain_community.vectorstores import AstraDB
@@ -49,31 +46,31 @@ from langchain_core.documents import Document
 
 docs = [
     Document(
-        page_content="A bunch of scientists bring back dinosaurs and mayhem breaks loose",
-        metadata={"year": 1993, "rating": 7.7, "genre": "science fiction"},
+        page_content="一群科学家带回恐龙，随之而来的是混乱",
+        metadata={"year": 1993, "rating": 7.7, "genre": "科幻"},
     ),
     Document(
-        page_content="Leo DiCaprio gets lost in a dream within a dream within a dream within a ...",
-        metadata={"year": 2010, "director": "Christopher Nolan", "rating": 8.2},
+        page_content="莱昂纳多·迪卡普里奥迷失在梦中，梦中又有梦...",
+        metadata={"year": 2010, "director": "克里斯托弗·诺兰", "rating": 8.2},
     ),
     Document(
-        page_content="A psychologist / detective gets lost in a series of dreams within dreams within dreams and Inception reused the idea",
-        metadata={"year": 2006, "director": "Satoshi Kon", "rating": 8.6},
+        page_content="一名心理学家/侦探迷失在一系列梦中，而《盗梦空间》重用了这个概念",
+        metadata={"year": 2006, "director": "今敏", "rating": 8.6},
     ),
     Document(
-        page_content="A bunch of normal-sized women are supremely wholesome and some men pine after them",
-        metadata={"year": 2019, "director": "Greta Gerwig", "rating": 8.3},
+        page_content="一群普通身材的女性非常健康，一些男性对她们心生向往",
+        metadata={"year": 2019, "director": "格蕾塔·葛韦格", "rating": 8.3},
     ),
     Document(
-        page_content="Toys come alive and have a blast doing so",
-        metadata={"year": 1995, "genre": "animated"},
+        page_content="玩具们复活并乐在其中",
+        metadata={"year": 1995, "genre": "动画"},
     ),
     Document(
-        page_content="Three men walk into the Zone, three men walk out of the Zone",
+        page_content="三个男人走进区域，三个男人走出区域",
         metadata={
             "year": 1979,
-            "director": "Andrei Tarkovsky",
-            "genre": "science fiction",
+            "director": "安德烈·塔尔科夫斯基",
+            "genre": "科幻",
             "rating": 9.9,
         },
     ),
@@ -88,9 +85,8 @@ vectorstore = AstraDB.from_documents(
 )
 ```
 
-## Creating our self-querying retriever
-Now we can instantiate our retriever. To do this we'll need to provide some information upfront about the metadata fields that our documents support and a short description of the document contents.
-
+## 创建自查询检索器
+现在我们可以实例化我们的检索器。为此，我们需要提前提供一些关于文档支持的元数据字段的信息以及文档内容的简短描述。
 
 ```python
 from langchain.chains.query_constructor.base import AttributeInfo
@@ -125,8 +121,8 @@ retriever = SelfQueryRetriever.from_llm(
 )
 ```
 
-## Testing it out
-And now we can try actually using our retriever!
+## 测试一下
+现在我们可以尝试实际使用我们的检索器！
 
 
 ```python
@@ -160,11 +156,11 @@ retriever.invoke(
 )
 ```
 
-## Filter k
+## 过滤 k
 
-We can also use the self query retriever to specify `k`: the number of documents to fetch.
+我们还可以使用自查询检索器来指定 `k`：要获取的文档数量。
 
-We can do this by passing `enable_limit=True` to the constructor.
+我们可以通过将 `enable_limit=True` 传递给构造函数来实现这一点。
 
 
 ```python
@@ -180,16 +176,15 @@ retriever = SelfQueryRetriever.from_llm(
 
 
 ```python
-# This example only specifies a relevant query
+# 这个示例仅指定一个相关查询
 retriever.invoke("What are two movies about dinosaurs?")
 ```
 
-## Cleanup
+## 清理
 
-If you want to completely delete the collection from your Astra DB instance, run this.
+如果您想从您的 Astra DB 实例中完全删除集合，请运行此命令。
 
-_(You will lose the data you stored in it.)_
-
+_(您将丢失存储在其中的数据。)_
 
 ```python
 vectorstore.delete_collection()

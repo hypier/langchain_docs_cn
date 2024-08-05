@@ -1,27 +1,25 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/copypaste.ipynb
 ---
-# Copy Paste
 
-This notebook covers how to load a document object from something you just want to copy and paste. In this case, you don't even need to use a DocumentLoader, but rather can just construct the Document directly.
+# 复制粘贴
 
+本笔记本介绍了如何从您想要复制和粘贴的内容加载文档对象。在这种情况下，您甚至不需要使用 DocumentLoader，而是可以直接构造 Document。
 
 ```python
 from langchain_core.documents import Document
 ```
 
-
 ```python
 text = "..... put the text you copy pasted here......"
 ```
-
 
 ```python
 doc = Document(page_content=text)
 ```
 
-## Metadata
-If you want to add metadata about the where you got this piece of text, you easily can with the metadata key.
+## 元数据
+如果您想添加关于您获取这段文本的元数据，可以通过元数据键轻松实现。
 
 
 ```python
@@ -33,8 +31,7 @@ metadata = {"source": "internet", "date": "Friday"}
 doc = Document(page_content=text, metadata=metadata)
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

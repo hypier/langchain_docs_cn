@@ -1,12 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/llm_rails.ipynb
 ---
+
 # LLMRails
 
-Let's load the LLMRails Embeddings class.
+让我们加载 LLMRails Embeddings 类。
 
-To use LLMRails embedding you need to pass api key by argument or set it in environment with `LLM_RAILS_API_KEY` key.
-To gey API Key you need to sign up in https://console.llmrails.com/signup and then go to https://console.llmrails.com/api-keys and copy key from there after creating one key in platform.
+要使用 LLMRails 嵌入，您需要通过参数传递 API 密钥或在环境中设置 `LLM_RAILS_API_KEY` 密钥。要获取 API 密钥，您需要在 https://console.llmrails.com/signup 注册，然后转到 https://console.llmrails.com/api-keys，在平台上创建一个密钥后从那里复制密钥。
 
 
 ```python
@@ -15,7 +15,7 @@ from langchain_community.embeddings import LLMRailsEmbeddings
 
 
 ```python
-embeddings = LLMRailsEmbeddings(model="embedding-english-v1")  # or embedding-multi-v1
+embeddings = LLMRailsEmbeddings(model="embedding-english-v1")  # 或 embedding-multi-v1
 ```
 
 
@@ -23,7 +23,7 @@ embeddings = LLMRailsEmbeddings(model="embedding-english-v1")  # or embedding-mu
 text = "This is a test document."
 ```
 
-To generate embeddings, you can either query an invidivual text, or you can query a list of texts.
+要生成嵌入，您可以查询单个文本，也可以查询文本列表。
 
 
 ```python
@@ -58,9 +58,7 @@ doc_result[0][:5]
  0.2079043835401535]
 ```
 
+## 相关
 
-
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

@@ -1,22 +1,19 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/huggingface_tools.ipynb
 ---
-# HuggingFace Hub Tools
 
->[Huggingface Tools](https://huggingface.co/docs/transformers/v4.29.0/en/custom_tools) that supporting text I/O can be
-loaded directly using the `load_huggingface_tool` function.
+# HuggingFace Hub 工具
 
+>[Huggingface 工具](https://huggingface.co/docs/transformers/v4.29.0/en/custom_tools) 支持文本输入/输出，可以直接使用 `load_huggingface_tool` 函数加载。
 
 ```python
 # Requires transformers>=4.29.0 and huggingface_hub>=0.14.1
 %pip install --upgrade --quiet  transformers huggingface_hub > /dev/null
 ```
 
-
 ```python
 %pip install --upgrade --quiet  langchain-community
 ```
-
 
 ```python
 from langchain.agents import load_huggingface_tool
@@ -33,15 +30,11 @@ model_download_counter: This is a tool that returns the most downloaded model of
 tool.run("text-classification")
 ```
 
-
-
 ```output
 'facebook/bart-large-mnli'
 ```
 
+## 相关
 
-
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

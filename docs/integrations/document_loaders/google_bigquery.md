@@ -1,23 +1,21 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/google_bigquery.ipynb
 ---
+
 # Google BigQuery
 
->[Google BigQuery](https://cloud.google.com/bigquery) is a serverless and cost-effective enterprise data warehouse that works across clouds and scales with your data.
-`BigQuery` is a part of the `Google Cloud Platform`.
+>[Google BigQuery](https://cloud.google.com/bigquery) 是一个无服务器且具有成本效益的企业数据仓库，能够跨云工作并随着数据的增长而扩展。
+`BigQuery` 是 `Google Cloud Platform` 的一部分。
 
-Load a `BigQuery` query with one document per row.
-
+加载每行一个文档的 `BigQuery` 查询。
 
 ```python
 %pip install --upgrade --quiet langchain-google-community[bigquery]
 ```
 
-
 ```python
 from langchain_google_community import BigQueryLoader
 ```
-
 
 ```python
 BASE_QUERY = """
@@ -40,7 +38,7 @@ FROM (
 """
 ```
 
-## Basic Usage
+## 基本用法
 
 
 ```python
@@ -56,7 +54,8 @@ print(data)
 ```output
 [Document(page_content='id: 1\ndna_sequence: ATTCGA\norganism: Lokiarchaeum sp. (strain GC14_75).', lookup_str='', metadata={}, lookup_index=0), Document(page_content='id: 2\ndna_sequence: AGGCGA\norganism: Heimdallarchaeota archaeon (strain LC_2).', lookup_str='', metadata={}, lookup_index=0), Document(page_content='id: 3\ndna_sequence: TCCGGA\norganism: Acidianus hospitalis (strain W1).', lookup_str='', metadata={}, lookup_index=0)]
 ```
-## Specifying Which Columns are Content vs Metadata
+
+## 指定哪些列是内容 vs 元数据
 
 
 ```python
@@ -76,11 +75,12 @@ print(data)
 ```output
 [Document(page_content='dna_sequence: ATTCGA\norganism: Lokiarchaeum sp. (strain GC14_75).', lookup_str='', metadata={'id': 1}, lookup_index=0), Document(page_content='dna_sequence: AGGCGA\norganism: Heimdallarchaeota archaeon (strain LC_2).', lookup_str='', metadata={'id': 2}, lookup_index=0), Document(page_content='dna_sequence: TCCGGA\norganism: Acidianus hospitalis (strain W1).', lookup_str='', metadata={'id': 3}, lookup_index=0)]
 ```
-## Adding Source to Metadata
+
+## 将源添加到元数据
 
 
 ```python
-# Note that the `id` column is being returned twice, with one instance aliased as `source`
+# 注意 `id` 列被返回了两次，其中一个实例被别名为 `source`
 ALIASED_QUERY = """
 SELECT
   id,
@@ -117,7 +117,7 @@ print(data)
 [Document(page_content='id: 1\ndna_sequence: ATTCGA\norganism: Lokiarchaeum sp. (strain GC14_75).\nsource: 1', lookup_str='', metadata={'source': 1}, lookup_index=0), Document(page_content='id: 2\ndna_sequence: AGGCGA\norganism: Heimdallarchaeota archaeon (strain LC_2).\nsource: 2', lookup_str='', metadata={'source': 2}, lookup_index=0), Document(page_content='id: 3\ndna_sequence: TCCGGA\norganism: Acidianus hospitalis (strain W1).\nsource: 3', lookup_str='', metadata={'source': 3}, lookup_index=0)]
 ```
 
-## Related
+## 相关
 
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

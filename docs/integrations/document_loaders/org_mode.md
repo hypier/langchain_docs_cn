@@ -1,13 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/org_mode.ipynb
 ---
+
 # Org-mode
 
->A [Org Mode document](https://en.wikipedia.org/wiki/Org-mode) is a document editing, formatting, and organizing mode, designed for notes, planning, and authoring within the free software text editor Emacs.
+>一个 [Org Mode 文档](https://en.wikipedia.org/wiki/Org-mode) 是一种文档编辑、格式化和组织模式，旨在用于在自由软件文本编辑器 Emacs 中进行笔记、规划和创作。
 
 ## `UnstructuredOrgModeLoader`
 
-You can load data from Org-mode files with `UnstructuredOrgModeLoader` using the following workflow.
+您可以使用 `UnstructuredOrgModeLoader` 从 Org-mode 文件中加载数据，具体工作流程如下。
 
 
 ```python
@@ -24,7 +25,7 @@ print(docs[0])
 page_content='Example Docs' metadata={'source': './example_data/README.org', 'category_depth': 0, 'last_modified': '2023-12-19T13:42:18', 'languages': ['eng'], 'filetype': 'text/org', 'file_directory': './example_data', 'filename': 'README.org', 'category': 'Title'}
 ```
 
-## Related
+## 相关
 
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

@@ -1,17 +1,16 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/youtube_audio.ipynb
 ---
-# YouTube audio
 
-Building chat or QA applications on YouTube videos is a topic of high interest.
+# YouTube 音频
 
-Below we show how to easily go from a `YouTube url` to `audio of the video` to `text` to `chat`!
+在 YouTube 视频上构建聊天或问答应用程序是一个备受关注的话题。
 
-We wil use the `OpenAIWhisperParser`, which will use the OpenAI Whisper API to transcribe audio to text, 
-and the  `OpenAIWhisperParserLocal` for local support and running on private clouds or on premise.
+下面我们将展示如何轻松地从 `YouTube url` 转换为 `视频音频` 再到 `文本` 再到 `聊天`！
 
-Note: You will need to have an `OPENAI_API_KEY` supplied.
+我们将使用 `OpenAIWhisperParser`，它将使用 OpenAI Whisper API 将音频转录为文本，以及 `OpenAIWhisperParserLocal` 以支持本地运行和在私有云或本地环境中运行。
 
+注意：您需要提供 `OPENAI_API_KEY`。
 
 ```python
 from langchain_community.document_loaders.blob_loaders.youtube_audio import (
@@ -24,10 +23,9 @@ from langchain_community.document_loaders.parsers import (
 )
 ```
 
-We will use `yt_dlp` to download audio for YouTube urls.
+我们将使用 `yt_dlp` 来下载 YouTube url 的音频。
 
-We will use `pydub` to split downloaded audio files (such that we adhere to Whisper API's 25MB file size limit).
-
+我们将使用 `pydub` 来拆分下载的音频文件（以遵守 Whisper API 的 25MB 文件大小限制）。
 
 ```python
 %pip install --upgrade --quiet  yt_dlp
@@ -37,11 +35,11 @@ We will use `pydub` to split downloaded audio files (such that we adhere to Whis
 
 ### YouTube url to text
 
-Use `YoutubeAudioLoader` to fetch / download the audio files.
+使用 `YoutubeAudioLoader` 来获取/下载音频文件。
 
-Then, ues `OpenAIWhisperParser()` to transcribe them to text.
+然后，使用 `OpenAIWhisperParser()` 将它们转录为文本。
 
-Let's take the first lecture of Andrej Karpathy's YouTube course as an example! 
+让我们以 Andrej Karpathy 的 YouTube 课程的第一节课为例！ 
 
 
 ```python
@@ -97,10 +95,9 @@ docs[0].page_content[0:500]
 "Hello, my name is Andrej and I've been training deep neural networks for a bit more than a decade. And in this lecture I'd like to show you what neural network training looks like under the hood. So in particular we are going to start with a blank Jupyter notebook and by the end of this lecture we will define and train a neural net and you'll get to see everything that goes on under the hood and exactly sort of how that works on an intuitive level. Now specifically what I would like to do is I w"
 ```
 
+### 从 YouTube 视频构建聊天应用
 
-### Building a chat app from YouTube video
-
-Given `Documents`, we can easily enable chat / question+answering.
+给定 `Documents`，我们可以轻松启用聊天/问答功能。
 
 
 ```python
@@ -112,28 +109,28 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 
 ```python
-# Combine doc
+# 合并文档
 combined_docs = [doc.page_content for doc in docs]
 text = " ".join(combined_docs)
 ```
 
 
 ```python
-# Split them
+# 拆分文本
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1500, chunk_overlap=150)
 splits = text_splitter.split_text(text)
 ```
 
 
 ```python
-# Build an index
+# 构建索引
 embeddings = OpenAIEmbeddings()
 vectordb = FAISS.from_texts(splits, embeddings)
 ```
 
 
 ```python
-# Build a QA chain
+# 构建问答链
 qa_chain = RetrievalQA.from_chain_type(
     llm=ChatOpenAI(model="gpt-3.5-turbo", temperature=0),
     chain_type="stuff",
@@ -143,8 +140,8 @@ qa_chain = RetrievalQA.from_chain_type(
 
 
 ```python
-# Ask a question!
-query = "Why do we need to zero out the gradient before backprop at each step?"
+# 提问！
+query = "为什么我们需要在每一步反向传播之前将梯度归零？"
 qa_chain.run(query)
 ```
 
@@ -157,7 +154,7 @@ qa_chain.run(query)
 
 
 ```python
-query = "What is the difference between an encoder and decoder?"
+query = "编码器和解码器之间有什么区别？"
 qa_chain.run(query)
 ```
 
@@ -170,7 +167,7 @@ qa_chain.run(query)
 
 
 ```python
-query = "For any token, what are x, k, v, and q?"
+query = "对于任何令牌，x、k、v 和 q 是什么？"
 qa_chain.run(query)
 ```
 
@@ -180,9 +177,7 @@ qa_chain.run(query)
 'For any token, x is the input vector that contains the private information of that token, k and q are the key and query vectors respectively, which are produced by forwarding linear modules on x, and v is the vector that is calculated by propagating the same linear module on x again. The key vector represents what the token contains, and the query vector represents what the token is looking for. The vector v is the information that the token will communicate to other tokens if it finds them interesting, and it gets aggregated for the purposes of the self-attention mechanism.'
 ```
 
+## 相关
 
-
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

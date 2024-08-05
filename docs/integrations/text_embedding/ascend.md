@@ -7,7 +7,7 @@ from langchain_community.embeddings import AscendEmbeddings
 model = AscendEmbeddings(
     model_path="/root/.cache/modelscope/hub/yangjhchs/acge_text_embedding",
     device_id=0,
-    query_instruction="Represend this sentence for searching relevant passages: ",
+    query_instruction="为搜索相关段落表示此句子: ",
 )
 emb = model.embed_query("hellow")
 print(emb)
@@ -19,12 +19,12 @@ print(emb)
 
 ```python
 doc_embs = model.embed_documents(
-    ["This is a content of the document", "This is another document"]
+    ["这是文档的内容", "这是另一个文档"]
 )
 print(doc_embs)
 ```
 ```output
-We strongly recommend passing in an `attention_mask` since your input_ids may be padded. See https://huggingface.co/docs/transformers/troubleshooting#incorrect-output-when-padding-tokens-arent-masked.
+我们强烈建议传入 `attention_mask`，因为您的 input_ids 可能是填充的。请参见 https://huggingface.co/docs/transformers/troubleshooting#incorrect-output-when-padding-tokens-arent-masked.
 ``````output
 [[-0.00348254  0.03098977 -0.00203087 ...  0.08492374  0.03970494
   -0.03372753]
@@ -59,7 +59,7 @@ array([-0.04053403, -0.05560051, -0.04385472, ...,  0.09371872,
 
 ```python
 model.aembed_documents(
-    ["This is a content of the document", "This is another document"]
+    ["这是文档的内容", "这是另一个文档"]
 )
 ```
 
@@ -73,7 +73,7 @@ model.aembed_documents(
 
 ```python
 await model.aembed_documents(
-    ["This is a content of the document", "This is another document"]
+    ["这是文档的内容", "这是另一个文档"]
 )
 ```
 
@@ -86,9 +86,7 @@ array([[-0.00348254,  0.03098977, -0.00203087, ...,  0.08492374,
          0.00126425, -0.03634358]], dtype=float32)
 ```
 
+## 相关
 
-
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

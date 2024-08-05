@@ -1,17 +1,17 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/openvino.ipynb
 ---
+
 # OpenVINO
-[OpenVINO™](https://github.com/openvinotoolkit/openvino) is an open-source toolkit for optimizing and deploying AI inference. The OpenVINO™ Runtime supports various hardware [devices](https://github.com/openvinotoolkit/openvino?tab=readme-ov-file#supported-hardware-matrix) including x86 and ARM CPUs, and Intel GPUs. It can help to boost deep learning performance in Computer Vision, Automatic Speech Recognition, Natural Language Processing and other common tasks.
+[OpenVINO™](https://github.com/openvinotoolkit/openvino) 是一个开源工具包，用于优化和部署 AI 推理。OpenVINO™ Runtime 支持各种硬件 [设备](https://github.com/openvinotoolkit/openvino?tab=readme-ov-file#supported-hardware-matrix)，包括 x86 和 ARM CPU，以及 Intel GPU。它可以帮助提升计算机视觉、自动语音识别、自然语言处理和其他常见任务中的深度学习性能。
 
-Hugging Face embedding model can be supported by OpenVINO through ``OpenVINOEmbeddings`` class. If you have an Intel GPU, you can specify `model_kwargs={"device": "GPU"}` to run inference on it.
-
+Hugging Face 嵌入模型可以通过 ``OpenVINOEmbeddings`` 类在 OpenVINO 中得到支持。如果您有一个 Intel GPU，可以指定 `model_kwargs={"device": "GPU"}` 来在其上运行推理。
 
 ```python
 %pip install --upgrade-strategy eager "optimum[openvino,nncf]" --quiet
 ```
 ```output
-Note: you may need to restart the kernel to use updated packages.
+注意：您可能需要重启内核以使用更新的包。
 ```
 
 ```python
@@ -58,9 +58,8 @@ query_result[:3]
 doc_result = ov_embeddings.embed_documents([text])
 ```
 
-## Export IR model
-It is possible to export your embedding model to the OpenVINO IR format with ``OVModelForFeatureExtraction``, and load the model from local folder.
-
+## 导出 IR 模型
+可以使用 ``OVModelForFeatureExtraction`` 将您的嵌入模型导出为 OpenVINO IR 格式，并从本地文件夹加载模型。
 
 ```python
 from pathlib import Path
@@ -70,7 +69,6 @@ if not Path(ov_model_dir).exists():
     ov_embeddings.save_model(ov_model_dir)
 ```
 
-
 ```python
 ov_embeddings = OpenVINOEmbeddings(
     model_name_or_path=ov_model_dir,
@@ -79,11 +77,11 @@ ov_embeddings = OpenVINOEmbeddings(
 )
 ```
 ```output
-Compiling the model to CPU ...
+正在将模型编译为 CPU ...
 ```
-## BGE with OpenVINO
-We can also access BGE embedding models via the ``OpenVINOBgeEmbeddings`` class with OpenVINO. 
 
+## BGE与OpenVINO
+我们还可以通过``OpenVINOBgeEmbeddings``类使用OpenVINO访问BGE嵌入模型。
 
 ```python
 from langchain_community.embeddings import OpenVINOBgeEmbeddings
@@ -98,31 +96,26 @@ ov_embeddings = OpenVINOBgeEmbeddings(
 )
 ```
 
-
 ```python
 embedding = ov_embeddings.embed_query("hi this is harrison")
 len(embedding)
 ```
 
-
-
 ```output
 384
 ```
 
+有关更多信息，请参考：
 
-For more information refer to:
+* [OpenVINO LLM指南](https://docs.openvino.ai/2024/learn-openvino/llm_inference_guide.html)。
 
-* [OpenVINO LLM guide](https://docs.openvino.ai/2024/learn-openvino/llm_inference_guide.html).
+* [OpenVINO文档](https://docs.openvino.ai/2024/home.html)。
 
-* [OpenVINO Documentation](https://docs.openvino.ai/2024/home.html).
+* [OpenVINO入门指南](https://www.intel.com/content/www/us/en/content-details/819067/openvino-get-started-guide.html)。
 
-* [OpenVINO Get Started Guide](https://www.intel.com/content/www/us/en/content-details/819067/openvino-get-started-guide.html).
+* [与LangChain的RAG笔记本](https://github.com/openvinotoolkit/openvino_notebooks/tree/latest/notebooks/llm-rag-langchain)。
 
-* [RAG Notebook with LangChain](https://github.com/openvinotoolkit/openvino_notebooks/tree/latest/notebooks/llm-rag-langchain).
+## 相关
 
-
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

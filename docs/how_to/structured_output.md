@@ -1,34 +1,35 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/structured_output.ipynb
 sidebar_position: 3
-keywords: [structured output, json, information extraction, with_structured_output]
+keywords: [结构化输出, json, 信息提取, with_structured_output]
 ---
-# How to return structured data from a model
 
-:::info Prerequisites
+# 如何从模型返回结构化数据
 
-This guide assumes familiarity with the following concepts:
-- [Chat models](/docs/concepts/#chat-models)
-- [Function/tool calling](/docs/concepts/#functiontool-calling)
+:::info 前提条件
+
+本指南假设您对以下概念有一定的了解：
+- [聊天模型](/docs/concepts/#chat-models)
+- [函数/工具调用](/docs/concepts/#functiontool-calling)
 :::
 
-It is often useful to have a model return output that matches a specific schema. One common use-case is extracting data from text to insert into a database or use with some other downstream system. This guide covers a few strategies for getting structured outputs from a model.
+通常，将模型的输出与特定模式匹配是非常有用的。一个常见的用例是从文本中提取数据以插入数据库或与其他下游系统一起使用。本指南介绍了从模型获取结构化输出的几种策略。
 
-## The `.with_structured_output()` method
+## `.with_structured_output()` 方法
 
 <span data-heading-keywords="with_structured_output"></span>
 
-:::info Supported models
+:::info 支持的模型
 
-You can find a [list of models that support this method here](/docs/integrations/chat/).
+您可以在这里找到 [支持此方法的模型列表](/docs/integrations/chat/)。
 
 :::
 
-This is the easiest and most reliable way to get structured outputs. `with_structured_output()` is implemented for models that provide native APIs for structuring outputs, like tool/function calling or JSON mode, and makes use of these capabilities under the hood.
+这是获取结构化输出最简单且最可靠的方法。`with_structured_output()` 针对提供结构化输出的本机 API 的模型实现，例如工具/函数调用或 JSON 模式，并在底层利用这些能力。
 
-This method takes a schema as input which specifies the names, types, and descriptions of the desired output attributes. The method returns a model-like Runnable, except that instead of outputting strings or Messages it outputs objects corresponding to the given schema. The schema can be specified as a TypedDict class, [JSON Schema](https://json-schema.org/) or a Pydantic class. If TypedDict or JSON Schema are used then a dictionary will be returned by the Runnable, and if a Pydantic class is used then a Pydantic object will be returned.
+该方法接受一个模式作为输入，指定所需输出属性的名称、类型和描述。该方法返回一个类似模型的 Runnable，除了输出字符串或消息外，它输出与给定模式对应的对象。模式可以指定为 TypedDict 类、[JSON Schema](https://json-schema.org/) 或 Pydantic 类。如果使用 TypedDict 或 JSON Schema，则 Runnable 将返回一个字典；如果使用 Pydantic 类，则将返回一个 Pydantic 对象。
 
-As an example, let's get a model to generate a joke and separate the setup from the punchline:
+作为示例，让我们让模型生成一个笑话，并将设置与笑点分开：
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
@@ -36,10 +37,9 @@ import ChatModelTabs from "@theme/ChatModelTabs";
   customVarName="llm"
 />
 
-### Pydantic class
+### Pydantic 类
 
-If we want the model to return a Pydantic object, we just need to pass in the desired Pydantic class. The key advantage of using Pydantic is that the model-generated output will be validated. Pydantic will raise an error if any required fields are missing or if any fields are of the wrong type.
-
+如果我们希望模型返回一个 Pydantic 对象，只需传入所需的 Pydantic 类。使用 Pydantic 的主要优点是模型生成的输出将会被验证。如果缺少任何必需字段或字段类型错误，Pydantic 将会引发错误。
 
 ```python
 from typing import Optional
@@ -63,25 +63,22 @@ structured_llm = llm.with_structured_output(Joke)
 structured_llm.invoke("Tell me a joke about cats")
 ```
 
-
-
 ```output
 Joke(setup='Why was the cat sitting on the computer?', punchline='Because it wanted to keep an eye on the mouse!', rating=7)
 ```
 
-
 :::tip
-Beyond just the structure of the Pydantic class, the name of the Pydantic class, the docstring, and the names and provided descriptions of parameters are very important. Most of the time `with_structured_output` is using a model's function/tool calling API, and you can effectively think of all of this information as being added to the model prompt.
+除了 Pydantic 类的结构外，Pydantic 类的名称、文档字符串以及参数的名称和提供的描述也非常重要。大多数情况下，`with_structured_output` 是在使用模型的函数/工具调用 API，你可以有效地将所有这些信息视为添加到模型提示中的内容。
 :::
 
-### TypedDict or JSON Schema
+### TypedDict 或 JSON Schema
 
-If you don't want to use Pydantic, explicitly don't want validation of the arguments, or want to be able to stream the model outputs, you can define your schema using a TypedDict class. We can optionally use a special `Annotated` syntax supported by LangChain that allows you to specify the default value and description of a field. Note, the default value is *not* filled in automatically if the model doesn't generate it, it is only used in defining the schema that is passed to the model.
+如果您不想使用 Pydantic，明确不想对参数进行验证，或者希望能够流式输出模型结果，您可以使用 TypedDict 类定义您的模式。我们可以选择性地使用 LangChain 支持的特殊 `Annotated` 语法，允许您指定字段的默认值和描述。请注意，如果模型没有生成默认值，则默认值*不会*自动填充，仅用于定义传递给模型的模式。
 
-:::info Requirements
+:::info 需求
 
-- Core: `langchain-core>=0.2.26`
-- Typing extensions: It is highly recommended to import `Annotated` and `TypedDict` from `typing_extensions` instead of `typing` to ensure consistent behavior across Python versions.
+- 核心: `langchain-core>=0.2.26`
+- 类型扩展: 强烈建议从 `typing_extensions` 导入 `Annotated` 和 `TypedDict`，而不是从 `typing` 导入，以确保在不同 Python 版本之间的一致行为。
 
 :::
 
@@ -120,7 +117,7 @@ structured_llm.invoke("Tell me a joke about cats")
 ```
 
 
-Equivalently, we can pass in a [JSON Schema](https://json-schema.org/) dict. This requires no imports or classes and makes it very clear exactly how each parameter is documented, at the cost of being a bit more verbose.
+同样，我们可以传入一个 [JSON Schema](https://json-schema.org/) 字典。这不需要任何导入或类，并且非常清楚每个参数的文档，代价是稍微冗长一些。
 
 
 ```python
@@ -158,11 +155,9 @@ structured_llm.invoke("Tell me a joke about cats")
  'rating': 7}
 ```
 
+### 在多个模式之间进行选择
 
-### Choosing between multiple schemas
-
-The simplest way to let the model choose from multiple schemas is to create a parent schema that has a Union-typed attribute:
-
+让模型从多个模式中选择的最简单方法是创建一个具有联合类型属性的父模式：
 
 ```python
 from typing import Union
@@ -170,19 +165,19 @@ from typing import Union
 
 # Pydantic
 class Joke(BaseModel):
-    """Joke to tell user."""
+    """要告诉用户的笑话。"""
 
-    setup: str = Field(description="The setup of the joke")
-    punchline: str = Field(description="The punchline to the joke")
+    setup: str = Field(description="笑话的开场白")
+    punchline: str = Field(description="笑话的高潮")
     rating: Optional[int] = Field(
-        default=None, description="How funny the joke is, from 1 to 10"
+        default=None, description="笑话的幽默程度，从1到10"
     )
 
 
 class ConversationalResponse(BaseModel):
-    """Respond in a conversational manner. Be kind and helpful."""
+    """以对话的方式回应。要友善和乐于助人。"""
 
-    response: str = Field(description="A conversational response to the user's query")
+    response: str = Field(description="对用户查询的对话回应")
 
 
 class Response(BaseModel):
@@ -191,37 +186,34 @@ class Response(BaseModel):
 
 structured_llm = llm.with_structured_output(Response)
 
-structured_llm.invoke("Tell me a joke about cats")
+structured_llm.invoke("告诉我一个关于猫的笑话")
 ```
-
 
 
 ```output
-Response(output=Joke(setup='Why was the cat sitting on the computer?', punchline='To keep an eye on the mouse!', rating=8))
+Response(output=Joke(setup='为什么猫坐在电脑上？', punchline='为了盯着鼠标！', rating=8))
 ```
-
 
 
 ```python
-structured_llm.invoke("How are you today?")
+structured_llm.invoke("你今天怎么样？")
 ```
-
 
 
 ```output
-Response(output=ConversationalResponse(response="I'm just a digital assistant, so I don't have feelings, but I'm here and ready to help you. How can I assist you today?"))
+Response(output=ConversationalResponse(response="我只是一个数字助手，所以没有感情，但我在这里准备帮助你。今天我能帮你什么？"))
 ```
 
 
-Alternatively, you can use tool calling directly to allow the model to choose between options, if your [chosen model supports it](/docs/integrations/chat/). This involves a bit more parsing and setup but in some instances leads to better performance because you don't have to use nested schemas. See [this how-to guide](/docs/how_to/tool_calling) for more details.
+或者，您可以直接使用工具调用，让模型在选项之间进行选择，如果您的 [选择的模型支持它](/docs/integrations/chat/)。这涉及更多的解析和设置，但在某些情况下可以带来更好的性能，因为您不必使用嵌套模式。有关更多细节，请参见 [本指南](/docs/how_to/tool_calling)。
 
-### Streaming
+### 流式输出
 
-We can stream outputs from our structured model when the output type is a dict (i.e., when the schema is specified as a TypedDict class or  JSON Schema dict). 
+当输出类型为字典（即，当架构指定为 TypedDict 类或 JSON Schema 字典）时，我们可以从结构化模型中流式输出。
 
 :::info
 
-Note that what's yielded is already aggregated chunks, not deltas.
+请注意，输出的是已经聚合的块，而不是增量。
 
 :::
 
@@ -270,12 +262,12 @@ for chunk in structured_llm.stream("Tell me a joke about cats"):
 {'setup': 'Why was the cat sitting on the computer?', 'punchline': 'Because it wanted to keep an eye on the mouse!'}
 {'setup': 'Why was the cat sitting on the computer?', 'punchline': 'Because it wanted to keep an eye on the mouse!', 'rating': 7}
 ```
+
 ### Few-shot prompting
 
-For more complex schemas it's very useful to add few-shot examples to the prompt. This can be done in a few ways.
+对于更复杂的模式，向提示中添加少量示例非常有用。这可以通过几种方式来实现。
 
-The simplest and most universal way is to add examples to a system message in the prompt:
-
+最简单和最通用的方法是在提示中的系统消息中添加示例：
 
 ```python
 from langchain_core.prompts import ChatPromptTemplate
@@ -301,7 +293,6 @@ few_shot_structured_llm.invoke("what's something funny about woodpeckers")
 ```
 
 
-
 ```output
 {'setup': 'Woodpecker',
  'punchline': "Woodpecker who? Woodpecker who can't find a tree is just a bird with a headache!",
@@ -309,8 +300,7 @@ few_shot_structured_llm.invoke("what's something funny about woodpeckers")
 ```
 
 
-When the underlying method for structuring outputs is tool calling, we can pass in our examples as explicit tool calls. You can check if the model you're using makes use of tool calling in its API reference.
-
+当用于结构化输出的底层方法是工具调用时，我们可以将示例作为显式工具调用传入。您可以查看您使用的模型是否在其 API 参考中使用工具调用。
 
 ```python
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
@@ -382,7 +372,6 @@ few_shot_structured_llm.invoke({"input": "crocodiles", "examples": examples})
 ```
 
 
-
 ```output
 {'setup': 'Crocodile',
  'punchline': 'Crocodile be seeing you later, alligator!',
@@ -390,17 +379,17 @@ few_shot_structured_llm.invoke({"input": "crocodiles", "examples": examples})
 ```
 
 
-For more on few shot prompting when using tool calling, see [here](/docs/how_to/function_calling/#Few-shot-prompting).
+有关使用工具调用时少量提示的更多信息，请参见 [here](/docs/how_to/function_calling/#Few-shot-prompting)。
 
-### (Advanced) Specifying the method for structuring outputs
+### (高级) 指定输出结构的方法
 
-For models that support more than one means of structuring outputs (i.e., they support both tool calling and JSON mode), you can specify which method to use with the `method=` argument.
+对于支持多种输出结构方式的模型（即，它们同时支持工具调用和 JSON 模式），您可以通过 `method=` 参数指定使用哪种方法。
 
-:::info JSON mode
+:::info JSON 模式
 
-If using JSON mode you'll have to still specify the desired schema in the model prompt. The schema you pass to `with_structured_output` will only be used for parsing the model outputs, it will not be passed to the model the way it is with tool calling.
+如果使用 JSON 模式，您仍然需要在模型提示中指定所需的模式。您传递给 `with_structured_output` 的模式只会用于解析模型输出，而不会像工具调用那样传递给模型。
 
-To see if the model you're using supports JSON mode, check its entry in the [API reference](https://api.python.langchain.com/en/latest/langchain_api_reference.html).
+要查看您使用的模型是否支持 JSON 模式，请检查其在 [API 参考](https://api.python.langchain.com/en/latest/langchain_api_reference.html) 中的条目。
 
 :::
 
@@ -420,11 +409,9 @@ structured_llm.invoke(
  'punchline': 'Because it wanted to keep an eye on the mouse!'}
 ```
 
+### (高级) 原始输出
 
-### (Advanced) Raw outputs
-
-LLMs aren't perfect at generating structured output, especially as schemas become complex. You can avoid raising exceptions and handle the raw output yourself by passing `include_raw=True`. This changes the output format to contain the raw message output, the `parsed` value (if successful), and any resulting errors:
-
+LLMs 在生成结构化输出时并不完美，尤其是在模式变得复杂时。您可以通过传递 `include_raw=True` 来避免引发异常并自行处理原始输出。这会将输出格式更改为包含原始消息输出、`parsed` 值（如果成功）以及任何结果错误：
 
 ```python
 structured_llm = llm.with_structured_output(Joke, include_raw=True)
@@ -442,15 +429,13 @@ structured_llm.invoke("Tell me a joke about cats")
  'parsing_error': None}
 ```
 
+## 直接提示和解析模型输出
 
-## Prompting and parsing model outputs directly
+并非所有模型都支持 `.with_structured_output()`，因为并非所有模型都具备工具调用或 JSON 模式支持。对于这类模型，您需要直接提示模型使用特定格式，并使用输出解析器从原始模型输出中提取结构化响应。
 
-Not all models support `.with_structured_output()`, since not all models have tool calling or JSON mode support. For such models you'll need to directly prompt the model to use a specific format, and use an output parser to extract the structured response from the raw model output.
+### 使用 `PydanticOutputParser`
 
-### Using `PydanticOutputParser`
-
-The following example uses the built-in [`PydanticOutputParser`](https://api.python.langchain.com/en/latest/output_parsers/langchain_core.output_parsers.pydantic.PydanticOutputParser.html) to parse the output of a chat model prompted to match the given Pydantic schema. Note that we are adding `format_instructions` directly to the prompt from a method on the parser:
-
+以下示例使用内置的 [`PydanticOutputParser`](https://api.python.langchain.com/en/latest/output_parsers/langchain_core.output_parsers.pydantic.PydanticOutputParser.html) 来解析聊天模型的输出，该模型被提示以匹配给定的 Pydantic 模式。请注意，我们直接从解析器的方法向提示中添加 `format_instructions`：
 
 ```python
 from typing import List
@@ -461,37 +446,36 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 
 
 class Person(BaseModel):
-    """Information about a person."""
+    """关于一个人的信息."""
 
-    name: str = Field(..., description="The name of the person")
+    name: str = Field(..., description="这个人的名字")
     height_in_meters: float = Field(
-        ..., description="The height of the person expressed in meters."
+        ..., description="这个人的身高，以米为单位."
     )
 
 
 class People(BaseModel):
-    """Identifying information about all people in a text."""
+    """文本中所有人的身份信息."""
 
     people: List[Person]
 
 
-# Set up a parser
+# 设置解析器
 parser = PydanticOutputParser(pydantic_object=People)
 
-# Prompt
+# 提示
 prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "Answer the user query. Wrap the output in `json` tags\n{format_instructions}",
+            "回答用户查询。将输出包裹在 `json` 标签中\n{format_instructions}",
         ),
         ("human", "{query}"),
     ]
 ).partial(format_instructions=parser.get_format_instructions())
 ```
 
-Let’s take a look at what information is sent to the model:
-
+让我们看看发送给模型的信息：
 
 ```python
 query = "Anna is 23 years old and she is 6 feet tall"
@@ -511,8 +495,7 @@ Here is the output schema:
 ```
 Human: Anna is 23 years old and she is 6 feet tall
 ```
-And now let's invoke it:
-
+现在让我们调用它：
 
 ```python
 chain = prompt | llm | parser
@@ -520,19 +503,15 @@ chain = prompt | llm | parser
 chain.invoke({"query": query})
 ```
 
-
-
 ```output
 People(people=[Person(name='Anna', height_in_meters=1.8288)])
 ```
 
+有关使用输出解析器与结构化输出提示技术的深入探讨，请参见 [本指南](/docs/how_to/output_parser_structured)。
 
-For a deeper dive into using output parsers with prompting techniques for structured output, see [this guide](/docs/how_to/output_parser_structured).
+### 自定义解析
 
-### Custom Parsing
-
-You can also create a custom prompt and parser with [LangChain Expression Language (LCEL)](/docs/concepts/#langchain-expression-language), using a plain function to parse the output from the model:
-
+您还可以使用 [LangChain 表达式语言 (LCEL)](/docs/concepts/#langchain-expression-language) 创建自定义提示和解析器，通过一个简单的函数解析模型的输出：
 
 ```python
 import json
@@ -545,60 +524,58 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 
 
 class Person(BaseModel):
-    """Information about a person."""
+    """关于一个人的信息。"""
 
-    name: str = Field(..., description="The name of the person")
+    name: str = Field(..., description="这个人的名字")
     height_in_meters: float = Field(
-        ..., description="The height of the person expressed in meters."
+        ..., description="这个人的身高，以米为单位。"
     )
 
 
 class People(BaseModel):
-    """Identifying information about all people in a text."""
+    """文本中所有人的识别信息。"""
 
     people: List[Person]
 
 
-# Prompt
+# 提示
 prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "Answer the user query. Output your answer as JSON that  "
-            "matches the given schema: ```json\n{schema}\n```. "
-            "Make sure to wrap the answer in ```json and ``` tags",
+            "回答用户查询。将您的答案输出为与给定模式匹配的 JSON：```json\n{schema}\n```. "
+            "确保将答案包裹在 ```json 和 ``` 标签中",
         ),
         ("human", "{query}"),
     ]
 ).partial(schema=People.schema())
 
 
-# Custom parser
+# 自定义解析器
 def extract_json(message: AIMessage) -> List[dict]:
-    """Extracts JSON content from a string where JSON is embedded between ```json and ``` tags.
+    """从一个字符串中提取 JSON 内容，该字符串中 JSON 嵌入在 ```json 和 ``` 标签之间。
 
-    Parameters:
-        text (str): The text containing the JSON content.
+    参数：
+        text (str): 包含 JSON 内容的文本。
 
-    Returns:
-        list: A list of extracted JSON strings.
+    返回：
+        list: 提取的 JSON 字符串列表。
     """
     text = message.content
-    # Define the regular expression pattern to match JSON blocks
+    # 定义正则表达式模式以匹配 JSON 块
     pattern = r"```json(.*?)```"
 
-    # Find all non-overlapping matches of the pattern in the string
+    # 在字符串中找到所有不重叠的模式匹配
     matches = re.findall(pattern, text, re.DOTALL)
 
-    # Return the list of matched JSON strings, stripping any leading or trailing whitespace
+    # 返回匹配的 JSON 字符串列表，去除任何前导或尾随空格
     try:
         return [json.loads(match.strip()) for match in matches]
     except Exception:
-        raise ValueError(f"Failed to parse: {message}")
+        raise ValueError(f"解析失败: {message}")
 ```
 
-Here is the prompt sent to the model:
-
+这是发送给模型的提示：
 
 ```python
 query = "Anna is 23 years old and she is 6 feet tall"
@@ -611,8 +588,7 @@ System: Answer the user query. Output your answer as JSON that  matches the give
 ```. Make sure to wrap the answer in ```json and ``` tags
 Human: Anna is 23 years old and she is 6 feet tall
 ```
-And here's what it looks like when we invoke it:
-
+当我们调用它时，它看起来是这样的：
 
 ```python
 chain = prompt | llm | extract_json
@@ -620,9 +596,6 @@ chain = prompt | llm | extract_json
 chain.invoke({"query": query})
 ```
 
-
-
 ```output
 [{'people': [{'name': 'Anna', 'height_in_meters': 1.8288}]}]
 ```
-

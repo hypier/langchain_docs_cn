@@ -1,22 +1,22 @@
 # LLMonitor
 
->[LLMonitor](https://llmonitor.com?utm_source=langchain&utm_medium=py&utm_campaign=docs) is an open-source observability platform that provides cost and usage analytics, user tracking, tracing and evaluation tools.
+>[LLMonitor](https://llmonitor.com?utm_source=langchain&utm_medium=py&utm_campaign=docs) 是一个开源的可观测性平台，提供成本和使用分析、用户跟踪、跟踪和评估工具。
 
 <video controls width='100%' >
   <source src='https://llmonitor.com/videos/demo-annotated.mp4'/>
 </video>
 
-## Setup
+## 设置
 
-Create an account on [llmonitor.com](https://llmonitor.com?utm_source=langchain&utm_medium=py&utm_campaign=docs), then copy your new app's `tracking id`.
+在 [llmonitor.com](https://llmonitor.com?utm_source=langchain&utm_medium=py&utm_campaign=docs) 上创建一个账户，然后复制您新应用的 `tracking id`。
 
-Once you have it, set it as an environment variable by running:
+一旦您有了它，通过运行以下命令将其设置为环境变量：
 
 ```bash
 export LLMONITOR_APP_ID="..."
 ```
 
-If you'd prefer not to set an environment variable, you can pass the key directly when initializing the callback handler:
+如果您不想设置环境变量，可以在初始化回调处理程序时直接传递密钥：
 
 ```python
 from langchain_community.callbacks.llmonitor_callback import LLMonitorCallbackHandler
@@ -24,7 +24,7 @@ from langchain_community.callbacks.llmonitor_callback import LLMonitorCallbackHa
 handler = LLMonitorCallbackHandler(app_id="...")
 ```
 
-## Usage with LLM/Chat models
+## 与 LLM/聊天模型的使用
 
 ```python
 from langchain_openai import OpenAI
@@ -42,13 +42,13 @@ llm("Tell me a joke")
 
 ```
 
-## Usage with chains and agents
+## 与链和代理的使用
 
-Make sure to pass the callback handler to the `run` method so that all related chains and llm calls are correctly tracked.
+确保将回调处理程序传递给 `run` 方法，以便正确跟踪所有相关的链和 llm 调用。
 
-It is also recommended to pass `agent_name` in the metadata to be able to distinguish between agents in the dashboard.
+还建议在元数据中传递 `agent_name`，以便能够在仪表板中区分不同的代理。
 
-Example:
+示例：
 
 ```python
 from langchain_openai import ChatOpenAI
@@ -80,7 +80,7 @@ agent_executor = AgentExecutor(
 agent_executor.run("how many letters in the word educa?", callbacks=[handler])
 ```
 
-Another example:
+另一个示例：
 
 ```python
 from langchain.agents import load_tools, initialize_agent, AgentType
@@ -100,8 +100,8 @@ agent.run(
 )
 ```
 
-## User Tracking
-User tracking allows you to identify your users, track their cost, conversations and more.
+## 用户追踪
+用户追踪使您能够识别用户，跟踪他们的成本、对话等信息。
 
 ```python
 from langchain_community.callbacks.llmonitor_callback import LLMonitorCallbackHandler, identify
@@ -112,6 +112,7 @@ with identify("user-123"):
 with identify("user-456", user_props={"email": "user456@test.com"}):
     agent.run("Who is Leo DiCaprio's girlfriend?")
 ```
-## Support
 
-For any question or issue with integration you can reach out to the LLMonitor team on [Discord](http://discord.com/invite/8PafSG58kK) or via [email](mailto:vince@llmonitor.com).
+## 支持
+
+如有任何与集成相关的问题或疑问，请通过 [Discord](http://discord.com/invite/8PafSG58kK) 或 [email](mailto:vince@llmonitor.com) 联系 LLMonitor 团队。

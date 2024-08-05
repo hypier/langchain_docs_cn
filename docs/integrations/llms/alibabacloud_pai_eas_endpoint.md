@@ -1,9 +1,10 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/alibabacloud_pai_eas_endpoint.ipynb
 ---
-# Alibaba Cloud PAI EAS
 
->[Machine Learning Platform for AI of Alibaba Cloud](https://www.alibabacloud.com/help/en/pai) is a machine learning or deep learning engineering platform intended for enterprises and developers. It provides easy-to-use, cost-effective, high-performance, and easy-to-scale plug-ins that can be applied to various industry scenarios. With over 140 built-in optimization algorithms, `Machine Learning Platform for AI` provides whole-process AI engineering capabilities including data labeling (`PAI-iTAG`), model building (`PAI-Designer` and `PAI-DSW`), model training (`PAI-DLC`), compilation optimization, and inference deployment (`PAI-EAS`). `PAI-EAS` supports different types of hardware resources, including CPUs and GPUs, and features high throughput and low latency. It allows you to deploy large-scale complex models with a few clicks and perform elastic scale-ins and scale-outs in real time. It also provides a comprehensive O&M and monitoring system.
+# 阿里云 PAI EAS
+
+>[阿里云的机器学习平台](https://www.alibabacloud.com/help/en/pai) 是一个面向企业和开发者的机器学习或深度学习工程平台。它提供易于使用、具有成本效益、高性能和易于扩展的插件，可以应用于各种行业场景。凭借超过140种内置优化算法，`Machine Learning Platform for AI` 提供包括数据标注（`PAI-iTAG`）、模型构建（`PAI-Designer` 和 `PAI-DSW`）、模型训练（`PAI-DLC`）、编译优化和推理部署（`PAI-EAS`）在内的全流程 AI 工程能力。`PAI-EAS` 支持不同类型的硬件资源，包括 CPU 和 GPU，并具有高吞吐量和低延迟。它允许用户通过几次点击部署大规模复杂模型，并实时执行弹性缩放和扩展。它还提供全面的运维和监控系统。
 
 
 ```python
@@ -24,7 +25,7 @@ Answer: Let's think step by step."""
 prompt = PromptTemplate.from_template(template)
 ```
 
-One who wants to use EAS LLMs must set up EAS service first. When the EAS service is launched, `EAS_SERVICE_URL` and `EAS_SERVICE_TOKEN` can be obtained. Users can refer to https://www.alibabacloud.com/help/en/pai/user-guide/service-deployment/ for more information,
+想要使用 EAS LLM 的用户必须首先设置 EAS 服务。当 EAS 服务启动后，可以获取 `EAS_SERVICE_URL` 和 `EAS_SERVICE_TOKEN`。用户可以参考 https://www.alibabacloud.com/help/en/pai/user-guide/service-deployment/ 获取更多信息，
 
 
 ```python
@@ -52,9 +53,7 @@ llm_chain.invoke({"question": question})
 '  Thank you for asking! However, I must respectfully point out that the question contains an error. Justin Bieber was born in 1994, and the Super Bowl was first played in 1967. Therefore, it is not possible for any NFL team to have won the Super Bowl in the year Justin Bieber was born.\n\nI hope this clarifies things! If you have any other questions, please feel free to ask.'
 ```
 
+## 相关
 
-
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

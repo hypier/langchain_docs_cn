@@ -1,28 +1,28 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/pathway.ipynb
 ---
+
 # Pathway
-> [Pathway](https://pathway.com/) is an open data processing framework. It allows you to easily develop data transformation pipelines and Machine Learning applications that work with live data sources and changing data.
+> [Pathway](https://pathway.com/) 是一个开放的数据处理框架。它使您能够轻松开发与实时数据源和变化数据一起工作的 数据转换管道和机器学习应用程序。
 
-This notebook demonstrates how to use a live `Pathway` data indexing pipeline with `Langchain`. You can query the results of this pipeline from your chains in the same manner as you would a regular vector store. However, under the hood, Pathway updates the index on each data change giving you always up-to-date answers.
+本笔记本演示了如何使用实时的 `Pathway` 数据索引管道与 `Langchain`。您可以像查询常规向量存储一样从您的链中查询此管道的结果。然而，Pathway 在每次数据更改时更新索引，始终为您提供最新的答案。
 
-In this notebook, we will use a [public demo document processing pipeline](https://pathway.com/solutions/ai-pipelines#try-it-out) that:
+在本笔记本中，我们将使用一个 [公共演示文档处理管道](https://pathway.com/solutions/ai-pipelines#try-it-out)，该管道：
 
-1. Monitors several cloud data sources for data changes.
-2. Builds a vector index for the data.
+1. 监控多个云数据源的数据变化。
+2. 为数据构建向量索引。
 
-To have your own document processing pipeline check the [hosted offering](https://pathway.com/solutions/ai-pipelines) or [build your own](https://pathway.com/developers/user-guide/llm-xpack/vectorstore_pipeline/).
+要拥有自己的文档处理管道，请查看 [托管服务](https://pathway.com/solutions/ai-pipelines) 或 [自行构建](https://pathway.com/developers/user-guide/llm-xpack/vectorstore_pipeline/)。
 
-We will connect to the index using a `VectorStore` client, which implements the `similarity_search` function to retrieve matching documents.
+我们将使用 `VectorStore` 客户端连接到索引，该客户端实现了 `similarity_search` 函数以检索匹配的文档。
 
-The basic pipeline used in this document allows to effortlessly build a simple vector index of files stored in a cloud location. However, Pathway provides everything needed to build realtime data pipelines and apps, including SQL-like able operations such as groupby-reductions and joins between disparate data sources, time-based grouping and windowing of data, and a wide array of connectors.
+本文件中使用的基本管道可以轻松构建存储在云位置的文件的简单向量索引。然而，Pathway 提供了构建实时数据管道和应用程序所需的一切，包括 SQL 类似的操作，如 groupby-缩减和不同数据源之间的连接、基于时间的数据分组和窗口处理，以及各种连接器。
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
+您需要使用 `pip install -qU langchain-community` 安装 `langchain-community` 以使用此集成。
 
-## Querying the data pipeline
+## 查询数据管道
 
-To instantiate and configure the client you need to provide either the `url` or the `host` and `port` of your document indexing pipeline. In the code below we use a publicly available [demo pipeline](https://pathway.com/solutions/ai-pipelines#try-it-out), which REST API you can access at `https://demo-document-indexing.pathway.stream`. This demo ingests documents from [Google Drive](https://drive.google.com/drive/u/0/folders/1cULDv2OaViJBmOfG5WB0oWcgayNrGtVs) and [Sharepoint](https://navalgo.sharepoint.com/sites/ConnectorSandbox/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FConnectorSandbox%2FShared%20Documents%2FIndexerSandbox&p=true&ga=1) and maintains an index for retrieving documents.
-
+要实例化并配置客户端，您需要提供文档索引管道的 `url` 或 `host` 和 `port`。在下面的代码中，我们使用一个公开可用的 [demo pipeline](https://pathway.com/solutions/ai-pipelines#try-it-out)，其 REST API 可通过 `https://demo-document-indexing.pathway.stream` 访问。此演示从 [Google Drive](https://drive.google.com/drive/u/0/folders/1cULDv2OaViJBmOfG5WB0oWcgayNrGtVs) 和 [Sharepoint](https://navalgo.sharepoint.com/sites/ConnectorSandbox/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FConnectorSandbox%2FShared%20Documents%2FIndexerSandbox&p=true&ga=1) 中摄取文档，并维护一个索引以检索文档。
 
 ```python
 from langchain_community.vectorstores import PathwayVectorClient
@@ -30,24 +30,22 @@ from langchain_community.vectorstores import PathwayVectorClient
 client = PathwayVectorClient(url="https://demo-document-indexing.pathway.stream")
 ```
 
- And we can start asking queries
-
+我们可以开始提出查询
 
 ```python
 query = "What is Pathway?"
 docs = client.similarity_search(query)
 ```
 
-
 ```python
 print(docs[0].page_content)
 ```
 
- **Your turn!** [Get your pipeline](https://pathway.com/solutions/ai-pipelines) or upload [new documents](https://chat-realtime-sharepoint-gdrive.demo.pathway.com/) to the demo pipeline and retry the query!
+**轮到您了！** [获取您的管道](https://pathway.com/solutions/ai-pipelines) 或上传 [新文档](https://chat-realtime-sharepoint-gdrive.demo.pathway.com/) 到演示管道并重试查询！
 
-## Filtering based on file metadata
+## 基于文件元数据的过滤
 
-We support document filtering using [jmespath](https://jmespath.org/) expressions, for instance:
+我们支持使用 [jmespath](https://jmespath.org/) 表达式进行文档过滤，例如：
 
 
 ```python
@@ -71,26 +69,25 @@ docs = client.similarity_search(
 )
 ```
 
-## Getting information on indexed files
+## 获取索引文件的信息
 
- `PathwayVectorClient.get_vectorstore_statistics()` gives essential statistics on the state of the vector store, like the number of indexed files and the timestamp of last updated one. You can use it in your chains to tell the user how fresh is your knowledge base.
+ `PathwayVectorClient.get_vectorstore_statistics()` 提供了向量存储状态的基本统计信息，例如索引文件的数量和最后更新的时间戳。您可以在链中使用它来告诉用户您的知识库有多新鲜。
 
 
 ```python
 client.get_vectorstore_statistics()
 ```
 
-## Your own pipeline
+## 你自己的管道
 
-### Running in production
-To have your own Pathway data indexing pipeline check the Pathway's offer for [hosted pipelines](https://pathway.com/solutions/ai-pipelines). You can also run your own Pathway pipeline - for information on how to build the pipeline refer to [Pathway guide](https://pathway.com/developers/user-guide/llm-xpack/vectorstore_pipeline/).
+### 在生产中运行
+要拥有自己的 Pathway 数据索引管道，请查看 Pathway 提供的 [托管管道](https://pathway.com/solutions/ai-pipelines)。您还可以运行自己的 Pathway 管道 - 有关如何构建管道的信息，请参考 [Pathway 指南](https://pathway.com/developers/user-guide/llm-xpack/vectorstore_pipeline/)。
 
-### Processing documents
+### 处理文档
 
-The vectorization pipeline supports pluggable components for parsing, splitting and embedding documents. For embedding and splitting you can use [Langchain components](https://pathway.com/developers/user-guide/llm-xpack/vectorstore_pipeline/#langchain) or check [embedders](https://pathway.com/developers/api-docs/pathway-xpacks-llm/embedders) and [splitters](https://pathway.com/developers/api-docs/pathway-xpacks-llm/splitters) available in Pathway. If parser is not provided, it defaults to `UTF-8` parser. You can find available parsers [here](https://github.com/pathwaycom/pathway/blob/main/python/pathway/xpacks/llm/parser.py).
+向量化管道支持可插拔组件用于解析、拆分和嵌入文档。对于嵌入和拆分，您可以使用 [Langchain 组件](https://pathway.com/developers/user-guide/llm-xpack/vectorstore_pipeline/#langchain)，或者查看 Pathway 中可用的 [嵌入器](https://pathway.com/developers/api-docs/pathway-xpacks-llm/embedders) 和 [拆分器](https://pathway.com/developers/api-docs/pathway-xpacks-llm/splitters)。如果未提供解析器，则默认使用 `UTF-8` 解析器。您可以在 [这里](https://github.com/pathwaycom/pathway/blob/main/python/pathway/xpacks/llm/parser.py) 找到可用的解析器。
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

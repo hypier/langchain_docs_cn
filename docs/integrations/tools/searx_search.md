@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/searx_search.ipynb
 ---
-# SearxNG Search
 
-This notebook goes over how to use a self hosted `SearxNG` search API to search the web.
+# SearxNG 搜索
 
-You can [check this link](https://docs.searxng.org/dev/search_api.html) for more informations about `Searx API` parameters.
+本笔记本介绍如何使用自托管的 `SearxNG` 搜索 API 在网络上进行搜索。
+
+您可以查看 [此链接](https://docs.searxng.org/dev/search_api.html) 以获取有关 `Searx API` 参数的更多信息。
 
 
 ```python
@@ -19,7 +20,7 @@ from langchain_community.utilities import SearxSearchWrapper
 search = SearxSearchWrapper(searx_host="http://127.0.0.1:8888")
 ```
 
-For some engines, if a direct `answer` is available the warpper will print the answer instead of the full list of search results. You can use the `results` method of the wrapper if you want to obtain all the results.
+对于某些引擎，如果有直接的 `answer` 可用，包装器将打印答案，而不是完整的搜索结果列表。如果您想获取所有结果，可以使用包装器的 `results` 方法。
 
 
 ```python
@@ -32,58 +33,46 @@ search.run("What is the capital of France")
 'Paris is the capital of France, the largest country of Europe with 550 000 km2 (65 millions inhabitants). Paris has 2.234 million inhabitants end 2011. She is the core of Ile de France region (12 million people).'
 ```
 
+## 自定义参数
 
-## Custom Parameters
+SearxNG 支持 [135 个搜索引擎](https://docs.searxng.org/user/configured_engines.html)。您还可以使用任意命名的参数自定义 Searx 包装器，这些参数将传递给 Searx 搜索 API。在下面的示例中，我们将更有趣地使用来自 Searx 搜索 API 的自定义搜索参数。
 
-SearxNG supports [135 search engines](https://docs.searxng.org/user/configured_engines.html). You can also customize the Searx wrapper with arbitrary named parameters that will be passed to the Searx search API . In the below example we will making a more interesting use of custom search parameters from searx search api.
-
-In this example we will be using the `engines` parameters to query wikipedia
-
+在此示例中，我们将使用 `engines` 参数查询维基百科。
 
 ```python
 search = SearxSearchWrapper(
     searx_host="http://127.0.0.1:8888", k=5
-)  # k is for max number of items
+)  # k 是最大项目数量
 ```
-
 
 ```python
 search.run("large language model ", engines=["wiki"])
 ```
 
-
-
 ```output
 'Large language models (LLMs) represent a major advancement in AI, with the promise of transforming domains through learned knowledge. LLM sizes have been increasing 10X every year for the last few years, and as these models grow in complexity and size, so do their capabilities.\n\nGPT-3 can translate language, write essays, generate computer code, and more — all with limited to no supervision. In July 2020, OpenAI unveiled GPT-3, a language model that was easily the largest known at the time. Put simply, GPT-3 is trained to predict the next word in a sentence, much like how a text message autocomplete feature works.\n\nA large language model, or LLM, is a deep learning algorithm that can recognize, summarize, translate, predict and generate text and other content based on knowledge gained from massive datasets. Large language models are among the most successful applications of transformer models.\n\nAll of today’s well-known language models—e.g., GPT-3 from OpenAI, PaLM or LaMDA from Google, Galactica or OPT from Meta, Megatron-Turing from Nvidia/Microsoft, Jurassic-1 from AI21 Labs—are...\n\nLarge language models (LLMs) such as GPT-3are increasingly being used to generate text. These tools should be used with care, since they can generate content that is biased, non-verifiable, constitutes original research, or violates copyrights.'
 ```
 
-
-Passing other Searx parameters for searx like `language`
-
+传递其他 Searx 参数，例如 `language`。
 
 ```python
 search = SearxSearchWrapper(searx_host="http://127.0.0.1:8888", k=1)
 search.run("deep learning", language="es", engines=["wiki"])
 ```
 
-
-
 ```output
 'Aprendizaje profundo (en inglés, deep learning) es un conjunto de algoritmos de aprendizaje automático (en inglés, machine learning) que intenta modelar abstracciones de alto nivel en datos usando arquitecturas computacionales que admiten transformaciones no lineales múltiples e iterativas de datos expresados en forma matricial o tensorial. 1'
 ```
 
+## 使用元数据获取结果
 
-## Obtaining results with metadata
+在这个例子中，我们将使用 `categories` 参数查找科学论文，并将结果限制在 `time_range` 内（并非所有引擎都支持时间范围选项）。
 
-In this example we will be looking for scientific paper using the `categories` parameter and limiting the results to a `time_range` (not all engines support the time range option).
-
-We also would like to obtain the results in a structured way including metadata. For this we will be using the `results` method of the wrapper.
-
+我们还希望以结构化的方式获取结果，包括元数据。为此，我们将使用包装器的 `results` 方法。
 
 ```python
 search = SearxSearchWrapper(searx_host="http://127.0.0.1:8888")
 ```
-
 
 ```python
 results = search.results(
@@ -136,8 +125,7 @@ pprint.pp(results)
   'engines': ['google scholar'],
   'category': 'science'}]
 ```
-Get papers from arxiv
-
+从 arxiv 获取论文
 
 ```python
 results = search.results(
@@ -258,28 +246,25 @@ pprint.pp(results)
   'engines': ['arxiv'],
   'category': 'science'}]
 ```
-In this example we query for `large language models` under the `it` category. We then filter the results that come from github.
-
+在这个例子中，我们查询 `large language models` 在 `it` 类别下。然后，我们过滤来自 github 的结果。
 
 ```python
 results = search.results("large language model", num_results=20, categories="it")
 pprint.pp(list(filter(lambda r: r["engines"][0] == "github", results)))
 ```
 ```output
-[{'snippet': 'Guide to using pre-trained large language models of source code',
+[{'snippet': '使用预训练的大型语言模型进行源代码的指南',
   'title': 'Code-LMs',
   'link': 'https://github.com/VHellendoorn/Code-LMs',
   'engines': ['github'],
   'category': 'it'},
- {'snippet': 'Dramatron uses large language models to generate coherent '
-             'scripts and screenplays.',
+ {'snippet': 'Dramatron使用大型语言模型生成连贯的剧本和电影剧本。',
   'title': 'dramatron',
   'link': 'https://github.com/deepmind/dramatron',
   'engines': ['github'],
   'category': 'it'}]
 ```
-We could also directly query for results from `github` and other source forges.
-
+我们还可以直接查询来自`github`和其他源代码库的结果。
 
 ```python
 results = search.results(
@@ -288,131 +273,109 @@ results = search.results(
 pprint.pp(results)
 ```
 ```output
-[{'snippet': "Implementation of 'A Watermark for Large Language Models' paper "
-             'by Kirchenbauer & Geiping et. al.',
+[{'snippet': "《大型语言模型的水印》论文的实现，由Kirchenbauer和Geiping等人撰写。",
   'title': 'Peutlefaire / LMWatermark',
   'link': 'https://gitlab.com/BrianPulfer/LMWatermark',
   'engines': ['gitlab'],
   'category': 'it'},
- {'snippet': 'Guide to using pre-trained large language models of source code',
+ {'snippet': '使用预训练的大型语言模型进行源代码的指南',
   'title': 'Code-LMs',
   'link': 'https://github.com/VHellendoorn/Code-LMs',
   'engines': ['github'],
   'category': 'it'},
  {'snippet': '',
-  'title': 'Simen Burud / Large-scale Language Models for Conversational '
-           'Speech Recognition',
+  'title': 'Simen Burud / 用于对话语音识别的大规模语言模型',
   'link': 'https://gitlab.com/BrianPulfer',
   'engines': ['gitlab'],
   'category': 'it'},
- {'snippet': 'Dramatron uses large language models to generate coherent '
-             'scripts and screenplays.',
+ {'snippet': 'Dramatron使用大型语言模型生成连贯的剧本和电影剧本。',
   'title': 'dramatron',
   'link': 'https://github.com/deepmind/dramatron',
   'engines': ['github'],
   'category': 'it'},
- {'snippet': 'Code for loralib, an implementation of "LoRA: Low-Rank '
-             'Adaptation of Large Language Models"',
+ {'snippet': 'loralib的代码，实现了《LoRA：大型语言模型的低秩适应》',
   'title': 'LoRA',
   'link': 'https://github.com/microsoft/LoRA',
   'engines': ['github'],
   'category': 'it'},
- {'snippet': 'Code for the paper "Evaluating Large Language Models Trained on '
-             'Code"',
+ {'snippet': '论文《评估在代码上训练的大型语言模型》的代码',
   'title': 'human-eval',
   'link': 'https://github.com/openai/human-eval',
   'engines': ['github'],
   'category': 'it'},
- {'snippet': 'A trend starts from "Chain of Thought Prompting Elicits '
-             'Reasoning in Large Language Models".',
+ {'snippet': '一个趋势源自《思维链提示引发大型语言模型推理》。',
   'title': 'Chain-of-ThoughtsPapers',
   'link': 'https://github.com/Timothyxxx/Chain-of-ThoughtsPapers',
   'engines': ['github'],
   'category': 'it'},
- {'snippet': 'Mistral: A strong, northwesterly wind: Framework for transparent '
-             'and accessible large-scale language model training, built with '
-             'Hugging Face 🤗 Transformers.',
+ {'snippet': 'Mistral：一种强大的西北风：透明和可访问的大规模语言模型训练框架，基于Hugging Face 🤗 Transformers构建。',
   'title': 'mistral',
   'link': 'https://github.com/stanford-crfm/mistral',
   'engines': ['github'],
   'category': 'it'},
- {'snippet': 'A prize for finding tasks that cause large language models to '
-             'show inverse scaling',
+ {'snippet': '寻找导致大型语言模型出现逆向缩放的任务的奖项',
   'title': 'prize',
   'link': 'https://github.com/inverse-scaling/prize',
   'engines': ['github'],
   'category': 'it'},
- {'snippet': 'Optimus: the first large-scale pre-trained VAE language model',
+ {'snippet': 'Optimus：第一个大规模预训练的VAE语言模型',
   'title': 'Optimus',
   'link': 'https://github.com/ChunyuanLI/Optimus',
   'engines': ['github'],
   'category': 'it'},
- {'snippet': 'Seminar on Large Language Models (COMP790-101 at UNC Chapel '
-             'Hill, Fall 2022)',
+ {'snippet': '大型语言模型研讨会（COMP790-101于UNC教堂山，2022年秋季）',
   'title': 'llm-seminar',
   'link': 'https://github.com/craffel/llm-seminar',
   'engines': ['github'],
   'category': 'it'},
- {'snippet': 'A central, open resource for data and tools related to '
-             'chain-of-thought reasoning in large language models. Developed @ '
-             'Samwald research group: https://samwald.info/',
+ {'snippet': '一个中心开放资源，提供与大型语言模型中的思维链推理相关的数据和工具。由Samwald研究小组开发：https://samwald.info/',
   'title': 'ThoughtSource',
   'link': 'https://github.com/OpenBioLink/ThoughtSource',
   'engines': ['github'],
   'category': 'it'},
- {'snippet': 'A comprehensive list of papers using large language/multi-modal '
-             'models for Robotics/RL, including papers, codes, and related '
-             'websites',
+ {'snippet': '使用大型语言/多模态模型进行机器人/强化学习的论文、代码和相关网站的综合列表',
   'title': 'Awesome-LLM-Robotics',
   'link': 'https://github.com/GT-RIPL/Awesome-LLM-Robotics',
   'engines': ['github'],
   'category': 'it'},
- {'snippet': 'Tools for curating biomedical training data for large-scale '
-             'language modeling',
+ {'snippet': '用于大规模语言建模的生物医学训练数据策划工具',
   'title': 'biomedical',
   'link': 'https://github.com/bigscience-workshop/biomedical',
   'engines': ['github'],
   'category': 'it'},
- {'snippet': 'ChatGPT @ Home: Large Language Model (LLM) chatbot application, '
-             'written by ChatGPT',
+ {'snippet': 'ChatGPT @ Home：大型语言模型（LLM）聊天机器人应用程序，由ChatGPT编写',
   'title': 'ChatGPT-at-Home',
   'link': 'https://github.com/Sentdex/ChatGPT-at-Home',
   'engines': ['github'],
   'category': 'it'},
- {'snippet': 'Design and Deploy Large Language Model Apps',
+ {'snippet': '设计和部署大型语言模型应用程序',
   'title': 'dust',
   'link': 'https://github.com/dust-tt/dust',
   'engines': ['github'],
   'category': 'it'},
- {'snippet': 'Polyglot: Large Language Models of Well-balanced Competence in '
-             'Multi-languages',
+ {'snippet': 'Polyglot：多语言能力均衡的大型语言模型',
   'title': 'polyglot',
   'link': 'https://github.com/EleutherAI/polyglot',
   'engines': ['github'],
   'category': 'it'},
- {'snippet': 'Code release for "Learning Video Representations from Large '
-             'Language Models"',
+ {'snippet': '《从大型语言模型学习视频表示》的代码发布',
   'title': 'LaViLa',
   'link': 'https://github.com/facebookresearch/LaViLa',
   'engines': ['github'],
   'category': 'it'},
- {'snippet': 'SmoothQuant: Accurate and Efficient Post-Training Quantization '
-             'for Large Language Models',
+ {'snippet': 'SmoothQuant：大型语言模型的准确和高效的后训练量化',
   'title': 'smoothquant',
   'link': 'https://github.com/mit-han-lab/smoothquant',
   'engines': ['github'],
   'category': 'it'},
- {'snippet': 'This repository contains the code, data, and models of the paper '
-             'titled "XL-Sum: Large-Scale Multilingual Abstractive '
-             'Summarization for 44 Languages" published in Findings of the '
-             'Association for Computational Linguistics: ACL-IJCNLP 2021.',
+ {'snippet': '该存储库包含论文《XL-Sum：44种语言的大规模多语言抽象摘要》的代码、数据和模型，该论文发表于计算语言学协会的发现：ACL-IJCNLP 2021。',
   'title': 'xl-sum',
   'link': 'https://github.com/csebuetnlp/xl-sum',
   'engines': ['github'],
   'category': 'it'}]
 ```
 
-## Related
+## 相关
 
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

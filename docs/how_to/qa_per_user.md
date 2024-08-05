@@ -1,31 +1,32 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/qa_per_user.ipynb
 ---
-# How to do per-user retrieval
 
-This guide demonstrates how to configure runtime properties of a retrieval chain. An example application is to limit the documents available to a retriever based on the user.
+# 如何进行用户级检索
 
-When building a retrieval app, you often have to build it with multiple users in mind. This means that you may be storing data not just for one user, but for many different users, and they should not be able to see eachother's data. This means that you need to be able to configure your retrieval chain to only retrieve certain information. This generally involves two steps.
+本指南演示如何配置检索链的运行时属性。一个示例应用是根据用户限制检索器可用的文档。
 
-**Step 1: Make sure the retriever you are using supports multiple users**
+在构建检索应用时，您通常需要考虑多个用户。这意味着您可能不仅仅为一个用户存储数据，而是为许多不同的用户存储数据，并且他们不应该能够看到彼此的数据。这意味着您需要能够配置检索链，以仅检索特定信息。这通常涉及两个步骤。
 
-At the moment, there is no unified flag or filter for this in LangChain. Rather, each vectorstore and retriever may have their own, and may be called different things (namespaces, multi-tenancy, etc). For vectorstores, this is generally exposed as a keyword argument that is passed in during `similarity_search`. By reading the documentation or source code, figure out whether the retriever you are using supports multiple users, and, if so, how to use it.
+**步骤 1：确保您使用的检索器支持多个用户**
 
-Note: adding documentation and/or support for multiple users for retrievers that do not support it (or document it) is a GREAT way to contribute to LangChain
+目前，LangChain 中没有统一的标志或过滤器。相反，每个向量存储和检索器可能都有自己的支持，并且可能称为不同的名称（命名空间、多租户等）。对于向量存储，这通常作为关键字参数在 `similarity_search` 时传入。通过阅读文档或源代码，确定您使用的检索器是否支持多个用户，如果支持，如何使用它。
 
-**Step 2: Add that parameter as a configurable field for the chain**
+注意：为不支持（或未记录）多个用户的检索器添加文档和/或支持是对 LangChain 的一个很好的贡献方式。
 
-This will let you easily call the chain and configure any relevant flags at runtime. See [this documentation](/docs/how_to/configure) for more information on configuration.
+**步骤 2：将该参数添加为链的可配置字段**
 
-Now, at runtime you can call this chain with configurable field.
+这将使您能够轻松调用链并在运行时配置任何相关标志。有关配置的更多信息，请参阅 [此文档](/docs/how_to/configure)。
 
-## Code Example
+现在，在运行时，您可以使用可配置字段调用此链。
 
-Let's see a concrete example of what this looks like in code. We will use Pinecone for this example.
+## 代码示例
 
-To configure Pinecone, set the following environment variable:
+让我们看看在代码中这是什么样子的具体示例。我们将使用 Pinecone 作为这个示例。
 
-- `PINECONE_API_KEY`: Your Pinecone API key
+要配置 Pinecone，请设置以下环境变量：
+
+- `PINECONE_API_KEY`: 您的 Pinecone API 密钥
 
 
 ```python
@@ -46,7 +47,7 @@ vectorstore.add_texts(["i worked at facebook"], namespace="ankush")
 ```
 
 
-The pinecone kwarg for `namespace` can be used to separate documents
+`namespace` 的 pinecone kwarg 可用于分隔文档
 
 
 ```python
@@ -78,14 +79,14 @@ vectorstore.as_retriever(
 ```
 
 
-We can now create the chain that we will use to do question-answering over.
+我们现在可以创建将用于问答的链。
 
-Let's first select a LLM.
+让我们首先选择一个 LLM。
 import ChatModelTabs from "@theme/ChatModelTabs";
 
 <ChatModelTabs customVarName="llm" />
 
-This is basic question-answering chain set up.
+这是基本的问答链设置。
 
 
 ```python
@@ -105,9 +106,9 @@ prompt = ChatPromptTemplate.from_template(template)
 retriever = vectorstore.as_retriever()
 ```
 
-Here we mark the retriever as having a configurable field. All vectorstore retrievers have `search_kwargs` as a field. This is just a dictionary, with vectorstore specific fields.
+在这里，我们将检索器标记为具有可配置字段。所有 vectorstore 检索器都有 `search_kwargs` 作为字段。这只是一个字典，包含特定于 vectorstore 的字段。
 
-This will let us pass in a value for `search_kwargs` when invoking the chain.
+这将使我们在调用链时传入 `search_kwargs` 的值。
 
 
 ```python
@@ -120,7 +121,7 @@ configurable_retriever = retriever.configurable_fields(
 )
 ```
 
-We can now create the chain using our configurable retriever
+我们现在可以使用可配置检索器创建链
 
 
 ```python
@@ -132,7 +133,7 @@ chain = (
 )
 ```
 
-We can now invoke the chain with configurable options. `search_kwargs` is the id of the configurable field. The value is the search kwargs to use for Pinecone
+我们现在可以使用可配置选项调用链。`search_kwargs` 是可配置字段的 id。值是用于 Pinecone 的搜索 kwargs
 
 
 ```python
@@ -164,4 +165,4 @@ chain.invoke(
 ```
 
 
-For more vectorstore implementations for multi-user, please refer to specific pages, such as [Milvus](/docs/integrations/vectorstores/milvus).
+有关多用户的更多 vectorstore 实现，请参阅特定页面，例如 [Milvus](/docs/integrations/vectorstores/milvus).

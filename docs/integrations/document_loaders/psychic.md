@@ -1,18 +1,18 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/psychic.ipynb
 ---
+
 # Psychic
-This notebook covers how to load documents from `Psychic`. See [here](/docs/integrations/providers/psychic) for more details.
+本笔记本介绍如何从 `Psychic` 加载文档。有关更多详细信息，请参见 [这里](/docs/integrations/providers/psychic)。
 
-## Prerequisites
-1. Follow the Quick Start section in [this document](/docs/integrations/providers/psychic)
-2. Log into the [Psychic dashboard](https://dashboard.psychic.dev/) and get your secret key
-3. Install the frontend react library into your web app and have a user authenticate a connection. The connection will be created using the connection id that you specify.
+## 前提条件
+1. 按照[本文件](/docs/integrations/providers/psychic)中的快速入门部分进行操作
+2. 登录[Psychic 仪表板](https://dashboard.psychic.dev/)并获取您的密钥
+3. 将前端 React 库安装到您的 Web 应用中，并让用户验证连接。连接将使用您指定的连接 ID 创建。
 
-## Loading documents
+## 加载文档
 
-Use the `PsychicLoader` class to load in documents from a connection. Each connection has a connector id (corresponding to the SaaS app that was connected) and a connection id (which you passed in to the frontend library).
-
+使用 `PsychicLoader` 类从连接中加载文档。每个连接都有一个连接器 ID（对应于所连接的 SaaS 应用程序）和一个连接 ID（您传递给前端库的）。
 
 ```python
 # Uncomment this to install psychicapi if you don't already have it installed
@@ -39,10 +39,9 @@ google_drive_loader = PsychicLoader(
 documents = google_drive_loader.load()
 ```
 
-## Converting the docs to embeddings 
+## 将文档转换为嵌入
 
-We can now convert these documents into embeddings and store them in a vector database like Chroma
-
+我们现在可以将这些文档转换为嵌入，并将它们存储在像 Chroma 这样的向量数据库中。
 
 ```python
 from langchain.chains import RetrievalQAWithSourcesChain
@@ -50,7 +49,6 @@ from langchain_chroma import Chroma
 from langchain_openai import OpenAI, OpenAIEmbeddings
 from langchain_text_splitters import CharacterTextSplitter
 ```
-
 
 ```python
 text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
@@ -64,8 +62,7 @@ chain = RetrievalQAWithSourcesChain.from_chain_type(
 chain({"question": "what is psychic?"}, return_only_outputs=True)
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

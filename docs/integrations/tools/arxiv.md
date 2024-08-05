@@ -1,17 +1,16 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/arxiv.ipynb
 ---
+
 # ArXiv
 
-This notebook goes over how to use the `arxiv` tool with an agent. 
+本笔记本介绍了如何使用 `arxiv` 工具与代理。
 
-First, you need to install the `arxiv` python package.
-
+首先，您需要安装 `arxiv` Python 包。
 
 ```python
 %pip install --upgrade --quiet  langchain-community arxiv
 ```
-
 
 ```python
 from langchain import hub
@@ -27,7 +26,6 @@ prompt = hub.pull("hwchase17/react")
 agent = create_react_agent(llm, tools, prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 ```
-
 
 ```python
 agent_executor.invoke(
@@ -57,31 +55,29 @@ Final Answer: The paper "1605.08386" is about heat-bath random walks with Markov
 [1m> Finished chain.[0m
 ```
 
-
 ```output
 {'input': "What's the paper 1605.08386 about?",
  'output': 'The paper "1605.08386" is about heat-bath random walks with Markov bases.'}
 ```
 
+## ArXiv API Wrapper
 
-## The ArXiv API Wrapper
-
-The tool uses the `API Wrapper`. Below, we explore some of the features it provides.
+该工具使用 `API Wrapper`。下面，我们探索它提供的一些功能。
 
 
 ```python
 from langchain_community.utilities import ArxivAPIWrapper
 ```
 
-You can use the ArxivAPIWrapper to get information about a scientific article or articles. The query text is limited to 300 characters.
+您可以使用 ArxivAPIWrapper 获取有关科学文章或多篇文章的信息。查询文本限制为 300 个字符。
 
-The ArxivAPIWrapper returns these article fields:
-- Publishing date
-- Title
-- Authors
-- Summary
+ArxivAPIWrapper 返回以下文章字段：
+- 出版日期
+- 标题
+- 作者
+- 摘要
 
-The following query returns information about one article with the arxiv ID "1605.08386". 
+以下查询返回有关 arxiv ID 为 "1605.08386" 的一篇文章的信息。
 
 
 ```python
@@ -97,9 +93,9 @@ docs
 ```
 
 
-Now, we want to get information about one author, `Caprice Stanley`.
+现在，我们想要获取关于一位作者 `Caprice Stanley` 的信息。
 
-This query returns information about three articles. By default, the query returns information only about three top articles.
+此查询返回有关三篇文章的信息。默认情况下，查询仅返回三篇顶级文章的信息。
 
 
 ```python
@@ -114,7 +110,7 @@ docs
 ```
 
 
-Now, we are trying to find information about non-existing article. In this case, the response is "No good Arxiv Result was found"
+现在，我们尝试查找不存在的文章的信息。在这种情况下，响应为 "未找到有效的 Arxiv 结果"
 
 
 ```python
@@ -128,9 +124,7 @@ docs
 'No good Arxiv Result was found'
 ```
 
+## 相关
 
-
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

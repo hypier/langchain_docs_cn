@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/toolkits/csv.ipynb
 ---
+
 # CSV
 
-This notebook shows how to use agents to interact with data in `CSV` format. It is mostly optimized for question answering.
+本笔记本展示了如何使用代理与 `CSV` 格式的数据进行交互。它主要优化用于问答。
 
-**NOTE: this agent calls the Pandas DataFrame agent under the hood, which in turn calls the Python agent, which executes LLM generated Python code - this can be bad if the LLM generated Python code is harmful. Use cautiously.**
+**注意：此代理在后台调用 Pandas DataFrame 代理，后者又调用 Python 代理，执行 LLM 生成的 Python 代码 - 如果 LLM 生成的 Python 代码有害，这可能会很糟糕。请谨慎使用。**
 
 
 
@@ -16,10 +17,9 @@ from langchain_experimental.agents.agent_toolkits import create_csv_agent
 from langchain_openai import ChatOpenAI, OpenAI
 ```
 
-## Using `ZERO_SHOT_REACT_DESCRIPTION`
+## 使用 `ZERO_SHOT_REACT_DESCRIPTION`
 
-This shows how to initialize the agent using the `ZERO_SHOT_REACT_DESCRIPTION` agent type.
-
+这展示了如何使用 `ZERO_SHOT_REACT_DESCRIPTION` 代理类型初始化代理。
 
 ```python
 agent = create_csv_agent(
@@ -30,10 +30,9 @@ agent = create_csv_agent(
 )
 ```
 
-## Using OpenAI Functions
+## 使用 OpenAI 函数
 
-This shows how to initialize the agent using the OPENAI_FUNCTIONS agent type. Note that this is an alternative to the above.
-
+这显示了如何使用 OPENAI_FUNCTIONS 代理类型初始化代理。请注意，这是上述内容的替代方案。
 
 ```python
 agent = create_csv_agent(
@@ -43,7 +42,6 @@ agent = create_csv_agent(
     agent_type=AgentType.OPENAI_FUNCTIONS,
 )
 ```
-
 
 ```python
 agent.run("how many rows are there?")
@@ -55,14 +53,14 @@ Error in on_chain_start callback: 'name'
 Invoking: `python_repl_ast` with `df.shape[0]`
 
 
-[0m[36;1m[1;3m891[0m[32;1m[1;3mThere are 891 rows in the dataframe.[0m
+[0m[36;1m[1;3m891[0m[32;1m[1;3m数据框中有 891 行。[0m
 
 [1m> Finished chain.[0m
 ```
 
 
 ```output
-'There are 891 rows in the dataframe.'
+'数据框中有 891 行。'
 ```
 
 
@@ -77,14 +75,14 @@ Error in on_chain_start callback: 'name'
 Invoking: `python_repl_ast` with `df[df['SibSp'] > 3]['PassengerId'].count()`
 
 
-[0m[36;1m[1;3m30[0m[32;1m[1;3mThere are 30 people in the dataframe who have more than 3 siblings.[0m
+[0m[36;1m[1;3m30[0m[32;1m[1;3m数据框中有 30 人有超过 3 个兄弟姐妹。[0m
 
 [1m> Finished chain.[0m
 ```
 
 
 ```output
-'There are 30 people in the dataframe who have more than 3 siblings.'
+'数据框中有 30 人有超过 3 个兄弟姐妹。'
 ```
 
 
@@ -112,21 +110,19 @@ square_root = math.sqrt(average_age)
 square_root`
 
 
-[0m[36;1m[1;3m5.585696017507576[0m[32;1m[1;3mThe square root of the average age is approximately 5.59.[0m
+[0m[36;1m[1;3m5.585696017507576[0m[32;1m[1;3m平均年龄的平方根大约是 5.59。[0m
 
 [1m> Finished chain.[0m
 ```
 
 
 ```output
-'The square root of the average age is approximately 5.59.'
+'平均年龄的平方根大约是 5.59。'
 ```
 
+### 多个 CSV 示例
 
-### Multi CSV Example
-
-This next part shows how the agent can interact with multiple csv files passed in as a list.
-
+下一部分展示了代理如何与作为列表传入的多个 csv 文件进行交互。
 
 ```python
 agent = create_csv_agent(
@@ -144,13 +140,12 @@ Error in on_chain_start callback: 'name'
 Invoking: `python_repl_ast` with `df1['Age'].nunique() - df2['Age'].nunique()`
 
 
-[0m[36;1m[1;3m-1[0m[32;1m[1;3mThere is 1 row in the age column that is different between the two dataframes.[0m
+[0m[36;1m[1;3m-1[0m[32;1m[1;3m在两个数据框的年龄列中有 1 行不同。[0m
 
 [1m> Finished chain.[0m
 ```
 
 
 ```output
-'There is 1 row in the age column that is different between the two dataframes.'
+'在两个数据框的年龄列中有 1 行不同。'
 ```
-

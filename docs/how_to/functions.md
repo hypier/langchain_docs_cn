@@ -3,30 +3,31 @@ custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs
 sidebar_position: 3
 keywords: [RunnableLambda, LCEL]
 ---
-# How to run custom functions
 
-:::info Prerequisites
+# 如何运行自定义函数
 
-This guide assumes familiarity with the following concepts:
-- [LangChain Expression Language (LCEL)](/docs/concepts/#langchain-expression-language)
-- [Chaining runnables](/docs/how_to/sequence/)
+:::info 前提条件
+
+本指南假设您熟悉以下概念：
+- [LangChain 表达式语言 (LCEL)](/docs/concepts/#langchain-expression-language)
+- [链式运行](/docs/how_to/sequence/)
 
 :::
 
-You can use arbitrary functions as [Runnables](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable). This is useful for formatting or when you need functionality not provided by other LangChain components, and custom functions used as Runnables are called [`RunnableLambdas`](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.RunnableLambda.html).
+您可以将任意函数用作 [Runnables](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable)。这对于格式化或当您需要其他 LangChain 组件未提供的功能时非常有用，作为 Runnables 使用的自定义函数称为 [`RunnableLambdas`](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.RunnableLambda.html)。
 
-Note that all inputs to these functions need to be a SINGLE argument. If you have a function that accepts multiple arguments, you should write a wrapper that accepts a single dict input and unpacks it into multiple argument.
+请注意，这些函数的所有输入需要是一个单一的参数。如果您有一个接受多个参数的函数，您应该编写一个包装器，该包装器接受一个单一的字典输入，并将其解包为多个参数。
 
-This guide will cover:
+本指南将涵盖：
 
-- How to explicitly create a runnable from a custom function using the `RunnableLambda` constructor and the convenience `@chain` decorator
-- Coercion of custom functions into runnables when used in chains
-- How to accept and use run metadata in your custom function
-- How to stream with custom functions by having them return generators
+- 如何使用 `RunnableLambda` 构造函数和方便的 `@chain` 装饰器显式创建一个 runnable
+- 在链中使用时自定义函数强制转换为 runnables
+- 如何在自定义函数中接受和使用运行元数据
+- 如何通过使自定义函数返回生成器来进行流式处理
 
-## Using the constructor
+## 使用构造函数
 
-Below, we explicitly wrap our custom logic using the `RunnableLambda` constructor:
+下面，我们使用 `RunnableLambda` 构造函数明确包装我们的自定义逻辑：
 
 
 ```python
@@ -84,11 +85,9 @@ chain.invoke({"foo": "bar", "bar": "gah"})
 AIMessage(content='3 + 9 equals 12.', response_metadata={'token_usage': {'completion_tokens': 8, 'prompt_tokens': 14, 'total_tokens': 22}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': 'fp_c2295e73ad', 'finish_reason': 'stop', 'logprobs': None}, id='run-73728de3-e483-49e3-ad54-51bd9570e71a-0')
 ```
 
+## 方便的 `@chain` 装饰器
 
-## The convenience `@chain` decorator
-
-You can also turn an arbitrary function into a chain by adding a `@chain` decorator. This is functionaly equivalent to wrapping the function in a `RunnableLambda` constructor as shown above. Here's an example:
-
+您还可以通过添加 `@chain` 装饰器将任意函数转换为链。这在功能上等同于将该函数包装在 `RunnableLambda` 构造函数中，如上所示。以下是一个示例：
 
 ```python
 from langchain_core.output_parsers import StrOutputParser
@@ -110,21 +109,17 @@ def custom_chain(text):
 custom_chain.invoke("bears")
 ```
 
-
-
 ```output
 'The subject of the joke is the bear and his girlfriend.'
 ```
 
+在上面，`@chain` 装饰器用于将 `custom_chain` 转换为可运行的，我们通过 `.invoke()` 方法调用它。
 
-Above, the `@chain` decorator is used to convert `custom_chain` into a runnable, which we invoke with the `.invoke()` method.
+如果您使用 [LangSmith](https://docs.smith.langchain.com/) 进行跟踪，您应该能在其中看到 `custom_chain` 的跟踪记录，OpenAI 的调用嵌套在下面。
 
-If you are using a tracing with [LangSmith](https://docs.smith.langchain.com/), you should see a `custom_chain` trace in there, with the calls to OpenAI nested underneath.
+## 链中的自动强制转换
 
-## Automatic coercion in chains
-
-When using custom functions in chains with the pipe operator (`|`), you can omit the `RunnableLambda` or `@chain` constructor and rely on coercion. Here's a simple example with a function that takes the output from the model and returns the first five letters of it:
-
+在使用管道操作符 (`|`) 的链中使用自定义函数时，可以省略 `RunnableLambda` 或 `@chain` 构造函数，而依赖于强制转换。以下是一个简单的示例，展示一个函数如何接受模型的输出并返回前五个字母：
 
 ```python
 prompt = ChatPromptTemplate.from_template("tell me a story about {topic}")
@@ -137,18 +132,16 @@ chain_with_coerced_function.invoke({"topic": "bears"})
 ```
 
 
-
 ```output
 'Once '
 ```
 
 
-Note that we didn't need to wrap the custom function `(lambda x: x.content[:5])` in a `RunnableLambda` constructor because the `model` on the left of the pipe operator is already a Runnable. The custom function is **coerced** into a runnable. See [this section](/docs/how_to/sequence/#coercion) for more information.
+请注意，我们不需要将自定义函数 `(lambda x: x.content[:5])` 包裹在 `RunnableLambda` 构造函数中，因为在管道操作符左侧的 `model` 已经是一个 Runnable。自定义函数被 **强制转换** 为一个 runnable。有关更多信息，请参见 [本节](/docs/how_to/sequence/#coercion)。
 
-## Passing run metadata
+## 运行元数据传递
 
-Runnable lambdas can optionally accept a [RunnableConfig](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.config.RunnableConfig.html#langchain_core.runnables.config.RunnableConfig) parameter, which they can use to pass callbacks, tags, and other configuration information to nested runs.
-
+可运行的 lambda 可以选择性地接受一个 [RunnableConfig](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.config.RunnableConfig.html#langchain_core.runnables.config.RunnableConfig) 参数，利用该参数将回调、标签和其他配置信息传递给嵌套运行。
 
 ```python
 import json
@@ -209,22 +202,22 @@ Tokens Used: 62
 Successful Requests: 1
 Total Cost (USD): $9.6e-05
 ```
-## Streaming
+
+## 流式处理
 
 :::note
-[RunnableLambda](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.RunnableLambda.html) is best suited for code that does not need to support streaming. If you need to support streaming (i.e., be able to operate on chunks of inputs and yield chunks of outputs), use [RunnableGenerator](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.RunnableGenerator.html) instead as in the example below.
+[RunnableLambda](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.RunnableLambda.html) 最适合不需要支持流式处理的代码。如果您需要支持流式处理（即能够处理输入块并生成输出块），请使用 [RunnableGenerator](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.RunnableGenerator.html)，如下例所示。
 :::
 
-You can use generator functions (ie. functions that use the `yield` keyword, and behave like iterators) in a chain.
+您可以在链中使用生成器函数（即使用 `yield` 关键字的函数，并像迭代器一样工作）。
 
-The signature of these generators should be `Iterator[Input] -> Iterator[Output]`. Or for async generators: `AsyncIterator[Input] -> AsyncIterator[Output]`.
+这些生成器的签名应为 `Iterator[Input] -> Iterator[Output]`。或者对于异步生成器：`AsyncIterator[Input] -> AsyncIterator[Output]`。
 
-These are useful for:
-- implementing a custom output parser
-- modifying the output of a previous step, while preserving streaming capabilities
+这些对于以下情况很有用：
+- 实现自定义输出解析器
+- 修改前一步的输出，同时保留流式处理能力
 
-Here's an example of a custom output parser for comma-separated lists. First, we create a chain that generates such a list as text:
-
+以下是一个用于逗号分隔列表的自定义输出解析器的示例。首先，我们创建一个生成这样的文本列表的链：
 
 ```python
 from typing import Iterator, List
@@ -241,8 +234,7 @@ for chunk in str_chain.stream({"animal": "bear"}):
 ```output
 lion, tiger, wolf, gorilla, panda
 ```
-Next, we define a custom function that will aggregate the currently streamed output and yield it when the model generates the next comma in the list:
-
+接下来，我们定义一个自定义函数，该函数将聚合当前流式输出，并在模型生成下一个逗号时返回它：
 
 ```python
 # This is a custom parser that splits an iterator of llm tokens
@@ -277,8 +269,7 @@ for chunk in list_chain.stream({"animal": "bear"}):
 ['gorilla']
 ['raccoon']
 ```
-Invoking it gives a full array of values:
-
+调用它会返回一个完整的值数组：
 
 ```python
 list_chain.invoke({"animal": "bear"})
@@ -290,11 +281,9 @@ list_chain.invoke({"animal": "bear"})
 ['lion', 'tiger', 'wolf', 'gorilla', 'raccoon']
 ```
 
+## Async 版本
 
-## Async version
-
-If you are working in an `async` environment, here is an `async` version of the above example:
-
+如果您在 `async` 环境中工作，下面是上述示例的 `async` 版本：
 
 ```python
 from typing import AsyncIterator
@@ -306,7 +295,7 @@ async def asplit_into_list(
     buffer = ""
     async for (
         chunk
-    ) in input:  # `input` is a `async_generator` object, so use `async for`
+    ) in input:  # `input` 是一个 `async_generator` 对象，因此使用 `async for`
         buffer += chunk
         while "," in buffer:
             comma_index = buffer.index(",")
@@ -338,9 +327,8 @@ await list_chain.ainvoke({"animal": "bear"})
 ['lion', 'tiger', 'wolf', 'gorilla', 'panda']
 ```
 
+## 下一步
 
-## Next steps
+现在您已经了解了在链中使用自定义逻辑的几种不同方法，以及如何实现流式处理。
 
-Now you've learned a few different ways to use custom logic within your chains, and how to implement streaming.
-
-To learn more, see the other how-to guides on runnables in this section.
+要了解更多信息，请参阅本节中有关可运行项的其他操作指南。

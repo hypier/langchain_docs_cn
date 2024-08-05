@@ -1,26 +1,27 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/sequence.ipynb
-keywords: [Runnable, Runnables, RunnableSequence, LCEL, chain, chains, chaining]
+keywords: [可运行的, 可运行项, 可运行序列, LCEL, 链, 链条, 链接]
 ---
-# How to chain runnables
 
-:::info Prerequisites
+# 如何链式调用可运行对象
 
-This guide assumes familiarity with the following concepts:
-- [LangChain Expression Language (LCEL)](/docs/concepts/#langchain-expression-language)
-- [Prompt templates](/docs/concepts/#prompt-templates)
-- [Chat models](/docs/concepts/#chat-models)
-- [Output parser](/docs/concepts/#output-parsers)
+:::info 前提条件
+
+本指南假设您对以下概念有一定了解：
+- [LangChain 表达式语言 (LCEL)](/docs/concepts/#langchain-expression-language)
+- [提示模板](/docs/concepts/#prompt-templates)
+- [聊天模型](/docs/concepts/#chat-models)
+- [输出解析器](/docs/concepts/#output-parsers)
 
 :::
 
-One point about [LangChain Expression Language](/docs/concepts/#langchain-expression-language) is that any two runnables can be "chained" together into sequences. The output of the previous runnable's `.invoke()` call is passed as input to the next runnable. This can be done using the pipe operator (`|`), or the more explicit `.pipe()` method, which does the same thing.
+关于 [LangChain 表达式语言](/docs/concepts/#langchain-expression-language) 的一个要点是，任何两个可运行对象都可以“链式”组合成序列。前一个可运行对象的 `.invoke()` 调用的输出作为输入传递给下一个可运行对象。这可以使用管道操作符 (`|`) 或更明确的 `.pipe()` 方法来完成，二者功能相同。
 
-The resulting [`RunnableSequence`](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.RunnableSequence.html) is itself a runnable, which means it can be invoked, streamed, or further chained just like any other runnable. Advantages of chaining runnables in this way are efficient streaming (the sequence will stream output as soon as it is available), and debugging and tracing with tools like [LangSmith](/docs/how_to/debugging).
+生成的 [`RunnableSequence`](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.RunnableSequence.html) 本身也是一个可运行对象，这意味着它可以像其他任何可运行对象一样被调用、流式传输或进一步链式调用。以这种方式链式调用可运行对象的优点包括高效的流式传输（序列将尽快流式输出可用的内容）以及使用 [LangSmith](/docs/how_to/debugging) 等工具进行调试和追踪。
 
-## The pipe operator: `|`
+## 管道操作符： `|`
 
-To show off how this works, let's go through an example. We'll walk through a common pattern in LangChain: using a [prompt template](/docs/how_to#prompt-templates) to format input into a [chat model](/docs/how_to#chat-models), and finally converting the chat message output into a string with an [output parser](/docs/how_to#output-parsers).
+为了展示这个是如何工作的，让我们通过一个示例来讲解。我们将通过 LangChain 中的一个常见模式：使用 [提示模板](/docs/how_to#prompt-templates) 将输入格式化为 [聊天模型](/docs/how_to#chat-models)，最后将聊天消息输出转换为字符串，使用 [输出解析器](/docs/how_to#output-parsers)。
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
@@ -38,7 +39,7 @@ prompt = ChatPromptTemplate.from_template("tell me a joke about {topic}")
 chain = prompt | model | StrOutputParser()
 ```
 
-Prompts and models are both runnable, and the output type from the prompt call is the same as the input type of the chat model, so we can chain them together. We can then invoke the resulting sequence like any other runnable:
+提示和模型都是可运行的，提示调用的输出类型与聊天模型的输入类型相同，因此我们可以将它们串联在一起。然后我们可以像其他可运行的内容一样调用结果序列：
 
 
 ```python
@@ -51,17 +52,15 @@ chain.invoke({"topic": "bears"})
 "Here's a bear joke for you:\n\nWhy did the bear dissolve in water?\nBecause it was a polar bear!"
 ```
 
+### 强制转换
 
-### Coercion
+我们甚至可以将这个链与更多的可运行对象结合起来，创建另一个链。这可能涉及使用其他类型的可运行对象进行一些输入/输出格式化，具体取决于链组件所需的输入和输出。
 
-We can even combine this chain with more runnables to create another chain. This may involve some input/output formatting using other types of runnables, depending on the required inputs and outputs of the chain components.
+例如，假设我们想要将笑话生成链与另一个链组合，该链评估生成的笑话是否有趣。
 
-For example, let's say we wanted to compose the joke generating chain with another chain that evaluates whether or not the generated joke was funny.
+我们需要小心如何将输入格式化到下一个链中。在下面的示例中，链中的字典会被自动解析并转换为[`RunnableParallel`](/docs/how_to/parallel)，它并行运行所有值并返回一个包含结果的字典。
 
-We would need to be careful with how we format the input into the next chain. In the below example, the dict in the chain is automatically parsed and converted into a [`RunnableParallel`](/docs/how_to/parallel), which runs all of its values in parallel and returns a dict with the results.
-
-This happens to be the same format the next prompt template expects. Here it is in action:
-
+这恰好是下一个提示模板所期望的格式。以下是它的实际应用：
 
 ```python
 from langchain_core.output_parsers import StrOutputParser
@@ -73,15 +72,11 @@ composed_chain = {"joke": chain} | analysis_prompt | model | StrOutputParser()
 composed_chain.invoke({"topic": "bears"})
 ```
 
-
-
 ```output
 'Haha, that\'s a clever play on words! Using "polar" to imply the bear dissolved or became polar/polarized when put in water. Not the most hilarious joke ever, but it has a cute, groan-worthy pun that makes it mildly amusing. I appreciate a good pun or wordplay joke.'
 ```
 
-
-Functions will also be coerced into runnables, so you can add custom logic to your chains too. The below chain results in the same logical flow as before:
-
+函数也会被强制转换为可运行对象，因此您也可以向链中添加自定义逻辑。下面的链与之前的逻辑流程相同：
 
 ```python
 composed_chain_with_lambda = (
@@ -95,18 +90,15 @@ composed_chain_with_lambda = (
 composed_chain_with_lambda.invoke({"topic": "beets"})
 ```
 
-
-
 ```output
 "Haha, that's a cute and punny joke! I like how it plays on the idea of beets blushing or turning red like someone blushing. Food puns can be quite amusing. While not a total knee-slapper, it's a light-hearted, groan-worthy dad joke that would make me chuckle and shake my head. Simple vegetable humor!"
 ```
 
+然而，请记住，像这样使用函数可能会干扰流式操作。有关更多信息，请参见[本节](/docs/how_to/functions)。
 
-However, keep in mind that using functions like this may interfere with operations like streaming. See [this section](/docs/how_to/functions) for more information.
+## `.pipe()` 方法
 
-## The `.pipe()` method
-
-We could also compose the same sequence using the `.pipe()` method. Here's what that looks like:
+我们也可以使用 `.pipe()` 方法来组合相同的序列。它的样子如下：
 
 
 ```python
@@ -129,7 +121,7 @@ composed_chain_with_pipe.invoke({"topic": "battlestar galactica"})
 ```
 
 
-Or the abbreviated:
+或者简化版：
 
 
 ```python
@@ -138,7 +130,6 @@ composed_chain_with_pipe = RunnableParallel({"joke": chain}).pipe(
 )
 ```
 
-## Related
+## 相关
 
-- [Streaming](/docs/how_to/streaming/): Check out the streaming guide to understand the streaming behavior of a chain
-
+- [流媒体](/docs/how_to/streaming/): 查看流媒体指南以了解链的流媒体行为

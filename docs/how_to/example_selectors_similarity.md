@@ -1,9 +1,10 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/example_selectors_similarity.ipynb
 ---
-# How to select examples by similarity
 
-This object selects examples based on similarity to the inputs. It does this by finding the examples with the embeddings that have the greatest cosine similarity with the inputs.
+# 如何通过相似性选择示例
+
+该对象根据与输入的相似性选择示例。它通过找到与输入具有最大余弦相似度的嵌入示例来实现这一点。
 
 
 
@@ -18,7 +19,7 @@ example_prompt = PromptTemplate(
     template="Input: {input}\nOutput: {output}",
 )
 
-# Examples of a pretend task of creating antonyms.
+# 创建反义词的虚构任务示例。
 examples = [
     {"input": "happy", "output": "sad"},
     {"input": "tall", "output": "short"},
@@ -31,20 +32,20 @@ examples = [
 
 ```python
 example_selector = SemanticSimilarityExampleSelector.from_examples(
-    # The list of examples available to select from.
+    # 可供选择的示例列表。
     examples,
-    # The embedding class used to produce embeddings which are used to measure semantic similarity.
+    # 用于生成嵌入的嵌入类，这些嵌入用于测量语义相似性。
     OpenAIEmbeddings(),
-    # The VectorStore class that is used to store the embeddings and do a similarity search over.
+    # 用于存储嵌入并进行相似性搜索的 VectorStore 类。
     Chroma,
-    # The number of examples to produce.
+    # 生成的示例数量。
     k=1,
 )
 similar_prompt = FewShotPromptTemplate(
-    # We provide an ExampleSelector instead of examples.
+    # 我们提供一个 ExampleSelector，而不是示例。
     example_selector=example_selector,
     example_prompt=example_prompt,
-    prefix="Give the antonym of every input",
+    prefix="给出每个输入的反义词",
     suffix="Input: {adjective}\nOutput:",
     input_variables=["adjective"],
 )
@@ -52,11 +53,11 @@ similar_prompt = FewShotPromptTemplate(
 
 
 ```python
-# Input is a feeling, so should select the happy/sad example
+# 输入是情感，因此应选择 happy/sad 示例
 print(similar_prompt.format(adjective="worried"))
 ```
 ```output
-Give the antonym of every input
+给出每个输入的反义词
 
 Input: happy
 Output: sad
@@ -66,11 +67,11 @@ Output:
 ```
 
 ```python
-# Input is a measurement, so should select the tall/short example
+# 输入是一个测量，因此应选择 tall/short 示例
 print(similar_prompt.format(adjective="large"))
 ```
 ```output
-Give the antonym of every input
+给出每个输入的反义词
 
 Input: tall
 Output: short
@@ -80,14 +81,14 @@ Output:
 ```
 
 ```python
-# You can add new examples to the SemanticSimilarityExampleSelector as well
+# 您也可以向 SemanticSimilarityExampleSelector 添加新示例
 similar_prompt.example_selector.add_example(
     {"input": "enthusiastic", "output": "apathetic"}
 )
 print(similar_prompt.format(adjective="passionate"))
 ```
 ```output
-Give the antonym of every input
+给出每个输入的反义词
 
 Input: enthusiastic
 Output: apathetic

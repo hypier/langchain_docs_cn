@@ -1,17 +1,18 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/discord.ipynb
 ---
+
 # Discord
 
->[Discord](https://discord.com/) is a VoIP and instant messaging social platform. Users have the ability to communicate with voice calls, video calls, text messaging, media and files in private chats or as part of communities called "servers". A server is a collection of persistent chat rooms and voice channels which can be accessed via invite links.
+>[Discord](https://discord.com/) 是一个VoIP和即时消息社交平台。用户可以通过语音通话、视频通话、文本消息、媒体和文件在私人聊天或称为“服务器”的社区中进行沟通。服务器是一个持久的聊天室和语音频道的集合，可以通过邀请链接访问。
 
-Follow these steps to download your `Discord` data:
+按照以下步骤下载您的 `Discord` 数据：
 
-1. Go to your **User Settings**
-2. Then go to **Privacy and Safety**
-3. Head over to the **Request all of my Data** and click on **Request Data** button
+1. 前往您的 **用户设置**
+2. 然后进入 **隐私与安全**
+3. 前往 **请求我的所有数据** 并点击 **请求数据** 按钮
 
-It might take 30 days for you to receive your data. You'll receive an email at the address which is registered with Discord. That email will have a download button using which you would be able to download your personal Discord data.
+您可能需要30天才能收到您的数据。您将收到一封发送到注册Discord的电子邮件地址的邮件。该邮件将包含一个下载按钮，您可以通过它下载您的个人Discord数据。
 
 
 ```python
@@ -45,8 +46,7 @@ loader = DiscordChatLoader(df, user_id_col="ID")
 print(loader.load())
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

@@ -1,17 +1,18 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/textgen.ipynb
 ---
+
 # TextGen
 
-[GitHub:oobabooga/text-generation-webui](https://github.com/oobabooga/text-generation-webui) A gradio web UI for running Large Language Models like LLaMA, llama.cpp, GPT-J, Pythia, OPT, and GALACTICA.
+[GitHub:oobabooga/text-generation-webui](https://github.com/oobabooga/text-generation-webui) 一个用于运行大型语言模型的 Gradio Web 用户界面，如 LLaMA、llama.cpp、GPT-J、Pythia、OPT 和 GALACTICA。
 
-This example goes over how to use LangChain to interact with LLM models via the `text-generation-webui` API integration.
+本示例介绍了如何使用 LangChain 通过 `text-generation-webui` API 集成与 LLM 模型进行交互。
 
-Please ensure that you have `text-generation-webui` configured and an LLM installed.  Recommended installation via the [one-click installer appropriate](https://github.com/oobabooga/text-generation-webui#one-click-installers) for your OS.
+请确保您已配置 `text-generation-webui` 并安装了 LLM。建议通过适合您操作系统的 [一键安装程序](https://github.com/oobabooga/text-generation-webui#one-click-installers) 进行安装。
 
-Once `text-generation-webui` is installed and confirmed working via the web interface, please enable the `api` option either through the web model configuration tab, or by adding the run-time arg `--api` to your start command.
+一旦 `text-generation-webui` 安装并通过 Web 界面确认工作，请通过 Web 模型配置选项卡启用 `api` 选项，或通过将运行时参数 `--api` 添加到您的启动命令中来启用。
 
-## Set model_url and run the example
+## 设置 model_url 并运行示例
 
 
 ```python
@@ -40,9 +41,9 @@ question = "What NFL team won the Super Bowl in the year Justin Bieber was born?
 llm_chain.run(question)
 ```
 
-### Streaming Version
+### 流媒体版本
 
-You should install websocket-client to use this feature.
+您需要安装 websocket-client 才能使用此功能。
 `pip install websocket-client`
 
 
@@ -82,8 +83,7 @@ for chunk in llm.stream("Ask 'Hi, how are you?' like a pirate:'", stop=["'", "\n
     print(chunk, end="", flush=True)
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

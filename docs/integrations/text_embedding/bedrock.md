@@ -1,17 +1,10 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/bedrock.ipynb
 ---
+
 # Bedrock
 
->[Amazon Bedrock](https://aws.amazon.com/bedrock/) is a fully managed service that offers a choice of 
-> high-performing foundation models (FMs) from leading AI companies like `AI21 Labs`, `Anthropic`, `Cohere`, 
-> `Meta`, `Stability AI`, and `Amazon` via a single API, along with a broad set of capabilities you need to 
-> build generative AI applications with security, privacy, and responsible AI. Using `Amazon Bedrock`, 
-> you can easily experiment with and evaluate top FMs for your use case, privately customize them with 
-> your data using techniques such as fine-tuning and `Retrieval Augmented Generation` (`RAG`), and build 
-> agents that execute tasks using your enterprise systems and data sources. Since `Amazon Bedrock` is 
-> serverless, you don't have to manage any infrastructure, and you can securely integrate and deploy 
-> generative AI capabilities into your applications using the AWS services you are already familiar with.
+>[Amazon Bedrock](https://aws.amazon.com/bedrock/) 是一项完全托管的服务，提供来自 `AI21 Labs`、`Anthropic`、`Cohere`、`Meta`、`Stability AI` 和 `Amazon` 等领先 AI 公司的一系列高性能基础模型 (FMs)，通过单一 API 访问，并提供构建具备安全性、隐私性和负责任 AI 的生成 AI 应用所需的广泛能力。使用 `Amazon Bedrock`，您可以轻松实验和评估适合您用例的顶级 FMs，使用微调和 `Retrieval Augmented Generation` (`RAG`) 等技术私下定制它们，并构建能够使用您的企业系统和数据源执行任务的代理。由于 `Amazon Bedrock` 是无服务器的，您无需管理任何基础设施，您可以安全地将生成 AI 能力集成并部署到您已经熟悉的 AWS 服务中的应用程序中。
 
 
 
@@ -55,8 +48,7 @@ await embeddings.aembed_documents(
 )
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

@@ -2,23 +2,23 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/output_parser_structured.ipynb
 sidebar_position: 3
 ---
-# How to use output parsers to parse an LLM response into structured format
 
-Language models output text. But there are times where you want to get more structured information than just text back. While some model providers support [built-in ways to return structured output](/docs/how_to/structured_output), not all do.
+# 如何使用输出解析器将LLM响应解析为结构化格式
 
-Output parsers are classes that help structure language model responses. There are two main methods an output parser must implement:
+语言模型输出文本。但有时您希望获得比仅仅文本更结构化的信息。虽然一些模型提供者支持 [内置的返回结构化输出的方法](/docs/how_to/structured_output)，但并非所有都支持。
 
-- "Get format instructions": A method which returns a string containing instructions for how the output of a language model should be formatted.
-- "Parse": A method which takes in a string (assumed to be the response from a language model) and parses it into some structure.
+输出解析器是帮助结构化语言模型响应的类。输出解析器必须实现两个主要方法：
 
-And then one optional one:
+- “获取格式说明”：一个返回字符串的方法，包含有关语言模型输出应如何格式化的说明。
+- “解析”：一个接受字符串（假定为语言模型的响应）并将其解析为某种结构的方法。
 
-- "Parse with prompt": A method which takes in a string (assumed to be the response from a language model) and a prompt (assumed to be the prompt that generated such a response) and parses it into some structure. The prompt is largely provided in the event the OutputParser wants to retry or fix the output in some way, and needs information from the prompt to do so.
+还有一个可选的方法：
 
-## Get started
+- “带提示解析”：一个接受字符串（假定为语言模型的响应）和一个提示（假定为生成该响应的提示）并将其解析为某种结构的方法。提供提示主要是为了在输出解析器想要以某种方式重试或修复输出时，并需要提示中的信息来做到这一点。
 
-Below we go over the main type of output parser, the `PydanticOutputParser`.
+## 开始
 
+下面我们将介绍主要的输出解析器类型，`PydanticOutputParser`。
 
 ```python
 from langchain_core.output_parsers import PydanticOutputParser
@@ -57,50 +57,38 @@ output = prompt_and_model.invoke({"query": "Tell me a joke."})
 parser.invoke(output)
 ```
 
-
-
 ```output
 Joke(setup='Why did the chicken cross the road?', punchline='To get to the other side!')
 ```
 
-
 ## LCEL
 
-Output parsers implement the [Runnable interface](/docs/concepts#interface), the basic building block of the [LangChain Expression Language (LCEL)](/docs/concepts#langchain-expression-language-lcel). This means they support `invoke`, `ainvoke`, `stream`, `astream`, `batch`, `abatch`, `astream_log` calls.
+输出解析器实现了 [Runnable interface](/docs/concepts#interface)，这是 [LangChain 表达式语言 (LCEL)](/docs/concepts#langchain-expression-language-lcel) 的基本构建块。这意味着它们支持 `invoke`、`ainvoke`、`stream`、`astream`、`batch`、`abatch`、`astream_log` 调用。
 
-Output parsers accept a string or `BaseMessage` as input and can return an arbitrary type.
-
+输出解析器接受一个字符串或 `BaseMessage` 作为输入，并可以返回任意类型。
 
 ```python
 parser.invoke(output)
 ```
 
-
-
 ```output
 Joke(setup='Why did the chicken cross the road?', punchline='To get to the other side!')
 ```
 
-
-Instead of manually invoking the parser, we also could've just added it to our `Runnable` sequence:
-
+我们也可以将解析器直接添加到我们的 `Runnable` 序列中，而不必手动调用它：
 
 ```python
 chain = prompt | model | parser
 chain.invoke({"query": "Tell me a joke."})
 ```
 
-
-
 ```output
 Joke(setup='Why did the chicken cross the road?', punchline='To get to the other side!')
 ```
 
+虽然所有解析器都支持流接口，但只有某些解析器可以通过部分解析的对象进行流式处理，因为这高度依赖于输出类型。无法构造部分对象的解析器将简单地返回完全解析的输出。
 
-While all parsers support the streaming interface, only certain parsers can stream through partially parsed objects, since this is highly dependent on the output type. Parsers which cannot construct partial objects will simply yield the fully parsed output.
-
-The `SimpleJsonOutputParser` for example can stream through partial outputs:
-
+例如，`SimpleJsonOutputParser` 可以通过部分输出进行流式处理：
 
 ```python
 from langchain.output_parsers.json import SimpleJsonOutputParser
@@ -112,12 +100,9 @@ json_parser = SimpleJsonOutputParser()
 json_chain = json_prompt | model | json_parser
 ```
 
-
 ```python
 list(json_chain.stream({"question": "Who invented the microscope?"}))
 ```
-
-
 
 ```output
 [{},
@@ -133,17 +118,12 @@ list(json_chain.stream({"question": "Who invented the microscope?"}))
  {'answer': 'Antonie van Leeuwenhoek'}]
 ```
 
-
-While the PydanticOutputParser cannot:
-
+而 `PydanticOutputParser` 则不能：
 
 ```python
 list(chain.stream({"query": "Tell me a joke."}))
 ```
 
-
-
 ```output
 [Joke(setup='Why did the chicken cross the road?', punchline='To get to the other side!')]
 ```
-

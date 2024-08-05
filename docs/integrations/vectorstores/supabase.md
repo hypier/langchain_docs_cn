@@ -1,23 +1,24 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/supabase.ipynb
 ---
+
 # Supabase (Postgres)
 
->[Supabase](https://supabase.com/docs) is an open-source Firebase alternative. `Supabase` is built on top of `PostgreSQL`, which offers strong SQL querying capabilities and enables a simple interface with already-existing tools and frameworks.
+>[Supabase](https://supabase.com/docs) 是一个开源的 Firebase 替代品。`Supabase` 构建在 `PostgreSQL` 之上，提供强大的 SQL 查询能力，并与现有工具和框架实现简单接口。
 
->[PostgreSQL](https://en.wikipedia.org/wiki/PostgreSQL) also known as `Postgres`, is a free and open-source relational database management system (RDBMS) emphasizing extensibility and SQL compliance.
+>[PostgreSQL](https://en.wikipedia.org/wiki/PostgreSQL)，也称为 `Postgres`，是一个免费的开源关系数据库管理系统（RDBMS），强调可扩展性和 SQL 兼容性。
 
-This notebook shows how to use `Supabase` and `pgvector` as your VectorStore.
+本笔记本展示了如何使用 `Supabase` 和 `pgvector` 作为您的 VectorStore。
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
+您需要通过 `pip install -qU langchain-community` 安装 `langchain-community` 以使用此集成。
 
-To run this notebook, please ensure:
-- the `pgvector` extension is enabled
-- you have installed the `supabase-py` package
-- that you have created a `match_documents` function in your database
-- that you have a `documents` table in your `public` schema similar to the one below.
+要运行此笔记本，请确保：
+- `pgvector` 扩展已启用
+- 您已安装 `supabase-py` 包
+- 您在数据库中创建了 `match_documents` 函数
+- 您在 `public` 模式下有一个类似于下面的 `documents` 表。
 
-The following function determines cosine similarity, but you can adjust to your needs.
+以下函数确定余弦相似度，但您可以根据需要进行调整。
 
 ```sql
 -- Enable the pgvector extension to work with embedding vectors
@@ -66,7 +67,7 @@ $$;
 # !conda install -c conda-forge supabase
 ```
 
-We want to use `OpenAIEmbeddings` so we have to get the OpenAI API Key.
+我们想使用 `OpenAIEmbeddings`，因此我们必须获取 OpenAI API 密钥。
 
 
 ```python
@@ -94,7 +95,7 @@ from dotenv import load_dotenv
 load_dotenv()
 ```
 
-First we'll create a Supabase client and instantiate a OpenAI embeddings class.
+首先，我们将创建一个 Supabase 客户端并实例化 OpenAI 嵌入类。
 
 
 ```python
@@ -111,7 +112,7 @@ supabase: Client = create_client(supabase_url, supabase_key)
 embeddings = OpenAIEmbeddings()
 ```
 
-Next we'll load and parse some data for our vector store (skip if you already have documents with embeddings stored in your DB).
+接下来，我们将加载和解析一些数据以供我们的向量存储使用（如果您已经在数据库中存储了带有嵌入的文档，可以跳过此步骤）。
 
 
 ```python
@@ -124,7 +125,7 @@ text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
 docs = text_splitter.split_documents(documents)
 ```
 
-Insert the above documents into the database. Embeddings will automatically be generated for each document. You can adjust the chunk_size based on the amount of documents you have. The default is 500 but lowering it may be necessary.
+将上述文档插入数据库。每个文档的嵌入将自动生成。您可以根据文档的数量调整 chunk_size。默认值为 500，但降低它可能是必要的。
 
 
 ```python
@@ -138,7 +139,7 @@ vector_store = SupabaseVectorStore.from_documents(
 )
 ```
 
-Alternatively if you already have documents with embeddings in your database, simply instantiate a new `SupabaseVectorStore` directly:
+或者，如果您已经在数据库中有带有嵌入的文档，可以直接实例化一个新的 `SupabaseVectorStore`：
 
 
 ```python
@@ -150,7 +151,7 @@ vector_store = SupabaseVectorStore(
 )
 ```
 
-Finally, test it out by performing a similarity search:
+最后，通过执行相似性搜索来测试它：
 
 
 ```python
@@ -171,36 +172,31 @@ One of the most serious constitutional responsibilities a President has is nomin
 
 And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
 ```
-## Similarity search with score
 
+## 相似性搜索与评分
 
-The returned distance score is cosine distance. Therefore, a lower score is better.
-
+返回的距离分数是余弦距离。因此，分数越低越好。
 
 ```python
 matched_docs = vector_store.similarity_search_with_relevance_scores(query)
 ```
 
-
 ```python
 matched_docs[0]
 ```
-
-
 
 ```output
 (Document(page_content='Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And while you’re at it, pass the Disclose Act so Americans can know who is funding our elections. \n\nTonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. \n\nOne of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. \n\nAnd I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.', metadata={'source': '../../../state_of_the_union.txt'}),
  0.802509746274066)
 ```
 
+## Retriever 选项
 
-## Retriever options
+本节介绍如何将 SupabaseVectorStore 用作检索器的不同选项。
 
-This section goes over different options for how to use SupabaseVectorStore as a retriever.
+### 最大边际相关性搜索
 
-### Maximal Marginal Relevance Searches
-
-In addition to using similarity search in the retriever object, you can also use `mmr`.
+除了在检索器对象中使用相似性搜索外，您还可以使用 `mmr`。
 
 
 
@@ -219,84 +215,8 @@ for i, d in enumerate(matched_docs):
     print(f"\n## Document {i}\n")
     print(d.page_content)
 ```
-```output
 
-## Document 0
+## 相关
 
-Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And while you’re at it, pass the Disclose Act so Americans can know who is funding our elections. 
-
-Tonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. 
-
-One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. 
-
-And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
-
-## Document 1
-
-One was stationed at bases and breathing in toxic smoke from “burn pits” that incinerated wastes of war—medical and hazard material, jet fuel, and more. 
-
-When they came home, many of the world’s fittest and best trained warriors were never the same. 
-
-Headaches. Numbness. Dizziness. 
-
-A cancer that would put them in a flag-draped coffin. 
-
-I know. 
-
-One of those soldiers was my son Major Beau Biden. 
-
-We don’t know for sure if a burn pit was the cause of his brain cancer, or the diseases of so many of our troops. 
-
-But I’m committed to finding out everything we can. 
-
-Committed to military families like Danielle Robinson from Ohio. 
-
-The widow of Sergeant First Class Heath Robinson.  
-
-He was born a soldier. Army National Guard. Combat medic in Kosovo and Iraq. 
-
-Stationed near Baghdad, just yards from burn pits the size of football fields. 
-
-Heath’s widow Danielle is here with us tonight. They loved going to Ohio State football games. He loved building Legos with their daughter.
-
-## Document 2
-
-And I’m taking robust action to make sure the pain of our sanctions  is targeted at Russia’s economy. And I will use every tool at our disposal to protect American businesses and consumers. 
-
-Tonight, I can announce that the United States has worked with 30 other countries to release 60 Million barrels of oil from reserves around the world.  
-
-America will lead that effort, releasing 30 Million barrels from our own Strategic Petroleum Reserve. And we stand ready to do more if necessary, unified with our allies.  
-
-These steps will help blunt gas prices here at home. And I know the news about what’s happening can seem alarming. 
-
-But I want you to know that we are going to be okay. 
-
-When the history of this era is written Putin’s war on Ukraine will have left Russia weaker and the rest of the world stronger. 
-
-While it shouldn’t have taken something so terrible for people around the world to see what’s at stake now everyone sees it clearly.
-
-## Document 3
-
-We can’t change how divided we’ve been. But we can change how we move forward—on COVID-19 and other issues we must face together. 
-
-I recently visited the New York City Police Department days after the funerals of Officer Wilbert Mora and his partner, Officer Jason Rivera. 
-
-They were responding to a 9-1-1 call when a man shot and killed them with a stolen gun. 
-
-Officer Mora was 27 years old. 
-
-Officer Rivera was 22. 
-
-Both Dominican Americans who’d grown up on the same streets they later chose to patrol as police officers. 
-
-I spoke with their families and told them that we are forever in debt for their sacrifice, and we will carry on their mission to restore the trust and safety every community deserves. 
-
-I’ve worked on these issues a long time. 
-
-I know what works: Investing in crime prevention and community police officers who’ll walk the beat, who’ll know the neighborhood, and who can restore trust and safety.
-```
-
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

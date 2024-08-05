@@ -1,26 +1,24 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_transformers/beautiful_soup.ipynb
 ---
+
 # Beautiful Soup
 
->[Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/) is a Python package for parsing 
-> HTML and XML documents (including having malformed markup, i.e. non-closed tags, so named after tag soup). 
-> It creates a parse tree for parsed pages that can be used to extract data from HTML,[3] which 
-> is useful for web scraping.
+>[Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/) 是一个用于解析 HTML 和 XML 文档的 Python 包（包括处理格式错误的标记，即未闭合的标签，因此得名标签汤）。它为解析的页面创建一个解析树，可以用于从 HTML 中提取数据，这对于网络爬虫非常有用。
 
-`Beautiful Soup` offers fine-grained control over HTML content, enabling specific tag extraction, removal, and content cleaning. 
+`Beautiful Soup` 提供了对 HTML 内容的细粒度控制，使得特定标签的提取、移除和内容清理成为可能。
 
-It's suited for cases where you want to extract specific information and clean up the HTML content according to your needs.
+它适用于需要提取特定信息并根据需要清理 HTML 内容的情况。
 
-For example, we can scrape text content within `<p>, <li>, <div>, and <a>` tags from the HTML content:
+例如，我们可以从 HTML 内容中抓取 `<p>, <li>, <div>, 和 <a>` 标签内的文本内容：
 
-* `<p>`: The paragraph tag. It defines a paragraph in HTML and is used to group together related sentences and/or phrases.
+* `<p>`：段落标签。它在 HTML 中定义一个段落，用于将相关的句子和/或短语分组在一起。
  
-* `<li>`: The list item tag. It is used within ordered (`<ol>`) and unordered (`<ul>`) lists to define individual items within the list.
+* `<li>`：列表项标签。它用于有序（`<ol>`）和无序（`<ul>`）列表中，以定义列表中的单个项。
  
-* `<div>`: The division tag. It is a block-level element used to group other inline or block-level elements.
+* `<div>`：分区标签。它是一个块级元素，用于将其他内联或块级元素分组在一起。
  
-* `<a>`: The anchor tag. It is used to define hyperlinks.
+* `<a>`：锚点标签。它用于定义超链接。
 
 
 ```python
@@ -51,4 +49,3 @@ docs_transformed[0].page_content[0:500]
 ```output
 'Conservative legal activists are challenging Amazon, Comcast and others using many of the same tools that helped kill affirmative-action programs in colleges.1,2099 min read U.S. stock indexes fell and government-bond prices climbed, after Moody’s lowered credit ratings for 10 smaller U.S. banks and said it was reviewing ratings for six larger ones. The Dow industrials dropped more than 150 points.3 min read Penn Entertainment’s Barstool Sportsbook app will be rebranded as ESPN Bet this fall as '
 ```
-

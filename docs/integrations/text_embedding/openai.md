@@ -2,13 +2,14 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/openai.ipynb
 keywords: [openaiembeddings]
 ---
+
 # OpenAI
 
-Let's load the OpenAI Embedding class.
+让我们加载 OpenAI Embedding 类。
 
-## Setup
+## 设置
 
-First we install langchain-openai and set the required env vars
+首先，我们安装 langchain-openai 并设置所需的环境变量
 
 
 ```python
@@ -38,15 +39,16 @@ embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
 text = "This is a test document."
 ```
 
-## Usage
-### Embed query
+## 用法
+
+### 嵌入查询
 
 
 ```python
 query_result = embeddings.embed_query(text)
 ```
 ```output
-Warning: model not found. Using cl100k_base encoding.
+警告：未找到模型。使用 cl100k_base 编码。
 ```
 
 ```python
@@ -63,15 +65,14 @@ query_result[:5]
  -0.022267658631828974]
 ```
 
-
-## Embed documents
+## 嵌入文档
 
 
 ```python
 doc_result = embeddings.embed_documents([text])
 ```
 ```output
-Warning: model not found. Using cl100k_base encoding.
+警告：未找到模型。使用 cl100k_base 编码。
 ```
 
 ```python
@@ -88,10 +89,9 @@ doc_result[0][:5]
  -0.022267658631828974]
 ```
 
+## 指定维度
 
-## Specify dimensions
-
-With the `text-embedding-3` class of models, you can specify the size of the embeddings you want returned. For example by default `text-embedding-3-large` returned embeddings of dimension 3072:
+使用 `text-embedding-3` 类模型，您可以指定希望返回的嵌入大小。例如，默认情况下 `text-embedding-3-large` 返回维度为 3072 的嵌入：
 
 
 ```python
@@ -105,7 +105,7 @@ len(doc_result[0])
 ```
 
 
-But by passing in `dimensions=1024` we can reduce the size of our embeddings to 1024:
+但是通过传入 `dimensions=1024`，我们可以将嵌入的大小减少到 1024：
 
 
 ```python
@@ -125,9 +125,7 @@ Warning: model not found. Using cl100k_base encoding.
 1024
 ```
 
+## 相关
 
-
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

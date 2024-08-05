@@ -1,35 +1,36 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/chat_token_usage_tracking.ipynb
 ---
-# How to track token usage in ChatModels
 
-:::info Prerequisites
+# 如何跟踪 ChatModels 中的令牌使用情况
 
-This guide assumes familiarity with the following concepts:
-- [Chat models](/docs/concepts/#chat-models)
+:::info 前提条件
+
+本指南假设您熟悉以下概念：
+- [聊天模型](/docs/concepts/#chat-models)
 
 :::
 
-Tracking token usage to calculate cost is an important part of putting your app in production. This guide goes over how to obtain this information from your LangChain model calls.
+跟踪令牌使用情况以计算成本是将您的应用投入生产的重要部分。本指南将介绍如何从您的 LangChain 模型调用中获取此信息。
 
-This guide requires `langchain-openai >= 0.1.9`.
+本指南需要 `langchain-openai >= 0.1.9`。
 
 
 ```python
 %pip install --upgrade --quiet langchain langchain-openai
 ```
 
-## Using LangSmith
+## 使用 LangSmith
 
-You can use [LangSmith](https://www.langchain.com/langsmith) to help track token usage in your LLM application. See the [LangSmith quick start guide](https://docs.smith.langchain.com/).
+您可以使用 [LangSmith](https://www.langchain.com/langsmith) 来帮助跟踪您 LLM 应用中的令牌使用情况。请参阅 [LangSmith 快速入门指南](https://docs.smith.langchain.com/)。
 
-## Using AIMessage.usage_metadata
+## 使用 AIMessage.usage_metadata
 
-A number of model providers return token usage information as part of the chat generation response. When available, this information will be included on the `AIMessage` objects produced by the corresponding model.
+许多模型提供者将令牌使用信息作为聊天生成响应的一部分返回。在可用时，这些信息将包含在相应模型生成的 `AIMessage` 对象中。
 
-LangChain `AIMessage` objects include a [usage_metadata](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessage.html#langchain_core.messages.ai.AIMessage.usage_metadata) attribute. When populated, this attribute will be a [UsageMetadata](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.UsageMetadata.html) dictionary with standard keys (e.g., `"input_tokens"` and `"output_tokens"`).
+LangChain 的 `AIMessage` 对象包含一个 [usage_metadata](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessage.html#langchain_core.messages.ai.AIMessage.usage_metadata) 属性。当该属性被填充时，它将是一个带有标准键（例如，`"input_tokens"` 和 `"output_tokens"`）的 [UsageMetadata](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.UsageMetadata.html) 字典。
 
-Examples:
+示例：
 
 **OpenAI**:
 
@@ -70,11 +71,9 @@ anthropic_response.usage_metadata
 {'input_tokens': 8, 'output_tokens': 12, 'total_tokens': 20}
 ```
 
+### 使用 AIMessage.response_metadata
 
-### Using AIMessage.response_metadata
-
-Metadata from the model response is also included in the AIMessage [response_metadata](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessage.html#langchain_core.messages.ai.AIMessage.response_metadata) attribute. These data are typically not standardized. Note that different providers adopt different conventions for representing token counts:
-
+模型响应的元数据也包含在 AIMessage [response_metadata](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessage.html#langchain_core.messages.ai.AIMessage.response_metadata) 属性中。这些数据通常没有标准化。请注意，不同的提供者采用不同的约定来表示令牌计数：
 
 ```python
 print(f'OpenAI: {openai_response.response_metadata["token_usage"]}\n')
@@ -85,16 +84,17 @@ OpenAI: {'completion_tokens': 9, 'prompt_tokens': 8, 'total_tokens': 17}
 
 Anthropic: {'input_tokens': 8, 'output_tokens': 12}
 ```
-### Streaming
 
-Some providers support token count metadata in a streaming context.
+### 流式传输
+
+一些提供者在流式传输上下文中支持令牌计数元数据。
 
 #### OpenAI
 
-For example, OpenAI will return a message [chunk](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessageChunk.html) at the end of a stream with token usage information. This behavior is supported by `langchain-openai >= 0.1.9` and can be enabled by setting `stream_usage=True`. This attribute can also be set when `ChatOpenAI` is instantiated.
+例如，OpenAI将在流结束时返回一个消息 [chunk](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessageChunk.html)，其中包含令牌使用信息。此行为由 `langchain-openai >= 0.1.9` 支持，并可以通过设置 `stream_usage=True` 来启用。该属性也可以在实例化 `ChatOpenAI` 时设置。
 
 :::note
-By default, the last message chunk in a stream will include a `"finish_reason"` in the message's `response_metadata` attribute. If we include token usage in streaming mode, an additional chunk containing usage metadata will be added to the end of the stream, such that `"finish_reason"` appears on the second to last message chunk.
+默认情况下，流中的最后一个消息块将在消息的 `response_metadata` 属性中包含 `"finish_reason"`。如果我们在流式模式中包含令牌使用情况，则会在流的末尾添加一个包含使用元数据的附加块，使得 `"finish_reason"` 出现在倒数第二个消息块上。
 :::
 
 
@@ -120,7 +120,7 @@ content='?' id='run-adb20c31-60c7-43a2-99b2-d4a53ca5f623'
 content='' response_metadata={'finish_reason': 'stop', 'model_name': 'gpt-3.5-turbo-0125'} id='run-adb20c31-60c7-43a2-99b2-d4a53ca5f623'
 content='' id='run-adb20c31-60c7-43a2-99b2-d4a53ca5f623' usage_metadata={'input_tokens': 8, 'output_tokens': 9, 'total_tokens': 17}
 ```
-Note that the usage metadata will be included in the sum of the individual message chunks:
+请注意，使用元数据将包含在各个消息块的总和中：
 
 
 ```python
@@ -131,7 +131,7 @@ print(aggregate.usage_metadata)
 Hello! How can I assist you today?
 {'input_tokens': 8, 'output_tokens': 9, 'total_tokens': 17}
 ```
-To disable streaming token counts for OpenAI, set `stream_usage` to False, or omit it from the parameters:
+要禁用 OpenAI 的流式令牌计数，请将 `stream_usage` 设置为 False，或将其从参数中省略：
 
 
 ```python
@@ -152,9 +152,9 @@ content=' today' id='run-8e758550-94b0-4cca-a298-57482793c25d'
 content='?' id='run-8e758550-94b0-4cca-a298-57482793c25d'
 content='' response_metadata={'finish_reason': 'stop', 'model_name': 'gpt-3.5-turbo-0125'} id='run-8e758550-94b0-4cca-a298-57482793c25d'
 ```
-You can also enable streaming token usage by setting `stream_usage` when instantiating the chat model. This can be useful when incorporating chat models into LangChain [chains](/docs/concepts#langchain-expression-language-lcel): usage metadata can be monitored when [streaming intermediate steps](/docs/how_to/streaming#using-stream-events) or using tracing software such as [LangSmith](https://docs.smith.langchain.com/).
+您还可以通过在实例化聊天模型时设置 `stream_usage` 来启用流式令牌使用。这在将聊天模型纳入 LangChain [链](/docs/concepts#langchain-expression-language-lcel) 时非常有用：可以在 [流式中间步骤](/docs/how_to/streaming#using-stream-events) 或使用 [LangSmith](https://docs.smith.langchain.com/) 等跟踪软件时监控使用元数据。
 
-See the below example, where we return output structured to a desired schema, but can still observe token usage streamed from intermediate steps.
+请参见以下示例，我们返回结构化为所需模式的输出，但仍然可以观察到从中间步骤流式传输的令牌使用情况。
 
 
 ```python
@@ -162,42 +162,42 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 
 
 class Joke(BaseModel):
-    """Joke to tell user."""
+    """给用户讲笑话。"""
 
-    setup: str = Field(description="question to set up a joke")
-    punchline: str = Field(description="answer to resolve the joke")
+    setup: str = Field(description="设置笑话的问题")
+    punchline: str = Field(description="解决笑话的答案")
 
 
 llm = ChatOpenAI(
     model="gpt-3.5-turbo-0125",
     stream_usage=True,
 )
-# Under the hood, .with_structured_output binds tools to the
-# chat model and appends a parser.
+# 在内部，.with_structured_output 将工具绑定到
+# 聊天模型并附加解析器。
 structured_llm = llm.with_structured_output(Joke)
 
 async for event in structured_llm.astream_events("Tell me a joke", version="v2"):
     if event["event"] == "on_chat_model_end":
-        print(f'Token usage: {event["data"]["output"].usage_metadata}\n')
+        print(f'令牌使用情况: {event["data"]["output"].usage_metadata}\n')
     elif event["event"] == "on_chain_end":
         print(event["data"]["output"])
     else:
         pass
 ```
 ```output
-Token usage: {'input_tokens': 79, 'output_tokens': 23, 'total_tokens': 102}
+令牌使用情况: {'input_tokens': 79, 'output_tokens': 23, 'total_tokens': 102}
 
-setup='Why was the math book sad?' punchline='Because it had too many problems.'
+setup='为什么数学书很伤心？' punchline='因为它有太多问题。'
 ```
-Token usage is also visible in the corresponding [LangSmith trace](https://smith.langchain.com/public/fe6513d5-7212-4045-82e0-fefa28bc7656/r) in the payload from the chat model.
+令牌使用情况在来自聊天模型的有效负载中的相应 [LangSmith 跟踪](https://smith.langchain.com/public/fe6513d5-7212-4045-82e0-fefa28bc7656/r) 中也可见。
 
-## Using callbacks
+## 使用回调
 
-There are also some API-specific callback context managers that allow you to track token usage across multiple calls. It is currently only implemented for the OpenAI API and Bedrock Anthropic API.
+还有一些特定于 API 的回调上下文管理器，可以让您跟踪多次调用中的令牌使用情况。目前仅为 OpenAI API 和 Bedrock Anthropic API 实现。
 
 ### OpenAI
 
-Let's first look at an extremely simple example of tracking token usage for a single Chat model call.
+让我们先来看一个极其简单的示例，跟踪单个 Chat 模型调用的令牌使用情况。
 
 
 ```python
@@ -222,7 +222,7 @@ Tokens Used: 27
 Successful Requests: 1
 Total Cost (USD): $2.95e-05
 ```
-Anything inside the context manager will get tracked. Here's an example of using it to track multiple calls in sequence.
+上下文管理器中的任何内容都将被跟踪。以下是使用它按顺序跟踪多个调用的示例。
 
 
 ```python
@@ -248,7 +248,7 @@ Tokens Used: 27
 Successful Requests: 1
 Total Cost (USD): $2.95e-05
 ```
-If a chain or agent with multiple steps in it is used, it will track all those steps.
+如果使用包含多个步骤的链或代理，它将跟踪所有这些步骤。
 
 
 ```python
@@ -325,10 +325,10 @@ Prompt Tokens: 1538
 Completion Tokens: 137
 Total Cost (USD): $0.0009745000000000001
 ```
+
 ### Bedrock Anthropic
 
-The `get_bedrock_anthropic_callback` works very similarly:
-
+`get_bedrock_anthropic_callback` 的工作方式非常相似：
 
 ```python
 # !pip install langchain-aws
@@ -349,8 +349,9 @@ Tokens Used: 96
 Successful Requests: 2
 Total Cost (USD): $0.001888
 ```
-## Next steps
 
-You've now seen a few examples of how to track token usage for supported providers.
+## 下一步
 
-Next, check out the other how-to guides chat models in this section, like [how to get a model to return structured output](/docs/how_to/structured_output) or [how to add caching to your chat models](/docs/how_to/chat_model_caching).
+您现在已经看到了一些如何跟踪支持的提供者的令牌使用情况的示例。
+
+接下来，请查看本节中其他的聊天模型操作指南，例如 [如何让模型返回结构化输出](/docs/how_to/structured_output) 或 [如何为您的聊天模型添加缓存](/docs/how_to/chat_model_caching)。

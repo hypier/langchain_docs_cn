@@ -1,130 +1,128 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/llamacpp.ipynb
 ---
+
 # Llama.cpp
 
-[llama-cpp-python](https://github.com/abetlen/llama-cpp-python) is a Python binding for [llama.cpp](https://github.com/ggerganov/llama.cpp).
+[llama-cpp-python](https://github.com/abetlen/llama-cpp-python) 是 [llama.cpp](https://github.com/ggerganov/llama.cpp) 的 Python 绑定。
 
-It supports inference for [many LLMs](https://github.com/ggerganov/llama.cpp#description) models, which can be accessed on [Hugging Face](https://huggingface.co/TheBloke).
+它支持对 [许多 LLMs](https://github.com/ggerganov/llama.cpp#description) 模型的推理，这些模型可以在 [Hugging Face](https://huggingface.co/TheBloke) 上访问。
 
-This notebook goes over how to run `llama-cpp-python` within LangChain.
+本笔记本介绍了如何在 LangChain 中运行 `llama-cpp-python`。
 
-**Note: new versions of `llama-cpp-python` use GGUF model files (see [here](https://github.com/abetlen/llama-cpp-python/pull/633)).**
+**注意：`llama-cpp-python` 的新版本使用 GGUF 模型文件（见 [这里](https://github.com/abetlen/llama-cpp-python/pull/633)）。**
 
-This is a breaking change.
- 
-To convert existing GGML models to GGUF you can run the following in [llama.cpp](https://github.com/ggerganov/llama.cpp):
+这是一个重大变更。
+
+要将现有的 GGML 模型转换为 GGUF，您可以在 [llama.cpp](https://github.com/ggerganov/llama.cpp) 中运行以下命令：
 
 ```
 python ./convert-llama-ggmlv3-to-gguf.py --eps 1e-5 --input models/openorca-platypus2-13b.ggmlv3.q4_0.bin --output models/openorca-platypus2-13b.gguf.q4_0.bin
 ```
 
-## Installation
+## 安装
 
-There are different options on how to install the llama-cpp package: 
-- CPU usage
-- CPU + GPU (using one of many BLAS backends)
-- Metal GPU (MacOS with Apple Silicon Chip) 
+有多种安装 llama-cpp 包的选项：
+- CPU 使用
+- CPU + GPU（使用众多 BLAS 后端之一）
+- Metal GPU（适用于搭载 Apple Silicon 芯片的 MacOS）
 
-### CPU only installation
+### 仅 CPU 安装
 
 
 ```python
 %pip install --upgrade --quiet  llama-cpp-python
 ```
 
-### Installation with OpenBLAS / cuBLAS / CLBlast
+### 使用 OpenBLAS / cuBLAS / CLBlast 安装
 
-`llama.cpp` supports multiple BLAS backends for faster processing. Use the `FORCE_CMAKE=1` environment variable to force the use of cmake and install the pip package for the desired BLAS backend ([source](https://github.com/abetlen/llama-cpp-python#installation-with-openblas--cublas--clblast)).
+`llama.cpp` 支持多个 BLAS 后端以实现更快的处理速度。使用 `FORCE_CMAKE=1` 环境变量强制使用 cmake 并安装所需 BLAS 后端的 pip 包 ([source](https://github.com/abetlen/llama-cpp-python#installation-with-openblas--cublas--clblast))。
 
-Example installation with cuBLAS backend:
+使用 cuBLAS 后端的示例安装：
 
 
 ```python
 !CMAKE_ARGS="-DLLAMA_CUBLAS=on" FORCE_CMAKE=1 pip install llama-cpp-python
 ```
 
-**IMPORTANT**: If you have already installed the CPU only version of the package, you need to reinstall it from scratch. Consider the following command: 
+**重要**：如果您已经安装了仅支持 CPU 的版本，您需要从头重新安装。请考虑以下命令： 
 
 
 ```python
 !CMAKE_ARGS="-DLLAMA_CUBLAS=on" FORCE_CMAKE=1 pip install --upgrade --force-reinstall llama-cpp-python --no-cache-dir
 ```
 
-### Installation with Metal
+### 使用 Metal 安装
 
-`llama.cpp` supports Apple silicon first-class citizen - optimized via ARM NEON, Accelerate and Metal frameworks. Use the `FORCE_CMAKE=1` environment variable to force the use of cmake and install the pip package for the Metal support ([source](https://github.com/abetlen/llama-cpp-python/blob/main/docs/install/macos.md)).
+`llama.cpp` 支持 Apple silicon 的第一公民 - 通过 ARM NEON、Accelerate 和 Metal 框架进行了优化。使用 `FORCE_CMAKE=1` 环境变量强制使用 cmake 并安装支持 Metal 的 pip 包 ([source](https://github.com/abetlen/llama-cpp-python/blob/main/docs/install/macos.md))。
 
-Example installation with Metal Support:
+使用 Metal 支持的示例安装：
 
 
 ```python
 !CMAKE_ARGS="-DLLAMA_METAL=on" FORCE_CMAKE=1 pip install llama-cpp-python
 ```
 
-**IMPORTANT**: If you have already installed a cpu only version of the package, you need to reinstall it from scratch: consider the following command: 
+**重要**：如果您已经安装了仅支持 CPU 的版本，您需要从头开始重新安装：考虑以下命令： 
 
 
 ```python
 !CMAKE_ARGS="-DLLAMA_METAL=on" FORCE_CMAKE=1 pip install --upgrade --force-reinstall llama-cpp-python --no-cache-dir
 ```
 
-### Installation with Windows
+### 在Windows上安装
 
-It is stable to install the `llama-cpp-python` library by compiling from the source. You can follow most of the instructions in the repository itself but there are some windows specific instructions which might be useful.
+通过从源代码编译来安装`llama-cpp-python`库是稳定的。您可以遵循仓库中的大部分说明，但有一些特定于Windows的说明可能会很有用。
 
-Requirements to install the `llama-cpp-python`,
+安装`llama-cpp-python`的要求：
 
 - git
 - python
 - cmake
-- Visual Studio Community (make sure you install this with the following settings)
-    - Desktop development with C++
-    - Python development
-    - Linux embedded development with C++
+- Visual Studio Community（确保您使用以下设置进行安装）
+    - C++桌面开发
+    - Python开发
+    - C++嵌入式Linux开发
 
-1. Clone git repository recursively to get `llama.cpp` submodule as well 
+1. 递归克隆git仓库以获取`llama.cpp`子模块
 
 ```
 git clone --recursive -j8 https://github.com/abetlen/llama-cpp-python.git
 ```
 
-2. Open up a command Prompt and set the following environment variables.
-
+2. 打开命令提示符并设置以下环境变量。
 
 ```
 set FORCE_CMAKE=1
 set CMAKE_ARGS=-DLLAMA_CUBLAS=OFF
 ```
-If you have an NVIDIA GPU make sure `DLLAMA_CUBLAS` is set to `ON`
+如果您有NVIDIA GPU，请确保将`DLLAMA_CUBLAS`设置为`ON`
 
-#### Compiling and installing
+#### 编译和安装
 
-Now you can `cd` into the `llama-cpp-python` directory and install the package
+现在您可以`cd`进入`llama-cpp-python`目录并安装该包
 
 ```
 python -m pip install -e .
 ```
 
-**IMPORTANT**: If you have already installed a cpu only version of the package, you need to reinstall it from scratch: consider the following command: 
-
+**重要**：如果您已经安装了仅限CPU的版本，您需要从头重新安装：考虑以下命令：
 
 ```python
 !python -m pip install -e . --force-reinstall --no-cache-dir
 ```
 
-## Usage
+## 使用方法
 
-Make sure you are following all instructions to [install all necessary model files](https://github.com/ggerganov/llama.cpp).
+确保您遵循所有说明以[安装所有必要的模型文件](https://github.com/ggerganov/llama.cpp)。
 
-You don't need an `API_TOKEN` as you will run the LLM locally.
+您不需要 `API_TOKEN`，因为您将本地运行 LLM。
 
-It is worth understanding which models are suitable to be used on the desired machine.
+了解哪些模型适合在所需机器上使用是值得的。
 
-[TheBloke's](https://huggingface.co/TheBloke) Hugging Face models have a `Provided files` section that exposes the RAM required to run models of different quantisation sizes and methods (eg: [Llama2-7B-Chat-GGUF](https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF#provided-files)).
+[TheBloke's](https://huggingface.co/TheBloke) Hugging Face 模型有一个 `Provided files` 部分，展示了运行不同量化大小和方法的模型所需的 RAM（例如：[Llama2-7B-Chat-GGUF](https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF#provided-files)）。
 
-This [github issue](https://github.com/facebookresearch/llama/issues/425) is also relevant to find the right model for your machine.
-
+这个 [github issue](https://github.com/facebookresearch/llama/issues/425) 也与找到适合您机器的正确模型相关。
 
 ```python
 from langchain_community.llms import LlamaCpp
@@ -132,8 +130,7 @@ from langchain_core.callbacks import CallbackManager, StreamingStdOutCallbackHan
 from langchain_core.prompts import PromptTemplate
 ```
 
-**Consider using a template that suits your model! Check the models page on Hugging Face etc. to get a correct prompting template.**
-
+**考虑使用适合您模型的模板！请查看 Hugging Face 等的模型页面以获取正确的提示模板。**
 
 ```python
 template = """Question: {question}
@@ -143,7 +140,6 @@ Answer: Let's work this out in a step by step way to be sure we have the right a
 prompt = PromptTemplate.from_template(template)
 ```
 
-
 ```python
 # Callbacks support token-wise streaming
 callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
@@ -151,7 +147,7 @@ callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
 
 ### CPU
 
-Example using a LLaMA 2 7B model
+使用 LLaMA 2 7B 模型的示例
 
 
 ```python
@@ -203,7 +199,7 @@ llama_print_timings:       total time = 11332.41 ms
 ```
 
 
-Example using a LLaMA v1 model
+使用 LLaMA v1 模型的示例
 
 
 ```python
@@ -245,18 +241,16 @@ llama_print_timings:       total time = 28945.95 ms
 '\n\n1. First, find out when Justin Bieber was born.\n2. We know that Justin Bieber was born on March 1, 1994.\n3. Next, we need to look up when the Super Bowl was played in that year.\n4. The Super Bowl was played on January 28, 1995.\n5. Finally, we can use this information to answer the question. The NFL team that won the Super Bowl in the year Justin Bieber was born is the San Francisco 49ers.'
 ```
 
-
 ### GPU
 
-If the installation with BLAS backend was correct, you will see a `BLAS = 1` indicator in model properties.
+如果使用 BLAS 后端的安装正确，您将在模型属性中看到 `BLAS = 1` 指示器。
 
-Two of the most important parameters for use with GPU are:
+与 GPU 一起使用的两个最重要的参数是：
 
-- `n_gpu_layers` - determines how many layers of the model are offloaded to your GPU.
-- `n_batch` - how many tokens are processed in parallel. 
+- `n_gpu_layers` - 确定有多少层模型被卸载到您的 GPU 上。
+- `n_batch` - 同时处理多少个 tokens。
 
-Setting these parameters correctly will dramatically improve the evaluation speed (see [wrapper code](https://github.com/langchain-ai/langchain/blob/master/libs/community/langchain_community/llms/llamacpp.py) for more details).
-
+正确设置这些参数将显著提高评估速度（有关更多详细信息，请参见 [wrapper code](https://github.com/langchain-ai/langchain/blob/master/libs/community/langchain_community/llms/llamacpp.py)）。
 
 ```python
 n_gpu_layers = -1  # The number of layers to put on the GPU. The rest will be on the CPU. If you don't know how many layers there are, you can use -1 to move all to GPU.
@@ -271,7 +265,6 @@ llm = LlamaCpp(
     verbose=True,  # Verbose is required to pass to the callback manager
 )
 ```
-
 
 ```python
 llm_chain = prompt | llm
@@ -297,25 +290,21 @@ llama_print_timings:        eval time =  4526.53 ms /   163 runs   (   27.77 ms 
 llama_print_timings:       total time =  5293.77 ms
 ```
 
-
 ```output
 "\n\n1. Identify Justin Bieber's birth date: Justin Bieber was born on March 1, 1994.\n\n2. Find the Super Bowl winner of that year: The NFL season of 1993 with the Super Bowl being played in January or of 1994.\n\n3. Determine which team won the game: The Dallas Cowboys faced the Buffalo Bills in Super Bowl XXVII on January 31, 1993 (as the year is mis-labelled due to a error). The Dallas Cowboys won this matchup.\n\nSo, Justin Bieber was born when the Dallas Cowboys were the reigning NFL Super Bowl."
 ```
 
-
 ### Metal
 
-If the installation with Metal was correct, you will see a `NEON = 1` indicator in model properties.
+如果 Metal 的安装正确，您将在模型属性中看到 `NEON = 1` 指示器。
 
-Two of the most important GPU parameters are:
+两个最重要的 GPU 参数是：
 
-- `n_gpu_layers` - determines how many layers of the model are offloaded to your Metal GPU.
-- `n_batch` - how many tokens are processed in parallel, default is 8, set to bigger number.
-- `f16_kv` - for some reason, Metal only support `True`, otherwise you will get error such as `Asserting on type 0
-GGML_ASSERT: .../ggml-metal.m:706: false && "not implemented"`
+- `n_gpu_layers` - 确定有多少层模型被卸载到您的 Metal GPU。
+- `n_batch` - 并行处理的令牌数量，默认是 8，可以设置为更大的数字。
+- `f16_kv` - 出于某种原因，Metal 仅支持 `True`，否则您会遇到错误，例如 `Asserting on type 0 GGML_ASSERT: .../ggml-metal.m:706: false && "not implemented"`
 
-Setting these parameters correctly will dramatically improve the evaluation speed (see [wrapper code](https://github.com/langchain-ai/langchain/blob/master/libs/community/langchain_community/llms/llamacpp.py) for more details).
-
+正确设置这些参数将显著提高评估速度（有关更多详细信息，请参见 [wrapper code](https://github.com/langchain-ai/langchain/blob/master/libs/community/langchain_community/llms/llamacpp.py)）。
 
 ```python
 n_gpu_layers = 1  # The number of layers to put on the GPU. The rest will be on the CPU. If you don't know how many layers there are, you can use -1 to move all to GPU.
@@ -331,7 +320,7 @@ llm = LlamaCpp(
 )
 ```
 
-The console log will show the following log to indicate Metal was enable properly.
+控制台日志将显示以下日志以指示 Metal 已正确启用。
 
 ```
 ggml_metal_init: allocating
@@ -339,22 +328,21 @@ ggml_metal_init: using MPS
 ...
 ```
 
-You also could check `Activity Monitor` by watching the GPU usage of the process, the CPU usage will drop dramatically after turn on `n_gpu_layers=1`. 
+您还可以通过监视进程的 GPU 使用情况来检查 `Activity Monitor`，开启 `n_gpu_layers=1` 后 CPU 使用率将显著下降。
 
-For the first call to the LLM, the performance may be slow due to the model compilation in Metal GPU.
+对于第一次调用 LLM，性能可能较慢，因为模型在 Metal GPU 中进行编译。
 
-### Grammars
+### 语法
 
-We can use [grammars](https://github.com/ggerganov/llama.cpp/blob/master/grammars/README.md) to constrain model outputs and sample tokens based on the rules defined in them.
+我们可以使用 [语法](https://github.com/ggerganov/llama.cpp/blob/master/grammars/README.md) 来限制模型输出，并根据其中定义的规则采样令牌。
 
-To demonstrate this concept, we've included [sample grammar files](https://github.com/langchain-ai/langchain/tree/master/libs/langchain/langchain/llms/grammars), that will be used in the examples below.
+为了演示这个概念，我们包含了 [示例语法文件](https://github.com/langchain-ai/langchain/tree/master/libs/langchain/langchain/llms/grammars)，将在下面的示例中使用。
 
-Creating gbnf grammar files can be time-consuming, but if you have a use-case where output schemas are important, there are two tools that can help:
-- [Online grammar generator app](https://grammar.intrinsiclabs.ai/) that converts TypeScript interface definitions to gbnf file.
-- [Python script](https://github.com/ggerganov/llama.cpp/blob/master/examples/json-schema-to-grammar.py) for converting json schema to gbnf file. You can for example create `pydantic` object, generate its JSON schema using `.schema_json()` method, and then use this script to convert it to gbnf file.
+创建 gbnf 语法文件可能会耗时，但如果您有输出模式重要的用例，有两个工具可以帮助您：
+- [在线语法生成应用](https://grammar.intrinsiclabs.ai/) 可以将 TypeScript 接口定义转换为 gbnf 文件。
+- [Python 脚本](https://github.com/ggerganov/llama.cpp/blob/master/examples/json-schema-to-grammar.py) 用于将 json schema 转换为 gbnf 文件。例如，您可以创建 `pydantic` 对象，使用 `.schema_json()` 方法生成其 JSON schema，然后使用这个脚本将其转换为 gbnf 文件。
 
-In the first example, supply the path to the specified `json.gbnf` file in order to produce JSON:
-
+在第一个示例中，提供指定的 `json.gbnf` 文件的路径以生成 JSON：
 
 ```python
 n_gpu_layers = 1  # The number of layers to put on the GPU. The rest will be on the CPU. If you don't know how many layers there are, you can use -1 to move all to GPU.
@@ -370,7 +358,6 @@ llm = LlamaCpp(
     grammar_path="/Users/rlm/Desktop/Code/langchain-main/langchain/libs/langchain/langchain/llms/grammars/json.gbnf",
 )
 ```
-
 
 ```python
 %%capture captured --no-stdout
@@ -404,8 +391,7 @@ llama_print_timings: prompt eval time =   356.78 ms /     9 tokens (   39.64 ms 
 llama_print_timings:        eval time =  3947.16 ms /   143 runs   (   27.60 ms per token,    36.23 tokens per second)
 llama_print_timings:       total time =  5846.21 ms
 ```
-We can also supply `list.gbnf` to return a list:
-
+我们还可以提供 `list.gbnf` 来返回一个列表：
 
 ```python
 n_gpu_layers = 1
@@ -420,7 +406,6 @@ llm = LlamaCpp(
     grammar_path="/Users/rlm/Desktop/Code/langchain-main/langchain/libs/langchain/langchain/llms/grammars/list.gbnf",
 )
 ```
-
 
 ```python
 %%capture captured --no-stdout
@@ -437,7 +422,7 @@ llama_print_timings:        eval time =   680.82 ms /    25 runs   (   27.23 ms 
 llama_print_timings:       total time =  1295.27 ms
 ```
 
-## Related
+## 相关
 
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

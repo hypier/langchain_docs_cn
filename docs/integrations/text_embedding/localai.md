@@ -1,9 +1,10 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/localai.ipynb
 ---
+
 # LocalAI
 
-Let's load the LocalAI Embedding class. In order to use the LocalAI Embedding class, you need to have the LocalAI service hosted somewhere and configure the embedding models. See the documentation at https://localai.io/basics/getting_started/index.html and https://localai.io/features/embeddings/index.html.
+让我们加载 LocalAI Embedding 类。要使用 LocalAI Embedding 类，您需要在某处托管 LocalAI 服务并配置嵌入模型。请参阅文档 https://localai.io/basics/getting_started/index.html 和 https://localai.io/features/embeddings/index.html。
 
 
 ```python
@@ -32,7 +33,7 @@ query_result = embeddings.embed_query(text)
 doc_result = embeddings.embed_documents([text])
 ```
 
-Let's load the LocalAI Embedding class with first generation models (e.g. text-search-ada-doc-001/text-search-ada-query-001). Note: These are not recommended models - see [here](https://platform.openai.com/docs/guides/embeddings/what-are-embeddings)
+让我们使用第一代模型（例如 text-search-ada-doc-001/text-search-ada-query-001）加载 LocalAI Embedding 类。注意：这些模型不推荐使用 - 请参见 [这里](https://platform.openai.com/docs/guides/embeddings/what-are-embeddings)
 
 
 ```python
@@ -69,8 +70,7 @@ import os
 os.environ["OPENAI_PROXY"] = "http://proxy.yourcompany.com:8080"
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

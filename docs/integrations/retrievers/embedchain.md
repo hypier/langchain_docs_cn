@@ -1,34 +1,34 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/embedchain.ipynb
 ---
+
 # Embedchain
 
->[Embedchain](https://github.com/embedchain/embedchain) is a RAG framework to create data pipelines. It loads, indexes, retrieves and syncs all the data.
+>[Embedchain](https://github.com/embedchain/embedchain) 是一个用于创建数据管道的 RAG 框架。它加载、索引、检索和同步所有数据。
 >
->It is available as an [open source package](https://github.com/embedchain/embedchain) and as a [hosted platform solution](https://app.embedchain.ai/).
+>它作为一个 [开源包](https://github.com/embedchain/embedchain) 和一个 [托管平台解决方案](https://app.embedchain.ai/) 可用。
 
-This notebook shows how to use a retriever that uses `Embedchain`.
+本笔记本展示了如何使用一个使用 `Embedchain` 的检索器。
 
-# Installation
+# 安装
 
-First you will need to install the [`embedchain` package](https://pypi.org/project/embedchain/). 
+首先，您需要安装 [`embedchain` 包](https://pypi.org/project/embedchain/)。 
 
-You can install the package by running 
+您可以通过运行以下命令来安装该包：
 
 
 ```python
 %pip install --upgrade --quiet  embedchain
 ```
 
-# Create New Retriever
+# 创建新检索器
 
-`EmbedchainRetriever` has a static `.create()` factory method that takes the following arguments:
+`EmbedchainRetriever` 有一个静态的 `.create()` 工厂方法，接受以下参数：
 
-* `yaml_path: string` optional -- Path to the YAML configuration file. If not provided, a default configuration is used. You can browse the [docs](https://docs.embedchain.ai/) to explore various customization options.
-
+* `yaml_path: string` 可选 -- YAML 配置文件的路径。如果未提供，将使用默认配置。您可以浏览 [docs](https://docs.embedchain.ai/) 来探索各种自定义选项。
 
 ```python
-# Setup API Key
+# 设置 API 密钥
 
 import os
 from getpass import getpass
@@ -42,19 +42,18 @@ os.environ["OPENAI_API_KEY"] = getpass()
 ```python
 from langchain_community.retrievers import EmbedchainRetriever
 
-# create a retriever with default options
+# 使用默认选项创建检索器
 retriever = EmbedchainRetriever.create()
 
-# or if you want to customize, pass the yaml config path
+# 或者如果您想自定义，请传递 yaml 配置路径
 # retriever = EmbedchainRetiever.create(yaml_path="config.yaml")
 ```
 
-# Add Data
+# 添加数据
 
-In embedchain, you can as many supported data types as possible. You can browse our [docs](https://docs.embedchain.ai/) to see the data types supported.
+在 embedchain 中，您可以添加尽可能多的支持的数据类型。您可以浏览我们的 [文档](https://docs.embedchain.ai/) 以查看支持的数据类型。
 
-Embedchain automatically deduces the types of the data. So you can add a string, URL or local file path.
-
+Embedchain 会自动推断数据的类型。因此，您可以添加字符串、URL 或本地文件路径。
 
 ```python
 retriever.add_texts(
@@ -88,22 +87,17 @@ Successfully saved https://www.youtube.com/watch?v=RcYjXbSJBN8 (DataType.YOUTUBE
  'da3227cdbcedb018e05c47b774d625f6']
 ```
 
+# 使用检索器
 
-# Use Retriever
-
-You can now use the retrieve to find relevant documents given a query
-
+您现在可以使用检索器根据查询找到相关文档
 
 ```python
 result = retriever.invoke("How many companies does Elon Musk run and name those?")
 ```
 
-
 ```python
 result
 ```
-
-
 
 ```output
 [Document(page_content='Views Filmography Companies Zip2 X.com PayPal SpaceX Starlink Tesla, Inc. Energycriticismlitigation OpenAI Neuralink The Boring Company Thud X Corp. Twitteracquisitiontenure as CEO xAI In popular culture Elon Musk (Isaacson) Elon Musk (Vance) Ludicrous Power Play "Members Only" "The Platonic Permutation" "The Musk Who Fell to Earth" "One Crew over the Crewcoo\'s Morty" Elon Musk\'s Crash Course Related Boring Test Tunnel Hyperloop Musk family Musk vs. Zuckerberg SolarCity Tesla Roadster in space', metadata={'source': 'https://en.wikipedia.org/wiki/Elon_Musk', 'document_id': 'c33c05d0-5028-498b-b5e3-c43a4f9e8bf8--3342161a0fbc19e91f6bf387204aa30fbb2cea05abc81882502476bde37b9392'}),
@@ -111,9 +105,7 @@ result
  Document(page_content='to form PayPal. In October 2002, eBay acquired PayPal for $1.5 billion, and that same year, with $100 million of the money he made, Musk founded SpaceX, a spaceflight services company. In 2004, he became an early investor in electric vehicle manufacturer Tesla Motors, Inc. (now Tesla, Inc.). He became its chairman and product architect, assuming the position of CEO in 2008. In 2006, Musk helped create SolarCity, a solar-energy company that was acquired by Tesla in 2016 and became Tesla Energy.', metadata={'source': 'https://en.wikipedia.org/wiki/Elon_Musk', 'document_id': 'c33c05d0-5028-498b-b5e3-c43a4f9e8bf8--3342161a0fbc19e91f6bf387204aa30fbb2cea05abc81882502476bde37b9392'})]
 ```
 
+## 相关
 
-
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

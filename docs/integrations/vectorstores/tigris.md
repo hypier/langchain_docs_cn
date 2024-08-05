@@ -1,26 +1,25 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/tigris.ipynb
 ---
+
 # Tigris
 
-> [Tigris](https://tigrisdata.com) is an open-source Serverless NoSQL Database and Search Platform designed to simplify building high-performance vector search applications.
-> `Tigris` eliminates the infrastructure complexity of managing, operating, and synchronizing multiple tools, allowing you to focus on building great applications instead.
+> [Tigris](https://tigrisdata.com) 是一个开源的无服务器 NoSQL 数据库和搜索平台，旨在简化构建高性能向量搜索应用程序的过程。  
+> `Tigris` 消除了管理、操作和同步多个工具的基础设施复杂性，使您能够专注于构建出色的应用程序。
 
-This notebook guides you how to use Tigris as your VectorStore
+本笔记本将指导您如何使用 Tigris 作为您的 VectorStore。
 
-**Pre requisites**
-1. An OpenAI account. You can sign up for an account [here](https://platform.openai.com/)
-2. [Sign up for a free Tigris account](https://console.preview.tigrisdata.cloud). Once you have signed up for the Tigris account, create a new project called `vectordemo`. Next, make a note of the *Uri* for the region you've created your project in, the **clientId** and **clientSecret**. You can get all this information from the **Application Keys** section of the project.
+**前提条件**
+1. 一个 OpenAI 账户。您可以在 [这里](https://platform.openai.com/) 注册账户。
+2. [注册一个免费的 Tigris 账户](https://console.preview.tigrisdata.cloud)。注册 Tigris 账户后，创建一个名为 `vectordemo` 的新项目。接下来，记下您创建项目的区域的 *Uri*、**clientId** 和 **clientSecret**。您可以在项目的 **Application Keys** 部分找到所有这些信息。
 
-Let's first install our dependencies:
-
+让我们首先安装依赖项：
 
 ```python
 %pip install --upgrade --quiet  tigrisdb openapi-schema-pydantic langchain-openai langchain-community tiktoken
 ```
 
-We will load the `OpenAI` api key and `Tigris` credentials in our environment
-
+我们将在环境中加载 `OpenAI` api 密钥和 `Tigris` 凭据。
 
 ```python
 import getpass
@@ -32,7 +31,6 @@ os.environ["TIGRIS_CLIENT_ID"] = getpass.getpass("Tigris Client Id:")
 os.environ["TIGRIS_CLIENT_SECRET"] = getpass.getpass("Tigris Client Secret:")
 ```
 
-
 ```python
 from langchain_community.document_loaders import TextLoader
 from langchain_community.vectorstores import Tigris
@@ -40,8 +38,8 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import CharacterTextSplitter
 ```
 
-### Initialize Tigris vector store
-Let's import our test dataset:
+### 初始化 Tigris 向量存储
+让我们导入我们的测试数据集：
 
 
 ```python
@@ -58,7 +56,7 @@ embeddings = OpenAIEmbeddings()
 vector_store = Tigris.from_documents(docs, embeddings, index_name="my_embeddings")
 ```
 
-### Similarity Search
+### 相似性搜索
 
 
 ```python
@@ -67,7 +65,7 @@ found_docs = vector_store.similarity_search(query)
 print(found_docs)
 ```
 
-### Similarity Search with score (vector distance)
+### 带分数的相似性搜索（向量距离）
 
 
 ```python
@@ -77,8 +75,7 @@ for doc, score in result:
     print(f"document={doc}, score={score}")
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

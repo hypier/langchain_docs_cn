@@ -1,46 +1,43 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/connery.ipynb
 ---
+
 # Connery Action Tool
 
-Using this tool, you can integrate individual Connery Action into your LangChain agent.
+使用此工具，您可以将单个 Connery Action 集成到您的 LangChain 代理中。
 
-If you want to use more than one Connery Action in your agent,
-check out the [Connery Toolkit](/docs/integrations/toolkits/connery) documentation.
+如果您想在代理中使用多个 Connery Action，请查看 [Connery Toolkit](/docs/integrations/toolkits/connery) 文档。
 
-## What is Connery?
+## 什么是 Connery？
 
-Connery is an open-source plugin infrastructure for AI.
+Connery 是一个用于 AI 的开源插件基础设施。
 
-With Connery, you can easily create a custom plugin with a set of actions and seamlessly integrate them into your LangChain agent.
-Connery will take care of critical aspects such as runtime, authorization, secret management, access management, audit logs, and other vital features.
+使用 Connery，您可以轻松创建自定义插件，设置一系列操作，并将其无缝集成到您的 LangChain 代理中。Connery 将处理运行时、授权、秘密管理、访问管理、审计日志和其他重要功能等关键方面。
 
-Furthermore, Connery, supported by our community, provides a diverse collection of ready-to-use open-source plugins for added convenience.
+此外，Connery 在我们的社区支持下，提供了一系列多样化的现成开源插件，以便于使用。
 
-Learn more about Connery:
+了解更多关于 Connery 的信息：
 
 - GitHub: https://github.com/connery-io/connery
 - Documentation: https://docs.connery.io
 
-## Prerequisites
+## 前提条件
 
-To use Connery Actions in your LangChain agent, you need to do some preparation:
+要在您的 LangChain 代理中使用 Connery Actions，您需要进行一些准备：
 
-1. Set up the Connery runner using the [Quickstart](https://docs.connery.io/docs/runner/quick-start/) guide.
-2. Install all the plugins with the actions you want to use in your agent.
-3. Set environment variables `CONNERY_RUNNER_URL` and `CONNERY_RUNNER_API_KEY` so the toolkit can communicate with the Connery Runner.
+1. 使用 [快速入门](https://docs.connery.io/docs/runner/quick-start/) 指南设置 Connery 运行器。
+2. 安装您希望在代理中使用的所有插件和操作。
+3. 设置环境变量 `CONNERY_RUNNER_URL` 和 `CONNERY_RUNNER_API_KEY` 以便工具包能够与 Connery 运行器通信。
 
-## Example of using Connery Action Tool
+## 使用 Connery Action Tool 的示例
 
-In the example below, we fetch action by its ID from the Connery Runner and then call it with the specified parameters.
+在下面的示例中，我们通过其 ID 从 Connery Runner 获取操作，然后使用指定的参数调用它。
 
-Here, we use the ID of the **Send email** action from the [Gmail](https://github.com/connery-io/gmail) plugin.
-
+在这里，我们使用来自 [Gmail](https://github.com/connery-io/gmail) 插件的 **发送邮件** 操作的 ID。
 
 ```python
 %pip install -upgrade --quiet langchain-community
 ```
-
 
 ```python
 import os
@@ -64,8 +61,7 @@ connery_service = ConneryService()
 send_email_action = connery_service.get_action("CABC80BB79C15067CA983495324AE709")
 ```
 
-Run the action manually.
-
+手动运行该操作。
 
 ```python
 manual_run_result = send_email_action.run(
@@ -78,10 +74,9 @@ manual_run_result = send_email_action.run(
 print(manual_run_result)
 ```
 
-Run the action using the OpenAI Functions agent.
+使用 OpenAI Functions 代理运行该操作。
 
-You can see a LangSmith trace of this example [here](https://smith.langchain.com/public/a37d216f-c121-46da-a428-0e09dc19b1dc/r).
-
+您可以在此处查看此示例的 LangSmith 跟踪 [here](https://smith.langchain.com/public/a37d216f-c121-46da-a428-0e09dc19b1dc/r)。
 
 ```python
 llm = ChatOpenAI(temperature=0)
@@ -106,10 +101,9 @@ Invoking: `CABC80BB79C15067CA983495324AE709` with `{'recipient': 'test@example.c
 [1m> Finished chain.[0m
 I have sent an email to test@example.com informing them that you will be late for the meeting.
 ```
-NOTE: Connery Action is a structured tool, so you can only use it in the agents supporting structured tools.
+注意：Connery Action 是一个结构化工具，因此您只能在支持结构化工具的代理中使用它。
 
+## 相关
 
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

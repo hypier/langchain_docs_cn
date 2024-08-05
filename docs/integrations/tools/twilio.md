@@ -1,26 +1,26 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/twilio.ipynb
 ---
+
 # Twilio
 
-This notebook goes over how to use the [Twilio](https://www.twilio.com) API wrapper to send a message through SMS or [Twilio Messaging Channels](https://www.twilio.com/docs/messaging/channels).
+本笔记本介绍如何使用 [Twilio](https://www.twilio.com) API 封装通过 SMS 或 [Twilio Messaging Channels](https://www.twilio.com/docs/messaging/channels) 发送消息。
 
-Twilio Messaging Channels facilitates integrations with 3rd party messaging apps and lets you send messages through WhatsApp Business Platform (GA), Facebook Messenger (Public Beta) and Google Business Messages (Private Beta).
+Twilio Messaging Channels 便于与第三方消息应用集成，并允许您通过 WhatsApp Business Platform (GA)、Facebook Messenger (Public Beta) 和 Google Business Messages (Private Beta) 发送消息。
 
-## Setup
+## 设置
 
-To use this tool you need to install the Python Twilio package `twilio`
-
+要使用此工具，您需要安装 Python Twilio 包 `twilio` 
 
 ```python
 %pip install --upgrade --quiet  twilio
 ```
 
-You'll also need to set up a Twilio account and get your credentials. You'll need your Account String Identifier (SID) and your Auth Token. You'll also need a number to send messages from.
+您还需要设置一个 Twilio 帐户并获取您的凭据。您需要您的帐户字符串标识符（SID）和您的身份验证令牌（Auth Token）。您还需要一个发送消息的号码。
 
-You can either pass these in to the TwilioAPIWrapper as named parameters `account_sid`, `auth_token`, `from_number`, or you can set the environment variables `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`.
+您可以将这些作为命名参数 `account_sid`、`auth_token`、`from_number` 传递给 TwilioAPIWrapper，或者您可以设置环境变量 `TWILIO_ACCOUNT_SID`、`TWILIO_AUTH_TOKEN`、`TWILIO_FROM_NUMBER`。
 
-## Sending an SMS
+## 发送短信
 
 
 ```python
@@ -41,15 +41,13 @@ twilio = TwilioAPIWrapper(
 twilio.run("hello world", "+16162904619")
 ```
 
-## Sending a WhatsApp Message
+## 发送 WhatsApp 消息
 
-You'll need to link your WhatsApp Business Account with Twilio. You'll also need to make sure that the number to send messages from is configured as a WhatsApp Enabled Sender on Twilio and registered with WhatsApp.
-
+您需要将您的 WhatsApp 商业账户与 Twilio 关联。您还需要确保发送消息的号码已在 Twilio 上配置为 WhatsApp 启用发送者，并已在 WhatsApp 上注册。
 
 ```python
 from langchain_community.utilities.twilio import TwilioAPIWrapper
 ```
-
 
 ```python
 twilio = TwilioAPIWrapper(
@@ -59,13 +57,11 @@ twilio = TwilioAPIWrapper(
 )
 ```
 
-
 ```python
 twilio.run("hello world", "whatsapp: +16162904619")
 ```
 
+## 相关
 
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

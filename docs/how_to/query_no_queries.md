@@ -2,24 +2,23 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/query_no_queries.ipynb
 sidebar_position: 3
 ---
-# How to handle cases where no queries are generated
 
-Sometimes, a query analysis technique may allow for any number of queries to be generated - including no queries! In this case, our overall chain will need to inspect the result of the query analysis before deciding whether to call the retriever or not.
+# 如何处理未生成查询的情况
 
-We will use mock data for this example.
+有时，查询分析技术可能允许生成任意数量的查询——包括没有查询！在这种情况下，我们的整体链条需要在决定是否调用检索器之前检查查询分析的结果。
 
-## Setup
-#### Install dependencies
+我们将使用模拟数据作为此示例。
 
+## 设置
+#### 安装依赖
 
 ```python
 # %pip install -qU langchain langchain-community langchain-openai langchain-chroma
 ```
 
-#### Set environment variables
+#### 设置环境变量
 
-We'll use OpenAI in this example:
-
+在这个例子中我们将使用 OpenAI：
 
 ```python
 import getpass
@@ -27,15 +26,14 @@ import os
 
 os.environ["OPENAI_API_KEY"] = getpass.getpass()
 
-# Optional, uncomment to trace runs with LangSmith. Sign up here: https://smith.langchain.com.
+# 可选，取消注释以使用 LangSmith 跟踪运行。请在此注册： https://smith.langchain.com.
 # os.environ["LANGCHAIN_TRACING_V2"] = "true"
 # os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 ```
 
-### Create Index
+### 创建索引
 
-We will create a vectorstore over fake information.
-
+我们将基于虚假信息创建一个向量存储。
 
 ```python
 from langchain_chroma import Chroma
@@ -51,10 +49,9 @@ vectorstore = Chroma.from_texts(
 retriever = vectorstore.as_retriever()
 ```
 
-## Query analysis
+## 查询分析
 
-We will use function calling to structure the output. However, we will configure the LLM such that is doesn't NEED to call the function representing a search query (should it decide not to). We will also then use a prompt to do query analysis that explicitly lays when it should and shouldn't make a search.
-
+我们将使用函数调用来结构化输出。然而，我们将配置 LLM，使其在不需要调用表示搜索查询的函数时（如果它决定不这样做）。然后，我们将使用一个提示来进行查询分析，明确说明何时应该以及不应该进行搜索。
 
 ```python
 from typing import Optional
@@ -63,11 +60,11 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 
 
 class Search(BaseModel):
-    """Search over a database of job records."""
+    """在工作记录数据库上进行搜索。"""
 
     query: str = Field(
         ...,
-        description="Similarity search query applied to job record.",
+        description="应用于工作记录的相似性搜索查询。",
     )
 ```
 
@@ -77,9 +74,9 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_openai import ChatOpenAI
 
-system = """You have the ability to issue search queries to get information to help answer user information.
+system = """您有能力发出搜索查询以获取帮助回答用户信息的信息。
 
-You do not NEED to look things up. If you don't need to, then just respond normally."""
+您不需要查找信息。如果您不需要，请正常回复。"""
 prompt = ChatPromptTemplate.from_messages(
     [
         ("system", system),
@@ -91,11 +88,10 @@ structured_llm = llm.bind_tools([Search])
 query_analyzer = {"question": RunnablePassthrough()} | prompt | structured_llm
 ```
 
-We can see that by invoking this we get an message that sometimes - but not always - returns a tool call.
-
+我们可以看到，通过调用这个，我们得到一条消息，有时 - 但不是总是 - 返回一个工具调用。
 
 ```python
-query_analyzer.invoke("where did Harrison Work")
+query_analyzer.invoke("Harrison在哪里工作")
 ```
 
 
@@ -107,19 +103,18 @@ AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_ZnoVX4j9Mn8
 
 
 ```python
-query_analyzer.invoke("hi!")
+query_analyzer.invoke("你好！")
 ```
 
 
 
 ```output
-AIMessage(content='Hello! How can I assist you today?')
+AIMessage(content='你好！我今天能帮您什么？')
 ```
 
+## 查询分析的检索
 
-## Retrieval with query analysis
-
-So how would we include this in a chain? Let's look at an example below.
+那么我们如何将其包含在一个链中呢？让我们看下面的例子。
 
 
 ```python
@@ -167,4 +162,3 @@ custom_chain.invoke("hi!")
 ```output
 AIMessage(content='Hello! How can I assist you today?')
 ```
-

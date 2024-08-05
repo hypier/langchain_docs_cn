@@ -1,10 +1,11 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/baichuan.ipynb
-sidebar_label: Baichuan Chat
+sidebar_label: Baichuan 聊天
 ---
-# Chat with Baichuan-192K
 
-Baichuan chat models API by Baichuan Intelligent Technology. For more information, see [https://platform.baichuan-ai.com/docs/api](https://platform.baichuan-ai.com/docs/api)
+# 与 Baichuan-192K 聊天
+
+Baichuan 聊天模型 API，由 Baichuan Intelligent Technology 提供。如需更多信息，请访问 [https://platform.baichuan-ai.com/docs/api](https://platform.baichuan-ai.com/docs/api)
 
 
 ```python
@@ -17,7 +18,7 @@ from langchain_core.messages import HumanMessage
 chat = ChatBaichuan(baichuan_api_key="YOUR_API_KEY")
 ```
 
-Alternatively, you can set your API key with:
+或者，您可以通过以下方式设置您的 API 密钥：
 
 
 ```python
@@ -36,7 +37,6 @@ chat([HumanMessage(content="我日薪8块钱，请问在闰年的二月，我月
 ```output
 AIMessage(content='首先，我们需要确定闰年的二月有多少天。闰年的二月有29天。\n\n然后，我们可以计算你的月薪：\n\n日薪 = 月薪 / (当月天数)\n\n所以，你的月薪 = 日薪 * 当月天数\n\n将数值代入公式：\n\n月薪 = 8元/天 * 29天 = 232元\n\n因此，你在闰年的二月的月薪是232元。')
 ```
-
 
 ## Chat with Baichuan-192K with Streaming
 
@@ -59,9 +59,7 @@ chat([HumanMessage(content="我日薪8块钱，请问在闰年的二月，我月
 AIMessageChunk(content='首先，我们需要确定闰年的二月有多少天。闰年的二月有29天。\n\n然后，我们可以计算你的月薪：\n\n日薪 = 月薪 / (当月天数)\n\n所以，你的月薪 = 日薪 * 当月天数\n\n将数值代入公式：\n\n月薪 = 8元/天 * 29天 = 232元\n\n因此，你在闰年的二月的月薪是232元。')
 ```
 
+## 相关
 
-
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

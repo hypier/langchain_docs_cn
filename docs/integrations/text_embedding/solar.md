@@ -1,12 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/solar.ipynb
 ---
-# Solar
 
-[Solar](https://console.upstage.ai/services/embedding) offers an embeddings service.
+# 太阳能
 
-This example goes over how to use LangChain to interact with Solar Inference for text embedding.
+[太阳能](https://console.upstage.ai/services/embedding) 提供嵌入服务。
 
+此示例介绍如何使用 LangChain 与 Solar Inference 进行文本嵌入的交互。
 
 ```python
 import os
@@ -14,28 +14,22 @@ import os
 os.environ["SOLAR_API_KEY"] = ""
 ```
 
-
 ```python
 from langchain_community.embeddings import SolarEmbeddings
 ```
 
-
 ```python
 embeddings = SolarEmbeddings()
 ```
-
 
 ```python
 query_text = "This is a test query."
 query_result = embeddings.embed_query(query_text)
 ```
 
-
 ```python
 query_result
 ```
-
-
 
 ```output
 [-0.009612835943698883,
@@ -1041,19 +1035,14 @@ query_result
  ...]
 ```
 
-
-
 ```python
-document_text = "This is a test document."
+document_text = "这是一个测试文档。"
 document_result = embeddings.embed_documents([document_text])
 ```
-
 
 ```python
 document_result
 ```
-
-
 
 ```output
 [[-0.019484492018818855,
@@ -2059,8 +2048,6 @@ document_result
   ...]]
 ```
 
-
-
 ```python
 import numpy as np
 
@@ -2069,13 +2056,13 @@ document_numpy = np.array(document_result[0])
 similarity = np.dot(query_numpy, document_numpy) / (
     np.linalg.norm(query_numpy) * np.linalg.norm(document_numpy)
 )
-print(f"Cosine similarity between document and query: {similarity}")
+print(f"文档与查询之间的余弦相似度: {similarity}")
 ```
 ```output
 Cosine similarity between document and query: 0.8685132879722154
 ```
 
-## Related
+## 相关
 
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

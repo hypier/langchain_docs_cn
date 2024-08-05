@@ -1,67 +1,65 @@
 # solo-performance-prompting-agent
 
-This template creates an agent that transforms a single LLM into a cognitive synergist  by engaging in multi-turn self-collaboration with multiple personas.
-A cognitive synergist refers to an intelligent agent that collaborates with multiple minds, combining their individual strengths and knowledge, to enhance problem-solving and overall performance in complex tasks. By dynamically identifying and simulating different personas based on task inputs, SPP unleashes the potential of cognitive synergy in LLMs. 
+此模板创建一个代理，通过与多个角色进行多轮自我协作，将单个 LLM 转变为认知协同者。认知协同者是指一个智能代理，与多个思维协作，结合它们各自的优势和知识，以增强在复杂任务中的问题解决能力和整体表现。通过根据任务输入动态识别和模拟不同角色，SPP 发挥了 LLM 中认知协同的潜力。
 
-This template will use the `DuckDuckGo` search API. 
+此模板将使用 `DuckDuckGo` 搜索 API。
 
-## Environment Setup
+## 环境设置
 
-This template will use `OpenAI` by default. 
-Be sure that `OPENAI_API_KEY` is set in your environment.
+此模板默认使用 `OpenAI`。 
+请确保在您的环境中设置了 `OPENAI_API_KEY`。
 
-## Usage
+## 用法
 
-To use this package, you should first have the LangChain CLI installed:
+要使用此包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将其作为唯一包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package solo-performance-prompting-agent
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，只需运行：
 
 ```shell
 langchain app add solo-performance-prompting-agent
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 ```python
 from solo_performance_prompting_agent.agent import agent_executor as solo_performance_prompting_agent_chain
 
 add_routes(app, solo_performance_prompting_agent_chain, path="/solo-performance-prompting-agent")
 ```
 
-(Optional) Let's now configure LangSmith. 
-LangSmith will help us trace, monitor and debug LangChain applications. 
-You can sign up for LangSmith [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
-
+（可选）现在让我们配置 LangSmith。
+LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接通过以下方式启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server is running locally at 
+这将启动 FastAPI 应用程序，服务器在本地运行于 
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/solo-performance-prompting-agent/playground](http://127.0.0.1:8000/solo-performance-prompting-agent/playground)  
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板。
+我们可以在 [http://127.0.0.1:8000/solo-performance-prompting-agent/playground](http://127.0.0.1:8000/solo-performance-prompting-agent/playground) 访问游乐场。
 
-We can access the template from code with:
+我们可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable

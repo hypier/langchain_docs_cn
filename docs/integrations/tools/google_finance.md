@@ -1,27 +1,26 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/google_finance.ipynb
 ---
+
 # Google Finance
 
-This notebook goes over how to use the Google Finance Tool to get information from the Google Finance page
+本笔记本介绍如何使用 Google Finance 工具从 Google Finance 页面获取信息。
 
-To get an SerpApi key key, sign up at: https://serpapi.com/users/sign_up.
+要获取 SerpApi 密钥，请注册：https://serpapi.com/users/sign_up。
 
-Then install google-search-results with the command: 
+然后使用以下命令安装 google-search-results：
 
 pip install google-search-results
 
-Then set the environment variable SERPAPI_API_KEY to your SerpApi key
+然后将环境变量 SERPAPI_API_KEY 设置为您的 SerpApi 密钥。
 
-Or pass the key in as a argument to the wrapper serp_api_key="your secret key"
+或者将密钥作为参数传递给包装器 serp_api_key="your secret key"。
 
-Use the Tool
-
+使用该工具
 
 ```python
 %pip install --upgrade --quiet  google-search-results langchain-community
 ```
-
 
 ```python
 import os
@@ -33,13 +32,11 @@ os.environ["SERPAPI_API_KEY"] = ""
 tool = GoogleFinanceQueryRun(api_wrapper=GoogleFinanceAPIWrapper())
 ```
 
-
 ```python
 tool.run("Google")
 ```
 
-Using it with Langchain
-
+与 Langchain 一起使用
 
 ```python
 import os
@@ -57,8 +54,7 @@ agent = initialize_agent(
 agent.run("what is google's stock")
 ```
 
+## 相关
 
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

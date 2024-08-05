@@ -1,32 +1,32 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/toolkits/requests.ipynb
-sidebar_label: Requests
+sidebar_label: 请求
 ---
 
 # Requests Toolkit
 
-We can use the Requests [toolkit](/docs/concepts/#toolkits) to construct agents that generate HTTP requests.
+我们可以使用 Requests [toolkit](/docs/concepts/#toolkits) 来构建生成 HTTP 请求的代理。
 
-For detailed documentation of all API toolkit features and configurations head to the API reference for [RequestsToolkit](https://api.python.langchain.com/en/latest/agent_toolkits/langchain_community.agent_toolkits.openapi.toolkit.RequestsToolkit.html).
+有关所有 API 工具包功能和配置的详细文档，请访问 [RequestsToolkit](https://api.python.langchain.com/en/latest/agent_toolkits/langchain_community.agent_toolkits.openapi.toolkit.RequestsToolkit.html) 的 API 参考。
 
-## ⚠️ Security note ⚠️
-There are inherent risks in giving models discretion to execute real-world actions. Take precautions to mitigate these risks:
+## ⚠️ 安全提示 ⚠️
+在赋予模型执行现实世界行为的自由裁量权时，存在固有风险。采取预防措施以减轻这些风险：
 
-- Make sure that permissions associated with the tools are narrowly-scoped (e.g., for database operations or API requests);
-- When desired, make use of human-in-the-loop workflows.
+- 确保与工具相关的权限范围狭窄（例如，用于数据库操作或API请求）；
+- 在需要时，利用人机协作的工作流程。
 
-## Setup
+## 设置
 
-### Installation
+### 安装
 
-This toolkit lives in the `langchain-community` package:
+该工具包位于 `langchain-community` 包中：
 
 
 ```python
 %pip install -qU langchain-community
 ```
 
-Note that if you want to get automated tracing from runs of individual tools, you can also set your [LangSmith](https://docs.smith.langchain.com/) API key by uncommenting below:
+请注意，如果您希望从单个工具的运行中获得自动跟踪，您还可以通过取消注释下面的内容来设置您的 [LangSmith](https://docs.smith.langchain.com/) API 密钥：
 
 
 ```python
@@ -34,22 +34,20 @@ Note that if you want to get automated tracing from runs of individual tools, yo
 # os.environ["LANGSMITH_TRACING"] = "true"
 ```
 
-## Instantiation
+## 实例化
 
-First we will demonstrate a minimal example.
+首先，我们将演示一个最小示例。
 
-**NOTE**: There are inherent risks in giving models discretion to execute real-world actions. We must "opt-in" to these risks by setting `allow_dangerous_request=True` to use these tools.
-**This can be dangerous for calling unwanted requests**. Please make sure your custom OpenAPI spec (yaml) is safe and that permissions associated with the tools are narrowly-scoped.
-
+**注意**：赋予模型执行现实世界操作的自由裁量权固有风险。我们必须通过设置 `allow_dangerous_request=True` 来“选择接受”这些风险，以使用这些工具。
+**这可能会导致调用不必要的请求**。请确保您的自定义 OpenAPI 规范 (yaml) 是安全的，并且与工具相关的权限是狭义的。
 
 ```python
 ALLOW_DANGEROUS_REQUEST = True
 ```
 
-We can use the [JSONPlaceholder](https://jsonplaceholder.typicode.com) API as a testing ground.
+我们可以使用 [JSONPlaceholder](https://jsonplaceholder.typicode.com) API 作为测试平台。
 
-Let's create (a subset of) its API spec:
-
+让我们创建（其 API 规范的一个子集）：
 
 ```python
 from typing import Any, Dict, Union
@@ -76,7 +74,7 @@ def _get_api_spec() -> str:
             "in": "query",
             "required": False,
             "schema": {"type": "integer", "example": 2},
-            "description": "Limit the number of results",
+            "description": "限制结果数量",
         }
     ]
     openapi_spec: Dict[str, Any] = {
@@ -85,18 +83,18 @@ def _get_api_spec() -> str:
         "servers": [{"url": base_url}],
         "paths": {},
     }
-    # Iterate over the endpoints to construct the paths
+    # 遍历端点以构建路径
     for endpoint in endpoints:
         response = requests.get(base_url + endpoint)
         if response.status_code == 200:
             schema = _get_schema(response.json())
             openapi_spec["paths"][endpoint] = {
                 "get": {
-                    "summary": f"Get {endpoint[1:]}",
+                    "summary": f"获取 {endpoint[1:]}",
                     "parameters": common_query_parameters,
                     "responses": {
                         "200": {
-                            "description": "Successful response",
+                            "description": "成功响应",
                             "content": {
                                 "application/json": {
                                     "schema": {"type": "object", "properties": schema}
@@ -112,8 +110,7 @@ def _get_api_spec() -> str:
 api_spec = _get_api_spec()
 ```
 
-Next we can instantiate the toolkit. We require no authorization or other headers for this API:
-
+接下来，我们可以实例化工具包。我们不需要为此 API 提供授权或其他标头：
 
 ```python
 from langchain_community.agent_toolkits.openapi.toolkit import RequestsToolkit
@@ -125,9 +122,9 @@ toolkit = RequestsToolkit(
 )
 ```
 
-## Tools
+## 工具
 
-View available tools:
+查看可用工具：
 
 
 ```python
@@ -153,7 +150,7 @@ tools
 - [RequestsPutTool](https://api.python.langchain.com/en/latest/tools/langchain_community.tools.requests.tool.RequestsPutTool.html)
 - [RequestsDeleteTool](https://api.python.langchain.com/en/latest/tools/langchain_community.tools.requests.tool.RequestsDeleteTool.html)
 
-## Use within an agent
+## 在代理中使用
 
 
 ```python
@@ -183,17 +180,17 @@ for event in events:
     event["messages"][-1].pretty_print()
 ```
 ```output
-================================[1m Human Message [0m=================================
+================================[1m 人类消息 [0m=================================
 
 Fetch the top two posts. What are their titles?
-==================================[1m Ai Message [0m==================================
-Tool Calls:
+==================================[1m AI 消息 [0m==================================
+工具调用:
   requests_get (call_RV2SOyzCnV5h2sm4WPgG8fND)
- Call ID: call_RV2SOyzCnV5h2sm4WPgG8fND
-  Args:
+ 调用 ID: call_RV2SOyzCnV5h2sm4WPgG8fND
+  参数:
     url: https://jsonplaceholder.typicode.com/posts?_limit=2
-=================================[1m Tool Message [0m=================================
-Name: requests_get
+=================================[1m 工具消息 [0m=================================
+名称: requests_get
 
 [
   {
@@ -209,12 +206,13 @@ Name: requests_get
     "body": "est rerum tempore vitae\nsequi sint nihil reprehenderit dolor beatae ea dolores neque\nfugiat blanditiis voluptate porro vel nihil molestiae ut reiciendis\nqui aperiam non debitis possimus qui neque nisi nulla"
   }
 ]
-==================================[1m Ai Message [0m==================================
+==================================[1m AI 消息 [0m==================================
 
 The titles of the top two posts are:
 1. "sunt aut facere repellat provident occaecati excepturi optio reprehenderit"
 2. "qui est esse"
 ```
-## API reference
 
-For detailed documentation of all API toolkit features and configurations head to the API reference for [RequestsToolkit](https://api.python.langchain.com/en/latest/agent_toolkits/langchain_community.agent_toolkits.openapi.toolkit.RequestsToolkit.html).
+## API 参考
+
+有关所有 API 工具包功能和配置的详细文档，请访问 [RequestsToolkit](https://api.python.langchain.com/en/latest/agent_toolkits/langchain_community.agent_toolkits.openapi.toolkit.RequestsToolkit.html) 的 API 参考。

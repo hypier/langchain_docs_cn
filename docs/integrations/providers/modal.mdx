@@ -1,19 +1,19 @@
 # Modal
 
-This page covers how to use the Modal ecosystem to run LangChain custom LLMs.
-It is broken into two parts: 
+本页面介绍如何使用 Modal 生态系统运行 LangChain 自定义 LLM。  
+它分为两个部分：
 
-1. Modal installation and web endpoint deployment
-2. Using deployed web endpoint with `LLM` wrapper class.
+1. Modal 安装和网络端点部署  
+2. 使用部署的网络端点与 `LLM` 包装类。
 
-## Installation and Setup
+## 安装与设置
 
-- Install with `pip install modal`
-- Run `modal token new`
+- 使用 `pip install modal` 安装
+- 运行 `modal token new`
 
-## Define your Modal Functions and Webhooks
+## 定义您的模态函数和 Webhook
 
-You must include a prompt. There is a rigid response structure:
+您必须包含一个提示。响应结构是固定的：
 
 ```python
 class Item(BaseModel):
@@ -25,7 +25,7 @@ def get_text(item: Item):
     return {"prompt": run_gpt2.call(item.prompt)}
 ```
 
-The following is an example with the GPT2 model:
+以下是使用 GPT2 模型的示例：
 
 ```python
 from pydantic import BaseModel
@@ -46,8 +46,8 @@ def download_model():
     tokenizer.save_pretrained(CACHE_PATH)
     model.save_pretrained(CACHE_PATH)
 
-# Define a container image for the LLM function below, which
-# downloads and stores the GPT-2 model.
+# 定义下面 LLM 函数的容器镜像，该函数
+# 下载并存储 GPT-2 模型。
 image = modal.Image.debian_slim().pip_install(
     "tokenizers", "transformers", "torch", "accelerate"
 ).run_function(download_model)
@@ -71,14 +71,14 @@ def get_text(item: Item):
     return {"prompt": run_gpt2.call(item.prompt)}
 ```
 
-### Deploy the web endpoint
+### 部署 web 端点
 
-Deploy the web endpoint to Modal cloud with the [`modal deploy`](https://modal.com/docs/reference/cli/deploy) CLI command.
-Your web endpoint will acquire a persistent URL under the `modal.run` domain.
+使用 [`modal deploy`](https://modal.com/docs/reference/cli/deploy) CLI 命令将 web 端点部署到 Modal 云。
+您的 web 端点将在 `modal.run` 域下获取一个持久的 URL。
 
-## LLM wrapper around Modal web endpoint
+## LLM 包装器用于 Modal 网络端点
 
-The  `Modal` LLM wrapper class which will accept your deployed web endpoint's URL.
+`Modal` LLM 包装器类，将接受您部署的网络端点的 URL。
 
 ```python
 from langchain_community.llms import Modal
@@ -92,4 +92,3 @@ question = "What NFL team won the Super Bowl in the year Justin Beiber was born?
 
 llm_chain.run(question)
 ```
-

@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/aleph_alpha.ipynb
 ---
+
 # Aleph Alpha
 
-[The Luminous series](https://docs.aleph-alpha.com/docs/introduction/luminous/) is a family of large language models.
+[The Luminous series](https://docs.aleph-alpha.com/docs/introduction/luminous/) 是一系列大型语言模型。
 
-This example goes over how to use LangChain to interact with Aleph Alpha models
+这个示例介绍了如何使用 LangChain 与 Aleph Alpha 模型进行交互
 
 
 ```python
@@ -73,9 +74,7 @@ llm_chain.invoke({"question": question})
 ' Artificial Intelligence is the simulation of human intelligence processes by machines.\n\n'
 ```
 
+## 相关
 
-
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

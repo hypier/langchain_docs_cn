@@ -1,16 +1,15 @@
 # Snowflake
 
-> [Snowflake](https://www.snowflake.com/) is a cloud-based data-warehousing platform 
-> that allows you to store and query large amounts of data.
+> [Snowflake](https://www.snowflake.com/) 是一个基于云的数据仓库平台， 
+> 允许您存储和查询大量数据。
 
-This page covers how to use the `Snowflake` ecosystem within `LangChain`.
+本页面介绍如何在 `LangChain` 中使用 `Snowflake` 生态系统。
 
-## Embedding models
+## 嵌入模型
 
-Snowflake offers their open-weight `arctic` line of embedding models for free
-on [Hugging Face](https://huggingface.co/Snowflake/snowflake-arctic-embed-m-v1.5). The most recent model, snowflake-arctic-embed-m-v1.5 feature [matryoshka embedding](https://arxiv.org/abs/2205.13147) which allows for effective vector truncation. 
-You can use these models via the 
-[HuggingFaceEmbeddings](/docs/integrations/text_embedding/huggingfacehub) connector:
+Snowflake 在 [Hugging Face](https://huggingface.co/Snowflake/snowflake-arctic-embed-m-v1.5) 上免费提供他们的开放权重 `arctic` 嵌入模型。最新的模型 snowflake-arctic-embed-m-v1.5 特性 [matryoshka embedding](https://arxiv.org/abs/2205.13147)，可以实现有效的向量截断。 
+您可以通过 
+[HuggingFaceEmbeddings](/docs/integrations/text_embedding/huggingfacehub) 连接器使用这些模型：
 
 ```shell
 pip install langchain-community sentence-transformers
@@ -22,10 +21,10 @@ from langchain_huggingface import HuggingFaceEmbeddings
 model = HuggingFaceEmbeddings(model_name="snowflake/arctic-embed-m-v1.5")
 ```
 
-## Document loader
+## 文档加载器
 
-You can use the [`SnowflakeLoader`](/docs/integrations/document_loaders/snowflake) 
-to load data from Snowflake:
+您可以使用 [`SnowflakeLoader`](/docs/integrations/document_loaders/snowflake) 
+从 Snowflake 加载数据：
 
 ```python
 from langchain_community.document_loaders import SnowflakeLoader

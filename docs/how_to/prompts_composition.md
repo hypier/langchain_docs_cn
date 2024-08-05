@@ -2,21 +2,21 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/prompts_composition.ipynb
 sidebar_position: 5
 ---
-# How to compose prompts together
 
-:::info Prerequisites
+# 如何组合提示
 
-This guide assumes familiarity with the following concepts:
-- [Prompt templates](/docs/concepts/#prompt-templates)
+:::info 前提条件
+
+本指南假设您熟悉以下概念：
+- [提示模板](/docs/concepts/#prompt-templates)
 
 :::
 
-LangChain provides a user friendly interface for composing different parts of prompts together. You can do this with either string prompts or chat prompts. Constructing prompts this way allows for easy reuse of components.
+LangChain 提供了一个用户友好的界面，用于将提示的不同部分组合在一起。您可以使用字符串提示或聊天提示来实现这一点。以这种方式构建提示可以方便地重用组件。
 
-## String prompt composition
+## 字符串提示组成
 
-When working with string prompts, each template is joined together. You can work with either prompts directly or strings (the first element in the list needs to be a prompt).
-
+在处理字符串提示时，每个模板会连接在一起。您可以直接使用提示或字符串（列表中的第一个元素需要是提示）。
 
 ```python
 from langchain_core.prompts import PromptTemplate
@@ -30,31 +30,23 @@ prompt = (
 prompt
 ```
 
-
-
 ```output
 PromptTemplate(input_variables=['language', 'topic'], template='Tell me a joke about {topic}, make it funny\n\nand in {language}')
 ```
-
-
 
 ```python
 prompt.format(topic="sports", language="spanish")
 ```
 
-
-
 ```output
 'Tell me a joke about sports, make it funny\n\nand in spanish'
 ```
 
+## 聊天提示构成
 
-## Chat prompt composition
+聊天提示由一系列消息组成。与上述示例类似，我们可以连接聊天提示模板。每个新元素都是最终提示中的一条新消息。
 
-A chat prompt is made up a of a list of messages. Similarly to the above example, we can concatenate chat prompt templates. Each new element is a new message in the final prompt.
-
-First, let's initialize the a [`ChatPromptTemplate`](https://api.python.langchain.com/en/latest/prompts/langchain_core.prompts.chat.ChatPromptTemplate.html) with a [`SystemMessage`](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.system.SystemMessage.html).
-
+首先，让我们初始化一个 [`ChatPromptTemplate`](https://api.python.langchain.com/en/latest/prompts/langchain_core.prompts.chat.ChatPromptTemplate.html) 和一个 [`SystemMessage`](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.system.SystemMessage.html)。
 
 ```python
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
@@ -62,9 +54,7 @@ from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 prompt = SystemMessage(content="You are a nice pirate")
 ```
 
-You can then easily create a pipeline combining it with other messages *or* message templates.
-Use a `Message` when there is no variables to be formatted, use a `MessageTemplate` when there are variables to be formatted. You can also use just a string (note: this will automatically get inferred as a [`HumanMessagePromptTemplate`](https://api.python.langchain.com/en/latest/prompts/langchain_core.prompts.chat.HumanMessagePromptTemplate.html).)
-
+然后，您可以轻松地创建一个管道，将其与其他消息 *或* 消息模板结合使用。当没有变量需要格式化时使用 `Message`，当有变量需要格式化时使用 `MessageTemplate`。您也可以仅使用字符串（注意：这将自动推断为一个 [`HumanMessagePromptTemplate`](https://api.python.langchain.com/en/latest/prompts/langchain_core.prompts.chat.HumanMessagePromptTemplate.html)）。
 
 ```python
 new_prompt = (
@@ -72,8 +62,7 @@ new_prompt = (
 )
 ```
 
-Under the hood, this creates an instance of the ChatPromptTemplate class, so you can use it just as you did before!
-
+在底层，这会创建一个 ChatPromptTemplate 类的实例，因此您可以像以前一样使用它！
 
 ```python
 new_prompt.format_messages(input="i said hi")
@@ -88,14 +77,12 @@ new_prompt.format_messages(input="i said hi")
  HumanMessage(content='i said hi')]
 ```
 
+## 使用 PipelinePrompt
 
-## Using PipelinePrompt
+LangChain 包含一个名为 [`PipelinePromptTemplate`](https://api.python.langchain.com/en/latest/prompts/langchain_core.prompts.pipeline.PipelinePromptTemplate.html) 的类，当您想重用提示的部分时，它非常有用。PipelinePrompt 由两个主要部分组成：
 
-LangChain includes a class called [`PipelinePromptTemplate`](https://api.python.langchain.com/en/latest/prompts/langchain_core.prompts.pipeline.PipelinePromptTemplate.html), which can be useful when you want to reuse parts of prompts. A PipelinePrompt consists of two main parts:
-
-- Final prompt: The final prompt that is returned
-- Pipeline prompts: A list of tuples, consisting of a string name and a prompt template. Each prompt template will be formatted and then passed to future prompt templates as a variable with the same name.
-
+- 最终提示：返回的最终提示
+- 管道提示：由字符串名称和提示模板组成的元组列表。每个提示模板将被格式化，然后作为具有相同名称的变量传递给未来的提示模板。
 
 ```python
 from langchain_core.prompts import PipelinePromptTemplate, PromptTemplate
@@ -134,13 +121,9 @@ pipeline_prompt = PipelinePromptTemplate(
 pipeline_prompt.input_variables
 ```
 
-
-
 ```output
 ['person', 'example_a', 'example_q', 'input']
 ```
-
-
 
 ```python
 print(
@@ -165,8 +148,9 @@ Now, do this for real!
 Q: What's your favorite social media site?
 A:
 ```
-## Next steps
 
-You've now learned how to compose prompts together.
+## 下一步
 
-Next, check out the other how-to guides on prompt templates in this section, like [adding few-shot examples to your prompt templates](/docs/how_to/few_shot_examples_chat).
+您现在已经学习了如何组合提示。
+
+接下来，请查看本节中有关提示模板的其他操作指南，例如 [向您的提示模板添加少量示例](/docs/how_to/few_shot_examples_chat)。

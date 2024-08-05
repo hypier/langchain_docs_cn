@@ -1,40 +1,39 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/edenai.ipynb
 ---
+
 # Eden AI
 
-Eden AI is revolutionizing the AI landscape by uniting the best AI providers, empowering users to unlock limitless possibilities and tap into the true potential of artificial intelligence. With an all-in-one comprehensive and hassle-free platform, it allows users to deploy AI features to production lightning fast, enabling effortless access to the full breadth of AI capabilities via a single API. (website: https://edenai.co/)
+Eden AI 正在通过联合最优秀的 AI 提供商来彻底改变 AI 领域，使用户能够解锁无限可能性，挖掘人工智能的真正潜力。凭借一个全面且无忧的平台，它允许用户快速将 AI 功能部署到生产环境中，通过单一 API 轻松访问全方位的 AI 能力。(网站: https://edenai.co/)
 
-This example goes over how to use LangChain to interact with Eden AI models
+本示例介绍如何使用 LangChain 与 Eden AI 模型进行交互
 
 -----------------------------------------------------------------------------------
 
-`EdenAI` goes beyond mere model invocation. It empowers you with advanced features, including:
+`EdenAI` 超越了简单的模型调用。它为您提供了高级功能，包括：
 
-- **Multiple Providers**: Gain access to a diverse range of language models offered by various providers, giving you the freedom to choose the best-suited model for your use case.
+- **多个提供商**：访问各种提供商提供的多样语言模型，让您可以自由选择最适合您用例的模型。
 
-- **Fallback Mechanism**: Set a fallback mechanism to ensure seamless operations even if the primary provider is unavailable, you can easily switches to an alternative provider.
+- **回退机制**：设置回退机制，确保即使主要提供商不可用，您也可以轻松切换到备选提供商，从而确保操作的无缝进行。
 
-- **Usage Tracking**: Track usage statistics on a per-project and per-API key basis. This feature allows you to monitor and manage resource consumption effectively.
+- **使用统计**：按项目和 API 密钥跟踪使用统计数据。此功能使您能够有效监控和管理资源消耗。
 
-- **Monitoring and Observability**: `EdenAI` provides comprehensive monitoring and observability tools on the platform. Monitor the performance of your language models, analyze usage patterns, and gain valuable insights to optimize your applications.
+- **监控和可观察性**：`EdenAI` 在平台上提供全面的监控和可观察性工具。监控您的语言模型性能，分析使用模式，并获得有价值的见解以优化您的应用程序。
 
 
-Accessing the EDENAI's API requires an API key, 
+访问 EDENAI 的 API 需要一个 API 密钥，
 
-which you can get by creating an account https://app.edenai.run/user/register  and heading here https://app.edenai.run/admin/iam/api-keys
+您可以通过创建账户 https://app.edenai.run/user/register 获取密钥，并前往 https://app.edenai.run/admin/iam/api-keys
 
-Once we have a key we'll want to set it as an environment variable by running:
+一旦我们有了密钥，我们将通过运行以下命令将其设置为环境变量：
 
 ```bash
 export EDENAI_API_KEY="..."
 ```
 
-You can find more details on the API reference : https://docs.edenai.co/reference
+您可以在 API 参考中找到更多详细信息 : https://docs.edenai.co/reference
 
-If you'd prefer not to set an environment variable you can pass the key in directly via the edenai_api_key named parameter
-
- when initiating the EdenAI Chat Model class.
+如果您不想设置环境变量，可以在初始化 EdenAI Chat Model 类时通过名为 edenai_api_key 的参数直接传递密钥。
 
 
 ```python
@@ -73,11 +72,9 @@ await chat.ainvoke(messages)
 AIMessage(content='Hello! How can I assist you today?')
 ```
 
+## 流式处理与批处理
 
-## Streaming and Batching
-
-`ChatEdenAI` supports streaming and batching. Below is an example.
-
+`ChatEdenAI` 支持流式处理和批处理。以下是一个示例。
 
 ```python
 for chunk in chat.stream(messages):
@@ -91,17 +88,13 @@ Hello! How can I assist you today?
 chat.batch([messages])
 ```
 
-
-
 ```output
 [AIMessage(content='Hello! How can I assist you today?')]
 ```
 
+## 备用机制
 
-## Fallback mecanism
-
-With Eden AI you can set a fallback mechanism to ensure seamless operations even if the primary provider is unavailable, you can easily switches to an alternative provider.
-
+使用 Eden AI，您可以设置备用机制，以确保即使主要提供商不可用，操作也能无缝进行，您可以轻松切换到替代提供商。
 
 ```python
 chat = ChatEdenAI(
@@ -113,11 +106,11 @@ chat = ChatEdenAI(
 )
 ```
 
-In this example, you can use Google as a backup provider if OpenAI encounters any issues.
+在这个例子中，如果 OpenAI 遇到任何问题，您可以使用 Google 作为备份提供商。
 
-For more information and details about Eden AI, check out this link: : https://docs.edenai.co/docs/additional-parameters
+有关 Eden AI 的更多信息和详细信息，请查看此链接： : https://docs.edenai.co/docs/additional-parameters
 
-## Chaining Calls
+## 链式调用
 
 
 
@@ -141,13 +134,11 @@ chain.invoke({"product": "healthy snacks"})
 AIMessage(content='VitalBites')
 ```
 
-
-## Tools
+## 工具
 
 ### bind_tools()
 
-With `ChatEdenAI.bind_tools`, we can easily pass in Pydantic classes, dict schemas, LangChain tools, or even functions as tools to the model.
-
+通过 `ChatEdenAI.bind_tools`，我们可以轻松地将 Pydantic 类、字典模式、LangChain 工具，甚至函数作为工具传递给模型。
 
 ```python
 from langchain_core.pydantic_v1 import BaseModel, Field
@@ -156,9 +147,9 @@ llm = ChatEdenAI(provider="openai", temperature=0.2, max_tokens=500)
 
 
 class GetWeather(BaseModel):
-    """Get the current weather in a given location"""
+    """获取给定位置的当前天气"""
 
-    location: str = Field(..., description="The city and state, e.g. San Francisco, CA")
+    location: str = Field(..., description="城市和州，例如：旧金山，加州")
 
 
 llm_with_tools = llm.bind_tools([GetWeather])
@@ -167,7 +158,7 @@ llm_with_tools = llm.bind_tools([GetWeather])
 
 ```python
 ai_msg = llm_with_tools.invoke(
-    "what is the weather like in San Francisco",
+    "旧金山的天气怎么样",
 )
 ai_msg
 ```
@@ -192,12 +183,9 @@ ai_msg.tool_calls
   'id': 'call_tRpAO7KbQwgTjlka70mCQJdo'}]
 ```
 
-
 ### with_structured_output()
 
-The BaseChatModel.with_structured_output interface makes it easy to get structured output from chat models. You can use ChatEdenAI.with_structured_output, which uses tool-calling under the hood), to get the model to more reliably return an output in a specific format:
-
-
+BaseChatModel.with_structured_output 接口使从聊天模型获取结构化输出变得简单。您可以使用 ChatEdenAI.with_structured_output（在底层使用工具调用）来使模型更可靠地以特定格式返回输出：
 
 ```python
 structured_llm = llm.with_structured_output(GetWeather)
@@ -206,17 +194,13 @@ structured_llm.invoke(
 )
 ```
 
-
-
 ```output
 GetWeather(location='San Francisco')
 ```
 
+### 将工具结果传递给模型
 
-### Passing Tool Results to model
-
-Here is a full example of how to use a tool. Pass the tool output to the model, and get the result back from the model
-
+这是一个如何使用工具的完整示例。将工具的输出传递给模型，并从模型中获取结果。
 
 ```python
 from langchain_core.messages import HumanMessage, ToolMessage
@@ -257,17 +241,13 @@ messages.append(ToolMessage(tool_output, tool_call_id=tool_call["id"]))
 llm_with_tools.invoke(messages).content
 ```
 
-
-
 ```output
 '11 + 11 = 22'
 ```
 
+### 流式传输
 
-### Streaming
-
-Eden AI does not currently support streaming tool calls. Attempting to stream will yield a single final message.
-
+Eden AI 目前不支持流式工具调用。尝试进行流式传输将只返回一条最终消息。
 
 ```python
 list(llm_with_tools.stream("What's 9 + 9"))
@@ -282,9 +262,7 @@ list(llm_with_tools.stream("What's 9 + 9"))
 [AIMessageChunk(content='', id='run-fae32908-ec48-4ab2-ad96-bb0d0511754f', tool_calls=[{'name': 'add', 'args': {'a': 9, 'b': 9}, 'id': 'call_n0Tm7I9zERWa6UpxCAVCweLN'}], tool_call_chunks=[{'name': 'add', 'args': '{"a": 9, "b": 9}', 'id': 'call_n0Tm7I9zERWa6UpxCAVCweLN', 'index': 0}])]
 ```
 
+## 相关
 
-
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

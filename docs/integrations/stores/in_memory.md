@@ -1,33 +1,33 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/stores/in_memory.ipynb
-sidebar_label: In-memory
+sidebar_label: 内存中
 ---
+
 # InMemoryByteStore
 
-This guide will help you get started with in-memory [key-value stores](/docs/concepts/#key-value-stores). For detailed documentation of all `InMemoryByteStore` features and configurations head to the [API reference](https://api.python.langchain.com/en/latest/stores/langchain_core.stores.InMemoryByteStore.html).
+本指南将帮助您开始使用内存中的 [key-value stores](/docs/concepts/#key-value-stores)。有关所有 `InMemoryByteStore` 特性和配置的详细文档，请访问 [API reference](https://api.python.langchain.com/en/latest/stores/langchain_core.stores.InMemoryByteStore.html)。
 
-## Overview
+## 概述
 
-The `InMemoryByteStore` is a non-persistent implementation of a `ByteStore` that stores everything in a Python dictionary. It's intended for demos and cases where you don't need persistence past the lifetime of the Python process.
+`InMemoryByteStore` 是 `ByteStore` 的一种非持久化实现，它将所有内容存储在 Python 字典中。它适用于演示和不需要超出 Python 进程生命周期的持久化的情况。
 
-### Integration details
+### 集成详情
 
-| Class | Package | Local | [JS support](https://js.langchain.com/v0.2/docs/integrations/stores/in_memory/) | Package downloads | Package latest |
+| 类别 | 包 | 本地 | [JS 支持](https://js.langchain.com/v0.2/docs/integrations/stores/in_memory/) | 包下载量 | 包最新版本 |
 | :--- | :--- | :---: | :---: |  :---: | :---: |
 | [InMemoryByteStore](https://api.python.langchain.com/en/latest/stores/langchain_core.stores.InMemoryByteStore.html) | [langchain_core](https://api.python.langchain.com/en/latest/core_api_reference.html) | ✅ | ✅ | ![PyPI - Downloads](https://img.shields.io/pypi/dm/langchain_core?style=flat-square&label=%20) | ![PyPI - Version](https://img.shields.io/pypi/v/langchain_core?style=flat-square&label=%20) |
 
-### Installation
+### 安装
 
-The LangChain `InMemoryByteStore` integration lives in the `langchain_core` package:
-
+LangChain `InMemoryByteStore` 集成位于 `langchain_core` 包中：
 
 ```python
 %pip install -qU langchain_core
 ```
 
-## Instantiation
+## 实例化
 
-Now you can instantiate your byte store:
+现在您可以实例化您的字节存储：
 
 
 ```python
@@ -36,9 +36,9 @@ from langchain_core.stores import InMemoryByteStore
 kv_store = InMemoryByteStore()
 ```
 
-## Usage
+## 使用方法
 
-You can set data under keys like this using the `mset` method:
+您可以使用 `mset` 方法在键下设置数据，如下所示：
 
 
 ```python
@@ -64,7 +64,7 @@ kv_store.mget(
 ```
 
 
-And you can delete data using the `mdelete` method:
+您可以使用 `mdelete` 方法删除数据：
 
 
 ```python
@@ -89,12 +89,10 @@ kv_store.mget(
 [None, None]
 ```
 
+## API 参考
 
-## API reference
+有关所有 `InMemoryByteStore` 功能和配置的详细文档，请访问 API 参考： https://api.python.langchain.com/en/latest/stores/langchain_core.stores.InMemoryByteStore.html
 
-For detailed documentation of all `InMemoryByteStore` features and configurations, head to the API reference: https://api.python.langchain.com/en/latest/stores/langchain_core.stores.InMemoryByteStore.html
+## 相关
 
-
-## Related
-
-- [Key-value store conceptual guide](/docs/concepts/#key-value-stores)
+- [键值存储概念指南](/docs/concepts/#key-value-stores)

@@ -1,53 +1,52 @@
-
 # rag-ollama-multi-query
 
-This template performs RAG using Ollama and OpenAI with a multi-query retriever. 
+该模板使用Ollama和OpenAI执行RAG，采用多查询检索器。
 
-The multi-query retriever is an example of query transformation, generating multiple queries from different perspectives based on the user's input query. 
+多查询检索器是查询转换的一个示例，根据用户输入的查询从不同的角度生成多个查询。
 
-For each query, it retrieves a set of relevant documents and takes the unique union across all queries for answer synthesis.
+对于每个查询，它检索一组相关文档，并在所有查询中取唯一的并集以进行答案合成。
 
-We use a private, local LLM for the narrow task of query generation to avoid excessive calls to a larger LLM API.
+我们使用一个私有的本地LLM来执行查询生成的狭窄任务，以避免对更大LLM API的过度调用。
 
-See an example trace for Ollama LLM performing the query expansion [here](https://smith.langchain.com/public/8017d04d-2045-4089-b47f-f2d66393a999/r).
+有关Ollama LLM执行查询扩展的示例跟踪，请参见[此处](https://smith.langchain.com/public/8017d04d-2045-4089-b47f-f2d66393a999/r)。
 
-But we use OpenAI for the more challenging task of answer syntesis (full trace example [here](https://smith.langchain.com/public/ec75793b-645b-498d-b855-e8d85e1f6738/r)).
+但我们使用OpenAI来处理更具挑战性的答案合成任务（完整跟踪示例[此处](https://smith.langchain.com/public/ec75793b-645b-498d-b855-e8d85e1f6738/r)）。
 
-## Environment Setup
+## 环境设置
 
-To set up the environment, you need to download Ollama. 
+要设置环境，您需要下载 Ollama。
 
-Follow the instructions [here](https://python.langchain.com/docs/integrations/chat/ollama). 
+请按照 [此处](https://python.langchain.com/docs/integrations/chat/ollama) 的说明进行操作。
 
-You can choose the desired LLM with Ollama. 
+您可以选择所需的 LLM 与 Ollama。
 
-This template uses `zephyr`, which can be accessed using `ollama pull zephyr`.
+此模板使用 `zephyr`，可以通过 `ollama pull zephyr` 访问。
 
-There are many other options available [here](https://ollama.ai/library).
+还有许多其他选项可在 [此处](https://ollama.ai/library) 找到。
 
-Set the `OPENAI_API_KEY` environment variable to access the OpenAI models.
+设置 `OPENAI_API_KEY` 环境变量以访问 OpenAI 模型。
 
-## Usage
+## 使用方法
 
-To use this package, you should first install the LangChain CLI:
+要使用此软件包，您应首先安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this package, do:
+要创建一个新的 LangChain 项目并安装此软件包，请执行：
 
 ```shell
 langchain app new my-app --package rag-ollama-multi-query
 ```
 
-To add this package to an existing project, run:
+要将此软件包添加到现有项目中，请运行：
 
 ```shell
 langchain app add rag-ollama-multi-query
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 
 ```python
 from rag_ollama_multi_query import chain as rag_ollama_multi_query_chain
@@ -55,26 +54,26 @@ from rag_ollama_multi_query import chain as rag_ollama_multi_query_chain
 add_routes(app, rag_ollama_multi_query_chain, path="/rag-ollama-multi-query")
 ```
 
-(Optional) Now, let's configure LangSmith. LangSmith will help us trace, monitor, and debug LangChain applications. You can sign up for LangSmith [here](https://smith.langchain.com/). If you don't have access, you can skip this section
+（可选）现在，让我们配置 LangSmith。LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以通过以下方式直接启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server running locally at [http://localhost:8000](http://localhost:8000)
+这将启动 FastAPI 应用程序，服务器在本地运行，地址为 [http://localhost:8000](http://localhost:8000)。
 
-You can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-You can access the playground at [http://127.0.0.1:8000/rag-ollama-multi-query/playground](http://127.0.0.1:8000/rag-ollama-multi-query/playground)
+您可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板。
+您可以在 [http://127.0.0.1:8000/rag-ollama-multi-query/playground](http://127.0.0.1:8000/rag-ollama-multi-query/playground) 访问游乐场。
 
-To access the template from code, use:
+要从代码中访问模板，请使用：
 
 ```python
 from langserve.client import RemoteRunnable

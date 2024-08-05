@@ -1,22 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/toolkits/polygon.ipynb
 ---
-# Polygon IO Toolkit
 
-This notebook shows how to use agents to interact with the [Polygon IO](https://polygon.io/) toolkit. The toolkit provides access to Polygon's Stock Market Data API.
+# Polygon IO 工具包
 
-## Example Use
+本笔记本展示了如何使用代理与 [Polygon IO](https://polygon.io/) 工具包进行交互。该工具包提供对 Polygon 股票市场数据 API 的访问。
 
+## 示例用法
 
-### Setup
+### 设置
 
 
 ```python
 %pip install --upgrade --quiet langchain-community > /dev/null
 ```
 
-Get your Polygon IO API key [here](https://polygon.io/), and then set it below.
-Note that the tool used in this example requires a "Stocks Advanced" subscription
+在此处获取您的 Polygon IO API 密钥 [here](https://polygon.io/)，然后在下面设置它。
+请注意，此示例中使用的工具需要“股票高级”订阅
 
 
 ```python
@@ -28,7 +28,7 @@ os.environ["POLYGON_API_KEY"] = getpass.getpass()
 ```output
 ········
 ```
-It's also helpful (but not needed) to set up [LangSmith](https://smith.langchain.com/) for best-in-class observability
+设置 [LangSmith](https://smith.langchain.com/) 以获得最佳的可观察性也是有帮助的（但不是必需的）
 
 
 ```python
@@ -36,7 +36,7 @@ It's also helpful (but not needed) to set up [LangSmith](https://smith.langchain
 # os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 ```
 
-### Initializing the agent
+### 初始化代理
 
 
 ```python
@@ -69,7 +69,7 @@ agent_executor = AgentExecutor(
 )
 ```
 
-### Get the last price quote for a stock
+### 获取股票的最新报价
 
 
 ```python

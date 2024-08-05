@@ -1,19 +1,19 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/analyticdb.ipynb
 ---
+
 # AnalyticDB
 
->[AnalyticDB for PostgreSQL](https://www.alibabacloud.com/help/en/analyticdb-for-postgresql/latest/product-introduction-overview) is a massively parallel processing (MPP) data warehousing service that is designed to analyze large volumes of data online.
+>[AnalyticDB for PostgreSQL](https://www.alibabacloud.com/help/en/analyticdb-for-postgresql/latest/product-introduction-overview) 是一项大规模并行处理 (MPP) 数据仓库服务，旨在在线分析大量数据。
 
->`AnalyticDB for PostgreSQL` is developed based on the open-source `Greenplum Database` project and is enhanced with in-depth extensions by `Alibaba Cloud`. AnalyticDB for PostgreSQL is compatible with the ANSI SQL 2003 syntax and the PostgreSQL and Oracle database ecosystems. AnalyticDB for PostgreSQL also supports row store and column store. AnalyticDB for PostgreSQL processes petabytes of data offline at a high performance level and supports highly concurrent online queries.
+>`AnalyticDB for PostgreSQL` 基于开源的 `Greenplum Database` 项目开发，并由 `Alibaba Cloud` 进行了深入扩展。AnalyticDB for PostgreSQL 兼容 ANSI SQL 2003 语法以及 PostgreSQL 和 Oracle 数据库生态系统。AnalyticDB for PostgreSQL 还支持行存储和列存储。AnalyticDB for PostgreSQL 以高性能处理 PB 级数据，并支持高并发的在线查询。
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
+您需要使用 `pip install -qU langchain-community` 安装 `langchain-community` 才能使用此集成。
 
-This notebook shows how to use functionality related to the `AnalyticDB` vector database.
-To run, you should have an [AnalyticDB](https://www.alibabacloud.com/help/en/analyticdb-for-postgresql/latest/product-introduction-overview) instance up and running:
+本笔记本展示了如何使用与 `AnalyticDB` 向量数据库相关的功能。
+要运行，您应该有一个正在运行的 [AnalyticDB](https://www.alibabacloud.com/help/en/analyticdb-for-postgresql/latest/product-introduction-overview) 实例：
 
-- Using [AnalyticDB Cloud Vector Database](https://www.alibabacloud.com/product/hybriddb-postgresql). Click here to fast deploy it.
-
+- 使用 [AnalyticDB Cloud Vector Database](https://www.alibabacloud.com/product/hybriddb-postgresql)。点击这里快速部署。
 
 ```python
 from langchain_community.vectorstores import AnalyticDB
@@ -21,8 +21,7 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import CharacterTextSplitter
 ```
 
-Split documents and get embeddings by call OpenAI API
-
+通过调用 OpenAI API 分割文档并获取嵌入
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -35,17 +34,16 @@ docs = text_splitter.split_documents(documents)
 embeddings = OpenAIEmbeddings()
 ```
 
-Connect to AnalyticDB by setting related ENVIRONMENTS.
+通过设置相关环境变量连接到 AnalyticDB。
 ```
 export PG_HOST={your_analyticdb_hostname}
-export PG_PORT={your_analyticdb_port} # Optional, default is 5432
-export PG_DATABASE={your_database} # Optional, default is postgres
+export PG_PORT={your_analyticdb_port} # 可选，默认是 5432
+export PG_DATABASE={your_database} # 可选，默认是 postgres
 export PG_USER={database_username}
 export PG_PASSWORD={database_password}
 ```
 
-Then store your embeddings and documents into AnalyticDB
-
+然后将您的嵌入和文档存储到 AnalyticDB
 
 ```python
 import os
@@ -66,14 +64,12 @@ vector_db = AnalyticDB.from_documents(
 )
 ```
 
-Query and retrieve data
-
+查询并检索数据
 
 ```python
 query = "What did the president say about Ketanji Brown Jackson"
 docs = vector_db.similarity_search(query)
 ```
-
 
 ```python
 print(docs[0].page_content)
@@ -88,7 +84,7 @@ One of the most serious constitutional responsibilities a President has is nomin
 And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
 ```
 
-## Related
+## 相关
 
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

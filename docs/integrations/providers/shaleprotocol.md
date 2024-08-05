@@ -1,23 +1,22 @@
 # Shale Protocol
 
-[Shale Protocol](https://shaleprotocol.com) provides production-ready inference APIs for open LLMs. It's a Plug & Play API as it's hosted on a highly scalable GPU cloud infrastructure. 
+[Shale Protocol](https://shaleprotocol.com) 提供用于开放 LLM 的生产就绪推理 API。它是一个即插即用的 API，因为它托管在高度可扩展的 GPU 云基础设施上。
 
-Our free tier supports up to 1K daily requests per key as we want to eliminate the barrier for anyone to start building genAI apps with LLMs. 
+我们的免费套餐支持每个密钥每天最多 1K 的请求，因为我们希望消除任何人开始使用 LLM 构建 genAI 应用程序的障碍。
 
-With Shale Protocol, developers/researchers can create apps and explore the capabilities of open LLMs at no cost.
+通过 Shale Protocol，开发人员/研究人员可以免费创建应用程序并探索开放 LLM 的能力。
 
-This page covers how Shale-Serve API can be incorporated with LangChain.
+本页面介绍了如何将 Shale-Serve API 与 LangChain 集成。
 
-As of June 2023, the API supports Vicuna-13B by default. We are going to support more LLMs such as Falcon-40B in future releases. 
+截至 2023 年 6 月，该 API 默认支持 Vicuna-13B。我们将在未来的版本中支持更多 LLM，例如 Falcon-40B。
 
+## 如何
 
-## How to
+### 1. 在 https://shaleprotocol.com 找到我们 Discord 的链接。通过我们 Discord 上的 "Shale Bot" 生成一个 API 密钥。无需信用卡，也没有免费试用。它是一个永久免费的层级，每个 API 密钥每天限制 1K 次。
 
-### 1. Find the link to our Discord on https://shaleprotocol.com. Generate an API key through the "Shale Bot" on our Discord. No credit card is required and no free trials. It's a forever free tier with 1K limit per day per API key.
+### 2. 使用 https://shale.live/v1 作为 OpenAI API 的替代品
 
-### 2. Use https://shale.live/v1 as OpenAI API drop-in replacement 
-
-For example
+例如
 ```python
 from langchain_openai import OpenAI
 from langchain_core.prompts import PromptTemplate

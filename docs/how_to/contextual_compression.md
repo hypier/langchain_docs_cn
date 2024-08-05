@@ -1,20 +1,21 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/contextual_compression.ipynb
 ---
-# How to do retrieval with contextual compression
 
-One challenge with retrieval is that usually you don't know the specific queries your document storage system will face when you ingest data into the system. This means that the information most relevant to a query may be buried in a document with a lot of irrelevant text. Passing that full document through your application can lead to more expensive LLM calls and poorer responses.
+# 如何使用上下文压缩进行检索
 
-Contextual compression is meant to fix this. The idea is simple: instead of immediately returning retrieved documents as-is, you can compress them using the context of the given query, so that only the relevant information is returned. “Compressing” here refers to both compressing the contents of an individual document and filtering out documents wholesale.
+检索的一大挑战是，通常在将数据导入系统时，你并不知道文档存储系统将面临的具体查询。这意味着与查询最相关的信息可能会埋藏在一篇包含大量无关文本的文档中。将整个文档传递给你的应用程序可能会导致更昂贵的LLM调用和较差的响应。
 
-To use the Contextual Compression Retriever, you'll need:
+上下文压缩旨在解决这个问题。这个想法很简单：你可以利用给定查询的上下文来压缩检索到的文档，而不是立即按原样返回它们，从而仅返回相关信息。“压缩”在这里指的是压缩单个文档的内容以及整体过滤掉文档。
 
-- a base retriever
-- a Document Compressor
+要使用上下文压缩检索器，你需要：
 
-The Contextual Compression Retriever passes queries to the base retriever, takes the initial documents and passes them through the Document Compressor. The Document Compressor takes a list of documents and shortens it by reducing the contents of documents or dropping documents altogether.
+- 一个基础检索器
+- 一个文档压缩器
 
-## Get started
+上下文压缩检索器将查询传递给基础检索器，获取初始文档并将其传递给文档压缩器。文档压缩器接受一系列文档，通过减少文档内容或完全删除文档来缩短列表。
+
+## 开始使用
 
 
 ```python
@@ -29,8 +30,8 @@ def pretty_print_docs(docs):
     )
 ```
 
-## Using a vanilla vector store retriever
-Let's start by initializing a simple vector store retriever and storing the 2023 State of the Union speech (in chunks). We can see that given an example question our retriever returns one or two relevant docs and a few irrelevant docs. And even the relevant docs have a lot of irrelevant information in them.
+## 使用原生向量存储检索器
+让我们开始初始化一个简单的向量存储检索器，并存储2023年国情咨文（分块）。我们可以看到，给定一个示例问题，我们的检索器返回一到两个相关文档和一些不相关的文档。即使是相关文档中也包含了很多不相关的信息。
 
 
 
@@ -105,10 +106,9 @@ Raise the minimum wage to $15 an hour and extend the Child Tax Credit, so no one
 
 Let’s increase Pell Grants and increase our historic support of HBCUs, and invest in what Jill—our First Lady who teaches full-time—calls America’s best-kept secret: community colleges.
 ```
-## Adding contextual compression with an `LLMChainExtractor`
-Now let's wrap our base retriever with a `ContextualCompressionRetriever`. We'll add an `LLMChainExtractor`, which will iterate over the initially returned documents and extract from each only the content that is relevant to the query.
 
-
+## 使用 `LLMChainExtractor` 添加上下文压缩
+现在让我们用 `ContextualCompressionRetriever` 包装我们的基础检索器。我们将添加一个 `LLMChainExtractor`，它将遍历最初返回的文档，并从每个文档中提取与查询相关的内容。
 
 ```python
 from langchain.retrievers import ContextualCompressionRetriever
@@ -131,12 +131,11 @@ Document 1:
 
 I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson.
 ```
-## More built-in compressors: filters
+
+## 更多内置压缩器：过滤器
+
 ### `LLMChainFilter`
-The `LLMChainFilter` is slightly simpler but more robust compressor that uses an LLM chain to decide which of the initially retrieved documents to filter out and which ones to return, without manipulating the document contents.
-
-
-
+`LLMChainFilter` 是一个稍微简单但更强大的压缩器，它使用 LLM 链来决定从最初检索到的文档中过滤掉哪些文档，以及返回哪些文档，而不对文档内容进行任何修改。
 
 ```python
 from langchain.retrievers.document_compressors import LLMChainFilter
@@ -162,12 +161,12 @@ One of the most serious constitutional responsibilities a President has is nomin
 
 And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
 ```
+
 ### `LLMListwiseRerank`
 
-[LLMListwiseRerank](https://api.python.langchain.com/en/latest/retrievers/langchain.retrievers.document_compressors.listwise_rerank.LLMListwiseRerank.html) uses [zero-shot listwise document reranking](https://arxiv.org/pdf/2305.02156) and functions similarly to `LLMChainFilter` as a robust but more expensive option. It is recommended to use a more powerful LLM.
+[LLMListwiseRerank](https://api.python.langchain.com/en/latest/retrievers/langchain.retrievers.document_compressors.listwise_rerank.LLMListwiseRerank.html) 使用 [零样本列表文档重排序](https://arxiv.org/pdf/2305.02156)，其功能与 `LLMChainFilter` 类似，是一种更强大但成本更高的选项。建议使用更强大的 LLM。
 
-Note that `LLMListwiseRerank` requires a model with the [with_structured_output](/docs/integrations/chat/) method implemented.
-
+请注意，`LLMListwiseRerank` 需要实现 [with_structured_output](/docs/integrations/chat/) 方法的模型。
 
 ```python
 from langchain.retrievers.document_compressors import LLMListwiseRerank
@@ -196,11 +195,10 @@ One of the most serious constitutional responsibilities a President has is nomin
 
 And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
 ```
+
 ### `EmbeddingsFilter`
 
-Making an extra LLM call over each retrieved document is expensive and slow. The `EmbeddingsFilter` provides a cheaper and faster option by embedding the documents and query and only returning those documents which have sufficiently similar embeddings to the query.
-
-
+对每个检索到的文档进行额外的 LLM 调用是昂贵且缓慢的。`EmbeddingsFilter` 提供了一种更便宜且更快速的选项，通过嵌入文档和查询，仅返回那些与查询具有足够相似嵌入的文档。
 
 ```python
 from langchain.retrievers.document_compressors import EmbeddingsFilter
@@ -242,10 +240,11 @@ We’re putting in place dedicated immigration judges so families fleeing persec
 
 We’re securing commitments and supporting partners in South and Central America to host more refugees and secure their own borders.
 ```
-## Stringing compressors and document transformers together
-Using the `DocumentCompressorPipeline` we can also easily combine multiple compressors in sequence. Along with compressors we can add `BaseDocumentTransformer`s to our pipeline, which don't perform any contextual compression but simply perform some transformation on a set of documents. For example `TextSplitter`s can be used as document transformers to split documents into smaller pieces, and the `EmbeddingsRedundantFilter` can be used to filter out redundant documents based on embedding similarity between documents.
 
-Below we create a compressor pipeline by first splitting our docs into smaller chunks, then removing redundant documents, and then filtering based on relevance to the query.
+## 将压缩器和文档转换器串联在一起
+使用 `DocumentCompressorPipeline`，我们还可以轻松地将多个压缩器按顺序组合在一起。除了压缩器，我们还可以在管道中添加 `BaseDocumentTransformer`，它们不执行任何上下文压缩，而只是对一组文档进行一些转换。例如，`TextSplitter` 可以用作文档转换器，将文档拆分为更小的部分，而 `EmbeddingsRedundantFilter` 可以根据文档之间的嵌入相似性过滤掉冗余文档。
+
+下面我们通过先将文档拆分为较小的块，然后移除冗余文档，最后根据与查询的相关性进行过滤来创建一个压缩器管道。
 
 
 

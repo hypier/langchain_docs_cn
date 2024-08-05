@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/minimax.ipynb
 ---
+
 # MiniMax
 
-[MiniMax](https://api.minimax.chat/document/guides/embeddings?id=6464722084cdc277dfaa966a) offers an embeddings service.
+[MiniMax](https://api.minimax.chat/document/guides/embeddings?id=6464722084cdc277dfaa966a) 提供嵌入服务。
 
-This example goes over how to use LangChain to interact with MiniMax Inference for text embedding.
+本示例介绍如何使用 LangChain 与 MiniMax 推理进行文本嵌入交互。
 
 
 ```python
@@ -52,7 +53,7 @@ print(f"Cosine similarity between document and query: {similarity}")
 Cosine similarity between document and query: 0.1573236279277012
 ```
 
-## Related
+## 相关
 
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

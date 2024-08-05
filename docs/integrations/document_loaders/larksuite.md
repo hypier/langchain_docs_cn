@@ -1,13 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/larksuite.ipynb
 ---
-# LarkSuite (FeiShu)
 
->[LarkSuite](https://www.larksuite.com/) is an enterprise collaboration platform developed by ByteDance.
+# LarkSuite (飞书)
 
-This notebook covers how to load data from the `LarkSuite` REST API into a format that can be ingested into LangChain, along with example usage for text summarization.
+>[LarkSuite](https://www.larksuite.com/) 是字节跳动开发的企业协作平台。
 
-The LarkSuite API requires an access token (tenant_access_token or user_access_token), checkout [LarkSuite open platform document](https://open.larksuite.com/document) for API details.
+本笔记本涵盖如何从 `LarkSuite` REST API 加载数据到可以被 LangChain 吞吐的格式，以及文本摘要的示例用法。
+
+LarkSuite API 需要访问令牌（tenant_access_token 或 user_access_token），请查看 [LarkSuite 开放平台文档](https://open.larksuite.com/document) 以获取 API 详情。
 
 
 ```python
@@ -23,7 +24,7 @@ ACCESS_TOKEN = getpass("larksuite tenant_access_token or user_access_token")
 DOCUMENT_ID = input("larksuite document id")
 ```
 
-## Load From Document
+## 从文档加载
 
 
 ```python
@@ -37,7 +38,8 @@ pprint(docs)
 ```output
 [Document(page_content='Test Doc\nThis is a Test Doc\n\n1\n2\n3\n\n', metadata={'document_id': 'V76kdbd2HoBbYJxdiNNccajunPf', 'revision_id': 11, 'title': 'Test Doc'})]
 ```
-## Load From Wiki
+
+## 从 Wiki 加载
 
 
 ```python
@@ -63,8 +65,7 @@ chain = load_summarize_chain(llm, chain_type="map_reduce")
 chain.run(docs)
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

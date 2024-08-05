@@ -1,22 +1,20 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/youtube_transcript.ipynb
 ---
-# YouTube transcripts
 
->[YouTube](https://www.youtube.com/) is an online video sharing and social media platform created by Google.
+# YouTube 字幕
 
-This notebook covers how to load documents from `YouTube transcripts`.
+>[YouTube](https://www.youtube.com/) 是一个由谷歌创建的在线视频分享和社交媒体平台。
 
+本笔记本介绍如何从 `YouTube 字幕` 加载文档。
 
 ```python
 from langchain_community.document_loaders import YoutubeLoader
 ```
 
-
 ```python
 %pip install --upgrade --quiet  youtube-transcript-api
 ```
-
 
 ```python
 loader = YoutubeLoader.from_youtube_url(
@@ -24,12 +22,11 @@ loader = YoutubeLoader.from_youtube_url(
 )
 ```
 
-
 ```python
 loader.load()
 ```
 
-### Add video info
+### 添加视频信息
 
 
 ```python
@@ -44,11 +41,11 @@ loader = YoutubeLoader.from_youtube_url(
 loader.load()
 ```
 
-### Add language preferences
+### 添加语言偏好
 
-Language param : It's a list of language codes in a descending priority, `en` by default.
+语言参数：这是一个按优先级降序排列的语言代码列表，默认为 `en`。
 
-translation param : It's a translate preference, you can translate available transcript to your preferred language.
+翻译参数：这是一个翻译偏好，您可以将可用的转录翻译为您首选的语言。
 
 
 ```python
@@ -61,14 +58,13 @@ loader = YoutubeLoader.from_youtube_url(
 loader.load()
 ```
 
-### Get transcripts as timestamped chunks
+### 获取带时间戳的转录文本块
 
-Get one or more `Document` objects, each containing a chunk of the video transcript.  The length of the chunks, in seconds, may be specified.  Each chunk's metadata includes a URL of the video on YouTube, which will start the video at the beginning of the specific chunk.
+获取一个或多个 `Document` 对象，每个对象包含视频转录文本的一部分。可以指定每个块的长度（以秒为单位）。每个块的元数据包括视频在 YouTube 上的 URL，该 URL 将在特定块的开头开始播放视频。
 
-`transcript_format` param:  One of the `langchain_community.document_loaders.youtube.TranscriptFormat` values.  In this case, `TranscriptFormat.CHUNKS`.
+`transcript_format` 参数：`langchain_community.document_loaders.youtube.TranscriptFormat` 的一个值。在这种情况下，使用 `TranscriptFormat.CHUNKS`。
 
-`chunk_size_seconds` param:  An integer number of video seconds to be represented by each chunk of transcript data.  Default is 120 seconds.
-
+`chunk_size_seconds` 参数：表示每个转录数据块的视频秒数的整数。默认值为 120 秒。
 
 ```python
 from langchain_community.document_loaders.youtube import TranscriptFormat
@@ -82,21 +78,20 @@ loader = YoutubeLoader.from_youtube_url(
 print("\n\n".join(map(repr, loader.load())))
 ```
 
-## YouTube loader from Google Cloud
+## 来自 Google Cloud 的 YouTube 加载器
 
-### Prerequisites
+### 前提条件
 
-1. Create a Google Cloud project or use an existing project
-1. Enable the [Youtube Api](https://console.cloud.google.com/apis/enableflow?apiid=youtube.googleapis.com&project=sixth-grammar-344520)
-1. [Authorize credentials for desktop app](https://developers.google.com/drive/api/quickstart/python#authorize_credentials_for_a_desktop_application)
+1. 创建一个 Google Cloud 项目或使用现有项目
+1. 启用 [Youtube Api](https://console.cloud.google.com/apis/enableflow?apiid=youtube.googleapis.com&project=sixth-grammar-344520)
+1. [为桌面应用授权凭据](https://developers.google.com/drive/api/quickstart/python#authorize_credentials_for_a_desktop_application)
 1. `pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib youtube-transcript-api`
 
-### 🧑 Instructions for ingesting your Google Docs data
-By default, the `GoogleDriveLoader` expects the `credentials.json` file to be `~/.credentials/credentials.json`, but this is configurable using the `credentials_file` keyword argument. Same thing with `token.json`. Note that `token.json` will be created automatically the first time you use the loader.
+### 🧑 导入您的 Google Docs 数据的说明
+默认情况下，`GoogleDriveLoader` 期望 `credentials.json` 文件位于 `~/.credentials/credentials.json`，但可以使用 `credentials_file` 关键字参数进行配置。`token.json` 也是一样。请注意，`token.json` 会在您第一次使用加载器时自动创建。
 
-`GoogleApiYoutubeLoader` can load from a list of Google Docs document ids or a folder id. You can obtain your folder and document id from the URL:
-Note depending on your set up, the `service_account_path` needs to be set up. See [here](https://developers.google.com/drive/api/v3/quickstart/python) for more details.
-
+`GoogleApiYoutubeLoader` 可以从 Google Docs 文档 ID 列表或文件夹 ID 中加载。您可以从 URL 中获取您的文件夹和文档 ID：
+根据您的设置，`service_account_path` 需要进行设置。有关更多详细信息，请参见 [这里](https://developers.google.com/drive/api/v3/quickstart/python)。
 
 ```python
 # Init the GoogleApiClient
@@ -124,8 +119,7 @@ youtube_loader_ids = GoogleApiYoutubeLoader(
 youtube_loader_channel.load()
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

@@ -1,28 +1,26 @@
 # Airtable
 
->[Airtable](https://en.wikipedia.org/wiki/Airtable) is a cloud collaboration service.
-`Airtable` is a spreadsheet-database hybrid, with the features of a database but applied to a spreadsheet. 
-> The fields in an Airtable table are similar to cells in a spreadsheet, but have types such as 'checkbox', 
-> 'phone number', and 'drop-down list', and can reference file attachments like images.
+>[Airtable](https://en.wikipedia.org/wiki/Airtable) 是一个云协作服务。
+`Airtable` 是一种电子表格与数据库的混合体，具有数据库的特性，但应用于电子表格。
+> Airtable 表格中的字段类似于电子表格中的单元格，但具有 '复选框'、'电话号码' 和 '下拉列表' 等类型，并且可以引用文件附件，如图像。
 
->Users can create a database, set up column types, add records, link tables to one another, collaborate, sort records
-> and publish views to external websites.
+>用户可以创建数据库，设置列类型，添加记录，链接表格，协作，排序记录并将视图发布到外部网站。
 
-## Installation and Setup
+## 安装与设置
 
 ```bash
 pip install pyairtable
 ```
 
-* Get your [API key](https://support.airtable.com/docs/creating-and-using-api-keys-and-access-tokens).
-* Get the [ID of your base](https://airtable.com/developers/web/api/introduction).
-* Get the [table ID from the table url](https://www.highviewapps.com/kb/where-can-i-find-the-airtable-base-id-and-table-id/#:~:text=Both%20the%20Airtable%20Base%20ID,URL%20that%20begins%20with%20tbl).
+* 获取您的 [API 密钥](https://support.airtable.com/docs/creating-and-using-api-keys-and-access-tokens)。
+* 获取您的 [基础 ID](https://airtable.com/developers/web/api/introduction)。
+* 从表格网址获取 [表格 ID](https://www.highviewapps.com/kb/where-can-i-find-the-airtable-base-id-and-table-id/#:~:text=Both%20the%20Airtable%20Base%20ID,URL%20that%20begins%20with%20tbl)。
 
-## Document Loader
+## 文档加载器
 
 
 ```python
 from langchain_community.document_loaders import AirtableLoader
 ```
 
-See an [example](/docs/integrations/document_loaders/airtable).
+查看一个[示例](/docs/integrations/document_loaders/airtable)。

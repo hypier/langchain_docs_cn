@@ -2,24 +2,23 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/query_high_cardinality.ipynb
 sidebar_position: 7
 ---
-# How deal with high cardinality categoricals when doing query analysis
 
-You may want to do query analysis to create a filter on a categorical column. One of the difficulties here is that you usually need to specify the EXACT categorical value. The issue is you need to make sure the LLM generates that categorical value exactly. This can be done relatively easy with prompting when there are only a few values that are valid. When there are a high number of valid values then it becomes more difficult, as those values may not fit in the LLM context, or (if they do) there may be too many for the LLM to properly attend to.
+# 如何处理高基数分类变量进行查询分析
 
-In this notebook we take a look at how to approach this.
+您可能想要进行查询分析，以便在分类列上创建过滤器。这里的一个难点是，您通常需要指定确切的分类值。问题在于，您需要确保 LLM 生成的分类值是完全准确的。当有效值只有少数时，这可以通过提示相对容易地完成。当有效值数量很高时，这就变得更加困难，因为这些值可能无法适应 LLM 的上下文，或者（如果可以适应）可能有太多值使得 LLM 无法正确关注。
 
-## Setup
-#### Install dependencies
+在本笔记本中，我们将探讨如何解决这个问题。
 
+## 设置
+#### 安装依赖
 
 ```python
 # %pip install -qU langchain langchain-community langchain-openai faker langchain-chroma
 ```
 
-#### Set environment variables
+#### 设置环境变量
 
-We'll use OpenAI in this example:
-
+在这个例子中，我们将使用 OpenAI：
 
 ```python
 import getpass
@@ -27,15 +26,14 @@ import os
 
 os.environ["OPENAI_API_KEY"] = getpass.getpass()
 
-# Optional, uncomment to trace runs with LangSmith. Sign up here: https://smith.langchain.com.
+# 可选，取消注释以使用 LangSmith 跟踪运行。请在此注册：https://smith.langchain.com。
 # os.environ["LANGCHAIN_TRACING_V2"] = "true"
 # os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 ```
 
-#### Set up data
+#### 设置数据
 
-We will generate a bunch of fake names
-
+我们将生成一堆假名字
 
 ```python
 from faker import Faker
@@ -45,35 +43,27 @@ fake = Faker()
 names = [fake.name() for _ in range(10000)]
 ```
 
-Let's look at some of the names
-
+让我们看看一些名字
 
 ```python
 names[0]
 ```
 
-
-
 ```output
 'Hayley Gonzalez'
 ```
-
-
 
 ```python
 names[567]
 ```
 
-
-
 ```output
 'Jesse Knight'
 ```
 
+## 查询分析
 
-## Query Analysis
-
-We can now set up a baseline query analysis
+我们现在可以设置一个基线查询分析
 
 
 ```python
@@ -93,7 +83,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_openai import ChatOpenAI
 
-system = """Generate a relevant search query for a library system"""
+system = """为图书馆系统生成一个相关的搜索查询"""
 prompt = ChatPromptTemplate.from_messages(
     [
         ("system", system),
@@ -108,7 +98,7 @@ query_analyzer = {"question": RunnablePassthrough()} | prompt | structured_llm
 /Users/harrisonchase/workplace/langchain/libs/core/langchain_core/_api/beta_decorator.py:86: LangChainBetaWarning: The function `with_structured_output` is in beta. It is actively being worked on, so the API may change.
   warn_beta(
 ```
-We can see that if we spell the name exactly correctly, it knows how to handle it
+我们可以看到，如果我们准确拼写名字，它知道如何处理
 
 
 ```python
@@ -122,7 +112,7 @@ Search(query='books about aliens', author='Jesse Knight')
 ```
 
 
-The issue is that the values you want to filter on may NOT be spelled exactly correctly
+问题在于您想要过滤的值可能没有准确拼写
 
 
 ```python
@@ -135,11 +125,9 @@ query_analyzer.invoke("what are books about aliens by jess knight")
 Search(query='books about aliens', author='Jess Knight')
 ```
 
+### 添加所有值
 
-### Add in all values
-
-One way around this is to add ALL possible values to the prompt. That will generally guide the query in the right direction
-
+解决此问题的一种方法是将所有可能的值添加到提示中。这通常会将查询引导到正确的方向。
 
 ```python
 system = """Generate a relevant search query for a library system.
@@ -158,13 +146,11 @@ base_prompt = ChatPromptTemplate.from_messages(
 prompt = base_prompt.partial(authors=", ".join(names))
 ```
 
-
 ```python
 query_analyzer_all = {"question": RunnablePassthrough()} | prompt | structured_llm
 ```
 
-However... if the list of categoricals is long enough, it may error!
-
+但是……如果分类列表足够长，它可能会出错！
 
 ```python
 try:
@@ -175,8 +161,7 @@ except Exception as e:
 ```output
 Error code: 400 - {'error': {'message': "This model's maximum context length is 16385 tokens. However, your messages resulted in 33885 tokens (33855 in the messages, 30 in the functions). Please reduce the length of the messages or functions.", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}
 ```
-We can try to use a longer context window... but with so much information in there, it is not garunteed to pick it up reliably
-
+我们可以尝试使用更长的上下文窗口……但是在如此多的信息中，它并不能保证可靠地捕捉到。
 
 ```python
 llm_long = ChatOpenAI(model="gpt-4-turbo-preview", temperature=0)
@@ -184,22 +169,17 @@ structured_llm_long = llm_long.with_structured_output(Search)
 query_analyzer_all = {"question": RunnablePassthrough()} | prompt | structured_llm_long
 ```
 
-
 ```python
 query_analyzer_all.invoke("what are books about aliens by jess knight")
 ```
-
-
 
 ```output
 Search(query='aliens', author='Kevin Knight')
 ```
 
+### 查找所有相关值
 
-### Find and all relevant values
-
-Instead, what we can do is create an index over the relevant values and then query that for the N most relevant values,
-
+相反，我们可以创建一个相关值的索引，然后查询 N 个最相关的值，
 
 ```python
 from langchain_chroma import Chroma
@@ -209,14 +189,12 @@ embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
 vectorstore = Chroma.from_texts(names, embeddings, collection_name="author_names")
 ```
 
-
 ```python
 def select_names(question):
     _docs = vectorstore.similarity_search(question, k=10)
     _names = [d.page_content for d in _docs]
     return ", ".join(_names)
 ```
-
 
 ```python
 create_prompt = {
@@ -225,39 +203,30 @@ create_prompt = {
 } | base_prompt
 ```
 
-
 ```python
 query_analyzer_select = create_prompt | structured_llm
 ```
-
 
 ```python
 create_prompt.invoke("what are books by jess knight")
 ```
 
-
-
 ```output
 ChatPromptValue(messages=[SystemMessage(content='Generate a relevant search query for a library system.\n\n`author` attribute MUST be one of:\n\nJesse Knight, Kelly Knight, Scott Knight, Richard Knight, Andrew Knight, Katherine Knight, Erica Knight, Ashley Knight, Becky Knight, Kevin Knight\n\nDo NOT hallucinate author name!'), HumanMessage(content='what are books by jess knight')])
 ```
-
-
 
 ```python
 query_analyzer_select.invoke("what are books about aliens by jess knight")
 ```
 
-
-
 ```output
 Search(query='books about aliens', author='Jesse Knight')
 ```
 
+### 选择后替换
 
-### Replace after selection
-
-Another method is to let the LLM fill in whatever value, but then convert that value to a valid value.
-This can actually be done with the Pydantic class itself!
+另一种方法是让 LLM 填入任意值，但随后将该值转换为有效值。
+这实际上可以通过 Pydantic 类本身来完成！
 
 
 ```python
@@ -275,7 +244,7 @@ class Search(BaseModel):
 
 
 ```python
-system = """Generate a relevant search query for a library system"""
+system = """为图书馆系统生成相关的搜索查询"""
 prompt = ChatPromptTemplate.from_messages(
     [
         ("system", system),

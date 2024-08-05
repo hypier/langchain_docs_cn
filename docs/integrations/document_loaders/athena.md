@@ -1,29 +1,25 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/athena.ipynb
 ---
+
 # Athena
 
->[Amazon Athena](https://aws.amazon.com/athena/) is a serverless, interactive analytics service built
->on open-source frameworks, supporting open-table and file formats. `Athena` provides a simplified,
->flexible way to analyze petabytes of data where it lives. Analyze data or build applications
->from an Amazon Simple Storage Service (S3) data lake and 30 data sources, including on-premises data
->sources or other cloud systems using SQL or Python. `Athena` is built on open-source `Trino`
->and `Presto` engines and `Apache Spark` frameworks, with no provisioning or configuration effort required.
+>[Amazon Athena](https://aws.amazon.com/athena/) 是一项无服务器的交互式分析服务，基于开源框架，支持开放表和文件格式。`Athena` 提供了一种简化、灵活的方式来分析存储在其位置的 PB 级数据。通过 SQL 或 Python 从 Amazon Simple Storage Service (S3) 数据湖和 30 个数据源（包括本地数据源或其他云系统）分析数据或构建应用程序。`Athena` 基于开源的 `Trino` 和 `Presto` 引擎以及 `Apache Spark` 框架，无需配置或预配置工作。
 
-This notebook goes over how to load documents from `AWS Athena`.
+本笔记本介绍如何从 `AWS Athena` 加载文档。
 
-## Setting up
+## 设置
 
-Follow [instructions to set up an AWS accoung](https://docs.aws.amazon.com/athena/latest/ug/setting-up.html).
+按照 [设置 AWS 账户的说明](https://docs.aws.amazon.com/athena/latest/ug/setting-up.html)。
 
-Install a python library:
+安装一个 Python 库：
 
 
 ```python
 ! pip install boto3
 ```
 
-## Example
+## 示例
 
 
 ```python
@@ -48,7 +44,7 @@ documents = loader.load()
 print(documents)
 ```
 
-Example with metadata columns
+带有元数据列的示例
 
 
 ```python
@@ -70,8 +66,7 @@ documents = loader.load()
 print(documents)
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

@@ -1,22 +1,23 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/nemo.ipynb
 ---
-# NVIDIA NeMo embeddings
 
-Connect to NVIDIA's embedding service using the `NeMoEmbeddings` class.
+# NVIDIA NeMo 嵌入
 
-The NeMo Retriever Embedding Microservice (NREM) brings the power of state-of-the-art text embedding to your applications, providing unmatched natural language processing and understanding capabilities. Whether you're developing semantic search, Retrieval Augmented Generation (RAG) pipelines—or any application that needs to use text embeddings—NREM has you covered. Built on the NVIDIA software platform incorporating CUDA, TensorRT, and Triton, NREM brings state of the art GPU accelerated Text Embedding model serving.
+使用 `NeMoEmbeddings` 类连接到 NVIDIA 的嵌入服务。
 
-NREM uses NVIDIA's TensorRT built on top of the Triton Inference Server for optimized inference of text embedding models.
+NeMo 检索嵌入微服务 (NREM) 将最先进的文本嵌入能力带入您的应用程序，提供无与伦比的自然语言处理和理解能力。无论您是在开发语义搜索、检索增强生成 (RAG) 流水线，还是任何需要使用文本嵌入的应用程序，NREM 都能满足您的需求。NREM 构建在 NVIDIA 软件平台之上，结合了 CUDA、TensorRT 和 Triton，提供最先进的 GPU 加速文本嵌入模型服务。
 
-## Imports
+NREM 使用 NVIDIA 的 TensorRT 构建在 Triton 推理服务器之上，以优化文本嵌入模型的推理。
+
+## 导入
 
 
 ```python
 from langchain_community.embeddings import NeMoEmbeddings
 ```
 
-## Setup
+## 设置
 
 
 ```python
@@ -32,15 +33,14 @@ embedding_model = NeMoEmbeddings(
 )
 ```
 ```output
-Checking if endpoint is live: http://localhost:8080/v1/embeddings
+检查端点是否可用: http://localhost:8080/v1/embeddings
 ```
 
 ```python
 embedding_model.embed_query("This is a test.")
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

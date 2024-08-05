@@ -1,18 +1,18 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/tool_choice.ipynb
 ---
-# How to force models to call a tool
 
-:::info Prerequisites
+# 如何强制模型调用工具
 
-This guide assumes familiarity with the following concepts:
-- [Chat models](/docs/concepts/#chat-models)
-- [LangChain Tools](/docs/concepts/#tools)
-- [How to use a model to call tools](/docs/how_to/tool_calling)
+:::info 前提条件
+
+本指南假定您熟悉以下概念：
+- [聊天模型](/docs/concepts/#chat-models)
+- [LangChain 工具](/docs/concepts/#tools)
+- [如何使用模型调用工具](/docs/how_to/tool_calling)
 :::
 
-In order to force our LLM to spelect a specific tool, we can use the `tool_choice` parameter to ensure certain behavior. First, let's define our model and tools:
-
+为了强制我们的 LLM 选择特定的工具，我们可以使用 `tool_choice` 参数来确保某种行为。首先，让我们定义我们的模型和工具：
 
 ```python
 from langchain_core.tools import tool
@@ -33,8 +33,7 @@ def multiply(a: int, b: int) -> int:
 tools = [add, multiply]
 ```
 
-For example, we can force our tool to call the multiply tool by using the following code:
-
+例如，我们可以通过以下代码强制我们的工具调用乘法工具：
 
 ```python
 llm_forced_to_multiply = llm.bind_tools(tools, tool_choice="Multiply")
@@ -45,10 +44,9 @@ llm_forced_to_multiply.invoke("what is 2 + 4")
 AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_9cViskmLvPnHjXk9tbVla5HA', 'function': {'arguments': '{"a":2,"b":4}', 'name': 'Multiply'}, 'type': 'function'}]}, response_metadata={'token_usage': {'completion_tokens': 9, 'prompt_tokens': 103, 'total_tokens': 112}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-095b827e-2bdd-43bb-8897-c843f4504883-0', tool_calls=[{'name': 'Multiply', 'args': {'a': 2, 'b': 4}, 'id': 'call_9cViskmLvPnHjXk9tbVla5HA'}], usage_metadata={'input_tokens': 103, 'output_tokens': 9, 'total_tokens': 112})
 ```
 
-Even if we pass it something that doesn't require multiplcation - it will still call the tool!
+即使我们传递给它的内容不需要乘法，它仍然会调用该工具！
 
-We can also just force our tool to select at least one of our tools by passing in the "any" (or "required" which is OpenAI specific) keyword to the `tool_choice` parameter.
-
+我们还可以通过将 "any"（或 "required" 这是 OpenAI 特有的）关键字传递给 `tool_choice` 参数，强制我们的工具至少选择一个工具。
 
 ```python
 llm_forced_to_use_tool = llm.bind_tools(tools, tool_choice="any")

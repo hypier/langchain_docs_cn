@@ -1,17 +1,18 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/annoy.ipynb
 ---
+
 # Annoy
 
-> [Annoy](https://github.com/spotify/annoy) (`Approximate Nearest Neighbors Oh Yeah`) is a C++ library with Python bindings to search for points in space that are close to a given query point. It also creates large read-only file-based data structures that are mapped into memory so that many processes may share the same data.
+> [Annoy](https://github.com/spotify/annoy) (`Approximate Nearest Neighbors Oh Yeah`) 是一个 C++ 库，具有 Python 绑定，用于搜索与给定查询点接近的空间中的点。它还创建了大型只读基于文件的数据结构，这些数据结构映射到内存中，以便多个进程可以共享相同的数据。
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
+您需要通过 `pip install -qU langchain-community` 安装 `langchain-community` 才能使用此集成。
 
-This notebook shows how to use functionality related to the `Annoy` vector database.
+此笔记本展示了如何使用与 `Annoy` 向量数据库相关的功能。
 
 ```{note}
-NOTE: Annoy is read-only - once the index is built you cannot add any more embeddings!
-If you want to progressively add new entries to your VectorStore then better choose an alternative!
+NOTE: Annoy 是只读的 - 一旦索引构建完成，您无法再添加任何嵌入！
+如果您想逐步将新条目添加到您的 VectorStore，最好选择其他替代方案！
 ```
 
 
@@ -19,7 +20,7 @@ If you want to progressively add new entries to your VectorStore then better cho
 %pip install --upgrade --quiet  annoy
 ```
 
-## Create VectorStore from texts
+## 从文本创建 VectorStore
 
 
 ```python
@@ -33,13 +34,13 @@ embeddings_func = HuggingFaceEmbeddings()
 ```python
 texts = ["pizza is great", "I love salad", "my car", "a dog"]
 
-# default metric is angular
+# 默认度量是 angular
 vector_store = Annoy.from_texts(texts, embeddings_func)
 ```
 
 
 ```python
-# allows for custom annoy parameters, defaults are n_trees=100, n_jobs=-1, metric="angular"
+# 允许自定义 annoy 参数，默认值为 n_trees=100, n_jobs=-1, metric="angular"
 vector_store_v2 = Annoy.from_texts(
     texts, embeddings_func, metric="dot", n_trees=100, n_jobs=1
 )
@@ -61,7 +62,7 @@ vector_store.similarity_search("food", k=3)
 
 
 ```python
-# the score is a distance metric, so lower is better
+# 分数是距离度量，因此越低越好
 vector_store.similarity_search_with_score("food", k=3)
 ```
 
@@ -73,8 +74,7 @@ vector_store.similarity_search_with_score("food", k=3)
  (Document(page_content='my car', metadata={}), 1.1580758094787598)]
 ```
 
-
-## Create VectorStore from docs
+## 从文档创建 VectorStore
 
 
 ```python
@@ -110,7 +110,7 @@ vector_store_from_docs = Annoy.from_documents(docs, embeddings_func)
 
 
 ```python
-query = "What did the president say about Ketanji Brown Jackson"
+query = "总统对 Ketanji Brown Jackson 说了什么"
 docs = vector_store_from_docs.similarity_search(query)
 ```
 
@@ -119,9 +119,10 @@ docs = vector_store_from_docs.similarity_search(query)
 print(docs[0].page_content[:100])
 ```
 ```output
-Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Ac
+今晚。我呼吁参议院：通过《投票自由法案》。通过《约翰·刘易斯投票权法案》
 ```
-## Create VectorStore via existing embeddings
+
+## 通过现有嵌入创建 VectorStore
 
 
 ```python
@@ -148,8 +149,7 @@ vector_store_from_embeddings.similarity_search_with_score("food", k=3)
  (Document(page_content='my car', metadata={}), 1.1580758094787598)]
 ```
 
-
-## Search via embeddings
+## 通过嵌入进行搜索
 
 
 ```python
@@ -183,8 +183,7 @@ vector_store.similarity_search_with_score_by_vector(motorbike_emb, k=3)
  (Document(page_content='pizza is great', metadata={}), 1.3254905939102173)]
 ```
 
-
-## Search via docstore id
+## 通过 docstore id 搜索
 
 
 ```python
@@ -217,7 +216,7 @@ Document(page_content='pizza is great', metadata={})
 
 
 ```python
-# same document has distance 0
+# 同一文档的距离为 0
 vector_store.similarity_search_with_score_by_index(some_docstore_id, k=3)
 ```
 
@@ -229,8 +228,7 @@ vector_store.similarity_search_with_score_by_index(some_docstore_id, k=3)
  (Document(page_content='my car', metadata={}), 1.2895267009735107)]
 ```
 
-
-## Save and load
+## 保存和加载
 
 
 ```python
@@ -248,7 +246,7 @@ loaded_vector_store = Annoy.load_local(
 
 
 ```python
-# same document has distance 0
+# 相同文档的距离为0
 loaded_vector_store.similarity_search_with_score_by_index(some_docstore_id, k=3)
 ```
 
@@ -260,8 +258,7 @@ loaded_vector_store.similarity_search_with_score_by_index(some_docstore_id, k=3)
  (Document(page_content='my car', metadata={}), 1.2895267009735107)]
 ```
 
-
-## Construct from scratch
+## 从头构建
 
 
 ```python
@@ -316,9 +313,7 @@ db_manually.similarity_search_with_score("eating!", k=3)
  (Document(page_content='my car', metadata={'x': 'stuff'}), 1.226445198059082)]
 ```
 
+## 相关
 
-
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

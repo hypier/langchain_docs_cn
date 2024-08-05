@@ -1,37 +1,36 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/llamafile.ipynb
 ---
+
 # Llamafile
 
-[Llamafile](https://github.com/Mozilla-Ocho/llamafile) lets you distribute and run LLMs with a single file.
+[Llamafile](https://github.com/Mozilla-Ocho/llamafile) 让您可以通过一个文件分发和运行 LLM。
 
-Llamafile does this by combining [llama.cpp](https://github.com/ggerganov/llama.cpp) with [Cosmopolitan Libc](https://github.com/jart/cosmopolitan) into one framework that collapses all the complexity of LLMs down to a single-file executable (called a "llamafile") that runs locally on most computers, with no installation.
+Llamafile 通过将 [llama.cpp](https://github.com/ggerganov/llama.cpp) 和 [Cosmopolitan Libc](https://github.com/jart/cosmopolitan) 结合成一个框架，将 LLM 的所有复杂性简化为一个单文件可执行文件（称为“llamafile”），该文件可以在大多数计算机上本地运行，无需安装。
 
-## Setup
+## 设置
 
-1. Download a llamafile for the model you'd like to use. You can find many models in llamafile format on [HuggingFace](https://huggingface.co/models?other=llamafile). In this guide, we will download a small one, `TinyLlama-1.1B-Chat-v1.0.Q5_K_M`. Note: if you don't have `wget`, you can just download the model via this [link](https://huggingface.co/jartine/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/TinyLlama-1.1B-Chat-v1.0.Q5_K_M.llamafile?download=true).
+1. 下载您想使用的模型的 llamafile。您可以在 [HuggingFace](https://huggingface.co/models?other=llamafile) 上找到许多 llamafile 格式的模型。在本指南中，我们将下载一个小模型 `TinyLlama-1.1B-Chat-v1.0.Q5_K_M`。注意：如果您没有 `wget`，可以通过此 [链接](https://huggingface.co/jartine/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/TinyLlama-1.1B-Chat-v1.0.Q5_K_M.llamafile?download=true) 下载模型。
 
 ```bash
 wget https://huggingface.co/jartine/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/TinyLlama-1.1B-Chat-v1.0.Q5_K_M.llamafile
 ```
 
-2. Make the llamafile executable. First, if you haven't done so already, open a terminal. **If you're using MacOS, Linux, or BSD,** you'll need to grant permission for your computer to execute this new file using `chmod` (see below). **If you're on Windows,** rename the file by adding ".exe" to the end (model file should be named `TinyLlama-1.1B-Chat-v1.0.Q5_K_M.llamafile.exe`).
-
+2. 使 llamafile 可执行。首先，如果您尚未这样做，请打开终端。**如果您使用的是 MacOS、Linux 或 BSD，** 您需要使用 `chmod` 授予计算机执行此新文件的权限（见下文）。**如果您在 Windows 上，** 请通过在文件名末尾添加 ".exe" 来重命名文件（模型文件应命名为 `TinyLlama-1.1B-Chat-v1.0.Q5_K_M.llamafile.exe`）。
 
 ```bash
-chmod +x TinyLlama-1.1B-Chat-v1.0.Q5_K_M.llamafile  # run if you're on MacOS, Linux, or BSD
+chmod +x TinyLlama-1.1B-Chat-v1.0.Q5_K_M.llamafile  # 如果您在 MacOS、Linux 或 BSD 上运行
 ```
 
-3. Run the llamafile in "server mode":
+3. 以“服务器模式”运行 llamafile：
 
 ```bash
 ./TinyLlama-1.1B-Chat-v1.0.Q5_K_M.llamafile --server --nobrowser
 ```
 
-Now you can make calls to the llamafile's REST API. By default, the llamafile server listens at http://localhost:8080. You can find full server documentation [here](https://github.com/Mozilla-Ocho/llamafile/blob/main/llama.cpp/server/README.md#api-endpoints). You can interact with the llamafile directly via the REST API, but here we'll show how to interact with it using LangChain.
+现在您可以调用 llamafile 的 REST API。默认情况下，llamafile 服务器在 http://localhost:8080 监听。您可以在 [这里](https://github.com/Mozilla-Ocho/llamafile/blob/main/llama.cpp/server/README.md#api-endpoints) 找到完整的服务器文档。您可以通过 REST API 直接与 llamafile 交互，但在这里我们将展示如何使用 LangChain 与其交互。
 
-
-## Usage
+## 使用方法
 
 
 ```python
@@ -49,7 +48,7 @@ llm.invoke("Tell me a joke")
 ```
 
 
-To stream tokens, use the `.stream(...)` method:
+要流式传输令牌，请使用 `.stream(...)` 方法：
 
 
 ```python
@@ -70,10 +69,9 @@ print()
 - The woman's eyes softened. "Thank you for your advice. It's so important to keep moving forward in life," she said. - He nodded once again. "You’re welcome. I hope your journey is filled with laughter and joy."
 - They both smiled and left the bar, ready to embark on their respective adventures.
 ```
-To learn more about the LangChain Expressive Language and the available methods on an LLM, see the [LCEL Interface](/docs/concepts#interface)
+要了解更多关于 LangChain 表达语言和 LLM 上可用的方法，请参见 [LCEL 接口](/docs/concepts#interface)
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

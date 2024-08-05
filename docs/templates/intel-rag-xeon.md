@@ -1,94 +1,92 @@
-# RAG example on Intel Xeon
-This template performs RAG using Chroma and Text Generation Inference on Intel® Xeon® Scalable Processors.
-Intel® Xeon® Scalable processors feature built-in accelerators for more performance-per-core and unmatched AI performance, with advanced security technologies for the most in-demand workload requirements—all while offering the greatest cloud choice and application portability, please check [Intel® Xeon® Scalable Processors](https://www.intel.com/content/www/us/en/products/details/processors/xeon/scalable.html).
+# Intel Xeon上的RAG示例
+此模板在Intel® Xeon®可扩展处理器上使用Chroma和文本生成推理执行RAG。  
+Intel® Xeon®可扩展处理器具有内置加速器，提供更高的每核心性能和无与伦比的AI性能，配备先进的安全技术以满足最苛刻的工作负载需求——同时提供最大的云选择和应用程序可移植性，请查看[Intel® Xeon®可扩展处理器](https://www.intel.com/content/www/us/en/products/details/processors/xeon/scalable.html)。
 
-## Environment Setup
-To use [🤗 text-generation-inference](https://github.com/huggingface/text-generation-inference) on Intel® Xeon® Scalable Processors, please follow these steps:
+## 环境设置
+要在 Intel® Xeon® Scalable 处理器上使用 [🤗 text-generation-inference](https://github.com/huggingface/text-generation-inference)，请按照以下步骤操作：
 
-
-### Launch a local server instance on Intel Xeon Server:
+### 在Intel Xeon服务器上启动本地服务器实例：
 ```bash
 model=Intel/neural-chat-7b-v3-3
-volume=$PWD/data # share a volume with the Docker container to avoid downloading weights every run
+volume=$PWD/data # 与Docker容器共享卷，以避免每次运行时下载权重
 
 docker run --shm-size 1g -p 8080:80 -v $volume:/data ghcr.io/huggingface/text-generation-inference:1.4 --model-id $model
 ```
 
-For gated models such as `LLAMA-2`, you will have to pass -e HUGGING_FACE_HUB_TOKEN=\<token\> to the docker run command above with a valid Hugging Face Hub read token.
+对于诸如`LLAMA-2`的受限模型，您需要在上述docker run命令中传递 -e HUGGING_FACE_HUB_TOKEN=\<token\>，并使用有效的Hugging Face Hub读取令牌。
 
-Please follow this link [huggingface token](https://huggingface.co/docs/hub/security-tokens) to get the access token ans export `HUGGINGFACEHUB_API_TOKEN` environment with the token.
+请访问此链接 [huggingface token](https://huggingface.co/docs/hub/security-tokens) 获取访问令牌，并使用该令牌导出`HUGGINGFACEHUB_API_TOKEN`环境变量。
 
 ```bash
 export HUGGINGFACEHUB_API_TOKEN=<token> 
 ```
 
-Send a request to check if the endpoint is working:
+发送请求以检查端点是否正常工作：
 
 ```bash
 curl localhost:8080/generate -X POST -d '{"inputs":"Which NFL team won the Super Bowl in the 2010 season?","parameters":{"max_new_tokens":128, "do_sample": true}}'   -H 'Content-Type: application/json'
 ```
 
-More details please refer to [text-generation-inference](https://github.com/huggingface/text-generation-inference).
+更多细节请参考 [text-generation-inference](https://github.com/huggingface/text-generation-inference)。
 
+## 填充数据
 
-## Populating with data
-
-If you want to populate the DB with some example data, you can run the below commands:
+如果您想用一些示例数据填充数据库，可以运行以下命令：
 ```shell
 poetry install
 poetry run python ingest.py
 ```
 
-The script process and stores sections from Edgar 10k filings data for Nike `nke-10k-2023.pdf` into a Chroma database.
+该脚本处理并存储来自Edgar 10k申报数据的Nike `nke-10k-2023.pdf`的部分内容到Chroma数据库中。
 
-## Usage
+## 用法
 
-To use this package, you should first have the LangChain CLI installed:
+要使用此包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将此包作为唯一包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package intel-rag-xeon
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，只需运行：
 
 ```shell
 langchain app add intel-rag-xeon
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 ```python
 from intel_rag_xeon import chain as xeon_rag_chain
 
 add_routes(app, xeon_rag_chain, path="/intel-rag-xeon")
 ```
 
-(Optional) Let's now configure LangSmith. LangSmith will help us trace, monitor and debug LangChain applications. You can sign up for LangSmith [here](https://smith.langchain.com/). If you don't have access, you can skip this section
+（可选）现在让我们配置 LangSmith。LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接启动一个 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server is running locally at 
+这将启动 FastAPI 应用程序，服务器在本地运行，地址为 
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/intel-rag-xeon/playground](http://127.0.0.1:8000/intel-rag-xeon/playground)
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板
+我们可以在 [http://127.0.0.1:8000/intel-rag-xeon/playground](http://127.0.0.1:8000/intel-rag-xeon/playground) 访问游乐场
 
-We can access the template from code with:
+我们可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable

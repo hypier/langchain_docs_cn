@@ -1,6 +1,7 @@
 ---
 custom_edit_url:
 ---
+
 # 🦜️🏓 LangServe
 
 [![Release Notes](https://img.shields.io/github/release/langchain-ai/langserve)](https://github.com/langchain-ai/langserve/releases)
@@ -8,148 +9,124 @@ custom_edit_url:
 [![Open Issues](https://img.shields.io/github/issues-raw/langchain-ai/langserve)](https://github.com/langchain-ai/langserve/issues)
 [![](https://dcbadge.vercel.app/api/server/6adMQxSpJS?compact=true&style=flat)](https://discord.com/channels/1038097195422978059/1170024642245832774)
 
-## Overview
+## 概述
 
-[LangServe](https://github.com/langchain-ai/langserve) helps developers
-deploy `LangChain` [runnables and chains](https://python.langchain.com/docs/expression_language/)
-as a REST API.
+[LangServe](https://github.com/langchain-ai/langserve) 帮助开发者将 `LangChain` [可运行对象和链](https://python.langchain.com/docs/expression_language/) 部署为 REST API。
 
-This library is integrated with [FastAPI](https://fastapi.tiangolo.com/) and
-uses [pydantic](https://docs.pydantic.dev/latest/) for data validation.
+该库与 [FastAPI](https://fastapi.tiangolo.com/) 集成，并使用 [pydantic](https://docs.pydantic.dev/latest/) 进行数据验证。
 
-In addition, it provides a client that can be used to call into runnables deployed on a
-server.
-A JavaScript client is available
-in [LangChain.js](https://js.langchain.com/docs/ecosystem/langserve).
+此外，它还提供了一个客户端，可以用来调用部署在服务器上的可运行对象。
+JavaScript 客户端可在 [LangChain.js](https://js.langchain.com/docs/ecosystem/langserve) 中找到。
 
-## Features
+## 特性
 
-- Input and Output schemas automatically inferred from your LangChain object, and
-  enforced on every API call, with rich error messages
-- API docs page with JSONSchema and Swagger (insert example link)
-- Efficient `/invoke`, `/batch` and `/stream` endpoints with support for many
-  concurrent requests on a single server
-- `/stream_log` endpoint for streaming all (or some) intermediate steps from your
-  chain/agent
-- **new** as of 0.0.40, supports `/stream_events` to make it easier to stream without needing to parse the output of `/stream_log`.
-- Playground page at `/playground/` with streaming output and intermediate steps
-- Built-in (optional) tracing to [LangSmith](https://www.langchain.com/langsmith), just
-  add your API key (see [Instructions](https://docs.smith.langchain.com/))
-- All built with battle-tested open-source Python libraries like FastAPI, Pydantic,
-  uvloop and asyncio.
-- Use the client SDK to call a LangServe server as if it was a Runnable running
-  locally (or call the HTTP API directly)
+- 从您的 LangChain 对象自动推断输入和输出模式，并在每个 API 调用中强制执行，提供丰富的错误信息
+- 带有 JSONSchema 和 Swagger 的 API 文档页面（插入示例链接）
+- 高效的 `/invoke`、`/batch` 和 `/stream` 端点，支持单个服务器上的多个并发请求
+- `/stream_log` 端点用于流式传输您的链/代理中的所有（或部分）中间步骤
+- **新** 在 0.0.40 中，支持 `/stream_events`，使流式传输更简单，无需解析 `/stream_log` 的输出。
+- `/playground/` 页面，具有流式输出和中间步骤
+- 内置（可选）追踪到 [LangSmith](https://www.langchain.com/langsmith)，只需添加您的 API 密钥（请参见 [说明](https://docs.smith.langchain.com/)）
+- 所有功能均基于经过实战检验的开源 Python 库，如 FastAPI、Pydantic、uvloop 和 asyncio。
+- 使用客户端 SDK 调用 LangServe 服务器，就像它是一个本地运行的 Runnable（或直接调用 HTTP API）
 - [LangServe Hub](https://github.com/langchain-ai/langchain/blob/master/templates/README.md)
 
-## ⚠️ LangGraph Compatibility
+## ⚠️ LangGraph 兼容性
 
-LangServe is designed to primarily deploy simple Runnables and wok with well-known primitives in langchain-core.
+LangServe 主要用于部署简单的 Runnables，并与 langchain-core 中的知名原语一起使用。
 
-If you need a deployment option for LangGraph, you should instead be looking at [LangGraph Cloud (beta)](https://langchain-ai.github.io/langgraph/cloud/) which will
-be better suited for deploying LangGraph applications.
+如果您需要 LangGraph 的部署选项，您应该考虑 [LangGraph Cloud (beta)](https://langchain-ai.github.io/langgraph/cloud/)，它更适合部署 LangGraph 应用程序。
 
-## Limitations
+## 限制
 
-- Client callbacks are not yet supported for events that originate on the server
-- OpenAPI docs will not be generated when using Pydantic V2. Fast API does not
-  support [mixing pydantic v1 and v2 namespaces](https://github.com/tiangolo/fastapi/issues/10360).
-  See section below for more details.
+- 目前不支持来自服务器的事件的客户端回调
+- 使用 Pydantic V2 时将不会生成 OpenAPI 文档。Fast API 不支持 [混合使用 pydantic v1 和 v2 命名空间](https://github.com/tiangolo/fastapi/issues/10360)。有关更多详细信息，请参见下面的部分。
 
-## Security
+## 安全性
 
-- Vulnerability in Versions 0.0.13 - 0.0.15 -- playground endpoint allows accessing
-  arbitrary files on
-  server. [Resolved in 0.0.16](https://github.com/langchain-ai/langserve/pull/98).
+- 版本 0.0.13 - 0.0.15 中的漏洞 -- playground 端点允许访问服务器上的任意文件。 [在 0.0.16 中解决](https://github.com/langchain-ai/langserve/pull/98)。
 
-## Installation
+## 安装
 
-For both client and server:
+对于客户端和服务器：
 
 ```bash
 pip install "langserve[all]"
 ```
 
-or `pip install "langserve[client]"` for client code,
-and `pip install "langserve[server]"` for server code.
+或者使用 `pip install "langserve[client]"` 安装客户端代码，使用 `pip install "langserve[server]"` 安装服务器代码。
 
 ## LangChain CLI 🛠️
 
-Use the `LangChain` CLI to bootstrap a `LangServe` project quickly.
+使用 `LangChain` CLI 快速启动 `LangServe` 项目。
 
-To use the langchain CLI make sure that you have a recent version of `langchain-cli`
-installed. You can install it with `pip install -U langchain-cli`.
+要使用 langchain CLI，请确保您已安装最新版本的 `langchain-cli`。您可以通过 `pip install -U langchain-cli` 安装它。
 
-## Setup
+## 设置
 
-**Note**: We use `poetry` for dependency management. Please follow poetry [doc](https://python-poetry.org/docs/) to learn more about it.
+**注意**：我们使用 `poetry` 进行依赖管理。请参考 poetry [文档](https://python-poetry.org/docs/) 以了解更多信息。
 
-### 1. Create new app using langchain cli command
+### 1. 使用 langchain cli 命令创建新应用
 
 ```sh
 langchain app new my-app
 ```
 
-### 2. Define the runnable in add_routes. Go to server.py and edit
+### 2. 在 add_routes 中定义可运行的内容。前往 server.py 并进行编辑
 
 ```sh
 add_routes(app. NotImplemented)
 ```
 
-### 3. Use `poetry` to add 3rd party packages (e.g., langchain-openai, langchain-anthropic, langchain-mistral etc).
+### 3. 使用 `poetry` 添加第三方包（例如，langchain-openai、langchain-anthropic、langchain-mistral 等）。
 
 ```sh
 poetry add [package-name] // e.g `poetry add langchain-openai`
 ```
 
-### 4. Set up relevant env variables. For example,
+### 4. 设置相关环境变量。例如，
 
 ```sh
 export OPENAI_API_KEY="sk-..."
 ```
 
-### 5. Serve your app
+### 5. 服务你的应用
 
 ```sh
 poetry run langchain serve --port=8100
 ```
 
-## Examples
+## 示例
 
-Get your LangServe instance started quickly with
-[LangChain Templates](https://github.com/langchain-ai/langchain/blob/master/templates/README.md).
+快速启动您的 LangServe 实例，使用 [LangChain 模板](https://github.com/langchain-ai/langchain/blob/master/templates/README.md)。
 
-For more examples, see the templates
-[index](https://github.com/langchain-ai/langchain/blob/master/templates/docs/INDEX.md)
-or the [examples](https://github.com/langchain-ai/langserve/tree/main/examples)
-directory.
+有关更多示例，请查看模板 [索引](https://github.com/langchain-ai/langchain/blob/master/templates/docs/INDEX.md) 或 [示例](https://github.com/langchain-ai/langserve/tree/main/examples) 目录。
 
-| Description                                                                                                                                                                                                                                                        | Links                                                                                                                                                                                                                               |
-| :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **LLMs** Minimal example that reserves OpenAI and Anthropic chat models. Uses async, supports batching and streaming.                                                                                                                                              | [server](https://github.com/langchain-ai/langserve/tree/main/examples/llm/server.py), [client](https://github.com/langchain-ai/langserve/blob/main/examples/llm/client.ipynb)                                                       |
-| **Retriever** Simple server that exposes a retriever as a runnable.                                                                                                                                                                                                | [server](https://github.com/langchain-ai/langserve/tree/main/examples/retrieval/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/retrieval/client.ipynb)                                           |
-| **Conversational Retriever** A [Conversational Retriever](https://python.langchain.com/docs/expression_language/cookbook/retrieval#conversational-retrieval-chain) exposed via LangServe                                                                           | [server](https://github.com/langchain-ai/langserve/tree/main/examples/conversational_retrieval_chain/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/conversational_retrieval_chain/client.ipynb) |
-| **Agent** without **conversation history** based on [OpenAI tools](https://python.langchain.com/docs/modules/agents/agent_types/openai_functions_agent)                                                                                                            | [server](https://github.com/langchain-ai/langserve/tree/main/examples/agent/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/agent/client.ipynb)                                                   |
-| **Agent** with **conversation history** based on [OpenAI tools](https://python.langchain.com/docs/modules/agents/agent_types/openai_functions_agent)                                                                                                               | [server](https://github.com/langchain-ai/langserve/blob/main/examples/agent_with_history/server.py), [client](https://github.com/langchain-ai/langserve/blob/main/examples/agent_with_history/client.ipynb)                         |
-| [RunnableWithMessageHistory](https://python.langchain.com/docs/expression_language/how_to/message_history) to implement chat persisted on backend, keyed off a `session_id` supplied by client.                                                                    | [server](https://github.com/langchain-ai/langserve/tree/main/examples/chat_with_persistence/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/chat_with_persistence/client.ipynb)                   |
-| [RunnableWithMessageHistory](https://python.langchain.com/docs/expression_language/how_to/message_history) to implement chat persisted on backend, keyed off a `conversation_id` supplied by client, and `user_id` (see Auth for implementing `user_id` properly). | [server](https://github.com/langchain-ai/langserve/tree/main/examples/chat_with_persistence_and_user/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/chat_with_persistence_and_user/client.ipynb) |
-| [Configurable Runnable](https://python.langchain.com/docs/expression_language/how_to/configure) to create a retriever that supports run time configuration of the index name.                                                                                      | [server](https://github.com/langchain-ai/langserve/tree/main/examples/configurable_retrieval/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/configurable_retrieval/client.ipynb)                 |
-| [Configurable Runnable](https://python.langchain.com/docs/expression_language/how_to/configure) that shows configurable fields and configurable alternatives.                                                                                                      | [server](https://github.com/langchain-ai/langserve/tree/main/examples/configurable_chain/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/configurable_chain/client.ipynb)                         |
-| **APIHandler** Shows how to use `APIHandler` instead of `add_routes`. This provides more flexibility for developers to define endpoints. Works well with all FastAPI patterns, but takes a bit more effort.                                                        | [server](https://github.com/langchain-ai/langserve/tree/main/examples/api_handler_examples/server.py)                                                                                                                               |
-| **LCEL Example** Example that uses LCEL to manipulate a dictionary input.                                                                                                                                                                                          | [server](https://github.com/langchain-ai/langserve/tree/main/examples/passthrough_dict/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/passthrough_dict/client.ipynb)                             |
-| **Auth** with `add_routes`: Simple authentication that can be applied across all endpoints associated with app. (Not useful on its own for implementing per user logic.)                                                                                           | [server](https://github.com/langchain-ai/langserve/tree/main/examples/auth/global_deps/server.py)                                                                                                                                   |
-| **Auth** with `add_routes`: Simple authentication mechanism based on path dependencies. (No useful on its own for implementing per user logic.)                                                                                                                    | [server](https://github.com/langchain-ai/langserve/tree/main/examples/auth/path_dependencies/server.py)                                                                                                                             |
-| **Auth** with `add_routes`: Implement per user logic and auth for endpoints that use per request config modifier. (**Note**: At the moment, does not integrate with OpenAPI docs.)                                                                                 | [server](https://github.com/langchain-ai/langserve/tree/main/examples/auth/per_req_config_modifier/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/auth/per_req_config_modifier/client.ipynb)     |
-| **Auth** with `APIHandler`: Implement per user logic and auth that shows how to search only within user owned documents.                                                                                                                                           | [server](https://github.com/langchain-ai/langserve/tree/main/examples/auth/api_handler/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/auth/api_handler/client.ipynb)                             |
-| **Widgets** Different widgets that can be used with playground (file upload and chat)                                                                                                                                                                              | [server](https://github.com/langchain-ai/langserve/tree/main/examples/widgets/chat/tuples/server.py)                                                                                                                                |
-| **Widgets** File upload widget used for LangServe playground.                                                                                                                                                                                                      | [server](https://github.com/langchain-ai/langserve/tree/main/examples/file_processing/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/file_processing/client.ipynb)                               |
+| 描述                                                                                                                                                                                                                                                       | 链接                                                                                                                                                                                                                                   |
+| :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **LLMs** 最小示例，保留 OpenAI 和 Anthropic 聊天模型。使用异步，支持批处理和流式传输。                                                                                                                                                                       | [server](https://github.com/langchain-ai/langserve/tree/main/examples/llm/server.py), [client](https://github.com/langchain-ai/langserve/blob/main/examples/llm/client.ipynb)                                                       |
+| **Retriever** 简单服务器，暴露可运行的检索器。                                                                                                                                                                                                            | [server](https://github.com/langchain-ai/langserve/tree/main/examples/retrieval/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/retrieval/client.ipynb)                                           |
+| **Conversational Retriever** 通过 LangServe 暴露的 [Conversational Retriever](https://python.langchain.com/docs/expression_language/cookbook/retrieval#conversational-retrieval-chain)                                                             | [server](https://github.com/langchain-ai/langserve/tree/main/examples/conversational_retrieval_chain/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/conversational_retrieval_chain/client.ipynb) |
+| 基于 [OpenAI tools](https://python.langchain.com/docs/modules/agents/agent_types/openai_functions_agent) 的 **Agent**，没有 **对话历史**。                                                                                                                  | [server](https://github.com/langchain-ai/langserve/tree/main/examples/agent/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/agent/client.ipynb)                                                   |
+| 基于 [OpenAI tools](https://python.langchain.com/docs/modules/agents/agent_types/openai_functions_agent) 的 **Agent**，带有 **对话历史**。                                                                                                                  | [server](https://github.com/langchain-ai/langserve/blob/main/examples/agent_with_history/server.py), [client](https://github.com/langchain-ai/langserve/blob/main/examples/agent_with_history/client.ipynb)                         |
+| [RunnableWithMessageHistory](https://python.langchain.com/docs/expression_language/how_to/message_history) 实现后端持久化聊天，通过客户端提供的 `session_id` 进行键控。                                                                                     | [server](https://github.com/langchain-ai/langserve/tree/main/examples/chat_with_persistence/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/chat_with_persistence/client.ipynb)                   |
+| [RunnableWithMessageHistory](https://python.langchain.com/docs/expression_language/how_to/message_history) 实现后端持久化聊天，通过客户端提供的 `conversation_id` 和 `user_id` 进行键控（有关正确实现 `user_id` 的信息，请参见 Auth）。                | [server](https://github.com/langchain-ai/langserve/tree/main/examples/chat_with_persistence_and_user/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/chat_with_persistence_and_user/client.ipynb) |
+| [Configurable Runnable](https://python.langchain.com/docs/expression_language/how_to/configure) 创建一个支持运行时配置索引名称的检索器。                                                                                                                   | [server](https://github.com/langchain-ai/langserve/tree/main/examples/configurable_retrieval/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/configurable_retrieval/client.ipynb)                 |
+| [Configurable Runnable](https://python.langchain.com/docs/expression_language/how_to/configure) 显示可配置字段和可配置替代项。                                                                                                                                 | [server](https://github.com/langchain-ai/langserve/tree/main/examples/configurable_chain/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/configurable_chain/client.ipynb)                         |
+| **APIHandler** 显示如何使用 `APIHandler` 代替 `add_routes`。这为开发人员定义端点提供了更大的灵活性。与所有 FastAPI 模式配合良好，但需要更多的努力。                                                                                                   | [server](https://github.com/langchain-ai/langserve/tree/main/examples/api_handler_examples/server.py)                                                                                                                                   |
+| **LCEL 示例** 使用 LCEL 操作字典输入的示例。                                                                                                                                                                                                               | [server](https://github.com/langchain-ai/langserve/tree/main/examples/passthrough_dict/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/passthrough_dict/client.ipynb)                             |
+| **Auth** 使用 `add_routes`：可以应用于与应用程序关联的所有端点的简单身份验证。（单独使用对实现每个用户逻辑没有用。）                                                                                                                               | [server](https://github.com/langchain-ai/langserve/tree/main/examples/auth/global_deps/server.py)                                                                                                                                   |
+| **Auth** 使用 `add_routes`：基于路径依赖关系的简单身份验证机制。（单独使用对实现每个用户逻辑没有用。）                                                                                                                                              | [server](https://github.com/langchain-ai/langserve/tree/main/examples/auth/path_dependencies/server.py)                                                                                                                             |
+| **Auth** 使用 `add_routes`：实现每个用户逻辑和身份验证，适用于使用每个请求配置修改器的端点。（**注意**：目前不与 OpenAPI 文档集成。）                                                                                                               | [server](https://github.com/langchain-ai/langserve/tree/main/examples/auth/per_req_config_modifier/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/auth/per_req_config_modifier/client.ipynb)     |
+| **Auth** 使用 `APIHandler`：实现每个用户逻辑和身份验证，显示如何仅在用户拥有的文档中进行搜索。                                                                                                                                                    | [server](https://github.com/langchain-ai/langserve/tree/main/examples/auth/api_handler/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/auth/api_handler/client.ipynb)                             |
+| **Widgets** 可用于游乐场（文件上传和聊天）的不同小部件。                                                                                                                                                                                                    | [server](https://github.com/langchain-ai/langserve/tree/main/examples/widgets/chat/tuples/server.py)                                                                                                                                |
+| **Widgets** 用于 LangServe 游乐场的文件上传小部件。                                                                                                                                                                                                        | [server](https://github.com/langchain-ai/langserve/tree/main/examples/file_processing/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/file_processing/client.ipynb)                               |
 
-## Sample Application
+## 示例应用程序
 
-### Server
+### 服务器
 
-Here's a server that deploys an OpenAI chat model, an Anthropic chat model, and a chain
-that uses
-the Anthropic model to tell a joke about a topic.
+这是一个部署 OpenAI 聊天模型、Anthropic 聊天模型以及一个使用 Anthropic 模型讲述关于某个主题笑话的链的服务器。
 
 ```python
 #!/usr/bin/env python
@@ -190,8 +167,7 @@ if __name__ == "__main__":
     uvicorn.run(app, host="localhost", port=8000)
 ```
 
-If you intend to call your endpoint from the browser, you will also need to set CORS headers.
-You can use FastAPI's built-in middleware for that:
+如果您打算从浏览器调用您的端点，您还需要设置 CORS 头。您可以使用 FastAPI 的内置中间件来实现：
 
 ```python
 from fastapi.middleware.cors import CORSMiddleware
@@ -207,24 +183,21 @@ app.add_middleware(
 )
 ```
 
-### Docs
+### 文档
 
-If you've deployed the server above, you can view the generated OpenAPI docs using:
+如果您已经部署了上述服务器，可以通过以下方式查看生成的 OpenAPI 文档：
 
-> ⚠️ If using pydantic v2, docs will not be generated for _invoke_, _batch_, _stream_,
-> _stream_log_. See [Pydantic](#pydantic) section below for more details.
+> ⚠️ 如果使用 pydantic v2，_invoke_、_batch_、_stream_、_stream_log_ 的文档将不会生成。有关更多详细信息，请参见下面的 [Pydantic](#pydantic) 部分。
 
 ```sh
 curl localhost:8000/docs
 ```
 
-make sure to **add** the `/docs` suffix.
+确保 **添加** `/docs` 后缀。
 
-> ⚠️ Index page `/` is not defined by **design**, so `curl localhost:8000` or visiting
-> the URL
-> will return a 404. If you want content at `/` define an endpoint `@app.get("/")`.
+> ⚠️ 索引页面 `/` 没有按 **设计** 定义，因此 `curl localhost:8000` 或访问该 URL 将返回 404。如果您希望在 `/` 上有内容，请定义一个端点 `@app.get("/")`。
 
-### Client
+### 客户端
 
 Python SDK
 
@@ -241,23 +214,23 @@ joke_chain = RemoteRunnable("http://localhost:8000/joke/")
 
 joke_chain.invoke({"topic": "parrots"})
 
-# or async
+# 或者异步
 await joke_chain.ainvoke({"topic": "parrots"})
 
 prompt = [
-    SystemMessage(content='Act like either a cat or a parrot.'),
-    HumanMessage(content='Hello!')
+    SystemMessage(content='表现得像一只猫或一只鹦鹉。'),
+    HumanMessage(content='你好！')
 ]
 
-# Supports astream
+# 支持astream
 async for msg in anthropic.astream(prompt):
     print(msg, end="", flush=True)
 
 prompt = ChatPromptTemplate.from_messages(
-    [("system", "Tell me a long story about {topic}")]
+    [("system", "给我讲一个关于{topic}的长故事")]
 )
 
-# Can define custom chains
+# 可以定义自定义链
 chain = prompt | RunnableMap({
     "openai": openai,
     "anthropic": anthropic,
@@ -266,7 +239,7 @@ chain = prompt | RunnableMap({
 chain.batch([{"topic": "parrots"}, {"topic": "cats"}])
 ```
 
-In TypeScript (requires LangChain.js version 0.0.166 or later):
+在 TypeScript 中（需要 LangChain.js 版本 0.0.166 或更高）：
 
 ```typescript
 import { RemoteRunnable } from "@langchain/core/runnables/remote";
@@ -279,7 +252,7 @@ const result = await chain.invoke({
 });
 ```
 
-Python using `requests`:
+使用 `requests` 的 Python：
 
 ```python
 import requests
@@ -291,7 +264,7 @@ response = requests.post(
 response.json()
 ```
 
-You can also use `curl`:
+您也可以使用 `curl`：
 
 ```sh
 curl --location --request POST 'http://localhost:8000/joke/invoke' \
@@ -303,9 +276,9 @@ curl --location --request POST 'http://localhost:8000/joke/invoke' \
     }'
 ```
 
-## Endpoints
+## 端点
 
-The following code:
+以下代码：
 
 ```python
 ...
@@ -316,63 +289,55 @@ add_routes(
 )
 ```
 
-adds of these endpoints to the server:
+将这些端点添加到服务器：
 
-- `POST /my_runnable/invoke` - invoke the runnable on a single input
-- `POST /my_runnable/batch` - invoke the runnable on a batch of inputs
-- `POST /my_runnable/stream` - invoke on a single input and stream the output
-- `POST /my_runnable/stream_log` - invoke on a single input and stream the output,
-  including output of intermediate steps as it's generated
-- `POST /my_runnable/astream_events` - invoke on a single input and stream events as they are generated,
-  including from intermediate steps.
-- `GET /my_runnable/input_schema` - json schema for input to the runnable
-- `GET /my_runnable/output_schema` - json schema for output of the runnable
-- `GET /my_runnable/config_schema` - json schema for config of the runnable
+- `POST /my_runnable/invoke` - 在单个输入上调用可运行对象
+- `POST /my_runnable/batch` - 在一批输入上调用可运行对象
+- `POST /my_runnable/stream` - 在单个输入上调用并流式传输输出
+- `POST /my_runnable/stream_log` - 在单个输入上调用并流式传输输出，包括生成的中间步骤输出
+- `POST /my_runnable/astream_events` - 在单个输入上调用并流式传输生成的事件，包括来自中间步骤的事件。
+- `GET /my_runnable/input_schema` - 可运行对象输入的 json schema
+- `GET /my_runnable/output_schema` - 可运行对象输出的 json schema
+- `GET /my_runnable/config_schema` - 可运行对象配置的 json schema
 
-These endpoints match
-the [LangChain Expression Language interface](https://python.langchain.com/docs/expression_language/interface) --
-please reference this documentation for more details.
+这些端点与
+[LangChain 表达语言接口](https://python.langchain.com/docs/expression_language/interface) 匹配——有关更多详细信息，请参考此文档。
 
 ## Playground
 
-You can find a playground page for your runnable at `/my_runnable/playground/`. This
-exposes a simple UI
-to [configure](https://python.langchain.com/docs/expression_language/how_to/configure)
-and invoke your runnable with streaming output and intermediate steps.
+您可以在 `/my_runnable/playground/` 找到可运行的 playground 页面。这
+提供了一个简单的 UI
+来 [配置](https://python.langchain.com/docs/expression_language/how_to/configure)
+并调用您的可运行程序，支持流式输出和中间步骤。
 
 <p align="center">
 <img src="https://github.com/langchain-ai/langserve/assets/3205522/5ca56e29-f1bb-40f4-84b5-15916384a276" width="50%"/>
 </p>
 
-### Widgets
+### 小部件
 
-The playground supports [widgets](#playground-widgets) and can be used to test your
-runnable with different inputs. See the [widgets](#widgets) section below for more
-details.
+游乐场支持 [小部件](#playground-widgets)，可以用于测试您的可运行程序与不同的输入。有关更多详细信息，请参见下面的 [小部件](#widgets) 部分。
 
-### Sharing
+### 共享
 
-In addition, for configurable runnables, the playground will allow you to configure the
-runnable and share a link with the configuration:
+此外，对于可配置的可运行项，游乐场将允许您配置可运行项并分享带有该配置的链接：
 
 <p align="center">
 <img src="https://github.com/langchain-ai/langserve/assets/3205522/86ce9c59-f8e4-4d08-9fa3-62030e0f521d" width="50%"/>
 </p>
 
-## Chat playground
+## 聊天游乐场
 
-LangServe also supports a chat-focused playground that opt into and use under `/my_runnable/playground/`.
-Unlike the general playground, only certain types of runnables are supported - the runnable's input schema must
-be a `dict` with either:
+LangServe 还支持一个以聊天为中心的游乐场，可以在 `/my_runnable/playground/` 下选择并使用。与一般的游乐场不同，仅支持某些类型的可运行项 - 可运行项的输入模式必须是一个 `dict`，其格式为：
 
-- a single key, and that key's value must be a list of chat messages.
-- two keys, one whose value is a list of messages, and the other representing the most recent message.
+- 单个键，该键的值必须是一个聊天消息列表。
+- 两个键，一个键的值是消息列表，另一个键表示最新的消息。
 
-We recommend you use the first format.
+我们建议您使用第一种格式。
 
-The runnable must also return either an `AIMessage` or a string.
+可运行项还必须返回 `AIMessage` 或字符串。
 
-To enable it, you must set `playground_type="chat",` when adding your route. Here's an example:
+要启用此功能，您必须在添加路由时设置 `playground_type="chat",`。以下是一个示例：
 
 ```python
 # Declare a chain
@@ -404,9 +369,7 @@ add_routes(
 )
 ```
 
-If you are using LangSmith, you can also set `enable_feedback_endpoint=True` on your route to enable thumbs-up/thumbs-down buttons
-after each message, and `enable_public_trace_link_endpoint=True` to add a button that creates a public traces for runs.
-Note that you will also need to set the following environment variables:
+如果您使用 LangSmith，您还可以在路由上设置 `enable_feedback_endpoint=True` 以启用每条消息后的点赞/点踩按钮，并设置 `enable_public_trace_link_endpoint=True` 以添加一个按钮，用于创建运行的公共跟踪。请注意，您还需要设置以下环境变量：
 
 ```bash
 export LANGCHAIN_TRACING_V2="true"
@@ -414,165 +377,137 @@ export LANGCHAIN_PROJECT="YOUR_PROJECT_NAME"
 export LANGCHAIN_API_KEY="YOUR_API_KEY"
 ```
 
-Here's an example with the above two options turned on:
+以下是启用上述两个选项的示例：
 
 <p align="center">
 <img src="./.github/img/chat_playground.png" width="50%"/>
 </p>
 
-Note: If you enable public trace links, the internals of your chain will be exposed. We recommend only using this setting
-for demos or testing.
+注意：如果您启用公共跟踪链接，您的链的内部结构将被暴露。我们建议仅在演示或测试时使用此设置。
 
-## Legacy Chains
+## 传统链
 
-LangServe works with both Runnables (constructed
-via [LangChain Expression Language](https://python.langchain.com/docs/expression_language/))
-and legacy chains (inheriting from `Chain`).
-However, some of the input schemas for legacy chains may be incomplete/incorrect,
-leading to errors.
-This can be fixed by updating the `input_schema` property of those chains in LangChain.
-If you encounter any errors, please open an issue on THIS repo, and we will work to
-address it.
+LangServe 同时支持 Runnables（通过 [LangChain 表达式语言](https://python.langchain.com/docs/expression_language/) 构建）和传统链（继承自 `Chain`）。然而，某些传统链的输入模式可能不完整或不正确，导致错误。这可以通过更新 LangChain 中那些链的 `input_schema` 属性来修复。如果您遇到任何错误，请在此仓库中提交问题，我们将努力解决。
 
-## Deployment
+## 部署
 
-### Deploy to AWS
+### 部署到 AWS
 
-You can deploy to AWS using the [AWS Copilot CLI](https://aws.github.io/copilot-cli/)
+您可以使用 [AWS Copilot CLI](https://aws.github.io/copilot-cli/) 部署到 AWS
 
 ```bash
 copilot init --app [application-name] --name [service-name] --type 'Load Balanced Web Service' --dockerfile './Dockerfile' --deploy
 ```
 
-Click [here](https://aws.amazon.com/containers/copilot/) to learn more.
+点击 [这里](https://aws.amazon.com/containers/copilot/) 了解更多信息。
 
-### Deploy to Azure
+### 部署到 Azure
 
-You can deploy to Azure using Azure Container Apps (Serverless):
+您可以使用 Azure Container Apps（无服务器）部署到 Azure：
 
 ```
 az containerapp up --name [container-app-name] --source . --resource-group [resource-group-name] --environment  [environment-name] --ingress external --target-port 8001 --env-vars=OPENAI_API_KEY=your_key
 ```
 
-You can find more
-info [here](https://learn.microsoft.com/en-us/azure/container-apps/containerapp-up)
+您可以在 [这里](https://learn.microsoft.com/en-us/azure/container-apps/containerapp-up) 找到更多信息。
 
-### Deploy to GCP
+### 部署到 GCP
 
-You can deploy to GCP Cloud Run using the following command:
+您可以使用以下命令部署到 GCP Cloud Run：
 
 ```
 gcloud run deploy [your-service-name] --source . --port 8001 --allow-unauthenticated --region us-central1 --set-env-vars=OPENAI_API_KEY=your_key
 ```
 
-### Community Contributed
+### 社区贡献
 
-#### Deploy to Railway
+#### 部署到 Railway
 
-[Example Railway Repo](https://github.com/PaulLockett/LangServe-Railway/tree/main)
+[示例 Railway 仓库](https://github.com/PaulLockett/LangServe-Railway/tree/main)
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/pW9tXP?referralCode=c-aq4K)
+[![在 Railway 上部署](https://railway.app/button.svg)](https://railway.app/template/pW9tXP?referralCode=c-aq4K)
 
 ## Pydantic
 
-LangServe provides support for Pydantic 2 with some limitations.
+LangServe 对 Pydantic 2 提供支持，但有一些限制。
 
-1. OpenAPI docs will not be generated for invoke/batch/stream/stream_log when using
-   Pydantic V2. Fast API does not support [mixing pydantic v1 and v2 namespaces]. To fix this, use `pip install pydantic==1.10.17`.
-2. LangChain uses the v1 namespace in Pydantic v2. Please read
-   the [following guidelines to ensure compatibility with LangChain](https://github.com/langchain-ai/langchain/discussions/9337)
+1. 在使用 Pydantic V2 时，invoke/batch/stream/stream_log 的 OpenAPI 文档将不会生成。Fast API 不支持 [混合使用 pydantic v1 和 v2 命名空间]。要解决此问题，请使用 `pip install pydantic==1.10.17`。
+2. LangChain 在 Pydantic v2 中使用 v1 命名空间。请阅读
+   [以下指南以确保与 LangChain 的兼容性](https://github.com/langchain-ai/langchain/discussions/9337)
 
-Except for these limitations, we expect the API endpoints, the playground and any other
-features to work as expected.
+除了这些限制之外，我们预计 API 端点、游乐场和其他任何功能都能正常工作。
 
-## Advanced
+## 高级
 
-### Handling Authentication
+### 处理身份验证
 
-If you need to add authentication to your server, please read Fast API's documentation
-about [dependencies](https://fastapi.tiangolo.com/tutorial/dependencies/)
-and [security](https://fastapi.tiangolo.com/tutorial/security/).
+如果您需要为服务器添加身份验证，请阅读 Fast API 的文档关于 [依赖项](https://fastapi.tiangolo.com/tutorial/dependencies/) 和 [安全性](https://fastapi.tiangolo.com/tutorial/security/)。
 
-The below examples show how to wire up authentication logic LangServe endpoints using FastAPI primitives.
+下面的示例展示了如何使用 FastAPI 原语将身份验证逻辑连接到 LangServe 端点。
 
-You are responsible for providing the actual authentication logic, the users table etc.
+您需要提供实际的身份验证逻辑、用户表等。
 
-If you're not sure what you're doing, you could try using an existing solution [Auth0](https://auth0.com/).
+如果您不确定自己在做什么，可以尝试使用现有的解决方案 [Auth0](https://auth0.com/)。
 
-#### Using add_routes
+#### 使用 add_routes
 
-If you're using `add_routes`, see
-examples [here](https://github.com/langchain-ai/langserve/tree/main/examples/auth).
+如果您使用 `add_routes`，请查看 [这里](https://github.com/langchain-ai/langserve/tree/main/examples/auth) 的示例。
 
-| Description                                                                                                                                                                        | Links                                                                                                                                                                                                                           |
-| :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Auth** with `add_routes`: Simple authentication that can be applied across all endpoints associated with app. (Not useful on its own for implementing per user logic.)           | [server](https://github.com/langchain-ai/langserve/tree/main/examples/auth/global_deps/server.py)                                                                                                                               |
-| **Auth** with `add_routes`: Simple authentication mechanism based on path dependencies. (No useful on its own for implementing per user logic.)                                    | [server](https://github.com/langchain-ai/langserve/tree/main/examples/auth/path_dependencies/server.py)                                                                                                                         |
-| **Auth** with `add_routes`: Implement per user logic and auth for endpoints that use per request config modifier. (**Note**: At the moment, does not integrate with OpenAPI docs.) | [server](https://github.com/langchain-ai/langserve/tree/main/examples/auth/per_req_config_modifier/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/auth/per_req_config_modifier/client.ipynb) |
+| 描述                                                                                                                                                                               | 链接                                                                                                                                                                                                 |
+| :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Auth** 使用 `add_routes`：简单的身份验证，可以应用于与应用程序关联的所有端点。（单独使用对实现每个用户逻辑没有用。）                                                             | [server](https://github.com/langchain-ai/langserve/tree/main/examples/auth/global_deps/server.py)                                                                                                   |
+| **Auth** 使用 `add_routes`：基于路径依赖的简单身份验证机制。（单独使用对实现每个用户逻辑没有用。）                                                                            | [server](https://github.com/langchain-ai/langserve/tree/main/examples/auth/path_dependencies/server.py)                                                                                             |
+| **Auth** 使用 `add_routes`：实现每个用户逻辑和身份验证，用于使用每个请求配置修改器的端点。（**注意**：目前不与 OpenAPI 文档集成。）                                               | [server](https://github.com/langchain-ai/langserve/tree/main/examples/auth/per_req_config_modifier/server.py)，[client](https://github.com/langchain-ai/langserve/tree/main/examples/auth/per_req_config_modifier/client.ipynb) |
 
-Alternatively, you can use FastAPI's [middleware](https://fastapi.tiangolo.com/tutorial/middleware/).
+另外，您可以使用 FastAPI 的 [中间件](https://fastapi.tiangolo.com/tutorial/middleware/)。
 
-Using global dependencies and path dependencies has the advantage that auth will be properly supported in the OpenAPI docs page, but
-these are not sufficient for implement per user logic (e.g., making an application that can search only within user owned documents).
+使用全局依赖和路径依赖的优点在于身份验证将在 OpenAPI 文档页面中得到正确支持，但这些不足以实现每个用户的逻辑（例如，创建一个只能在用户拥有的文档中搜索的应用程序）。
 
-If you need to implement per user logic, you can use the `per_req_config_modifier` or `APIHandler` (below) to implement this logic.
+如果您需要实现每个用户的逻辑，可以使用 `per_req_config_modifier` 或 `APIHandler`（如下）来实现此逻辑。
 
-**Per User**
+**每个用户**
 
-If you need authorization or logic that is user dependent,
-specify `per_req_config_modifier` when using `add_routes`. Use a callable receives the
-raw `Request` object and can extract relevant information from it for authentication and
-authorization purposes.
+如果您需要授权或依赖于用户的逻辑，请在使用 `add_routes` 时指定 `per_req_config_modifier`。使用一个可调用对象接收原始 `Request` 对象，并可以从中提取相关信息以用于身份验证和授权目的。
 
-#### Using APIHandler
+#### 使用 APIHandler
 
-If you feel comfortable with FastAPI and python, you can use LangServe's [APIHandler](https://github.com/langchain-ai/langserve/blob/main/examples/api_handler_examples/server.py).
+如果您对 FastAPI 和 Python 感到舒适，可以使用 LangServe 的 [APIHandler](https://github.com/langchain-ai/langserve/blob/main/examples/api_handler_examples/server.py)。
 
-| Description                                                                                                                                                                                                 | Links                                                                                                                                                                                                           |
-| :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Auth** with `APIHandler`: Implement per user logic and auth that shows how to search only within user owned documents.                                                                                    | [server](https://github.com/langchain-ai/langserve/tree/main/examples/auth/api_handler/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/auth/api_handler/client.ipynb)         |
-| **APIHandler** Shows how to use `APIHandler` instead of `add_routes`. This provides more flexibility for developers to define endpoints. Works well with all FastAPI patterns, but takes a bit more effort. | [server](https://github.com/langchain-ai/langserve/tree/main/examples/api_handler_examples/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/api_handler_examples/client.ipynb) |
+| 描述                                                                                                                                                                                                 | 链接                                                                                                                                                                                                   |
+| :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Auth** 使用 `APIHandler`：实现每个用户逻辑和身份验证，展示如何仅在用户拥有的文档中进行搜索。                                                                                                   | [server](https://github.com/langchain-ai/langserve/tree/main/examples/auth/api_handler/server.py)，[client](https://github.com/langchain-ai/langserve/tree/main/examples/auth/api_handler/client.ipynb) |
+| **APIHandler** 展示如何使用 `APIHandler` 而不是 `add_routes`。这为开发人员定义端点提供了更多灵活性。与所有 FastAPI 模式配合良好，但需要更多的努力。                                            | [server](https://github.com/langchain-ai/langserve/tree/main/examples/api_handler_examples/server.py)，[client](https://github.com/langchain-ai/langserve/tree/main/examples/api_handler_examples/client.ipynb) |
 
-It's a bit more work, but gives you complete control over the endpoint definitions, so
-you can do whatever custom logic you need for auth.
+这需要更多的工作，但可以让您完全控制端点定义，因此您可以根据需要进行自定义逻辑处理。
 
-### Files
+### 文件
 
-LLM applications often deal with files. There are different architectures
-that can be made to implement file processing; at a high level:
+LLM 应用程序通常处理文件。可以实现文件处理的不同架构；从高层次来看：
 
-1. The file may be uploaded to the server via a dedicated endpoint and processed using a
-   separate endpoint
-2. The file may be uploaded by either value (bytes of file) or reference (e.g., s3 url
-   to file content)
-3. The processing endpoint may be blocking or non-blocking
-4. If significant processing is required, the processing may be offloaded to a dedicated
-   process pool
+1. 文件可以通过专用端点上传到服务器，并使用单独的端点进行处理
+2. 文件可以通过值（文件的字节）或引用（例如，指向文件内容的 s3 url）进行上传
+3. 处理端点可以是阻塞的或非阻塞的
+4. 如果需要大量处理，处理可以转移到专用进程池
 
-You should determine what is the appropriate architecture for your application.
+您应该确定适合您应用程序的架构。
 
-Currently, to upload files by value to a runnable, use base64 encoding for the
-file (`multipart/form-data` is not supported yet).
+目前，要通过值上传文件到可运行的实例，请使用 base64 编码文件（`multipart/form-data` 目前不支持）。
 
-Here's
-an [example](https://github.com/langchain-ai/langserve/tree/main/examples/file_processing)
-that shows
-how to use base64 encoding to send a file to a remote runnable.
+这是一个 [示例](https://github.com/langchain-ai/langserve/tree/main/examples/file_processing)，展示了如何使用 base64 编码将文件发送到远程可运行实例。
 
-Remember, you can always upload files by reference (e.g., s3 url) or upload them as
-multipart/form-data to a dedicated endpoint.
+请记住，您始终可以通过引用（例如，s3 url）上传文件，或将它们作为 multipart/form-data 上传到专用端点。
 
-### Custom Input and Output Types
+### 自定义输入和输出类型
 
-Input and Output types are defined on all runnables.
+输入和输出类型在所有可运行对象上定义。
 
-You can access them via the `input_schema` and `output_schema` properties.
+您可以通过 `input_schema` 和 `output_schema` 属性访问它们。
 
-`LangServe` uses these types for validation and documentation.
+`LangServe` 使用这些类型进行验证和文档编制。
 
-If you want to override the default inferred types, you can use the `with_types` method.
+如果您想覆盖默认推断的类型，可以使用 `with_types` 方法。
 
-Here's a toy example to illustrate the idea:
+以下是一个玩具示例来说明这个概念：
 
 ```python
 from typing import Any
@@ -595,15 +530,11 @@ runnable = RunnableLambda(func).with_types(
 add_routes(app, runnable)
 ```
 
-### Custom User Types
+### 自定义用户类型
 
-Inherit from `CustomUserType` if you want the data to de-serialize into a
-pydantic model rather than the equivalent dict representation.
+如果您希望数据反序列化为 pydantic 模型而不是等效的字典表示，请从 `CustomUserType` 继承。
 
-At the moment, this type only works _server_ side and is used
-to specify desired _decoding_ behavior. If inheriting from this type
-the server will keep the decoded type as a pydantic model instead
-of converting it into a dict.
+目前，这种类型仅在 _服务器_ 端工作，用于指定所需的 _解码_ 行为。如果从此类型继承，服务器将保持解码类型为 pydantic 模型，而不是将其转换为字典。
 
 ```python
 from fastapi import FastAPI
@@ -620,14 +551,14 @@ class Foo(CustomUserType):
 
 
 def func(foo: Foo) -> int:
-    """Sample function that expects a Foo type which is a pydantic model"""
+    """示例函数，期望 Foo 类型为 pydantic 模型"""
     assert isinstance(foo, Foo)
     return foo.bar
 
 
-# Note that the input and output type are automatically inferred!
-# You do not need to specify them.
-# runnable = RunnableLambda(func).with_types( # <-- Not needed in this case
+# 注意，输入和输出类型会自动推断！
+# 您不需要指定它们。
+# runnable = RunnableLambda(func).with_types( # <-- 在这种情况下不需要
 #     input_type=Foo,
 #     output_type=int,
 #
@@ -636,22 +567,20 @@ add_routes(app, RunnableLambda(func), path="/foo")
 
 ### Playground Widgets
 
-The playground allows you to define custom widgets for your runnable from the backend.
+该游乐场允许您从后端定义可运行的自定义小部件。
 
-Here are a few examples:
+以下是一些示例：
 
-| Description                                                                           | Links                                                                                                                                                                                                 |
-| :------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Widgets** Different widgets that can be used with playground (file upload and chat) | [server](https://github.com/langchain-ai/langserve/tree/main/examples/widgets/chat/tuples/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/widgets/client.ipynb)     |
-| **Widgets** File upload widget used for LangServe playground.                         | [server](https://github.com/langchain-ai/langserve/tree/main/examples/file_processing/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/file_processing/client.ipynb) |
+| 描述                                                                                 | 链接                                                                                                                                                                                                  |
+| :---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Widgets** 可以与游乐场一起使用的不同小部件（文件上传和聊天）                     | [server](https://github.com/langchain-ai/langserve/tree/main/examples/widgets/chat/tuples/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/widgets/client.ipynb)     |
+| **Widgets** 用于LangServe游乐场的文件上传小部件。                                   | [server](https://github.com/langchain-ai/langserve/tree/main/examples/file_processing/server.py), [client](https://github.com/langchain-ai/langserve/tree/main/examples/file_processing/client.ipynb) |
 
 #### Schema
 
-- A widget is specified at the field level and shipped as part of the JSON schema of the
-  input type
-- A widget must contain a key called `type` with the value being one of a well known
-  list of widgets
-- Other widget keys will be associated with values that describe paths in a JSON object
+- 小部件在字段级别上指定，并作为输入类型的JSON架构的一部分进行传输
+- 小部件必须包含一个名为`type`的键，其值为已知小部件列表中的一个
+- 其他小部件键将与描述JSON对象中路径的值相关联
 
 ```typescript
 type JsonPath = number | string | (number | string)[];
@@ -664,26 +593,22 @@ type Widget = {
 };
 ```
 
-### Available Widgets
+### 可用小部件
 
-There are only two widgets that the user can specify manually right now:
+目前用户只能手动指定两个小部件：
 
-1. File Upload Widget
-2. Chat History Widget
+1. 文件上传小部件
+2. 聊天记录小部件
 
-See below more information about these widgets.
+请参见下面关于这些小部件的更多信息。
 
-All other widgets on the playground UI are created and managed automatically by the UI
-based on the config schema of the Runnable. When you create Configurable Runnables,
-the playground should create appropriate widgets for you to control the behavior.
+在游乐场 UI 上的所有其他小部件都是根据 Runnable 的配置模式自动创建和管理的。当您创建可配置的 Runnable 时，游乐场应该为您创建适当的小部件以控制行为。
 
-#### File Upload Widget
+#### 文件上传小部件
 
-Allows creation of a file upload input in the UI playground for files
-that are uploaded as base64 encoded strings. Here's the
-full [example](https://github.com/langchain-ai/langserve/tree/main/examples/file_processing).
+允许在 UI 游乐场中创建一个文件上传输入，用于上传为 base64 编码字符串的文件。以下是完整的 [示例](https://github.com/langchain-ai/langserve/tree/main/examples/file_processing)。
 
-Snippet:
+代码片段：
 
 ```python
 try:
@@ -705,25 +630,23 @@ class FileProcessingRequest(CustomUserType):
 
 ```
 
-Example widget:
+示例小部件：
 
 <p align="center">
 <img src="https://github.com/langchain-ai/langserve/assets/3205522/52199e46-9464-4c2e-8be8-222250e08c3f" width="50%"/>
 </p>
 
-### Chat Widget
+### 聊天小部件
 
-Look
-at the [widget example](https://github.com/langchain-ai/langserve/tree/main/examples/widgets/chat/tuples/server.py).
+查看 [小部件示例](https://github.com/langchain-ai/langserve/tree/main/examples/widgets/chat/tuples/server.py)。
 
-To define a chat widget, make sure that you pass "type": "chat".
+要定义一个聊天小部件，请确保传递 "type": "chat"。
 
-- "input" is JSONPath to the field in the _Request_ that has the new input message.
-- "output" is JSONPath to the field in the _Response_ that has new output message(s).
-- Don't specify these fields if the entire input or output should be used as they are (
-  e.g., if the output is a list of chat messages.)
+- "input" 是 _Request_ 中包含新输入消息的字段的 JSONPath。
+- "output" 是 _Response_ 中包含新输出消息的字段的 JSONPath。
+- 如果整个输入或输出应按原样使用，则不需要指定这些字段（例如，如果输出是聊天消息的列表）。
 
-Here's a snippet:
+以下是一个代码片段：
 
 ```python
 class ChatHistory(CustomUserType):
@@ -759,13 +682,13 @@ add_routes(
 )
 ```
 
-Example widget:
+示例小部件：
 
 <p align="center">
 <img src="https://github.com/langchain-ai/langserve/assets/3205522/a71ff37b-a6a9-4857-a376-cf27c41d3ca4" width="50%"/>
 </p>
 
-You can also specify a list of messages as your a parameter directly, as shown in this snippet:
+您还可以直接将消息列表作为参数指定，如下所示：
 
 ```python
 prompt = ChatPromptTemplate.from_messages(
@@ -794,23 +717,21 @@ add_routes(
 )
 ```
 
-See [this sample file](https://github.com/langchain-ai/langserve/tree/main/examples/widgets/chat/message_list/server.py) for an example.
+请参见 [此示例文件](https://github.com/langchain-ai/langserve/tree/main/examples/widgets/chat/message_list/server.py) 以获取示例。
 
-### Enabling / Disabling Endpoints (LangServe >=0.0.33)
+### 启用 / 禁用端点 (LangServe >=0.0.33)
 
-You can enable / disable which endpoints are exposed when adding routes for a given chain.
+您可以在为给定链添加路由时启用 / 禁用暴露的端点。
 
-Use `enabled_endpoints` if you want to make sure to never get a new endpoint when upgrading langserve to a newer
-verison.
+如果您希望在将 langserve 升级到新版本时确保不会获取新的端点，请使用 `enabled_endpoints`。
 
-Enable: The code below will only enable `invoke`, `batch` and the
-corresponding `config_hash` endpoint variants.
+启用：下面的代码将仅启用 `invoke`、`batch` 及其对应的 `config_hash` 端点变体。
 
 ```python
 add_routes(app, chain, enabled_endpoints=["invoke", "batch", "config_hashes"], path="/mychain")
 ```
 
-Disable: The code below will disable the playground for the chain
+禁用：下面的代码将禁用该链的 playground。
 
 ```python
 add_routes(app, chain, disabled_endpoints=["playground"], path="/mychain")

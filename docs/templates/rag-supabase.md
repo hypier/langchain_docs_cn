@@ -1,19 +1,19 @@
-
 # rag_supabase
 
-This template performs RAG with Supabase.
+此模板使用 Supabase 执行 RAG。
 
-[Supabase](https://supabase.com/docs) is an open-source Firebase alternative. It is built on top of [PostgreSQL](https://en.wikipedia.org/wiki/PostgreSQL), a free and open-source relational database management system (RDBMS) and uses [pgvector](https://github.com/pgvector/pgvector) to store embeddings within your tables.
-## Environment Setup
+[Supabase](https://supabase.com/docs) 是一个开源的 Firebase 替代品。它建立在 [PostgreSQL](https://en.wikipedia.org/wiki/PostgreSQL) 之上，PostgreSQL 是一个免费且开源的关系数据库管理系统 (RDBMS)，并使用 [pgvector](https://github.com/pgvector/pgvector) 在您的表中存储嵌入。
 
-Set the `OPENAI_API_KEY` environment variable to access the OpenAI models.
+## 环境设置
 
-To get your `OPENAI_API_KEY`, navigate to [API keys](https://platform.openai.com/account/api-keys) on your OpenAI account and create a new secret key.
+设置 `OPENAI_API_KEY` 环境变量以访问 OpenAI 模型。
 
-To find your `SUPABASE_URL` and `SUPABASE_SERVICE_KEY`, head to your Supabase project's [API settings](https://supabase.com/dashboard/project/_/settings/api). 
+要获取您的 `OPENAI_API_KEY`，请导航到您的 OpenAI 账户中的 [API 密钥](https://platform.openai.com/account/api-keys) 并创建一个新的密钥。
 
-- `SUPABASE_URL` corresponds to the Project URL
-- `SUPABASE_SERVICE_KEY` corresponds to the `service_role` API key
+要找到您的 `SUPABASE_URL` 和 `SUPABASE_SERVICE_KEY`，请前往您 Supabase 项目的 [API 设置](https://supabase.com/dashboard/project/_/settings/api)。
+
+- `SUPABASE_URL` 对应于项目 URL
+- `SUPABASE_SERVICE_KEY` 对应于 `service_role` API 密钥
 
 
 ```shell
@@ -22,12 +22,12 @@ export SUPABASE_SERVICE_KEY=
 export OPENAI_API_KEY=
 ```
 
-## Setup Supabase Database
+## 设置 Supabase 数据库
 
-Use these steps to setup your Supabase database if you haven't already.
+如果您还没有设置 Supabase 数据库，请按照以下步骤进行操作。
 
-1. Head over to https://database.new to provision your Supabase database.
-2. In the studio, jump to the [SQL editor](https://supabase.com/dashboard/project/_/sql/new) and run the following script to enable `pgvector` and setup your database as a vector store:
+1. 前往 https://database.new 来配置您的 Supabase 数据库。
+2. 在控制台中，跳转到 [SQL 编辑器](https://supabase.com/dashboard/project/_/sql/new) 并运行以下脚本以启用 `pgvector` 并将您的数据库设置为向量存储：
 
    ```sql
    -- Enable the pgvector extension to work with embedding vectors
@@ -67,31 +67,31 @@ Use these steps to setup your Supabase database if you haven't already.
    $$;
    ```
 
-## Setup Environment Variables
+## 设置环境变量
 
-Since we are using [`SupabaseVectorStore`](https://python.langchain.com/docs/integrations/vectorstores/supabase) and [`OpenAIEmbeddings`](https://python.langchain.com/docs/integrations/text_embedding/openai), we need to load their API keys.
+由于我们使用 [`SupabaseVectorStore`](https://python.langchain.com/docs/integrations/vectorstores/supabase) 和 [`OpenAIEmbeddings`](https://python.langchain.com/docs/integrations/text_embedding/openai)，我们需要加载它们的 API 密钥。
 
-## Usage
+## 使用方法
 
-First, install the LangChain CLI:
+首先，安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将其作为唯一包安装，可以执行：
 
 ```shell
 langchain app new my-app --package rag-supabase
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，只需运行：
 
 ```shell
 langchain app add rag-supabase
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 
 ```python
 from rag_supabase.chain import chain as rag_supabase_chain
@@ -99,30 +99,30 @@ from rag_supabase.chain import chain as rag_supabase_chain
 add_routes(app, rag_supabase_chain, path="/rag-supabase")
 ```
 
-(Optional) Let's now configure LangSmith. 
-LangSmith will help us trace, monitor and debug LangChain applications. 
-You can sign up for LangSmith [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
+（可选）现在让我们配置 LangSmith。
+LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接通过以下方式启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server is running locally at 
+这将启动 FastAPI 应用程序，服务器在本地运行于 
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/rag-supabase/playground](http://127.0.0.1:8000/rag-supabase/playground)  
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板
+我们可以在 [http://127.0.0.1:8000/rag-supabase/playground](http://127.0.0.1:8000/rag-supabase/playground) 访问游乐场
 
-We can access the template from code with:
+我们可以通过以下代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable
@@ -130,4 +130,4 @@ from langserve.client import RemoteRunnable
 runnable = RemoteRunnable("http://localhost:8000/rag-supabase")
 ```
 
-TODO: Add details about setting up the Supabase database
+TODO: 添加关于设置 Supabase 数据库的详细信息

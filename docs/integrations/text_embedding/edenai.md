@@ -1,32 +1,28 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/edenai.ipynb
 ---
+
 # EDEN AI
 
-Eden AI is revolutionizing the AI landscape by uniting the best AI providers, empowering users to unlock limitless possibilities and tap into the true potential of artificial intelligence. With an all-in-one comprehensive and hassle-free platform, it allows users to deploy AI features to production lightning fast, enabling effortless access to the full breadth of AI capabilities via a single API. (website: https://edenai.co/)
+Eden AI 正在通过联合最佳的 AI 提供商来彻底改变 AI 领域，使用户能够解锁无限可能，挖掘人工智能的真正潜力。通过一个全面且无忧的平台，它允许用户快速将 AI 功能部署到生产环境中，使用户能够通过单一 API 轻松访问所有 AI 能力。(网站: https://edenai.co/)
 
-This example goes over how to use LangChain to interact with Eden AI embedding models
+本示例介绍如何使用 LangChain 与 Eden AI 嵌入模型进行交互
 
 -----------------------------------------------------------------------------------
 
 
-Accessing the EDENAI's API requires an API key, 
+访问 EDENAI 的 API 需要一个 API 密钥，
 
-which you can get by creating an account https://app.edenai.run/user/register  and heading here https://app.edenai.run/admin/account/settings
+您可以通过创建一个账户 https://app.edenai.run/user/register 并前往 https://app.edenai.run/admin/account/settings 来获取。
 
-Once we have a key we'll want to set it as an environment variable by running:
+一旦我们有了密钥，我们想通过运行以下命令将其设置为环境变量：
 
 ```shell
 export EDENAI_API_KEY="..."
 ```
 
 
-If you'd prefer not to set an environment variable you can pass the key in directly via the edenai_api_key named parameter
-
- when initiating the EdenAI embedding class:
-
-
-
+如果您不想设置环境变量，可以通过在初始化 EdenAI 嵌入类时直接传递名为 edenai_api_key 的参数来传递密钥：
 
 ```python
 from langchain_community.embeddings.edenai import EdenAiEmbeddings
@@ -37,31 +33,26 @@ from langchain_community.embeddings.edenai import EdenAiEmbeddings
 embeddings = EdenAiEmbeddings(edenai_api_key="...", provider="...")
 ```
 
-## Calling a model
+## 调用模型
 
 
-The EdenAI API brings together various providers.
+EdenAI API 汇集了各种提供商。
 
-To access a specific model, you can simply use the "provider" when calling.
-
-
+要访问特定模型，您可以在调用时简单地使用“提供商”。
 
 ```python
 embeddings = EdenAiEmbeddings(provider="openai")
 ```
-
 
 ```python
 docs = ["It's raining right now", "cats are cute"]
 document_result = embeddings.embed_documents(docs)
 ```
 
-
 ```python
 query = "my umbrella is broken"
 query_result = embeddings.embed_query(query)
 ```
-
 
 ```python
 import numpy as np
@@ -79,7 +70,7 @@ Cosine similarity between "It's raining right now" and query: 0.849261496107252
 Cosine similarity between "cats are cute" and query: 0.7525900655705218
 ```
 
-## Related
+## 相关
 
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

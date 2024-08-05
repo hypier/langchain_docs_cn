@@ -1,19 +1,19 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/tools_model_specific.ipynb
 ---
-# How to bind model-specific tools
 
-Providers adopt different conventions for formatting tool schemas. 
-For instance, OpenAI uses a format like this:
+# 如何绑定特定模型的工具
 
-- `type`: The type of the tool. At the time of writing, this is always `"function"`.
-- `function`: An object containing tool parameters.
-- `function.name`: The name of the schema to output.
-- `function.description`: A high level description of the schema to output.
-- `function.parameters`: The nested details of the schema you want to extract, formatted as a [JSON schema](https://json-schema.org/) dict.
+提供者采用不同的约定来格式化工具架构。
+例如，OpenAI 使用如下格式：
 
-We can bind this model-specific format directly to the model as well if preferred. Here's an example:
+- `type`: 工具的类型。在撰写时，这始终是 `"function"`。
+- `function`: 一个包含工具参数的对象。
+- `function.name`: 要输出的架构名称。
+- `function.description`: 要输出的架构的高级描述。
+- `function.parameters`: 要提取的架构的嵌套细节，格式为 [JSON schema](https://json-schema.org/) 字典。
 
+如果需要，我们也可以将这种特定于模型的格式直接绑定到模型上。以下是一个示例：
 
 ```python
 from langchain_openai import ChatOpenAI
@@ -47,4 +47,4 @@ model_with_tools.invoke("Whats 119 times 8?")
 AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_mn4ELw1NbuE0DFYhIeK0GrPe', 'function': {'arguments': '{"a":119,"b":8}', 'name': 'multiply'}, 'type': 'function'}]}, response_metadata={'token_usage': {'completion_tokens': 17, 'prompt_tokens': 62, 'total_tokens': 79}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': 'fp_c2295e73ad', 'finish_reason': 'tool_calls', 'logprobs': None}, id='run-353e8a9a-7125-4f94-8c68-4f3da4c21120-0', tool_calls=[{'name': 'multiply', 'args': {'a': 119, 'b': 8}, 'id': 'call_mn4ELw1NbuE0DFYhIeK0GrPe'}])
 ```
 
-This is functionally equivalent to the `bind_tools()` method.
+这在功能上等价于 `bind_tools()` 方法。

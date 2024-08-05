@@ -2,27 +2,28 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/upstage.ipynb
 sidebar_label: Upstage
 ---
+
 # UpstageLayoutAnalysisLoader
 
-This notebook covers how to get started with `UpstageLayoutAnalysisLoader`.
+本笔记本介绍如何开始使用 `UpstageLayoutAnalysisLoader`。
 
-## Installation
+## 安装
 
-Install `langchain-upstage` package.
+安装 `langchain-upstage` 包。
 
 ```bash
 pip install -U langchain-upstage
 ```
 
-## Environment Setup
+## 环境设置
 
-Make sure to set the following environment variables:
+确保设置以下环境变量：
 
-- `UPSTAGE_API_KEY`: Your Upstage API key. Read [Upstage developers document](https://developers.upstage.ai/docs/getting-started/quick-start) to get your API key.
+- `UPSTAGE_API_KEY`：您的 Upstage API 密钥。请阅读 [Upstage 开发者文档](https://developers.upstage.ai/docs/getting-started/quick-start) 获取您的 API 密钥。
 
-> The previously used UPSTAGE_DOCUMENT_AI_API_KEY is deprecated. However, the key previously used in UPSTAGE_DOCUMENT_AI_API_KEY can now be used in UPSTAGE_API_KEY.
+> 之前使用的 UPSTAGE_DOCUMENT_AI_API_KEY 已被弃用。然而，之前在 UPSTAGE_DOCUMENT_AI_API_KEY 中使用的密钥现在可以在 UPSTAGE_API_KEY 中使用。
 
-## Usage
+## 使用方法
 
 
 ```python
@@ -38,8 +39,8 @@ from langchain_upstage import UpstageLayoutAnalysisLoader
 file_path = "/PATH/TO/YOUR/FILE.pdf"
 layzer = UpstageLayoutAnalysisLoader(file_path, split="page")
 
-# For improved memory efficiency, consider using the lazy_load method to load documents page by page.
-docs = layzer.load()  # or layzer.lazy_load()
+# 为了提高内存效率，考虑使用 lazy_load 方法逐页加载文档。
+docs = layzer.load()  # 或者 layzer.lazy_load()
 
 for doc in docs[:3]:
     print(doc)
@@ -50,7 +51,7 @@ page_content="Step 1-1 Step 1-2\nOutput Output Output\nOutput Output Output\n24 
 page_content="Properties Instruction Training Datasets Alignment\n Alpaca-GPT4 OpenOrca Synth. Math-Instruct Orca DPO Pairs Ultrafeedback Cleaned Synth. Math-Alignment\n Total # Samples 52K 2.91M 126K 12.9K 60.8K 126K\n Maximum # Samples Used 52K 100K 52K 12.9K 60.8K 20.1K\n Open Source O O X O O Table 1: Training datasets used for the instruction and alignment tuning stages, respectively. For the instruction\ntuning process, we utilized the Alpaca-GPT4 (Peng et al., 2023), OpenOrca (Mukherjee et al., 2023), and Synth.\nMath-Instruct datasets, while for the alignment tuning, we employed the Orca DPO Pairs (Intel, 2023), Ultrafeedback\nCleaned (Cui et al., 2023; Ivison et al., 2023), and Synth. Math-Alignment datasets. The 'Total # Samples indicates\nthe total number of samples in the entire dataset. The 'Maximum # Samples Used' indicates the actual maximum\nnumber of samples that were used in training, which could be lower than the total number of samples in a given\ndataset. 'Open Source' indicates whether the dataset is open-sourced. pretraining to quickly recover performance. We\nattribute the success of DUS to reducing such dis-\ncrepancies in both the depthwise scaling and the\ncontinued pretraining steps. We also hypothesize\nthat other methods of depthwise scaling could also\nwork for DUS, as long as the discrepancy in the\nscaled model is sufficiently contained before the\ncontinued pretraining step. Comparison to other up-scaling methods. Un-\nlike Komatsuzaki et al. (2022), depthwise scaled\nmodels do not require additional modules like gat-\ning networks or dynamic expert selection. Conse-\nquently, scaled models in DUS do not necessitate\na distinct training framework for optimal training\nefficiency, nor do they require specialized CUDA\nkernels for fast inference. A DUS model can seam-\nlessly integrate into existing training and inference\nframeworks while maintaining high efficiency. 3 Training Details After DUS, including continued pretraining, we\nperform fine-tuning of SOLAR 10.7B in two stages:\n1) instruction tuning and 2) alignment tuning. Instruction tuning. In the instruction tuning\nstage, the model is trained to follow instructions in\na QA format (Zhang et al., 2023). We mostly use\nopen-source datasets but also synthesize a math QA\ndataset to enhance the model's mathematical capa-\nbilities. A rundown of how we crafted the dataset is\nas follows. First, seed math data are collected from\nthe Math (Hendrycks et al., 2021) dataset only, to\navoid contamination with commonly used bench-\nmark datasets such as GSM8K (Cobbe et al., 2021).\nThen, using a process similar to MetaMath (Yu\net al., 2023), we rephrase the questions and an-\nswers of the seed math data. We use the resulting\nrephrased question-answer pairs as a QA dataset and call it 'Synth. Math-Instruct*. Alignment tuning. In the alignment tuning stage,\nthe instruction-tuned model is further fine-tuned\nto be more aligned with human or strong AI\n(e.g., GPT4 (OpenAI, 2023)) preferences using\nsDPO (Kim et al., 2024a), an improved version\nof direct preference optimization (DPO) (Rafailov\net al., 2023). Similar to the instruction tuning stage,\nwe use mostly open-source datasets but also syn-\nthesize a math-focused alignment dataset utilizing\nthe 'Synth. Math-Instruct' dataset mentioned in the\ninstruction tuning stage. The alignment data synthesis process is as\nfollows. We take advantage of the fact that\nthe rephrased question-answer pairs in Synth.\nMath-Instruct data are beneficial in enhancing the\nmodel's mathematical capabilities (see Sec. 4.3.1).\nThus, we speculate that the rephrased answer to the\nrephrased question is a better answer than the orig-\ninal answer, possibly due to the interim rephrasing\nstep. Consequently, we set the rephrased question\nas the prompt and use the rephrased answer as the\nchosen response and the original answer as the re-\njected response and create the {prompt, chosen,\nrejected} DPO tuple. We aggregate the tuples from\nthe rephrased question-answer pairs and call the\nresulting dataset 'Synth. Math-Alignment*. 4 Results 4.1 Experimental Details Training datasets. We present details regarding\nour training datasets for the instruction and align-\nment tuning stages in Tab. 1. We do not always\nuse the entire dataset and instead subsample a set\namount. Note that most of our training data is\nopen-source, and the undisclosed datasets can be\nsubstituted for open-source alternatives such as the" metadata={'page': 3, 'type': 'text', 'split': 'page'}
 ```
 
-## Related
+## 相关
 
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

@@ -1,23 +1,24 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/document_loader_directory.ipynb
 ---
-# How to load documents from a directory
 
-LangChain's [DirectoryLoader](https://api.python.langchain.com/en/latest/document_loaders/langchain_community.document_loaders.directory.DirectoryLoader.html) implements functionality for reading files from disk into LangChain [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html#langchain_core.documents.base.Document) objects. Here we demonstrate:
+# 如何从目录加载文档
 
-- How to load from a filesystem, including use of wildcard patterns;
-- How to use multithreading for file I/O;
-- How to use custom loader classes to parse specific file types (e.g., code);
-- How to handle errors, such as those due to decoding.
+LangChain 的 [DirectoryLoader](https://api.python.langchain.com/en/latest/document_loaders/langchain_community.document_loaders.directory.DirectoryLoader.html) 实现了将文件从磁盘读取到 LangChain [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html#langchain_core.documents.base.Document) 对象的功能。这里我们演示：
+
+- 如何从文件系统加载，包括使用通配符模式；
+- 如何使用多线程进行文件 I/O；
+- 如何使用自定义加载器类解析特定文件类型（例如，代码）；
+- 如何处理错误，例如由于解码引起的错误。
 
 
 ```python
 from langchain_community.document_loaders import DirectoryLoader
 ```
 
-`DirectoryLoader` accepts a `loader_cls` kwarg, which defaults to [UnstructuredLoader](/docs/integrations/document_loaders/unstructured_file). [Unstructured](https://unstructured-io.github.io/unstructured/) supports parsing for a number of formats, such as PDF and HTML. Here we use it to read in a markdown (.md) file.
+`DirectoryLoader` 接受一个 `loader_cls` 的关键字参数，默认为 [UnstructuredLoader](/docs/integrations/document_loaders/unstructured_file)。 [Unstructured](https://unstructured-io.github.io/unstructured/) 支持解析多种格式，如 PDF 和 HTML。这里我们使用它来读取一个 markdown (.md) 文件。
 
-We can use the `glob` parameter to control which files to load. Note that here it doesn't load the `.rst` file or the `.html` files.
+我们可以使用 `glob` 参数来控制加载哪些文件。请注意，这里不会加载 `.rst` 文件或 `.html` 文件。
 
 
 ```python
@@ -42,10 +43,10 @@ Security
 
 LangChain has a large ecosystem of integrations with various external resources like local
 ```
-## Show a progress bar
 
-By default a progress bar will not be shown. To show a progress bar, install the `tqdm` library (e.g. `pip install tqdm`), and set the `show_progress` parameter to `True`.
+## 显示进度条
 
+默认情况下不会显示进度条。要显示进度条，请安装 `tqdm` 库（例如 `pip install tqdm`），并将 `show_progress` 参数设置为 `True`。
 
 ```python
 loader = DirectoryLoader("../", glob="**/*.md", show_progress=True)
@@ -54,19 +55,18 @@ docs = loader.load()
 ```output
 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 20/20 [00:00<00:00, 54.56it/s]
 ```
-## Use multithreading
 
-By default the loading happens in one thread. In order to utilize several threads set the `use_multithreading` flag to true.
+## 使用多线程
 
+默认情况下，加载是在一个线程中进行的。为了利用多个线程，将 `use_multithreading` 标志设置为 true。
 
 ```python
 loader = DirectoryLoader("../", glob="**/*.md", use_multithreading=True)
 docs = loader.load()
 ```
 
-## Change loader class
-By default this uses the `UnstructuredLoader` class. To customize the loader, specify the loader class in the `loader_cls` kwarg. Below we show an example using [TextLoader](https://api.python.langchain.com/en/latest/document_loaders/langchain_community.document_loaders.text.TextLoader.html):
-
+## 更改加载器类
+默认情况下，这使用 `UnstructuredLoader` 类。要自定义加载器，请在 `loader_cls` 关键字参数中指定加载器类。下面我们展示一个使用 [TextLoader](https://api.python.langchain.com/en/latest/document_loaders/langchain_community.document_loaders.text.TextLoader.html) 的示例：
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -74,7 +74,6 @@ from langchain_community.document_loaders import TextLoader
 loader = DirectoryLoader("../", glob="**/*.md", loader_cls=TextLoader)
 docs = loader.load()
 ```
-
 
 ```python
 print(docs[0].page_content[:100])
@@ -84,10 +83,9 @@ print(docs[0].page_content[:100])
 
 LangChain has a large ecosystem of integrations with various external resources like loc
 ```
-Notice that while the `UnstructuredLoader` parses Markdown headers, `TextLoader` does not.
+请注意，虽然 `UnstructuredLoader` 解析 Markdown 标头，但 `TextLoader` 不会。
 
-If you need to load Python source code files, use the `PythonLoader`:
-
+如果您需要加载 Python 源代码文件，请使用 `PythonLoader`：
 
 ```python
 from langchain_community.document_loaders import PythonLoader
@@ -95,10 +93,9 @@ from langchain_community.document_loaders import PythonLoader
 loader = DirectoryLoader("../../../../../", glob="**/*.py", loader_cls=PythonLoader)
 ```
 
-## Auto-detect file encodings with TextLoader
+## 自动检测文件编码与 TextLoader
 
-`DirectoryLoader` can help manage errors due to variations in file encodings. Below we will attempt to load in a collection of files, one of which includes non-UTF8 encodings.
-
+`DirectoryLoader` 可以帮助管理由于文件编码差异而导致的错误。下面我们将尝试加载一组文件，其中一个文件包含非 UTF8 编码。
 
 ```python
 path = "../../../../libs/langchain/tests/unit_tests/examples/"
@@ -106,10 +103,9 @@ path = "../../../../libs/langchain/tests/unit_tests/examples/"
 loader = DirectoryLoader(path, glob="**/*.txt", loader_cls=TextLoader)
 ```
 
-### A. Default Behavior
+### A. 默认行为
 
-By default we raise an error:
-
+默认情况下，我们会引发错误：
 
 ```python
 loader.load()
@@ -135,7 +131,7 @@ File ~/.pyenv/versions/3.10.4/lib/python3.10/codecs.py:322, in BufferedIncrement
 UnicodeDecodeError: 'utf-8' codec can't decode byte 0xca in position 0: invalid continuation byte
 ``````output
 
-The above exception was the direct cause of the following exception:
+上述异常是以下异常的直接原因：
 ``````output
 RuntimeError                              Traceback (most recent call last)
 ``````output
@@ -178,14 +174,13 @@ File ~/repos/langchain/libs/community/langchain_community/document_loaders/text.
 RuntimeError: Error loading ../../../../libs/langchain/tests/unit_tests/examples/example-non-utf8.txt
 ```
 
-The file `example-non-utf8.txt` uses a different encoding, so the `load()` function fails with a helpful message indicating which file failed decoding.
+文件 `example-non-utf8.txt` 使用了不同的编码，因此 `load()` 函数在解码失败时会显示一条有用的消息，指示哪个文件解码失败。
 
-With the default behavior of `TextLoader` any failure to load any of the documents will fail the whole loading process and no documents are loaded.
+在 `TextLoader` 的默认行为下，任何加载文档的失败都会导致整个加载过程失败，且没有文档被加载。
 
-### B. Silent fail
+### B. 静默失败
 
-We can pass the parameter `silent_errors` to the `DirectoryLoader` to skip the files which could not be loaded and continue the load process.
-
+我们可以将参数 `silent_errors` 传递给 `DirectoryLoader`，以跳过无法加载的文件并继续加载过程。
 
 ```python
 loader = DirectoryLoader(
@@ -202,17 +197,13 @@ doc_sources = [doc.metadata["source"] for doc in docs]
 doc_sources
 ```
 
-
-
 ```output
 ['../../../../libs/langchain/tests/unit_tests/examples/example-utf8.txt']
 ```
 
+### C. 自动检测编码
 
-### C. Auto detect encodings
-
-We can also ask `TextLoader` to auto detect the file encoding before failing, by passing the `autodetect_encoding` to the loader class.
-
+我们还可以要求 `TextLoader` 在失败之前自动检测文件编码，通过将 `autodetect_encoding` 传递给加载器类。
 
 ```python
 text_loader_kwargs = {"autodetect_encoding": True}
@@ -222,16 +213,12 @@ loader = DirectoryLoader(
 docs = loader.load()
 ```
 
-
 ```python
 doc_sources = [doc.metadata["source"] for doc in docs]
 doc_sources
 ```
 
-
-
 ```output
 ['../../../../libs/langchain/tests/unit_tests/examples/example-utf8.txt',
  '../../../../libs/langchain/tests/unit_tests/examples/example-non-utf8.txt']
 ```
-

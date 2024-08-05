@@ -1,44 +1,43 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/oracleai.ipynb
 ---
-# Oracle AI Vector Search: Generate Summary
 
-Oracle AI Vector Search is designed for Artificial Intelligence (AI) workloads that allows you to query data based on semantics, rather than keywords.
-One of the biggest benefits of Oracle AI Vector Search is that semantic search on unstructured data can be combined with relational search on business data in one single system.
-This is not only powerful but also significantly more effective because you don't need to add a specialized vector database, eliminating the pain of data fragmentation between multiple systems.
+# Oracle AI Vector Search: 生成摘要
 
-In addition, your vectors can benefit from all of Oracle Database’s most powerful features, like the following:
+Oracle AI Vector Search 旨在处理人工智能 (AI) 工作负载，使您能够基于语义而非关键字查询数据。
+Oracle AI Vector Search 的最大优势之一是，可以将对非结构化数据的语义搜索与对业务数据的关系搜索结合在一个单一系统中。
+这不仅强大，而且显著更有效，因为您无需添加专用的向量数据库，从而消除了多个系统之间数据碎片化的困扰。
 
- * [Partitioning Support](https://www.oracle.com/database/technologies/partitioning.html)
- * [Real Application Clusters scalability](https://www.oracle.com/database/real-application-clusters/)
- * [Exadata smart scans](https://www.oracle.com/database/technologies/exadata/software/smartscan/)
- * [Shard processing across geographically distributed databases](https://www.oracle.com/database/distributed-database/)
- * [Transactions](https://docs.oracle.com/en/database/oracle/oracle-database/23/cncpt/transactions.html)
- * [Parallel SQL](https://docs.oracle.com/en/database/oracle/oracle-database/21/vldbg/parallel-exec-intro.html#GUID-D28717E4-0F77-44F5-BB4E-234C31D4E4BA)
- * [Disaster recovery](https://www.oracle.com/database/data-guard/)
- * [Security](https://www.oracle.com/security/database-security/)
- * [Oracle Machine Learning](https://www.oracle.com/artificial-intelligence/database-machine-learning/)
- * [Oracle Graph Database](https://www.oracle.com/database/integrated-graph-database/)
- * [Oracle Spatial and Graph](https://www.oracle.com/database/spatial/)
- * [Oracle Blockchain](https://docs.oracle.com/en/database/oracle/oracle-database/23/arpls/dbms_blockchain_table.html#GUID-B469E277-978E-4378-A8C1-26D3FF96C9A6)
+此外，您的向量可以受益于 Oracle 数据库的所有强大功能，例如：
+
+ * [分区支持](https://www.oracle.com/database/technologies/partitioning.html)
+ * [实时应用集群可扩展性](https://www.oracle.com/database/real-application-clusters/)
+ * [Exadata 智能扫描](https://www.oracle.com/database/technologies/exadata/software/smartscan/)
+ * [跨地理分布式数据库的分片处理](https://www.oracle.com/database/distributed-database/)
+ * [事务](https://docs.oracle.com/en/database/oracle/oracle-database/23/cncpt/transactions.html)
+ * [并行 SQL](https://docs.oracle.com/en/database/oracle/oracle-database/21/vldbg/parallel-exec-intro.html#GUID-D28717E4-0F77-44F5-BB4E-234C31D4E4BA)
+ * [灾难恢复](https://www.oracle.com/database/data-guard/)
+ * [安全性](https://www.oracle.com/security/database-security/)
+ * [Oracle 机器学习](https://www.oracle.com/artificial-intelligence/database-machine-learning/)
+ * [Oracle 图形数据库](https://www.oracle.com/database/integrated-graph-database/)
+ * [Oracle 空间和图形](https://www.oracle.com/database/spatial/)
+ * [Oracle 区块链](https://docs.oracle.com/en/database/oracle/oracle-database/23/arpls/dbms_blockchain_table.html#GUID-B469E277-978E-4378-A8C1-26D3FF96C9A6)
  * [JSON](https://docs.oracle.com/en/database/oracle/oracle-database/23/adjsn/json-in-oracle-database.html)
 
-The guide demonstrates how to use Summary Capabilities within Oracle AI Vector Search to generate summary for your documents using OracleSummary.
+本指南演示如何使用 Oracle AI Vector Search 中的摘要功能，通过 OracleSummary 为您的文档生成摘要。
 
-If you are just starting with Oracle Database, consider exploring the [free Oracle 23 AI](https://www.oracle.com/database/free/#resources) which provides a great introduction to setting up your database environment. While working with the database, it is often advisable to avoid using the system user by default; instead, you can create your own user for enhanced security and customization. For detailed steps on user creation, refer to our [end-to-end guide](https://github.com/langchain-ai/langchain/blob/master/cookbook/oracleai_demo.ipynb) which also shows how to set up a user in Oracle. Additionally, understanding user privileges is crucial for managing database security effectively. You can learn more about this topic in the official [Oracle guide](https://docs.oracle.com/en/database/oracle/oracle-database/19/admqs/administering-user-accounts-and-security.html#GUID-36B21D72-1BBB-46C9-A0C9-F0D2A8591B8D) on administering user accounts and security.
+如果您刚开始使用 Oracle 数据库，可以考虑探索 [免费的 Oracle 23 AI](https://www.oracle.com/database/free/#resources)，它为设置数据库环境提供了很好的介绍。在使用数据库时，通常建议避免默认使用系统用户；相反，您可以创建自己的用户以增强安全性和定制化。有关用户创建的详细步骤，请参考我们的 [端到端指南](https://github.com/langchain-ai/langchain/blob/master/cookbook/oracleai_demo.ipynb)，该指南还展示了如何在 Oracle 中设置用户。此外，理解用户权限对于有效管理数据库安全至关重要。您可以在官方 [Oracle 指南](https://docs.oracle.com/en/database/oracle/oracle-database/19/admqs/administering-user-accounts-and-security.html#GUID-36B21D72-1BBB-46C9-A0C9-F0D2A8591B8D) 中了解更多关于管理用户账户和安全性的话题。
 
-### Prerequisites
+### 前提条件
 
-Please install Oracle Python Client driver to use Langchain with Oracle AI Vector Search. 
-
+请安装 Oracle Python Client 驱动程序，以便使用 Langchain 和 Oracle AI 向量搜索。 
 
 ```python
 # pip install oracledb
 ```
 
-### Connect to Oracle Database
-The following sample code will show how to connect to Oracle Database. By default, python-oracledb runs in a ‘Thin’ mode which connects directly to Oracle Database. This mode does not need Oracle Client libraries. However, some additional functionality is available when python-oracledb uses them. Python-oracledb is said to be in ‘Thick’ mode when Oracle Client libraries are used. Both modes have comprehensive functionality supporting the Python Database API v2.0 Specification. See the following [guide](https://python-oracledb.readthedocs.io/en/latest/user_guide/appendix_a.html#featuresummary) that talks about features supported in each mode. You might want to switch to thick-mode if you are unable to use thin-mode.
-
+### 连接到Oracle数据库
+以下示例代码将展示如何连接到Oracle数据库。默认情况下，python-oracledb以“Thin”模式运行，该模式直接连接到Oracle数据库。此模式不需要Oracle客户端库。然而，当python-oracledb使用Oracle客户端库时，可以提供一些额外的功能。当使用Oracle客户端库时，python-oracledb被称为“Thick”模式。这两种模式都具有全面的功能，支持Python数据库API v2.0规范。请参阅以下[指南](https://python-oracledb.readthedocs.io/en/latest/user_guide/appendix_a.html#featuresummary)，了解每种模式支持的功能。如果您无法使用thin模式，您可能想切换到thick模式。
 
 ```python
 import sys
@@ -58,19 +57,17 @@ except Exception as e:
     sys.exit(1)
 ```
 
-### Generate Summary
-The Oracle AI Vector Search Langchain library offers a suite of APIs designed for document summarization. It supports multiple summarization providers such as Database, OCIGENAI, HuggingFace, among others, allowing users to select the provider that best meets their needs. To utilize these capabilities, users must configure the summary parameters as specified. For detailed information on these parameters, please consult the [Oracle AI Vector Search Guide book](https://docs.oracle.com/en/database/oracle/oracle-database/23/arpls/dbms_vector_chain1.html#GUID-EC9DDB58-6A15-4B36-BA66-ECBA20D2CE57).
+### 生成摘要
+Oracle AI Vector Search Langchain 库提供了一套用于文档摘要的 API。它支持多种摘要提供者，如 Database、OCIGENAI、HuggingFace 等，允许用户选择最符合其需求的提供者。要利用这些功能，用户必须按照规定配置摘要参数。有关这些参数的详细信息，请参阅 [Oracle AI Vector Search 指南](https://docs.oracle.com/en/database/oracle/oracle-database/23/arpls/dbms_vector_chain1.html#GUID-EC9DDB58-6A15-4B36-BA66-ECBA20D2CE57)。
 
-***Note:*** The users may need to set proxy if they want to use some 3rd party summary generation providers other than Oracle's in-house and default provider: 'database'. If you don't have proxy, please remove the proxy parameter when you instantiate the OracleSummary.
-
+***注意：*** 如果用户希望使用 Oracle 内部默认提供者 'database' 以外的某些第三方摘要生成提供者，则可能需要设置代理。如果您没有代理，请在实例化 OracleSummary 时移除代理参数。
 
 ```python
 # proxy to be used when we instantiate summary and embedder object
 proxy = "<proxy>"
 ```
 
-The following sample code will show how to generate summary:
-
+以下示例代码将展示如何生成摘要：
 
 ```python
 from langchain_community.utilities.oracleai import OracleSummary
@@ -117,12 +114,10 @@ summary = summ.get_summary(
 print(f"Summary generated by OracleSummary: {summary}")
 ```
 
-### End to End Demo
-Please refer to our complete demo guide [Oracle AI Vector Search End-to-End Demo Guide](https://github.com/langchain-ai/langchain/tree/master/cookbook/oracleai_demo.ipynb) to build an end to end RAG pipeline with the help of Oracle AI Vector Search.
+### 端到端演示
+请参考我们的完整演示指南 [Oracle AI Vector Search 端到端演示指南](https://github.com/langchain-ai/langchain/tree/master/cookbook/oracleai_demo.ipynb)，以借助 Oracle AI Vector Search 构建一个端到端的 RAG 管道。
 
+## 相关
 
-
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

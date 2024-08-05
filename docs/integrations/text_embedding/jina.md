@@ -1,16 +1,17 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/jina.ipynb
 ---
+
 # Jina
 
-Install requirements
+安装依赖
 
 
 ```python
 pip install -U langchain-community
 ```
 
-Import libraries
+导入库
 
 
 ```python
@@ -21,7 +22,7 @@ from numpy.linalg import norm
 from PIL import Image
 ```
 
-## Embed text and queries with Jina embedding models through JinaAI API
+## 通过 JinaAI API 使用 Jina 嵌入模型嵌入文本和查询
 
 
 ```python
@@ -55,7 +56,7 @@ doc_result = text_embeddings.embed_documents([text])
 print(doc_result)
 ```
 
-## Embed images and queries with Jina CLIP through JinaAI API
+## 通过 JinaAI API 嵌入图像和查询与 Jina CLIP
 
 
 ```python
@@ -66,7 +67,7 @@ multimodal_embeddings = JinaEmbeddings(jina_api_key="jina_*", model_name="jina-c
 ```python
 image = "https://avatars.githubusercontent.com/u/126733545?v=4"
 
-description = "Logo of a parrot and a chain on green background"
+description = "绿色背景上的鹦鹉和链子的标志"
 
 im = Image.open(requests.get(image, stream=True).raw)
 print("Image:")
@@ -105,8 +106,7 @@ cosine_similarity = dot(image_result[0], description_result[0]) / (
 print(cosine_similarity)
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

@@ -1,24 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/graphs/falkordb.ipynb
 ---
+
 # FalkorDB
 
->[FalkorDB](https://www.falkordb.com/) is a low-latency Graph Database that delivers knowledge to GenAI.
+>[FalkorDB](https://www.falkordb.com/) 是一个低延迟的图数据库，为 GenAI 提供知识。
 
+本笔记本展示了如何使用 LLMs 为 `FalkorDB` 数据库提供自然语言接口。
 
-This notebook shows how to use LLMs to provide a natural language interface to `FalkorDB` database.
+## 设置
 
-
-## Setting up
-
-You can run the `falkordb` Docker container locally:
+您可以在本地运行 `falkordb` Docker 容器：
 
 ```bash
 docker run -p 6379:6379 -it --rm falkordb/falkordb
 ```
 
-Once launched, you create a database on the local machine and connect to it.
-
+启动后，您可以在本地机器上创建一个数据库并连接到它。
 
 ```python
 from langchain.chains import FalkorDBQAChain
@@ -26,7 +24,7 @@ from langchain_community.graphs import FalkorDBGraph
 from langchain_openai import ChatOpenAI
 ```
 
-## Create a graph connection and insert the demo data
+## 创建图连接并插入示例数据
 
 
 ```python
@@ -68,8 +66,7 @@ graph.query(
 []
 ```
 
-
-## Creating FalkorDBQAChain
+## 创建 FalkorDBQAChain
 
 
 ```python
@@ -81,16 +78,16 @@ import os
 os.environ["OPENAI_API_KEY"] = "API_KEY_HERE"
 ```
 ```output
-Node properties: [[OrderedDict([('label', None), ('properties', ['name', 'birthDate', 'title'])])]]
-Relationships properties: [[OrderedDict([('type', None), ('properties', [])])]]
-Relationships: [['(:Person)-[:ACTED_IN]->(:Movie)']]
+节点属性: [[OrderedDict([('label', None), ('properties', ['name', 'birthDate', 'title'])])]]
+关系属性: [[OrderedDict([('type', None), ('properties', [])])]]
+关系: [['(:Person)-[:ACTED_IN]->(:Movie)']]
 ```
 
 ```python
 chain = FalkorDBQAChain.from_llm(ChatOpenAI(temperature=0), graph=graph, verbose=True)
 ```
 
-## Querying the graph
+## 查询图形
 
 
 ```python
@@ -112,7 +109,7 @@ Full Context:
 
 
 ```output
-'Tom Cruise, Val Kilmer, Anthony Edwards, and Meg Ryan played in Top Gun.'
+'汤姆·克鲁斯、瓦尔·基尔默、安东尼·爱德华兹和梅格·瑞恩在《壮志凌云》中出演。'
 ```
 
 
@@ -138,7 +135,7 @@ Full Context:
 
 
 ```output
-'The oldest actor who played in The Godfather: Part II is Al Pacino.'
+'在《教父：第二部》中出演的最年长演员是阿尔·帕西诺。'
 ```
 
 
@@ -161,6 +158,5 @@ Full Context:
 
 
 ```output
-'Robert De Niro played in "The Godfather: Part II".'
+'罗伯特·德尼罗出演了《教父：第二部》。'
 ```
-

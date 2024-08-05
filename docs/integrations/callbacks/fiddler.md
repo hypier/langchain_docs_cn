@@ -1,26 +1,27 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/callbacks/fiddler.ipynb
 ---
+
 # Fiddler
 
->[Fiddler](https://www.fiddler.ai/) is the pioneer in enterprise Generative and Predictive system ops, offering a unified platform that enables Data Science, MLOps, Risk, Compliance, Analytics, and other LOB teams to monitor, explain, analyze, and improve ML deployments at enterprise scale. 
+>[Fiddler](https://www.fiddler.ai/) 是企业生成和预测系统运维的先驱，提供一个统一的平台，使数据科学、MLOps、风险、合规、分析和其他业务部门团队能够在企业规模上监控、解释、分析和改进机器学习部署。
 
-## 1. Installation and Setup
+## 1. 安装与设置
 
 
 ```python
 #!pip install langchain langchain-community langchain-openai fiddler-client
 ```
 
-## 2. Fiddler connection details 
+## 2. Fiddler 连接详情 
 
-*Before you can add information about your model with Fiddler*
+*在您可以使用 Fiddler 添加有关您的模型的信息之前*
 
-1. The URL you're using to connect to Fiddler
-2. Your organization ID
-3. Your authorization token
+1. 您用于连接 Fiddler 的 URL
+2. 您的组织 ID
+3. 您的授权令牌
 
-These can be found by navigating to the *Settings* page of your Fiddler environment.
+这些信息可以通过导航到您的 Fiddler 环境的 *设置* 页面找到。
 
 
 ```python
@@ -33,7 +34,7 @@ PROJECT_NAME = ""
 MODEL_NAME = ""  # Model name in Fiddler
 ```
 
-## 3. Create a fiddler callback handler instance
+## 3. 创建 Fiddler 回调处理程序实例
 
 
 ```python
@@ -48,26 +49,24 @@ fiddler_handler = FiddlerCallbackHandler(
 )
 ```
 
-## Example 1 : Basic Chain
-
+## 示例 1 : 基本链
 
 ```python
 from langchain_core.output_parsers import StrOutputParser
 from langchain_openai import OpenAI
 
-# Note : Make sure openai API key is set in the environment variable OPENAI_API_KEY
+# 注意 : 确保在环境变量 OPENAI_API_KEY 中设置 openai API 密钥
 llm = OpenAI(temperature=0, streaming=True, callbacks=[fiddler_handler])
 output_parser = StrOutputParser()
 
 chain = llm | output_parser
 
-# Invoke the chain. Invocation will be logged to Fiddler, and metrics automatically generated
+# 调用链。调用将记录到 Fiddler，并自动生成指标
 chain.invoke("How far is moon from earth?")
 ```
 
-
 ```python
-# Few more invocations
+# 另外几个调用
 chain.invoke("What is the temperature on Mars?")
 chain.invoke("How much is 2 + 200000?")
 chain.invoke("Which movie won the oscars this year?")
@@ -76,8 +75,7 @@ chain.invoke("How are you doing today?")
 chain.invoke("What is the meaning of life?")
 ```
 
-## Example 2 : Chain with prompt templates
-
+## 示例 2 : 带有提示模板的链
 
 ```python
 from langchain_core.prompts import (
@@ -104,17 +102,17 @@ few_shot_prompt = FewShotChatMessagePromptTemplate(
 
 final_prompt = ChatPromptTemplate.from_messages(
     [
-        ("system", "You are a wondrous wizard of math."),
+        ("system", "你是一位神奇的数学巫师。"),
         few_shot_prompt,
         ("human", "{input}"),
     ]
 )
 
-# Note : Make sure openai API key is set in the environment variable OPENAI_API_KEY
+# 注意 : 确保在环境变量 OPENAI_API_KEY 中设置了 openai API 密钥
 llm = OpenAI(temperature=0, streaming=True, callbacks=[fiddler_handler])
 
 chain = final_prompt | llm
 
-# Invoke the chain. Invocation will be logged to Fiddler, and metrics automatically generated
-chain.invoke({"input": "What's the square of a triangle?"})
+# 调用链。调用将被记录到 Fiddler，并自动生成指标
+chain.invoke({"input": "三角形的平方是多少？"})
 ```

@@ -2,22 +2,23 @@
 keywords: [azure]
 ---
 
-# Microsoft
+# 微软
 
-All functionality related to `Microsoft Azure` and other `Microsoft` products.
+与 `Microsoft Azure` 及其他 `Microsoft` 产品相关的所有功能。
 
-## Chat Models
+## 聊天模型
+
 ### Azure OpenAI
 
->[Microsoft Azure](https://en.wikipedia.org/wiki/Microsoft_Azure), often referred to as `Azure` is a cloud computing platform run by `Microsoft`, which offers access, management, and development of applications and services through global data centers. It provides a range of capabilities, including software as a service (SaaS), platform as a service (PaaS), and infrastructure as a service (IaaS). `Microsoft Azure` supports many programming languages, tools, and frameworks, including Microsoft-specific and third-party software and systems.
+>[Microsoft Azure](https://en.wikipedia.org/wiki/Microsoft_Azure)，通常称为 `Azure`，是由 `Microsoft` 运营的云计算平台，通过全球数据中心提供应用程序和服务的访问、管理和开发。它提供了一系列功能，包括软件即服务（SaaS）、平台即服务（PaaS）和基础设施即服务（IaaS）。`Microsoft Azure` 支持多种编程语言、工具和框架，包括 Microsoft 特定的和第三方的软件及系统。
 
->[Azure OpenAI](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/) is an `Azure` service with powerful language models from `OpenAI` including the `GPT-3`, `Codex` and `Embeddings model` series for content generation, summarization, semantic search, and natural language to code translation.
+>[Azure OpenAI](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/) 是一项 `Azure` 服务，提供来自 `OpenAI` 的强大语言模型，包括用于内容生成、摘要、语义搜索和自然语言到代码翻译的 `GPT-3`、`Codex` 和 `Embeddings model` 系列。
 
 ```bash
 pip install langchain-openai
 ```
 
-Set the environment variables to get access to the `Azure OpenAI` service.
+设置环境变量以访问 `Azure OpenAI` 服务。
 
 ```python
 import os
@@ -26,8 +27,7 @@ os.environ["AZURE_OPENAI_ENDPOINT"] = "https://<your-endpoint.openai.azure.com/"
 os.environ["AZURE_OPENAI_API_KEY"] = "your AzureOpenAI key"
 ```
 
-See a [usage example](/docs/integrations/chat/azure_chat_openai)
-
+查看 [使用示例](/docs/integrations/chat/azure_chat_openai)
 
 ```python
 from langchain_openai import AzureChatOpenAI
@@ -37,7 +37,7 @@ from langchain_openai import AzureChatOpenAI
 
 ### Azure ML
 
-See a [usage example](/docs/integrations/llms/azure_ml).
+查看 [使用示例](/docs/integrations/llms/azure_ml)。
 
 ```python
 from langchain_community.llms.azureml_endpoint import AzureMLOnlineEndpoint
@@ -45,122 +45,113 @@ from langchain_community.llms.azureml_endpoint import AzureMLOnlineEndpoint
 
 ### Azure OpenAI
 
-See a [usage example](/docs/integrations/llms/azure_openai).
+查看 [使用示例](/docs/integrations/llms/azure_openai).
 
 ```python
 from langchain_openai import AzureOpenAI
 ```
 
-## Embedding Models
+## 嵌入模型
+
 ### Azure OpenAI
 
-See a [usage example](/docs/integrations/text_embedding/azureopenai)
+查看 [使用示例](/docs/integrations/text_embedding/azureopenai)
 
 ```python
 from langchain_openai import AzureOpenAIEmbeddings
 ```
 
-## Document loaders
+## 文档加载器
 
-### Azure AI Data
+### Azure AI 数据
 
->[Azure AI Studio](https://ai.azure.com/) provides the capability to upload data assets 
-> to cloud storage and register existing data assets from the following sources:
+>[Azure AI Studio](https://ai.azure.com/) 提供将数据资产上传到云存储并从以下来源注册现有数据资产的能力：
 >
 >- `Microsoft OneLake`
 >- `Azure Blob Storage`
 >- `Azure Data Lake gen 2`
 
-First, you need to install several python packages.
+首先，您需要安装几个 Python 包。
 
 ```bash
 pip install azureml-fsspec, azure-ai-generative
 ```
 
-See a [usage example](/docs/integrations/document_loaders/azure_ai_data).
+查看 [用法示例](/docs/integrations/document_loaders/azure_ai_data)。
 
 ```python
 from langchain.document_loaders import AzureAIDataLoader
 ```
 
-
 ### Azure AI Document Intelligence
 
->[Azure AI Document Intelligence](https://aka.ms/doc-intelligence) (formerly known
-> as `Azure Form Recognizer`) is machine-learning
-> based service that extracts texts (including handwriting), tables, document structures, 
-> and key-value-pairs
-> from digital or scanned PDFs, images, Office and HTML files.
->
-> Document Intelligence supports `PDF`, `JPEG/JPG`, `PNG`, `BMP`, `TIFF`, `HEIF`, `DOCX`, `XLSX`, `PPTX` and `HTML`.
+>[Azure AI Document Intelligence](https://aka.ms/doc-intelligence)（前称为 `Azure Form Recognizer`）是基于机器学习的服务，能够从数字或扫描的 PDF、图像、Office 和 HTML 文件中提取文本（包括手写文本）、表格、文档结构和键值对。
 
-First, you need to install a python package.
+> Document Intelligence 支持 `PDF`、`JPEG/JPG`、`PNG`、`BMP`、`TIFF`、`HEIF`、`DOCX`、`XLSX`、`PPTX` 和 `HTML`。
+
+首先，您需要安装一个 Python 包。
 
 ```bash
 pip install azure-ai-documentintelligence
 ```
 
-See a [usage example](/docs/integrations/document_loaders/azure_document_intelligence).
+查看 [使用示例](/docs/integrations/document_loaders/azure_document_intelligence)。
 
 ```python
 from langchain.document_loaders import AzureAIDocumentIntelligenceLoader
 ```
 
-
 ### Azure Blob Storage
 
->[Azure Blob Storage](https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction) is Microsoft's object storage solution for the cloud. Blob Storage is optimized for storing massive amounts of unstructured data. Unstructured data is data that doesn't adhere to a particular data model or definition, such as text or binary data.
+>[Azure Blob Storage](https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction) 是微软的云对象存储解决方案。Blob 存储经过优化，适合存储大量非结构化数据。非结构化数据是指不遵循特定数据模型或定义的数据，例如文本或二进制数据。
 
->[Azure Files](https://learn.microsoft.com/en-us/azure/storage/files/storage-files-introduction) offers fully managed
-> file shares in the cloud that are accessible via the industry standard Server Message Block (`SMB`) protocol,
-> Network File System (`NFS`) protocol, and `Azure Files REST API`. `Azure Files` are based on the `Azure Blob Storage`.
+>[Azure Files](https://learn.microsoft.com/en-us/azure/storage/files/storage-files-introduction) 提供完全托管的云文件共享，可以通过行业标准的服务器消息块 (`SMB`) 协议、网络文件系统 (`NFS`) 协议和 `Azure Files REST API` 进行访问。`Azure Files` 基于 `Azure Blob Storage`。
 
-`Azure Blob Storage` is designed for:
-- Serving images or documents directly to a browser.
-- Storing files for distributed access.
-- Streaming video and audio.
-- Writing to log files.
-- Storing data for backup and restore, disaster recovery, and archiving.
-- Storing data for analysis by an on-premises or Azure-hosted service.
+`Azure Blob Storage` 的设计目标包括：
+- 直接向浏览器提供图像或文档。
+- 存储供分布式访问的文件。
+- 流式传输视频和音频。
+- 写入日志文件。
+- 存储用于备份和恢复、灾难恢复以及归档的数据。
+- 存储供本地或 Azure 托管服务分析的数据。
 
 ```bash
 pip install azure-storage-blob
 ```
 
-See a [usage example for the Azure Blob Storage](/docs/integrations/document_loaders/azure_blob_storage_container).
+查看 [Azure Blob Storage 的使用示例](/docs/integrations/document_loaders/azure_blob_storage_container)。
 
 ```python
 from langchain_community.document_loaders import AzureBlobStorageContainerLoader
 ```
 
-See a [usage example for the Azure Files](/docs/integrations/document_loaders/azure_blob_storage_file).
+查看 [Azure Files 的使用示例](/docs/integrations/document_loaders/azure_blob_storage_file)。
 
 ```python
 from langchain_community.document_loaders import AzureBlobStorageFileLoader
 ```
 
-
 ### Microsoft OneDrive
 
->[Microsoft OneDrive](https://en.wikipedia.org/wiki/OneDrive) (formerly `SkyDrive`) is a file-hosting service operated by Microsoft.
+>[Microsoft OneDrive](https://en.wikipedia.org/wiki/OneDrive)（前称 `SkyDrive`）是由微软运营的文件托管服务。
 
-First, you need to install a python package.
+首先，您需要安装一个 Python 包。
 
 ```bash
 pip install o365
 ```
 
-See a [usage example](/docs/integrations/document_loaders/microsoft_onedrive).
+查看 [使用示例](/docs/integrations/document_loaders/microsoft_onedrive)。
 
 ```python
 from langchain_community.document_loaders import OneDriveLoader
 ```
 
-### Microsoft OneDrive File
+### Microsoft OneDrive 文件
 
->[Microsoft OneDrive](https://en.wikipedia.org/wiki/OneDrive) (formerly `SkyDrive`) is a file-hosting service operated by Microsoft.
+>[Microsoft OneDrive](https://en.wikipedia.org/wiki/OneDrive)（前身为 `SkyDrive`）是由 Microsoft 运营的文件托管服务。
 
-First, you need to install a python package.
+首先，您需要安装一个 Python 包。
 
 ```bash
 pip install o365
@@ -170,54 +161,45 @@ pip install o365
 from langchain_community.document_loaders import OneDriveFileLoader
 ```
 
-
 ### Microsoft Word
 
->[Microsoft Word](https://www.microsoft.com/en-us/microsoft-365/word) is a word processor developed by Microsoft.
+>[Microsoft Word](https://www.microsoft.com/en-us/microsoft-365/word) 是由微软开发的文字处理器。
 
-See a [usage example](/docs/integrations/document_loaders/microsoft_word).
+查看 [使用示例](/docs/integrations/document_loaders/microsoft_word).
 
 ```python
 from langchain_community.document_loaders import UnstructuredWordDocumentLoader
 ```
 
-
 ### Microsoft Excel
 
->[Microsoft Excel](https://en.wikipedia.org/wiki/Microsoft_Excel) is a spreadsheet editor developed by 
-> Microsoft for Windows, macOS, Android, iOS and iPadOS. 
-> It features calculation or computation capabilities, graphing tools, pivot tables, and a macro programming 
-> language called Visual Basic for Applications (VBA). Excel forms part of the Microsoft 365 suite of software.
+>[Microsoft Excel](https://en.wikipedia.org/wiki/Microsoft_Excel) 是由 Microsoft 为 Windows、macOS、Android、iOS 和 iPadOS 开发的电子表格编辑器。 
+> 它具有计算或计算能力、图表工具、数据透视表和一种名为 Visual Basic for Applications (VBA) 的宏编程语言。Excel 是 Microsoft 365 软件套件的一部分。
 
-The `UnstructuredExcelLoader` is used to load `Microsoft Excel` files. The loader works with both `.xlsx` and `.xls` files. 
-The page content will be the raw text of the Excel file. If you use the loader in `"elements"` mode, an HTML 
-representation of the Excel file will be available in the document metadata under the `text_as_html` key.
+`UnstructuredExcelLoader` 用于加载 `Microsoft Excel` 文件。该加载器支持 `.xlsx` 和 `.xls` 文件。 
+页面内容将是 Excel 文件的原始文本。如果您在 `"elements"` 模式下使用加载器，Excel 文件的 HTML 表示将可在文档元数据中的 `text_as_html` 键下找到。
 
-See a [usage example](/docs/integrations/document_loaders/microsoft_excel).
+请参见 [使用示例](/docs/integrations/document_loaders/microsoft_excel)。
 
 ```python
 from langchain_community.document_loaders import UnstructuredExcelLoader
 ```
 
-
 ### Microsoft SharePoint
 
->[Microsoft SharePoint](https://en.wikipedia.org/wiki/SharePoint) is a website-based collaboration system 
-> that uses workflow applications, “list” databases, and other web parts and security features to 
-> empower business teams to work together developed by Microsoft.
+>[Microsoft SharePoint](https://en.wikipedia.org/wiki/SharePoint) 是一个基于网站的协作系统，利用工作流应用程序、“列表”数据库以及其他网页组件和安全功能，帮助商业团队协同工作，由微软开发。
 
-See a [usage example](/docs/integrations/document_loaders/microsoft_sharepoint).
+查看[使用示例](/docs/integrations/document_loaders/microsoft_sharepoint)。
 
 ```python
 from langchain_community.document_loaders.sharepoint import SharePointLoader
 ```
 
-
 ### Microsoft PowerPoint
 
->[Microsoft PowerPoint](https://en.wikipedia.org/wiki/Microsoft_PowerPoint) is a presentation program by Microsoft.
+>[Microsoft PowerPoint](https://en.wikipedia.org/wiki/Microsoft_PowerPoint) 是微软的一款演示文稿程序。
 
-See a [usage example](/docs/integrations/document_loaders/microsoft_powerpoint).
+查看 [使用示例](/docs/integrations/document_loaders/microsoft_powerpoint)。
 
 ```python
 from langchain_community.document_loaders import UnstructuredPowerPointLoader
@@ -225,51 +207,51 @@ from langchain_community.document_loaders import UnstructuredPowerPointLoader
 
 ### Microsoft OneNote
 
-First, let's install dependencies:
+首先，让我们安装依赖项：
 
 ```bash
 pip install bs4 msal
 ```
 
-See a [usage example](/docs/integrations/document_loaders/microsoft_onenote).
+查看[使用示例](/docs/integrations/document_loaders/microsoft_onenote)。
 
 ```python
 from langchain_community.document_loaders.onenote import OneNoteLoader
 ```
 
-## AI Agent Memory System
+## AI代理记忆系统
 
-[AI agent](https://learn.microsoft.com/en-us/azure/cosmos-db/ai-agents) needs robust memory systems that support multi-modality, offer strong operational performance, and enable agent memory sharing as well as separation.
+[AI代理](https://learn.microsoft.com/en-us/azure/cosmos-db/ai-agents) 需要强大的记忆系统，以支持多模态，提供强大的操作性能，并实现代理记忆的共享与分离。
 
-AI agents can rely on Azure Cosmos DB as a unified [memory system](https://learn.microsoft.com/en-us/azure/cosmos-db/ai-agents#memory-can-make-or-break-agents) solution, enjoying speed, scale, and simplicity. This service successfully [enabled OpenAI's ChatGPT service](https://www.youtube.com/watch?v=6IIUtEFKJec&t) to scale dynamically with high reliability and low maintenance. Powered by an atom-record-sequence engine, it is the world's first globally distributed [NoSQL](https://learn.microsoft.com/en-us/azure/cosmos-db/distributed-nosql), [relational](https://learn.microsoft.com/en-us/azure/cosmos-db/distributed-relational), and [vector database](https://learn.microsoft.com/en-us/azure/cosmos-db/vector-database) service that offers a serverless mode. 
+AI代理可以依靠 Azure Cosmos DB 作为统一的 [记忆系统](https://learn.microsoft.com/en-us/azure/cosmos-db/ai-agents#memory-can-make-or-break-agents) 解决方案，享受速度、规模和简便性。该服务成功地 [使 OpenAI 的 ChatGPT 服务](https://www.youtube.com/watch?v=6IIUtEFKJec&t) 能够以高可靠性和低维护成本动态扩展。其由原子记录序列引擎驱动，是全球首个提供无服务器模式的 [全球分布式 NoSQL](https://learn.microsoft.com/en-us/azure/cosmos-db/distributed-nosql)、[关系型](https://learn.microsoft.com/en-us/azure/cosmos-db/distributed-relational) 和 [向量数据库](https://learn.microsoft.com/en-us/azure/cosmos-db/vector-database) 服务。
 
-Below are two available Azure Cosmos DB APIs that can provide vector store functionalities.
+以下是两个可用的 Azure Cosmos DB API，能够提供向量存储功能。
 
 ### Azure Cosmos DB for MongoDB (vCore)
 
->[Azure Cosmos DB for MongoDB vCore](https://learn.microsoft.com/en-us/azure/cosmos-db/mongodb/vcore/) makes it easy to create a database with full native MongoDB support.
-> You can apply your MongoDB experience and continue to use your favorite MongoDB drivers, SDKs, and tools by pointing your application to the API for MongoDB vCore account's connection string.
-> Use vector search in Azure Cosmos DB for MongoDB vCore to seamlessly integrate your AI-based applications with your data that's stored in Azure Cosmos DB.
+>[Azure Cosmos DB for MongoDB vCore](https://learn.microsoft.com/en-us/azure/cosmos-db/mongodb/vcore/) 使创建一个完全原生支持 MongoDB 的数据库变得简单。  
+> 您可以利用您的 MongoDB 经验，并通过将应用程序指向 MongoDB vCore 账户的连接字符串，继续使用您喜欢的 MongoDB 驱动程序、SDK 和工具。  
+> 在 Azure Cosmos DB for MongoDB vCore 中使用向量搜索，将基于 AI 的应用程序与存储在 Azure Cosmos DB 中的数据无缝集成。
 
-#### Installation and Setup
+#### 安装与设置
 
-See [detail configuration instructions](/docs/integrations/vectorstores/azure_cosmos_db).
+请参见 [详细配置说明](/docs/integrations/vectorstores/azure_cosmos_db)。
 
-We need to install `pymongo` python package.
+我们需要安装 `pymongo` python 包。
 
 ```bash
 pip install pymongo
 ```
 
-#### Deploy Azure Cosmos DB on Microsoft Azure
+#### 在 Microsoft Azure 上部署 Azure Cosmos DB
 
-Azure Cosmos DB for MongoDB vCore provides developers with a fully managed MongoDB-compatible database service for building modern applications with a familiar architecture.
+Azure Cosmos DB for MongoDB vCore 为开发人员提供了一个完全托管的 MongoDB 兼容数据库服务，用于构建具有熟悉架构的现代应用程序。
 
-With Cosmos DB for MongoDB vCore, developers can enjoy the benefits of native Azure integrations, low total cost of ownership (TCO), and the familiar vCore architecture when migrating existing applications or building new ones.
+使用 Cosmos DB for MongoDB vCore，开发人员可以享受原生 Azure 集成、低总拥有成本 (TCO) 和熟悉的 vCore 架构的好处，无论是在迁移现有应用程序还是构建新应用程序时。
 
-[Sign Up](https://azure.microsoft.com/en-us/free/) for free to get started today.
+[注册](https://azure.microsoft.com/en-us/free/) 免费开始使用。
 
-See a [usage example](/docs/integrations/vectorstores/azure_cosmos_db).
+查看 [使用示例](/docs/integrations/vectorstores/azure_cosmos_db)。
 
 ```python
 from langchain_community.vectorstores import AzureCosmosDBVectorSearch
@@ -277,80 +259,75 @@ from langchain_community.vectorstores import AzureCosmosDBVectorSearch
 
 ### Azure Cosmos DB NoSQL
 
->[Azure Cosmos DB for NoSQL](https://learn.microsoft.com/en-us/azure/cosmos-db/nosql/vector-search) now offers vector indexing and search in preview.
-This feature is designed to handle high-dimensional vectors, enabling efficient and accurate vector search at any scale. You can now store vectors
-directly in the documents alongside your data. This means that each document in your database can contain not only traditional schema-free data,
-but also high-dimensional vectors as other properties of the documents. This colocation of data and vectors allows for efficient indexing and searching,
-as the vectors are stored in the same logical unit as the data they represent. This simplifies data management, AI application architectures, and the
-efficiency of vector-based operations.
+>[Azure Cosmos DB for NoSQL](https://learn.microsoft.com/en-us/azure/cosmos-db/nosql/vector-search) 现在提供预览版的向量索引和搜索功能。该功能旨在处理高维向量，实现高效且准确的向量搜索，无论规模如何。您现在可以直接在文档中存储向量，与您的数据并存。这意味着数据库中的每个文档不仅可以包含传统的无模式数据，还可以作为文档的其他属性包含高维向量。数据和向量的共存使得高效的索引和搜索成为可能，因为向量与其所表示的数据存储在同一逻辑单元中。这简化了数据管理、人工智能应用架构以及基于向量的操作的效率。
 
-#### Installation and Setup
+#### 安装和设置
 
-See [detail configuration instructions](/docs/integrations/vectorstores/azure_cosmos_db_no_sql).
+请参阅 [详细配置说明](/docs/integrations/vectorstores/azure_cosmos_db_no_sql)。
 
-We need to install `azure-cosmos` python package.
+我们需要安装 `azure-cosmos` python 包。
 
 ```bash
 pip install azure-cosmos
 ```
 
-#### Deploy Azure Cosmos DB on Microsoft Azure
+#### 在 Microsoft Azure 上部署 Azure Cosmos DB
 
-Azure Cosmos DB offers a solution for modern apps and intelligent workloads by being very responsive with dynamic and elastic autoscale. It is available
-in every Azure region and can automatically replicate data closer to users. It has SLA guaranteed low-latency and high availability.
+Azure Cosmos DB 通过动态和弹性的自动扩展，为现代应用程序和智能工作负载提供了解决方案，响应非常迅速。它在每个 Azure 区域均可用，并可以自动将数据复制到离用户更近的地方。它具有 SLA 保证的低延迟和高可用性。
 
-[Sign Up](https://learn.microsoft.com/en-us/azure/cosmos-db/nosql/quickstart-python?pivots=devcontainer-codespace) for free to get started today.
+[注册](https://learn.microsoft.com/en-us/azure/cosmos-db/nosql/quickstart-python?pivots=devcontainer-codespace) 免费开始使用。
 
-See a [usage example](/docs/integrations/vectorstores/azure_cosmos_db_no_sql).
+请参阅 [使用示例](/docs/integrations/vectorstores/azure_cosmos_db_no_sql)。
 
 ```python
 from langchain_community.vectorstores import AzureCosmosDBNoSQLVectorSearch
 ```
 
-## Retrievers
+## 检索器
+
 ### Azure AI Search
 
->[Azure AI Search](https://learn.microsoft.com/en-us/azure/search/search-what-is-azure-search) (formerly known as `Azure Search` or `Azure Cognitive Search` ) is a cloud search service that gives developers infrastructure, APIs, and tools for building a rich search experience over private, heterogeneous content in web, mobile, and enterprise applications.
+>[Azure AI Search](https://learn.microsoft.com/en-us/azure/search/search-what-is-azure-search)（以前称为 `Azure Search` 或 `Azure Cognitive Search`）是一个云搜索服务，为开发人员提供基础设施、API 和工具，以在网页、移动和企业应用程序中构建丰富的搜索体验，针对私有的异构内容。
 
->Search is foundational to any app that surfaces text to users, where common scenarios include catalog or document search, online retail apps, or data exploration over proprietary content. When you create a search service, you'll work with the following capabilities:
->- A search engine for full text search over a search index containing user-owned content
->- Rich indexing, with lexical analysis and optional AI enrichment for content extraction and transformation
->- Rich query syntax for text search, fuzzy search, autocomplete, geo-search and more
->- Programmability through REST APIs and client libraries in Azure SDKs
->- Azure integration at the data layer, machine learning layer, and AI (AI Services)
+>搜索是任何向用户呈现文本的应用程序的基础，常见场景包括目录或文档搜索、在线零售应用程序或对专有内容的数据探索。当您创建搜索服务时，您将使用以下功能：
+>- 针对包含用户拥有内容的搜索索引的全文搜索引擎
+>- 丰富的索引功能，具有词汇分析和可选的 AI 增强，用于内容提取和转换
+>- 丰富的查询语法，用于文本搜索、模糊搜索、自动补全、地理搜索等
+>- 通过 REST API 和 Azure SDK 中的客户端库实现可编程性
+>- 在数据层、机器学习层和 AI（AI 服务）中的 Azure 集成
 
-See [set up instructions](https://learn.microsoft.com/en-us/azure/search/search-create-service-portal).
+请参阅 [设置说明](https://learn.microsoft.com/en-us/azure/search/search-create-service-portal)。
 
-See a [usage example](/docs/integrations/retrievers/azure_ai_search).
+查看 [使用示例](/docs/integrations/retrievers/azure_ai_search)。
 
 ```python
 from langchain.retrievers import AzureAISearchRetriever
 ```
 
-## Tools
+## 工具
 
-### Azure Container Apps dynamic sessions
+### Azure Container Apps 动态会话
 
-We need to get the `POOL_MANAGEMENT_ENDPOINT` environment variable from the Azure Container Apps service.
-See the instructions [here](/docs/integrations/tools/azure_dynamic_sessions/#setup).
+我们需要从 Azure Container Apps 服务中获取 `POOL_MANAGEMENT_ENDPOINT` 环境变量。
+请参阅 [此处](/docs/integrations/tools/azure_dynamic_sessions/#setup) 的说明。
 
-We need to install a python package.
+我们需要安装一个 Python 包。
 
 ```bash
 pip install langchain-azure-dynamic-sessions
 ```
 
-See a [usage example](/docs/integrations/tools/azure_dynamic_sessions).
+请参阅 [使用示例](/docs/integrations/tools/azure_dynamic_sessions)。
 
 ```python
 from langchain_azure_dynamic_sessions import SessionsPythonREPLTool
 ```
 
-### Bing Search
+### Bing搜索
 
-Follow the documentation [here](/docs/integrations/tools/bing_search) to get a detail explanations and instructions of this tool.
+请按照[这里](/docs/integrations/tools/bing_search)的文档获取该工具的详细说明和使用说明。
 
-The environment variable `BING_SUBSCRIPTION_KEY` and `BING_SEARCH_URL` are required from Bing Search resource.
+需要从Bing搜索资源中获取环境变量`BING_SUBSCRIPTION_KEY`和`BING_SEARCH_URL`。
 
 ```python
 from langchain_community.tools.bing_search import BingSearchResults
@@ -360,32 +337,31 @@ api_wrapper = BingSearchAPIWrapper()
 tool = BingSearchResults(api_wrapper=api_wrapper)
 ```
 
-## Toolkits
+## 工具包
 
-### Azure AI Services
+### Azure AI 服务
 
-We need to install several python packages.
+我们需要安装几个 Python 包。
 
 ```bash
 pip install azure-ai-formrecognizer azure-cognitiveservices-speech azure-ai-vision-imageanalysis
 ```
 
-See a [usage example](/docs/integrations/toolkits/azure_ai_services).
+请参见 [使用示例](/docs/integrations/toolkits/azure_ai_services)。
 
 ```python
 from langchain_community.agent_toolkits import azure_ai_services
 ```
 
-### Microsoft Office 365 email and calendar
+### Microsoft Office 365 邮件和日历
 
-We need to install `O365` python package.
+我们需要安装 `O365` python 包。
 
 ```bash
 pip install O365
 ```
 
-
-See a [usage example](/docs/integrations/toolkits/office365).
+查看 [使用示例](/docs/integrations/toolkits/office365)。
 
 ```python
 from langchain_community.agent_toolkits import O365Toolkit
@@ -393,69 +369,66 @@ from langchain_community.agent_toolkits import O365Toolkit
 
 ### Microsoft Azure PowerBI
 
-We need to install `azure-identity` python package.
+我们需要安装 `azure-identity` python 包。
 
 ```bash
 pip install azure-identity
 ```
 
-See a [usage example](/docs/integrations/toolkits/powerbi).
+查看 [使用示例](/docs/integrations/toolkits/powerbi)。
 
 ```python
 from langchain_community.agent_toolkits import PowerBIToolkit
 from langchain_community.utilities.powerbi import PowerBIDataset
 ```
 
-
-## Graphs
+## 图表
 
 ### Azure Cosmos DB for Apache Gremlin
 
-We need to install a python package.
+我们需要安装一个 python 包。
 
 ```bash
 pip install gremlinpython
 ```
 
-See a [usage example](/docs/integrations/graphs/azure_cosmosdb_gremlin).
+查看 [使用示例](/docs/integrations/graphs/azure_cosmosdb_gremlin)。
 
 ```python
 from langchain_community.graphs import GremlinGraph
 from langchain_community.graphs.graph_document import GraphDocument, Node, Relationship
 ```
 
-## Utilities
+## 实用工具
 
 ### Bing Search API
 
->[Microsoft Bing](https://www.bing.com/), commonly referred to as `Bing` or `Bing Search`, 
-> is a web search engine owned and operated by `Microsoft`.
+>[微软必应](https://www.bing.com/)，通常称为 `Bing` 或 `Bing Search`， 
+> 是由 `Microsoft` 拥有和运营的网络搜索引擎。
 
-See a [usage example](/docs/integrations/tools/bing_search).
+查看 [使用示例](/docs/integrations/tools/bing_search)。
 
 ```python
 from langchain_community.utilities import BingSearchAPIWrapper
 ```
 
-## More
+## 更多
 
 ### Microsoft Presidio
 
->[Presidio](https://microsoft.github.io/presidio/) (Origin from Latin praesidium ‘protection, garrison’) 
-> helps to ensure sensitive data is properly managed and governed. It provides fast identification and 
-> anonymization modules for private entities in text and images such as credit card numbers, names, 
-> locations, social security numbers, bitcoin wallets, US phone numbers, financial data and more.
+>[Presidio](https://microsoft.github.io/presidio/)（源自拉丁语 praesidium ‘保护，驻军’） 
+>帮助确保敏感数据得到妥善管理和治理。它为文本和图像中的私人实体提供快速识别和 
+>匿名化模块，例如信用卡号码、姓名、位置、社会安全号码、比特币钱包、美国电话号码、金融数据等。
 
-First, you need to install several python packages and download a `SpaCy` model.
+首先，您需要安装几个python包并下载一个 `SpaCy` 模型。
 
 ```bash
 pip install langchain-experimental openai presidio-analyzer presidio-anonymizer spacy Faker
 python -m spacy download en_core_web_lg
 ```
 
-See [usage examples](https://python.langchain.com/v0.1/docs/guides/productionization/safety/presidio_data_anonymization).
+查看 [使用示例](https://python.langchain.com/v0.1/docs/guides/productionization/safety/presidio_data_anonymization)。
 
 ```python
 from langchain_experimental.data_anonymizer import PresidioAnonymizer, PresidioReversibleAnonymizer
 ```
-

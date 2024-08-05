@@ -1,57 +1,53 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/documentdb.ipynb
 ---
+
 # Amazon Document DB
 
->[Amazon DocumentDB (with MongoDB Compatibility)](https://docs.aws.amazon.com/documentdb/) makes it easy to set up, operate, and scale MongoDB-compatible databases in the cloud.
-> With Amazon DocumentDB, you can run the same application code and use the same drivers and tools that you use with MongoDB.
-> Vector search for Amazon DocumentDB combines the flexibility and rich querying capability of a JSON-based document database with the power of vector search.
+>[Amazon DocumentDB (与 MongoDB 兼容)](https://docs.aws.amazon.com/documentdb/) 使您可以轻松地在云中设置、操作和扩展与 MongoDB 兼容的数据库。
+> 使用 Amazon DocumentDB，您可以运行相同的应用程序代码，并使用与 MongoDB 相同的驱动程序和工具。
+> Amazon DocumentDB 的向量搜索结合了基于 JSON 的文档数据库的灵活性和丰富的查询能力，以及向量搜索的强大功能。
 
 
-This notebook shows you how to use [Amazon Document DB Vector Search](https://docs.aws.amazon.com/documentdb/latest/developerguide/vector-search.html) to store documents in collections, create indicies and perform vector search queries using approximate nearest neighbor algorithms such "cosine", "euclidean", and "dotProduct". By default, DocumentDB creates Hierarchical Navigable Small World (HNSW) indexes. To learn about other supported vector index types, please refer to the document linked above.
+本笔记本向您展示如何使用 [Amazon Document DB 向量搜索](https://docs.aws.amazon.com/documentdb/latest/developerguide/vector-search.html) 将文档存储在集合中，创建索引并使用近似最近邻算法执行向量搜索查询，例如 "cosine"、"euclidean" 和 "dotProduct"。默认情况下，DocumentDB 创建层次可导航小世界 (HNSW) 索引。要了解其他支持的向量索引类型，请参考上述链接的文档。
 
-To use DocumentDB, you must first deploy a cluster. Please refer to the [Developer Guide](https://docs.aws.amazon.com/documentdb/latest/developerguide/what-is.html) for more details.
+要使用 DocumentDB，您必须首先部署一个集群。有关更多详细信息，请参阅 [开发者指南](https://docs.aws.amazon.com/documentdb/latest/developerguide/what-is.html)。
 
-[Sign Up](https://aws.amazon.com/free/) for free to get started today.
-        
-
+[注册](https://aws.amazon.com/free/) 免费开始使用。
 
 ```python
 !pip install pymongo
 ```
 
-
 ```python
 import getpass
 
-# DocumentDB connection string
-# i.e., "mongodb://{username}:{pass}@{cluster_endpoint}:{port}/?{params}"
-CONNECTION_STRING = getpass.getpass("DocumentDB Cluster URI:")
+# DocumentDB 连接字符串
+# 即， "mongodb://{username}:{pass}@{cluster_endpoint}:{port}/?{params}"
+CONNECTION_STRING = getpass.getpass("DocumentDB 集群 URI:")
 
 INDEX_NAME = "izzy-test-index"
 NAMESPACE = "izzy_test_db.izzy_test_collection"
 DB_NAME, COLLECTION_NAME = NAMESPACE.split(".")
 ```
 
-We want to use `OpenAIEmbeddings` so we need to set up our OpenAI environment variables. 
-
+我们想使用 `OpenAIEmbeddings`，因此需要设置我们的 OpenAI 环境变量。
 
 ```python
 import getpass
 import os
 
-# Set up the OpenAI Environment Variables
-os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API Key:")
+# 设置 OpenAI 环境变量
+os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API 密钥:")
 os.environ["OPENAI_EMBEDDINGS_DEPLOYMENT"] = (
-    "smart-agent-embedding-ada"  # the deployment name for the embedding model
+    "smart-agent-embedding-ada"  # 嵌入模型的部署名称
 )
-os.environ["OPENAI_EMBEDDINGS_MODEL_NAME"] = "text-embedding-ada-002"  # the model name
+os.environ["OPENAI_EMBEDDINGS_MODEL_NAME"] = "text-embedding-ada-002"  # 模型名称
 ```
 
-Now, we will load the documents into the collection, create the index, and then perform queries against the index.
+现在，我们将加载文档到集合中，创建索引，然后对索引执行查询。
 
-Please refer to the [documentation](https://docs.aws.amazon.com/documentdb/latest/developerguide/vector-search.html) if you have questions about certain parameters
-
+如果您对某些参数有疑问，请参考 [文档](https://docs.aws.amazon.com/documentdb/latest/developerguide/vector-search.html)。
 
 ```python
 from langchain.vectorstores.documentdb import (
@@ -69,7 +65,7 @@ documents = loader.load()
 text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
 docs = text_splitter.split_documents(documents)
 
-# OpenAI Settings
+# OpenAI 设置
 model_deployment = os.getenv(
     "OPENAI_EMBEDDINGS_DEPLOYMENT", "smart-agent-embedding-ada"
 )
@@ -80,7 +76,6 @@ openai_embeddings: OpenAIEmbeddings = OpenAIEmbeddings(
     deployment=model_deployment, model=model_name
 )
 ```
-
 
 ```python
 from pymongo import MongoClient
@@ -104,17 +99,15 @@ vectorstore = DocumentDBVectorSearch.from_documents(
     index_name=INDEX_NAME,
 )
 
-# number of dimensions used by model above
+# 上述模型使用的维度数量
 dimensions = 1536
 
-# specify similarity algorithm, valid options are:
+# 指定相似性算法，有效选项为：
 #   cosine (COS), euclidean (EUC), dotProduct (DOT)
 similarity_algorithm = DocumentDBSimilarityType.COS
 
 vectorstore.create_index(dimensions, similarity_algorithm)
 ```
-
-
 
 ```output
 { 'createdCollectionAutomatically' : false,
@@ -124,29 +117,25 @@ vectorstore.create_index(dimensions, similarity_algorithm)
    'operationTime' : Timestamp(1703656982, 1)}
 ```
 
-
-
 ```python
-# perform a similarity search between the embedding of the query and the embeddings of the documents
-query = "What did the President say about Ketanji Brown Jackson"
+# 在查询的嵌入与文档的嵌入之间执行相似性搜索
+query = "总统对 Ketanji Brown Jackson 说了什么"
 docs = vectorstore.similarity_search(query)
 ```
-
 
 ```python
 print(docs[0].page_content)
 ```
 ```output
-Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And while you’re at it, pass the Disclose Act so Americans can know who is funding our elections. 
+今晚。我呼吁参议院：通过《投票自由法案》。通过《约翰·刘易斯投票权法案》。在此期间，通过《披露法案》，让美国人知道谁在资助我们的选举。
 
-Tonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. 
+今晚，我想表彰一位为这个国家奉献一生的人：大法官斯蒂芬·布雷耶——一位退伍军人、宪法学者，以及即将退休的美国最高法院大法官。布雷耶大法官，感谢您的服务。
 
-One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. 
+总统最重要的宪法职责之一是提名某人担任美国最高法院法官。
 
-And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
+我在四天前做了这件事，当时我提名了巡回上诉法院法官 Ketanji Brown Jackson。她是我们国家顶尖的法律人才之一，将继续布雷耶大法官卓越的遗产。
 ```
-Once the documents have been loaded and the index has been created, you can now instantiate the vector store directly and run queries against the index
-
+一旦文档加载完毕并创建了索引，您现在可以直接实例化向量存储并对索引执行查询。
 
 ```python
 vectorstore = DocumentDBVectorSearch.from_connection_string(
@@ -156,51 +145,48 @@ vectorstore = DocumentDBVectorSearch.from_connection_string(
     index_name=INDEX_NAME,
 )
 
-# perform a similarity search between a query and the ingested documents
-query = "What did the president say about Ketanji Brown Jackson"
+# 在查询与已摄取文档之间执行相似性搜索
+query = "总统对 Ketanji Brown Jackson 说了什么"
 docs = vectorstore.similarity_search(query)
 ```
-
 
 ```python
 print(docs[0].page_content)
 ```
 ```output
-Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And while you’re at it, pass the Disclose Act so Americans can know who is funding our elections. 
+今晚。我呼吁参议院：通过《投票自由法案》。通过《约翰·刘易斯投票权法案》。在此期间，通过《披露法案》，让美国人知道谁在资助我们的选举。
 
-Tonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. 
+今晚，我想表彰一位为这个国家奉献一生的人：大法官斯蒂芬·布雷耶——一位退伍军人、宪法学者，以及即将退休的美国最高法院大法官。布雷耶大法官，感谢您的服务。
 
-One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. 
+总统最重要的宪法职责之一是提名某人担任美国最高法院法官。
 
-And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
+我在四天前做了这件事，当时我提名了巡回上诉法院法官 Ketanji Brown Jackson。她是我们国家顶尖的法律人才之一，将继续布雷耶大法官卓越的遗产。
 ```
 
 ```python
-# perform a similarity search between a query and the ingested documents
-query = "Which stats did the President share about the U.S. economy"
+# 在查询与已摄取文档之间执行相似性搜索
+query = "总统分享了哪些关于美国经济的统计数据"
 docs = vectorstore.similarity_search(query)
 ```
-
 
 ```python
 print(docs[0].page_content)
 ```
 ```output
-And unlike the $2 Trillion tax cut passed in the previous administration that benefitted the top 1% of Americans, the American Rescue Plan helped working people—and left no one behind. 
+与前一届政府通过的 2 万亿美元减税政策不同，该政策使美国顶层 1% 的人受益，《美国救援计划》帮助了工薪阶层——并且没有人被落下。
 
-And it worked. It created jobs. Lots of jobs. 
+而且它奏效了。它创造了就业机会。大量的工作。
 
-In fact—our economy created over 6.5 Million new jobs just last year, more jobs created in one year  
-than ever before in the history of America. 
+实际上——我们的经济去年创造了超过 650 万个新工作，是美国历史上在一年内创造的最多的工作。
 
-Our economy grew at a rate of 5.7% last year, the strongest growth in nearly 40 years, the first step in bringing fundamental change to an economy that hasn’t worked for the working people of this nation for too long.  
+我们的经济去年增长了 5.7%，是近 40 年以来最强劲的增长，迈出了为这个国家的工薪阶层带来根本变化的第一步。
 
-For the past 40 years we were told that if we gave tax breaks to those at the very top, the benefits would trickle down to everyone else. 
+在过去的 40 年里，我们被告知，如果我们给顶层减税，收益将会惠及其他所有人。
 
-But that trickle-down theory led to weaker economic growth, lower wages, bigger deficits, and the widest gap between those at the top and everyone else in nearly a century.
+但这种涓滴经济理论导致了经济增长乏力、工资下降、赤字增加，以及近一个世纪以来顶层与其他人之间的差距最大。
 ```
-## Question Answering
 
+## 问答
 
 ```python
 qa_retriever = vectorstore.as_retriever(
@@ -209,21 +195,19 @@ qa_retriever = vectorstore.as_retriever(
 )
 ```
 
-
 ```python
 from langchain_core.prompts import PromptTemplate
 
-prompt_template = """Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
+prompt_template = """使用以下上下文片段来回答最后的问题。如果你不知道答案，就说你不知道，不要试图编造答案。
 
 {context}
 
-Question: {question}
+问题: {question}
 """
 PROMPT = PromptTemplate(
     template=prompt_template, input_variables=["context", "question"]
 )
 ```
-
 
 ```python
 from langchain.chains import RetrievalQA
@@ -243,8 +227,7 @@ print(docs["result"])
 print(docs["source_documents"])
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

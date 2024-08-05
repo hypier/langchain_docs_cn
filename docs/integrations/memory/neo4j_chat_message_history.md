@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/neo4j_chat_message_history.ipynb
 ---
+
 # Neo4j
 
-[Neo4j](https://en.wikipedia.org/wiki/Neo4j) is an open-source graph database management system, renowned for its efficient management of highly connected data. Unlike traditional databases that store data in tables, Neo4j uses a graph structure with nodes, edges, and properties to represent and store data. This design allows for high-performance queries on complex data relationships.
+[Neo4j](https://en.wikipedia.org/wiki/Neo4j) 是一个开源图形数据库管理系统，以其高效管理高度关联的数据而闻名。与将数据存储在表中的传统数据库不同，Neo4j 使用节点、边和属性的图形结构来表示和存储数据。这种设计允许对复杂数据关系进行高性能查询。
 
-This notebook goes over how to use `Neo4j` to store chat message history.
+本笔记本介绍了如何使用 `Neo4j` 来存储聊天消息历史记录。
 
 
 ```python

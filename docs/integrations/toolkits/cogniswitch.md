@@ -1,44 +1,45 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/toolkits/cogniswitch.ipynb
 ---
-## Cogniswitch Tools
 
-**Use CogniSwitch to build production ready applications that can consume, organize and retrieve knowledge flawlessly. Using the framework of your choice, in this case Langchain CogniSwitch helps alleviate the stress of decision making when it comes to, choosing the right storage and retrieval formats. It also eradicates reliability issues and hallucinations when it comes to responses that are generated. Get started by interacting with your knowledge in just two simple steps.**
+## Cogniswitch 工具
 
-visit [https://www.cogniswitch.ai/developer to register](https://www.cogniswitch.ai/developer?utm_source=langchain&utm_medium=langchainbuild&utm_id=dev).
+**使用 CogniSwitch 构建可以无缝获取、组织和检索知识的生产就绪应用程序。使用您选择的框架，在本例中是 Langchain，CogniSwitch 有助于减轻在选择合适的存储和检索格式时的决策压力。它还消除了生成响应时的可靠性问题和幻觉。只需两个简单步骤即可开始与您的知识互动。**
 
-**Registration:** 
+访问 [https://www.cogniswitch.ai/developer 注册](https://www.cogniswitch.ai/developer?utm_source=langchain&utm_medium=langchainbuild&utm_id=dev)。
 
-- Signup with your email and verify your registration 
+**注册：**
 
-- You will get a mail with a platform token and oauth token for using the services.
+- 使用您的电子邮件注册并验证您的注册
+
+- 您将收到一封包含平台令牌和 OAuth 令牌的邮件，以便使用该服务。
 
 
 
-**step 1: Instantiate the toolkit and get the tools:**
+**步骤 1：实例化工具包并获取工具：**
 
-- Instantiate the cogniswitch toolkit with the cogniswitch token, openAI API key and OAuth token and get the tools. 
+- 使用 cogniswitch 令牌、openAI API 密钥和 OAuth 令牌实例化 cogniswitch 工具包并获取工具。
 
-**step 2: Instantiate the agent with the tools and llm:**
-- Instantiate the agent with the list of cogniswitch tools and the llm, into the agent executor.
+**步骤 2：使用工具和 LLM 实例化代理：**
+- 使用 cogniswitch 工具列表和 LLM 实例化代理到代理执行器中。
 
-**step 3: CogniSwitch Store Tool:** 
+**步骤 3：CogniSwitch 存储工具：**
 
-***CogniSwitch knowledge source file tool***
-- Use the agent to upload a file by giving the file path.(formats that are currently supported are .pdf, .docx, .doc, .txt, .html)  
-- The content from the file will be processed by the cogniswitch and stored in your knowledge store. 
+***CogniSwitch 知识源文件工具***
+- 使用代理通过提供文件路径上传文件。（当前支持的格式有 .pdf、.docx、.doc、.txt、.html）  
+- 文件中的内容将由 cogniswitch 处理并存储在您的知识库中。
 
-***CogniSwitch knowledge source url tool***
-- Use the agent to upload a URL.  
-- The content from the url will be processed by the cogniswitch and stored in your knowledge store. 
+***CogniSwitch 知识源网址工具***
+- 使用代理上传网址。  
+- 网址中的内容将由 cogniswitch 处理并存储在您的知识库中。
 
-**step 4: CogniSwitch Status Tool:**
-- Use the agent to know the status of the document uploaded with a document name.
-- You can also check the status of document processing in cogniswitch console. 
+**步骤 4：CogniSwitch 状态工具：**
+- 使用代理查询上传文档的状态，提供文档名称。
+- 您还可以在 cogniswitch 控制台中检查文档处理的状态。
 
-**step 5: CogniSwitch Answer Tool:**
-- Use the agent to ask your question.
-- You will get the answer from your knowledge as the response. 
+**步骤 5：CogniSwitch 答案工具：**
+- 使用代理提出您的问题。
+- 您将从您的知识中获得响应的答案。
 
 
 
@@ -46,7 +47,7 @@ visit [https://www.cogniswitch.ai/developer to register](https://www.cogniswitch
 %pip install -qU langchain-community
 ```
 
-### Import necessary libraries
+### 导入必要的库
 
 
 ```python
@@ -61,7 +62,7 @@ from langchain_community.agent_toolkits import CogniswitchToolkit
 from langchain_openai import ChatOpenAI
 ```
 
-### Cogniswitch platform token, OAuth token and OpenAI API key
+### Cogniswitch 平台令牌、OAuth 令牌和 OpenAI API 密钥
 
 
 ```python
@@ -72,7 +73,7 @@ oauth_token = "Your CogniSwitch authentication token"
 os.environ["OPENAI_API_KEY"] = OAI_token
 ```
 
-### Instantiate the cogniswitch toolkit with the credentials
+### 使用凭据实例化 cogniswitch 工具包
 
 
 ```python
@@ -81,14 +82,14 @@ cogniswitch_toolkit = CogniswitchToolkit(
 )
 ```
 
-### Get the list of cogniswitch tools
+### 获取 cogniswitch 工具列表
 
 
 ```python
 tool_lst = cogniswitch_toolkit.get_tools()
 ```
 
-### Instantiate the llm
+### 实例化 llm
 
 
 ```python
@@ -100,14 +101,14 @@ llm = ChatOpenAI(
 )
 ```
 
-### Create a agent executor
+### 创建代理执行器
 
 
 ```python
 agent_executor = create_conversational_retrieval_agent(llm, tool_lst, verbose=False)
 ```
 
-### Invoke the agent to upload a URL
+### 调用代理上传 URL
 
 
 ```python
@@ -118,7 +119,8 @@ print(response["output"])
 ```output
 The URL https://cogniswitch.ai/developer has been uploaded successfully. The status of the document is currently being processed. You will receive an email notification once the processing is complete.
 ```
-### Invoke the agent to upload a File
+
+### 调用代理上传文件
 
 
 ```python
@@ -129,7 +131,8 @@ print(response["output"])
 ```output
 The file example_file.txt has been uploaded successfully. The status of the document is currently being processed. You will receive an email notification once the processing is complete.
 ```
-### Invoke the agent to get the status of a document
+
+### 调用代理以获取文档状态
 
 
 ```python
@@ -149,11 +152,11 @@ The status of the document example_file.txt is as follows:
 
 The document is currently being processed.
 ```
-### Invoke the agent with query and get the answer
 
+### 使用查询调用代理并获取答案
 
 ```python
-response = agent_executor.invoke("How can cogniswitch help develop GenAI applications?")
+response = agent_executor.invoke("CogniSwitch 如何帮助开发 GenAI 应用程序？")
 
 print(response["output"])
 ```

@@ -1,28 +1,27 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/alibabacloud_opensearch.ipynb
 ---
-# Alibaba Cloud OpenSearch
 
->[Alibaba Cloud Opensearch](https://www.alibabacloud.com/product/opensearch) is a one-stop platform to develop intelligent search services. `OpenSearch` was built on the large-scale distributed search engine developed by `Alibaba`. `OpenSearch` serves more than 500 business cases in Alibaba Group and thousands of Alibaba Cloud customers. `OpenSearch` helps develop search services in different search scenarios, including e-commerce, O2O, multimedia, the content industry, communities and forums, and big data query in enterprises.
+# 阿里云 OpenSearch
 
->`OpenSearch` helps you develop high-quality, maintenance-free, and high-performance intelligent search services to provide your users with high search efficiency and accuracy.
+>[阿里云 Opensearch](https://www.alibabacloud.com/product/opensearch) 是一个一站式平台，用于开发智能搜索服务。 `OpenSearch` 基于 `Alibaba` 开发的大规模分布式搜索引擎构建。 `OpenSearch` 为阿里巴巴集团的500多个业务案例和成千上万的阿里云客户提供服务。 `OpenSearch` 帮助在不同的搜索场景中开发搜索服务，包括电子商务、O2O、多媒体、内容行业、社区和论坛，以及企业的大数据查询。
 
->`OpenSearch` provides the vector search feature. In specific scenarios, especially test question search and image search scenarios, you can use the vector search feature together with the multimodal search feature to improve the accuracy of search results.
+>`OpenSearch` 帮助您开发高质量、免维护和高性能的智能搜索服务，为用户提供高搜索效率和准确性。
 
-This notebook shows how to use functionality related to the `Alibaba Cloud OpenSearch Vector Search Edition`.
+>`OpenSearch` 提供向量搜索功能。在特定场景下，特别是测试问题搜索和图像搜索场景中，您可以将向量搜索功能与多模态搜索功能结合使用，以提高搜索结果的准确性。
 
-## Setting up
+此笔记本展示了如何使用与 `阿里云 OpenSearch 向量搜索版` 相关的功能。
 
+## 设置
 
-### Purchase an instance and configure it
+### 购买实例并进行配置
 
-Purchase OpenSearch Vector Search Edition from [Alibaba Cloud](https://opensearch.console.aliyun.com) and configure the instance according to the help [documentation](https://help.aliyun.com/document_detail/463198.html?spm=a2c4g.465092.0.0.2cd15002hdwavO).
+从 [阿里云](https://opensearch.console.aliyun.com) 购买 OpenSearch 向量搜索版并根据帮助 [文档](https://help.aliyun.com/document_detail/463198.html?spm=a2c4g.465092.0.0.2cd15002hdwavO) 配置实例。
 
-To run, you should have an [OpenSearch Vector Search Edition](https://opensearch.console.aliyun.com) instance up and running.
+要运行，您需要有一个正在运行的 [OpenSearch 向量搜索版](https://opensearch.console.aliyun.com) 实例。
 
-  
-### Alibaba Cloud OpenSearch Vector Store class
-                                                                                                                `AlibabaCloudOpenSearch` class supports functions:
+### 阿里云 OpenSearch 向量存储类
+`AlibabaCloudOpenSearch` 类支持以下功能：
 - `add_texts`
 - `add_documents`
 - `from_texts`
@@ -34,22 +33,19 @@ To run, you should have an [OpenSearch Vector Search Edition](https://opensearch
 - `similarity_search_with_relevance_scores`
 - `delete_doc_by_texts`
 
+阅读 [帮助文档](https://www.alibabacloud.com/help/en/opensearch/latest/vector-search) 以快速熟悉和配置 OpenSearch 向量搜索版实例。
 
-Read the [help document](https://www.alibabacloud.com/help/en/opensearch/latest/vector-search) to quickly familiarize and configure OpenSearch Vector Search Edition instance.
+如果在使用过程中遇到任何问题，请随时联系 xingshaomin.xsm@alibaba-inc.com，我们将尽力为您提供帮助和支持。
 
-If you encounter any problems during use, please feel free to contact xingshaomin.xsm@alibaba-inc.com, and we will do our best to provide you with assistance and support.
+实例启动并运行后，请按照以下步骤拆分文档、获取嵌入、连接到阿里云 OpenSearch 实例、索引文档并执行向量检索。
 
-After the instance is up and running, follow these steps to split documents, get embeddings, connect to the alibaba cloud opensearch instance, index documents, and perform vector retrieval.
-
-We need to install the following Python packages first.
-
+我们需要先安装以下 Python 包。
 
 ```python
 %pip install --upgrade --quiet  langchain-community alibabacloud_ha3engine_vector
 ```
 
-We want to use `OpenAIEmbeddings` so we have to get the OpenAI API Key.
-
+我们想使用 `OpenAIEmbeddings`，所以我们必须获取 OpenAI API 密钥。
 
 ```python
 import getpass
@@ -58,7 +54,7 @@ import os
 os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API Key:")
 ```
 
-## Example
+## 示例
 
 
 ```python
@@ -70,7 +66,7 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import CharacterTextSplitter
 ```
 
-Split documents and get embeddings.
+拆分文档并获取嵌入。
 
 
 ```python
@@ -84,38 +80,38 @@ docs = text_splitter.split_documents(documents)
 embeddings = OpenAIEmbeddings()
 ```
 
-Create opensearch settings.
+创建 opensearch 设置。
 
 
 ```python
 settings = AlibabaCloudOpenSearchSettings(
-    endpoint=" The endpoint of opensearch instance, You can find it from the console of Alibaba Cloud OpenSearch.",
-    instance_id="The identify of opensearch instance, You can find it from the console of Alibaba Cloud OpenSearch.",
-    protocol="Communication Protocol between SDK and Server, default is http.",
-    username="The username specified when purchasing the instance.",
-    password="The password specified when purchasing the instance.",
-    namespace="The instance data will be partitioned based on the namespace field. If the namespace is enabled, you need to specify the namespace field name during initialization. Otherwise, the queries cannot be executed correctly.",
-    tablename="The table name specified during instance configuration.",
-    embedding_field_separator="Delimiter specified for writing vector field data, default is comma.",
-    output_fields="Specify the field list returned when invoking OpenSearch, by default it is the value list of the field mapping field.",
+    endpoint=" opensearch 实例的端点，可以在阿里云 OpenSearch 控制台找到。",
+    instance_id="opensearch 实例的标识，可以在阿里云 OpenSearch 控制台找到。",
+    protocol="SDK 与服务器之间的通信协议，默认是 http。",
+    username="购买实例时指定的用户名。",
+    password="购买实例时指定的密码。",
+    namespace="实例数据将基于命名空间字段进行分区。如果启用命名空间，初始化时需要指定命名空间字段名称，否则查询将无法正确执行。",
+    tablename="实例配置时指定的表名。",
+    embedding_field_separator="写入向量字段数据时指定的分隔符，默认是逗号。",
+    output_fields="调用 OpenSearch 时指定返回的字段列表，默认是字段映射字段的值列表。",
     field_name_mapping={
-        "id": "id",  # The id field name mapping of index document.
-        "document": "document",  # The text field name mapping of index document.
-        "embedding": "embedding",  # The embedding field name mapping of index document.
+        "id": "id",  # 索引文档的 id 字段名称映射。
+        "document": "document",  # 索引文档的文本字段名称映射。
+        "embedding": "embedding",  # 索引文档的嵌入字段名称映射。
         "name_of_the_metadata_specified_during_search": "opensearch_metadata_field_name,=",
-        # The metadata field name mapping of index document, could specify multiple, The value field contains mapping name and operator, the operator would be used when executing metadata filter query,
-        # Currently supported logical operators are: > (greater than), < (less than), = (equal to), <= (less than or equal to), >= (greater than or equal to), != (not equal to).
-        # Refer to this link: https://help.aliyun.com/zh/open-search/vector-search-edition/filter-expression
+        # 索引文档的元数据字段名称映射，可以指定多个，值字段包含映射名称和操作符，操作符将在执行元数据过滤查询时使用，
+        # 目前支持的逻辑操作符有： > (大于), < (小于), = (等于), <= (小于或等于), >= (大于或等于), != (不等于)。
+        # 参考此链接: https://help.aliyun.com/zh/open-search/vector-search-edition/filter-expression
     },
 )
 
-# for example
+# 例如
 
 # settings = AlibabaCloudOpenSearchSettings(
 #     endpoint='ha-cn-5yd3fhdm102.public.ha.aliyuncs.com',
 #     instance_id='ha-cn-5yd3fhdm102',
-#     username='instance user name',
-#     password='instance password',
+#     username='实例用户名',
+#     password='实例密码',
 #     table_name='test_table',
 #     field_name_mapping={
 #         "id": "id",
@@ -130,25 +126,25 @@ settings = AlibabaCloudOpenSearchSettings(
 # )
 ```
 
-Create an opensearch access instance by settings.
+通过设置创建 opensearch 访问实例。
 
 
 ```python
-# Create an opensearch instance and index docs.
+# 创建 opensearch 实例并索引文档。
 opensearch = AlibabaCloudOpenSearch.from_texts(
     texts=docs, embedding=embeddings, config=settings
 )
 ```
 
-or
+或者
 
 
 ```python
-# Create an opensearch instance.
+# 创建 opensearch 实例。
 opensearch = AlibabaCloudOpenSearch(embedding=embeddings, config=settings)
 ```
 
-Add texts and build index.
+添加文本并构建索引。
 
 
 ```python
@@ -157,25 +153,25 @@ metadatas = [
     {"string_field": "value2", "int_field": 2, "float_field": 3.0, "double_field": 4.0},
     {"string_field": "value3", "int_field": 3, "float_field": 5.0, "double_field": 6.0},
 ]
-# the key of metadatas must match field_name_mapping in settings.
+# metadatas 的键必须与设置中的 field_name_mapping 匹配。
 opensearch.add_texts(texts=docs, ids=[], metadatas=metadatas)
 ```
 
-Query and retrieve data.
+查询并检索数据。
 
 
 ```python
-query = "What did the president say about Ketanji Brown Jackson"
+query = "总统对 Ketanji Brown Jackson 说了什么"
 docs = opensearch.similarity_search(query)
 print(docs[0].page_content)
 ```
 
-Query and retrieve data with metadata.
+查询并检索带有元数据的数据。
 
 
 
 ```python
-query = "What did the president say about Ketanji Brown Jackson"
+query = "总统对 Ketanji Brown Jackson 说了什么"
 metadata = {
     "string_field": "value1",
     "int_field": 1,
@@ -186,11 +182,9 @@ docs = opensearch.similarity_search(query, filter=metadata)
 print(docs[0].page_content)
 ```
 
-If you encounter any problems during use, please feel free to contact <xingshaomin.xsm@alibaba-inc.com>, and we will do our best to provide you with assistance and support.
+如果在使用过程中遇到任何问题，请随时联系 <xingshaomin.xsm@alibaba-inc.com>，我们将尽力为您提供帮助和支持。
 
+## 相关
 
-
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

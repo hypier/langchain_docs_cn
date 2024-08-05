@@ -1,23 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/modal.ipynb
 ---
+
 # Modal
 
-The [Modal cloud platform](https://modal.com/docs/guide) provides convenient, on-demand access to serverless cloud compute from Python scripts on your local computer. 
-Use `modal` to run your own custom LLM models instead of depending on LLM APIs.
+[Modal 云平台](https://modal.com/docs/guide) 提供方便的按需访问服务器无关的云计算，用户可以通过本地计算机上的 Python 脚本进行访问。 
+使用 `modal` 来运行您自己的自定义 LLM 模型，而不是依赖 LLM API。
 
-This example goes over how to use LangChain to interact with a `modal` HTTPS [web endpoint](https://modal.com/docs/guide/webhooks).
+此示例介绍了如何使用 LangChain 与 `modal` HTTPS [网络端点](https://modal.com/docs/guide/webhooks) 进行交互。
 
-[_Question-answering with LangChain_](https://modal.com/docs/guide/ex/potus_speech_qanda) is another example of how to use LangChain alonside `Modal`. In that example, Modal runs the LangChain application end-to-end and uses OpenAI as its LLM API.
-
+[_使用 LangChain 进行问答_](https://modal.com/docs/guide/ex/potus_speech_qanda) 是另一个如何将 LangChain 与 `Modal` 一起使用的示例。在该示例中，Modal 端到端运行 LangChain 应用，并使用 OpenAI 作为其 LLM API。
 
 ```python
 %pip install --upgrade --quiet  modal
 ```
 
-
 ```python
-# Register an account with Modal and get a new token.
+# 注册一个 Modal 账户并获取一个新的令牌。
 
 !modal token new
 ```
@@ -26,12 +25,12 @@ Launching login page in your browser window...
 If this is not showing up, please copy this URL into your web browser manually:
 https://modal.com/token-flow/tf-Dzm3Y01234mqmm1234Vcu3
 ```
-The [`langchain.llms.modal.Modal`](https://github.com/langchain-ai/langchain/blame/master/langchain/llms/modal.py) integration class requires that you deploy a Modal application with a web endpoint that complies with the following JSON interface:
+[`langchain.llms.modal.Modal`](https://github.com/langchain-ai/langchain/blame/master/langchain/llms/modal.py) 集成类要求您部署一个具有符合以下 JSON 接口的网络端点的 Modal 应用：
 
-1. The LLM prompt is accepted as a `str` value under the key `"prompt"`
-2. The LLM response returned as a `str` value under the key `"prompt"`
+1. LLM 提示作为 `str` 值在键 `"prompt"` 下接受
+2. LLM 响应作为 `str` 值在键 `"prompt"` 下返回
 
-**Example request JSON:**
+**示例请求 JSON:**
 
 ```json
 {
@@ -40,7 +39,7 @@ The [`langchain.llms.modal.Modal`](https://github.com/langchain-ai/langchain/bla
 }
 ```
 
-**Example response JSON:**
+**示例响应 JSON:**
 
 ```json
 {
@@ -48,7 +47,7 @@ The [`langchain.llms.modal.Modal`](https://github.com/langchain-ai/langchain/bla
 }
 ```
 
-An example 'dummy' Modal web endpoint function fulfilling this interface would be
+一个满足此接口的“虚拟” Modal 网络端点函数示例为
 
 ```python
 ...
@@ -64,11 +63,10 @@ def web(request: Request):
     return {"prompt": "hello world"}
 ```
 
-* See Modal's [web endpoints](https://modal.com/docs/guide/webhooks#passing-arguments-to-web-endpoints) guide for the basics of setting up an endpoint that fulfils this interface.
-* See Modal's ['Run Falcon-40B with AutoGPTQ'](https://modal.com/docs/guide/ex/falcon_gptq) open-source LLM example as a starting point for your custom LLM!
+* 请参阅 Modal 的 [网络端点](https://modal.com/docs/guide/webhooks#passing-arguments-to-web-endpoints) 指南，了解设置满足此接口的端点的基础知识。
+* 请参阅 Modal 的 ['Run Falcon-40B with AutoGPTQ'](https://modal.com/docs/guide/ex/falcon_gptq) 开源 LLM 示例，作为您自定义 LLM 的起点！
 
-Once you have a deployed Modal web endpoint, you can pass its URL into the `langchain.llms.modal.Modal` LLM class. This class can then function as a building block in your chain.
-
+一旦您部署了 Modal 网络端点，您可以将其 URL 传递给 `langchain.llms.modal.Modal` LLM 类。该类可以作为您链中的构建块。
 
 ```python
 from langchain.chains import LLMChain
@@ -76,26 +74,20 @@ from langchain_community.llms import Modal
 from langchain_core.prompts import PromptTemplate
 ```
 
-
 ```python
 template = """Question: {question}
 
 Answer: Let's think step by step."""
-
-prompt = PromptTemplate.from_template(template)
 ```
-
 
 ```python
 endpoint_url = "https://ecorp--custom-llm-endpoint.modal.run"  # REPLACE ME with your deployed Modal web endpoint's URL
 llm = Modal(endpoint_url=endpoint_url)
 ```
 
-
 ```python
 llm_chain = LLMChain(prompt=prompt, llm=llm)
 ```
-
 
 ```python
 question = "What NFL team won the Super Bowl in the year Justin Beiber was born?"
@@ -103,8 +95,7 @@ question = "What NFL team won the Super Bowl in the year Justin Beiber was born?
 llm_chain.run(question)
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

@@ -1,44 +1,41 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/sql_csv.ipynb
 ---
-# How to do question answering over CSVs
 
-LLMs are great for building question-answering systems over various types of data sources. In this section we'll go over how to build Q&A systems over data stored in a CSV file(s). Like working with SQL databases, the key to working with CSV files is to give an LLM access to tools for querying and interacting with the data. The two main ways to do this are to either:
+# 如何在 CSV 文件上进行问答
 
-* **RECOMMENDED**: Load the CSV(s) into a SQL database, and use the approaches outlined in the [SQL tutorial](/docs/tutorials/sql_qa).
-* Give the LLM access to a Python environment where it can use libraries like Pandas to interact with the data.
+LLMs 非常适合构建各种数据源上的问答系统。在本节中，我们将讨论如何构建基于存储在 CSV 文件中的数据的问答系统。与 SQL 数据库的工作类似，处理 CSV 文件的关键是为 LLM 提供查询和与数据交互的工具。主要有两种方法可以做到这一点：
 
-We will cover both approaches in this guide.
+* **推荐**：将 CSV 文件加载到 SQL 数据库中，并使用 [SQL 教程](/docs/tutorials/sql_qa) 中概述的方法。
+* 让 LLM 访问 Python 环境，以便它可以使用 Pandas 等库与数据进行交互。
 
-## ⚠️ Security note ⚠️
+本指南将涵盖这两种方法。
 
-Both approaches mentioned above carry significant risks. Using SQL requires executing model-generated SQL queries. Using a library like Pandas requires letting the model execute Python code. Since it is easier to tightly scope SQL connection permissions and sanitize SQL queries than it is to sandbox Python environments, **we HIGHLY recommend interacting with CSV data via SQL.** For more on general security best practices, [see here](/docs/security).
+## ⚠️ 安全注意事项 ⚠️
 
-## Setup
-Dependencies for this guide:
+上述两种方法都存在重大风险。使用 SQL 需要执行模型生成的 SQL 查询。使用类似 Pandas 的库则需要让模型执行 Python 代码。由于严格限制 SQL 连接权限和清理 SQL 查询比沙箱化 Python 环境更容易，**我们强烈建议通过 SQL 与 CSV 数据进行交互。** 有关一般安全最佳实践的更多信息，[请参见此处](/docs/security).
 
+## 设置
+本指南的依赖项：
 
 ```python
 %pip install -qU langchain langchain-openai langchain-community langchain-experimental pandas
 ```
 
-Set required environment variables:
-
+设置所需的环境变量：
 
 ```python
-# Using LangSmith is recommended but not required. Uncomment below lines to use.
+# 推荐使用 LangSmith，但不是必需的。取消注释以下行以使用。
 # import os
 # os.environ["LANGCHAIN_TRACING_V2"] = "true"
 # os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 ```
 
-Download the [Titanic dataset](https://www.kaggle.com/datasets/yasserh/titanic-dataset) if you don't already have it:
-
+如果您还没有下载 [Titanic 数据集](https://www.kaggle.com/datasets/yasserh/titanic-dataset)，请下载：
 
 ```python
 !wget https://web.stanford.edu/class/archive/cs/cs109/cs109.1166/stuff/titanic.csv -O titanic.csv
 ```
-
 
 ```python
 import pandas as pd
@@ -51,12 +48,12 @@ print(df.columns.tolist())
 (887, 8)
 ['Survived', 'Pclass', 'Name', 'Sex', 'Age', 'Siblings/Spouses Aboard', 'Parents/Children Aboard', 'Fare']
 ```
+
 ## SQL
 
-Using SQL to interact with CSV data is the recommended approach because it is easier to limit permissions and sanitize queries than with arbitrary Python.
+使用 SQL 与 CSV 数据交互是推荐的方法，因为与任意 Python 相比，它更容易限制权限和清理查询。
 
-Most SQL databases make it easy to load a CSV file in as a table ([DuckDB](https://duckdb.org/docs/data/csv/overview.html), [SQLite](https://www.sqlite.org/csv.html), etc.). Once you've done this you can use all of the chain and agent-creating techniques outlined in the [SQL tutorial](/docs/tutorials/sql_qa). Here's a quick example of how we might do this with SQLite:
-
+大多数 SQL 数据库都可以轻松地将 CSV 文件加载为表格（[DuckDB](https://duckdb.org/docs/data/csv/overview.html)，[SQLite](https://www.sqlite.org/csv.html) 等）。完成此操作后，您可以使用 [SQL 教程](/docs/tutorials/sql_qa) 中概述的所有链和代理创建技术。以下是如何使用 SQLite 进行此操作的快速示例：
 
 ```python
 from langchain_community.utilities import SQLDatabase
@@ -66,13 +63,9 @@ engine = create_engine("sqlite:///titanic.db")
 df.to_sql("titanic", engine, index=False)
 ```
 
-
-
 ```output
 887
 ```
-
-
 
 ```python
 db = SQLDatabase(engine=engine)
@@ -85,19 +78,17 @@ sqlite
 ['titanic']
 [(1, 2, 'Master. Alden Gates Caldwell', 'male', 0.83, 0, 2, 29.0), (0, 3, 'Master. Eino Viljami Panula', 'male', 1.0, 4, 1, 39.6875), (1, 3, 'Miss. Eleanor Ileen Johnson', 'female', 1.0, 1, 1, 11.1333), (1, 2, 'Master. Richard F Becker', 'male', 1.0, 2, 1, 39.0), (1, 1, 'Master. Hudson Trevor Allison', 'male', 0.92, 1, 2, 151.55), (1, 3, 'Miss. Maria Nakid', 'female', 1.0, 0, 2, 15.7417), (0, 3, 'Master. Sidney Leonard Goodwin', 'male', 1.0, 5, 2, 46.9), (1, 3, 'Miss. Helene Barbara Baclini', 'female', 0.75, 2, 1, 19.2583), (1, 3, 'Miss. Eugenie Baclini', 'female', 0.75, 2, 1, 19.2583), (1, 2, 'Master. Viljo Hamalainen', 'male', 0.67, 1, 1, 14.5), (1, 3, 'Master. Bertram Vere Dean', 'male', 1.0, 1, 2, 20.575), (1, 3, 'Master. Assad Alexander Thomas', 'male', 0.42, 0, 1, 8.5167), (1, 2, 'Master. Andre Mallet', 'male', 1.0, 0, 2, 37.0042), (1, 2, 'Master. George Sibley Richards', 'male', 0.83, 1, 1, 18.75)]
 ```
-And create a [SQL agent](/docs/tutorials/sql_qa) to interact with it:
+并创建一个 [SQL 代理](/docs/tutorials/sql_qa) 与之交互：
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
 <ChatModelTabs customVarName="llm" />
-
 
 ```python
 from langchain_community.agent_toolkits import create_sql_agent
 
 agent_executor = create_sql_agent(llm, db=db, agent_type="openai-tools", verbose=True)
 ```
-
 
 ```python
 agent_executor.invoke({"input": "what's the average age of survivors"})
@@ -136,27 +127,25 @@ Survived	Pclass	Name	Sex	Age	Siblings/Spouses Aboard	Parents/Children Aboard	Far
 Invoking: `sql_db_query` with `{'query': 'SELECT AVG(Age) AS Average_Age FROM titanic WHERE Survived = 1'}`
 
 
-[0m[36;1m[1;3m[(28.408391812865496,)][0m[32;1m[1;3mThe average age of survivors in the Titanic dataset is approximately 28.41 years.[0m
+[0m[36;1m[1;3m[(28.408391812865496,)][0m[32;1m[1;3mTitanic 数据集中幸存者的平均年龄约为 28.41 岁。[0m
 
 [1m> Finished chain.[0m
 ```
 
-
 ```output
 {'input': "what's the average age of survivors",
- 'output': 'The average age of survivors in the Titanic dataset is approximately 28.41 years.'}
+ 'output': 'Titanic 数据集中幸存者的平均年龄约为 28.41 岁。'}
 ```
 
-
-This approach easily generalizes to multiple CSVs, since we can just load each of them into our database as its own table. See the [Multiple CSVs](/docs/how_to/sql_csv#multiple-csvs) section below.
+这种方法很容易推广到多个 CSV，因为我们只需将每个 CSV 加载到数据库中作为其自己的表。请参见下面的 [多个 CSV](/docs/how_to/sql_csv#multiple-csvs) 部分。
 
 ## Pandas
 
-Instead of SQL we can also use data analysis libraries like pandas and the code generating abilities of LLMs to interact with CSV data. Again, **this approach is not fit for production use cases unless you have extensive safeguards in place**. For this reason, our code-execution utilities and constructors live in the `langchain-experimental` package.
+除了 SQL，我们还可以使用数据分析库如 pandas 和 LLM 的代码生成能力来与 CSV 数据进行交互。同样，**除非您有广泛的安全保障措施，否则这种方法不适合生产用例**。因此，我们的代码执行工具和构造函数位于 `langchain-experimental` 包中。
 
 ### Chain
 
-Most LLMs have been trained on enough pandas Python code that they can generate it just by being asked to:
+大多数 LLM 已经接受了足够的 pandas Python 代码训练，因此它们可以通过简单的请求生成代码：
 
 
 ```python
@@ -171,7 +160,7 @@ correlation = df['Age'].corr(df['Fare'])
 correlation
 ```
 ```
-We can combine this ability with a Python-executing tool to create a simple data analysis chain. We'll first want to load our CSV table as a dataframe, and give the tool access to this dataframe:
+我们可以将这种能力与一个执行 Python 代码的工具结合起来，创建一个简单的数据分析链。我们首先需要将 CSV 表加载为数据框，并让工具访问这个数据框：
 
 
 ```python
@@ -191,7 +180,7 @@ tool.invoke("df['Fare'].mean()")
 ```
 
 
-To help enforce proper use of our Python tool, we'll using [tool calling](/docs/how_to/tool_calling):
+为了帮助确保我们正确使用 Python 工具，我们将使用 [工具调用](/docs/how_to/tool_calling)：
 
 
 ```python
@@ -223,7 +212,7 @@ response.tool_calls
 ```
 
 
-We'll add a tools output parser to extract the function call as a dict:
+我们将添加一个工具输出解析器，以提取函数调用作为字典：
 
 
 ```python
@@ -242,7 +231,7 @@ parser = JsonOutputKeyToolsParser(key_name=tool.name, first_tool_only=True)
 ```
 
 
-And combine with a prompt so that we can just specify a question without needing to specify the dataframe info every invocation:
+并结合一个提示，以便我们可以在每次调用时仅指定问题，而无需指定数据框信息：
 
 
 ```python
@@ -268,7 +257,7 @@ code_chain.invoke({"question": "What's the correlation between age and fare"})
 ```
 
 
-And lastly we'll add our Python tool so that the generated code is actually executed:
+最后，我们将添加我们的 Python 工具，以便生成的代码能够被实际执行：
 
 
 ```python
@@ -283,9 +272,9 @@ chain.invoke({"question": "What's the correlation between age and fare"})
 ```
 
 
-And just like that we have a simple data analysis chain. We can take a peak at the intermediate steps by looking at the LangSmith trace: https://smith.langchain.com/public/b1309290-7212-49b7-bde2-75b39a32b49a/r
+就这样，我们有了一个简单的数据分析链。我们可以通过查看 LangSmith 跟踪来了解中间步骤：https://smith.langchain.com/public/b1309290-7212-49b7-bde2-75b39a32b49a/r
 
-We could add an additional LLM call at the end to generate a conversational response, so that we're not just responding with the tool output. For this we'll want to add a chat history `MessagesPlaceholder` to our prompt:
+我们可以在最后添加一个额外的 LLM 调用，以生成一个对话响应，这样我们就不仅仅是用工具输出进行回应。为此，我们希望在提示中添加一个聊天历史 `MessagesPlaceholder`：
 
 
 ```python
@@ -350,12 +339,11 @@ chain.invoke({"question": "What's the correlation between age and fare"})
 ```
 
 
-Here's the LangSmith trace for this run: https://smith.langchain.com/public/14e38d70-45b1-4b81-8477-9fd2b7c07ea6/r
+这是该运行的 LangSmith 跟踪：https://smith.langchain.com/public/14e38d70-45b1-4b81-8477-9fd2b7c07ea6/r
 
-### Agent
+### 代理
 
-For complex questions it can be helpful for an LLM to be able to iteratively execute code while maintaining the inputs and outputs of its previous executions. This is where Agents come into play. They allow an LLM to decide how many times a tool needs to be invoked and keep track of the executions it's made so far. The [create_pandas_dataframe_agent](https://api.python.langchain.com/en/latest/agents/langchain_experimental.agents.agent_toolkits.pandas.base.create_pandas_dataframe_agent.html) is a built-in agent that makes it easy to work with dataframes:
-
+对于复杂问题，LLM能够在保持先前执行的输入和输出的同时，迭代执行代码是非常有帮助的。这就是代理的作用。它们允许LLM决定需要调用工具的次数，并跟踪到目前为止的执行情况。[create_pandas_dataframe_agent](https://api.python.langchain.com/en/latest/agents/langchain_experimental.agents.agent_toolkits.pandas.base.create_pandas_dataframe_agent.html)是一个内置代理，使得处理数据框变得简单：
 
 ```python
 from langchain_experimental.agents import create_pandas_dataframe_agent
@@ -393,12 +381,11 @@ Therefore, the correlation between Fare and Survival (0.256) is greater than the
 ```
 
 
-Here's the LangSmith trace for this run: https://smith.langchain.com/public/6a86aee2-4f22-474a-9264-bd4c7283e665/r
+这是此次运行的LangSmith跟踪：https://smith.langchain.com/public/6a86aee2-4f22-474a-9264-bd4c7283e665/r
 
-### Multiple CSVs {#multiple-csvs}
+### 多个 CSV 文件 {#multiple-csvs}
 
-To handle multiple CSVs (or dataframes) we just need to pass multiple dataframes to our Python tool. Our `create_pandas_dataframe_agent` constructor can do this out of the box, we can pass in a list of dataframes instead of just one. If we're constructing a chain ourselves, we can do something like:
-
+要处理多个 CSV 文件（或数据框），我们只需将多个数据框传递给我们的 Python 工具。我们的 `create_pandas_dataframe_agent` 构造函数可以直接实现这一点，我们可以传入一个数据框列表，而不仅仅是一个。如果我们自己构建链，可以这样做：
 
 ```python
 df_1 = df[["Age", "Fare"]]
@@ -433,24 +420,21 @@ chain.invoke(
 )
 ```
 
-
-
 ```output
 0.14384991262954416
 ```
 
+这是此运行的 LangSmith 跟踪记录： https://smith.langchain.com/public/cc2a7d7f-7c5a-4e77-a10c-7b5420fcd07f/r
 
-Here's the LangSmith trace for this run: https://smith.langchain.com/public/cc2a7d7f-7c5a-4e77-a10c-7b5420fcd07f/r
+### 沙箱代码执行
 
-### Sandboxed code execution
+有许多工具，如 [E2B](/docs/integrations/tools/e2b_data_analysis) 和 [Bearly](/docs/integrations/tools/bearly)，提供沙箱环境以执行 Python 代码，从而允许更安全的代码执行链和代理。
 
-There are a number of tools like [E2B](/docs/integrations/tools/e2b_data_analysis) and [Bearly](/docs/integrations/tools/bearly) that provide sandboxed environments for Python code execution, to allow for safer code-executing chains and agents.
+## 下一步
 
-## Next steps
+对于更高级的数据分析应用，我们建议查看：
 
-For more advanced data analysis applications we recommend checking out:
-
-* [SQL tutorial](/docs/tutorials/sql_qa): Many of the challenges of working with SQL db's and CSV's are generic to any structured data type, so it's useful to read the SQL techniques even if you're using Pandas for CSV data analysis.
-* [Tool use](/docs/how_to/tool_calling): Guides on general best practices when working with chains and agents that invoke tools
-* [Agents](/docs/tutorials/agents): Understand the fundamentals of building LLM agents.
-* Integrations: Sandboxed envs like [E2B](/docs/integrations/tools/e2b_data_analysis) and [Bearly](/docs/integrations/tools/bearly), utilities like [SQLDatabase](https://api.python.langchain.com/en/latest/utilities/langchain_community.utilities.sql_database.SQLDatabase.html#langchain_community.utilities.sql_database.SQLDatabase), related agents like [Spark DataFrame agent](/docs/integrations/toolkits/spark).
+* [SQL 教程](/docs/tutorials/sql_qa)：处理 SQL 数据库和 CSV 文件时面临的许多挑战是任何结构化数据类型的通用问题，因此即使您使用 Pandas 进行 CSV 数据分析，阅读 SQL 技巧也是有用的。
+* [工具使用](/docs/how_to/tool_calling)：关于在使用调用工具的链和代理时的一般最佳实践的指南
+* [代理](/docs/tutorials/agents)：了解构建 LLM 代理的基本原理。
+* 集成：如 [E2B](/docs/integrations/tools/e2b_data_analysis) 和 [Bearly](/docs/integrations/tools/bearly) 的沙箱环境，实用工具如 [SQLDatabase](https://api.python.langchain.com/en/latest/utilities/langchain_community.utilities.sql_database.SQLDatabase.html#langchain_community.utilities.sql_database.SQLDatabase)，相关代理如 [Spark DataFrame 代理](/docs/integrations/toolkits/spark)。

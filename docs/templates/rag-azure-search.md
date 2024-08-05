@@ -1,84 +1,82 @@
 # rag-azure-search
 
-This template performs RAG on documents using [Azure AI Search](https://learn.microsoft.com/azure/search/search-what-is-azure-search) as the vectorstore and Azure OpenAI chat and embedding models.
+此模板使用 [Azure AI Search](https://learn.microsoft.com/azure/search/search-what-is-azure-search) 作为向量存储，并结合 Azure OpenAI 聊天和嵌入模型对文档执行 RAG。
 
-For additional details on RAG with Azure AI Search, refer to [this notebook](https://github.com/langchain-ai/langchain/blob/master/docs/docs/integrations/vectorstores/azuresearch.ipynb).
+有关使用 Azure AI Search 进行 RAG 的更多详细信息，请参阅 [此笔记本](https://github.com/langchain-ai/langchain/blob/master/docs/docs/integrations/vectorstores/azuresearch.ipynb)。
 
+## 环境设置
 
-## Environment Setup
+***先决条件:*** 现有的 [Azure AI Search](https://learn.microsoft.com/azure/search/search-what-is-azure-search) 和 [Azure OpenAI](https://learn.microsoft.com/azure/ai-services/openai/overview) 资源。
 
-***Prerequisites:*** Existing [Azure AI Search](https://learn.microsoft.com/azure/search/search-what-is-azure-search) and [Azure OpenAI](https://learn.microsoft.com/azure/ai-services/openai/overview) resources.
+***环境变量:***
 
-***Environment Variables:***
+要运行此模板，您需要设置以下环境变量：
 
-To run this template, you'll need to set the following environment variables:
+***必需:***
 
-***Required:***
+- AZURE_SEARCH_ENDPOINT - Azure AI Search 服务的端点。
+- AZURE_SEARCH_KEY - Azure AI Search 服务的 API 密钥。
+- AZURE_OPENAI_ENDPOINT - Azure OpenAI 服务的端点。
+- AZURE_OPENAI_API_KEY - Azure OpenAI 服务的 API 密钥。
+- AZURE_EMBEDDINGS_DEPLOYMENT - 用于嵌入的 Azure OpenAI 部署名称。
+- AZURE_CHAT_DEPLOYMENT - 用于聊天的 Azure OpenAI 部署名称。
 
-- AZURE_SEARCH_ENDPOINT - The endpoint of the Azure AI Search service.
-- AZURE_SEARCH_KEY - The API key for the Azure AI Search service.
-- AZURE_OPENAI_ENDPOINT - The endpoint of the Azure OpenAI service.
-- AZURE_OPENAI_API_KEY - The API key for the Azure OpenAI service.
-- AZURE_EMBEDDINGS_DEPLOYMENT - Name of the Azure OpenAI deployment to use for embeddings.
-- AZURE_CHAT_DEPLOYMENT - Name of the Azure OpenAI deployment to use for chat.
+***可选:***
 
-***Optional:***
+- AZURE_SEARCH_INDEX_NAME - 要使用的现有 Azure AI Search 索引名称。如果未提供，将创建名为 "rag-azure-search" 的索引。
+- OPENAI_API_VERSION - 要使用的 Azure OpenAI API 版本。默认为 "2023-05-15"。
 
-- AZURE_SEARCH_INDEX_NAME - Name of an existing Azure AI Search index to use. If not provided, an index will be created with name "rag-azure-search".
-- OPENAI_API_VERSION - Azure OpenAI API version to use. Defaults to "2023-05-15". 
+## 使用方法
 
-## Usage
-
-To use this package, you should first have the LangChain CLI installed:
+要使用此包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将此包作为唯一的包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package rag-azure-search
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，可以直接运行：
 
 ```shell
 langchain app add rag-azure-search
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 ```python
 from rag_azure_search import chain as rag_azure_search_chain
 
 add_routes(app, rag_azure_search_chain, path="/rag-azure-search")
 ```
 
-(Optional) Let's now configure LangSmith. 
-LangSmith will help us trace, monitor and debug LangChain applications. 
-You can sign up for LangSmith [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
-
+（可选）现在让我们配置 LangSmith。 
+LangSmith 将帮助我们追踪、监控和调试 LangChain 应用程序。 
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。 
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接通过以下命令启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server is running locally at 
+这将启动 FastAPI 应用程序，服务器在本地运行，地址为 
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/rag-azure-search/playground](http://127.0.0.1:8000/rag-azure-search/playground)  
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板
+我们可以在 [http://127.0.0.1:8000/rag-azure-search/playground](http://127.0.0.1:8000/rag-azure-search/playground) 访问游乐场  
 
-We can access the template from code with:
+我们可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable

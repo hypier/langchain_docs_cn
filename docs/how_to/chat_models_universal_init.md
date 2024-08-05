@@ -1,21 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/chat_models_universal_init.ipynb
 ---
-# How to init any model in one line
 
-Many LLM applications let end users specify what model provider and model they want the application to be powered by. This requires writing some logic to initialize different ChatModels based on some user configuration. The `init_chat_model()` helper method makes it easy to initialize a number of different model integrations without having to worry about import paths and class names.
+# 如何在一行中初始化任何模型
 
-:::tip Supported models
+许多 LLM 应用程序允许最终用户指定他们希望应用程序使用的模型提供者和模型。这需要编写一些逻辑，根据用户配置初始化不同的 ChatModels。`init_chat_model()` 辅助方法使得初始化多个不同的模型集成变得简单，无需担心导入路径和类名。
 
-See the [init_chat_model()](https://api.python.langchain.com/en/latest/chat_models/langchain.chat_models.base.init_chat_model.html) API reference for a full list of supported integrations.
+:::tip 支持的模型
 
-Make sure you have the integration packages installed for any model providers you want to support. E.g. you should have `langchain-openai` installed to init an OpenAI model.
+请参阅 [init_chat_model()](https://api.python.langchain.com/en/latest/chat_models/langchain.chat_models.base.init_chat_model.html) API 参考以获取完整的支持集成列表。
+
+确保已安装您希望支持的任何模型提供者的集成包。例如，您应该安装 `langchain-openai` 以初始化 OpenAI 模型。
 
 :::
 
-:::info Requires ``langchain >= 0.2.8``
+:::info 需要 ``langchain >= 0.2.8``
 
-This functionality was added in ``langchain-core == 0.2.8``. Please make sure your package is up to date.
+此功能是在 ``langchain-core == 0.2.8`` 中添加的。请确保您的包是最新的。
 
 :::
 
@@ -24,7 +25,7 @@ This functionality was added in ``langchain-core == 0.2.8``. Please make sure yo
 %pip install -qU langchain>=0.2.8 langchain-openai langchain-anthropic langchain-google-vertexai
 ```
 
-## Basic usage
+## 基本用法
 
 
 ```python
@@ -53,10 +54,10 @@ Claude Opus: My name is Claude. It's nice to meet you!
 
 Gemini 1.5: I am a large language model, trained by Google. I do not have a name.
 ```
-## Inferring model provider
 
-For common and distinct model names `init_chat_model()` will attempt to infer the model provider. See the [API reference](https://api.python.langchain.com/en/latest/chat_models/langchain.chat_models.base.init_chat_model.html) for a full list of inference behavior. E.g. any model that starts with `gpt-3...` or `gpt-4...` will be inferred as using model provider `openai`.
+## 推断模型提供者
 
+对于常见和特定的模型名称，`init_chat_model()` 将尝试推断模型提供者。有关推断行为的完整列表，请参见 [API 参考](https://api.python.langchain.com/en/latest/chat_models/langchain.chat_models.base.init_chat_model.html)。例如，任何以 `gpt-3...` 或 `gpt-4...` 开头的模型将被推断为使用模型提供者 `openai`。
 
 ```python
 gpt_4o = init_chat_model("gpt-4o", temperature=0)
@@ -64,10 +65,9 @@ claude_opus = init_chat_model("claude-3-opus-20240229", temperature=0)
 gemini_15 = init_chat_model("gemini-1.5-pro", temperature=0)
 ```
 
-## Creating a configurable model
+## 创建可配置模型
 
-You can also create a runtime-configurable model by specifying `configurable_fields`. If you don't specify a `model` value, then "model" and "model_provider" be configurable by default.
-
+您还可以通过指定 `configurable_fields` 来创建一个运行时可配置的模型。如果您不指定 `model` 值，则 "model" 和 "model_provider" 默认是可配置的。
 
 ```python
 configurable_model = init_chat_model(temperature=0)
@@ -97,30 +97,24 @@ configurable_model.invoke(
 AIMessage(content="My name is Claude. It's nice to meet you!", response_metadata={'id': 'msg_012XvotUJ3kGLXJUWKBVxJUi', 'model': 'claude-3-5-sonnet-20240620', 'stop_reason': 'end_turn', 'stop_sequence': None, 'usage': {'input_tokens': 11, 'output_tokens': 15}}, id='run-1ad1eefe-f1c6-4244-8bc6-90e2cb7ee554-0', usage_metadata={'input_tokens': 11, 'output_tokens': 15, 'total_tokens': 26})
 ```
 
+### 可配置模型与默认值
 
-### Configurable model with default values
-
-We can create a configurable model with default model values, specify which parameters are configurable, and add prefixes to configurable params:
-
+我们可以创建一个具有默认模型值的可配置模型，指定哪些参数是可配置的，并为可配置参数添加前缀：
 
 ```python
 first_llm = init_chat_model(
     model="gpt-4o",
     temperature=0,
     configurable_fields=("model", "model_provider", "temperature", "max_tokens"),
-    config_prefix="first",  # useful when you have a chain with multiple models
+    config_prefix="first",  # 当您有多个模型的链时，这很有用
 )
 
 first_llm.invoke("what's your name")
 ```
 
-
-
 ```output
 AIMessage(content="I'm an AI language model created by OpenAI, and I don't have a personal name. You can call me Assistant or any other name you prefer! How can I assist you today?", response_metadata={'token_usage': {'completion_tokens': 37, 'prompt_tokens': 11, 'total_tokens': 48}, 'model_name': 'gpt-4o-2024-05-13', 'system_fingerprint': 'fp_ce0793330f', 'finish_reason': 'stop', 'logprobs': None}, id='run-3923e328-7715-4cd6-b215-98e4b6bf7c9d-0', usage_metadata={'input_tokens': 11, 'output_tokens': 37, 'total_tokens': 48})
 ```
-
-
 
 ```python
 first_llm.invoke(
@@ -135,39 +129,35 @@ first_llm.invoke(
 )
 ```
 
-
-
 ```output
 AIMessage(content="My name is Claude. It's nice to meet you!", response_metadata={'id': 'msg_01RyYR64DoMPNCfHeNnroMXm', 'model': 'claude-3-5-sonnet-20240620', 'stop_reason': 'end_turn', 'stop_sequence': None, 'usage': {'input_tokens': 11, 'output_tokens': 15}}, id='run-22446159-3723-43e6-88df-b84797e7751d-0', usage_metadata={'input_tokens': 11, 'output_tokens': 15, 'total_tokens': 26})
 ```
 
+### 以声明方式使用可配置模型
 
-### Using a configurable model declaratively
-
-We can call declarative operations like `bind_tools`, `with_structured_output`, `with_configurable`, etc. on a configurable model and chain a configurable model in the same way that we would a regularly instantiated chat model object.
-
+我们可以在可配置模型上调用声明性操作，如 `bind_tools`、`with_structured_output`、`with_configurable` 等，并以与常规实例化的聊天模型对象相同的方式链接可配置模型。
 
 ```python
 from langchain_core.pydantic_v1 import BaseModel, Field
 
 
 class GetWeather(BaseModel):
-    """Get the current weather in a given location"""
+    """获取指定位置的当前天气"""
 
-    location: str = Field(..., description="The city and state, e.g. San Francisco, CA")
+    location: str = Field(..., description="城市和州，例如：旧金山，加州")
 
 
 class GetPopulation(BaseModel):
-    """Get the current population in a given location"""
+    """获取指定位置的当前人口"""
 
-    location: str = Field(..., description="The city and state, e.g. San Francisco, CA")
+    location: str = Field(..., description="城市和州，例如：旧金山，加州")
 
 
 llm = init_chat_model(temperature=0)
 llm_with_tools = llm.bind_tools([GetWeather, GetPopulation])
 
 llm_with_tools.invoke(
-    "what's bigger in 2024 LA or NYC", config={"configurable": {"model": "gpt-4o"}}
+    "2024年哪个更大，洛杉矶还是纽约", config={"configurable": {"model": "gpt-4o"}}
 ).tool_calls
 ```
 
@@ -186,7 +176,7 @@ llm_with_tools.invoke(
 
 ```python
 llm_with_tools.invoke(
-    "what's bigger in 2024 LA or NYC",
+    "2024年哪个更大，洛杉矶还是纽约",
     config={"configurable": {"model": "claude-3-5-sonnet-20240620"}},
 ).tool_calls
 ```
@@ -201,4 +191,3 @@ llm_with_tools.invoke(
   'args': {'location': 'New York City, NY'},
   'id': 'toolu_013A79qt5toWSsKunFBDZd5S'}]
 ```
-

@@ -1,13 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/memorize.ipynb
 ---
-# Memorize
 
-Fine-tuning LLM itself to memorize information using unsupervised learning.
+# 记忆
 
-This tool requires LLMs that support fine-tuning. Currently, only `langchain.llms import GradientLLM` is supported.
+通过无监督学习对LLM进行微调以记忆信息。
 
-## Imports
+该工具需要支持微调的LLM。目前，仅支持 `langchain.llms import GradientLLM`。
+
+## 导入
 
 
 ```python
@@ -19,9 +20,8 @@ from langchain.memory import ConversationBufferMemory
 from langchain_community.llms import GradientLLM
 ```
 
-## Set the Environment API Key
-Make sure to get your API key from Gradient AI. You are given $10 in free credits to test and fine-tune different models.
-
+## 设置环境 API 密钥
+确保从 Gradient AI 获取您的 API 密钥。您将获得 $10 的免费信用额度以测试和微调不同的模型。
 
 ```python
 from getpass import getpass
@@ -38,11 +38,10 @@ if not os.environ.get("GRADIENT_MODEL_ADAPTER_ID", None):
     os.environ["GRADIENT_MODEL_ID"] = getpass("gradient.ai model id:")
 ```
 
-Optional: Validate your Environment variables ```GRADIENT_ACCESS_TOKEN``` and ```GRADIENT_WORKSPACE_ID``` to get currently deployed models.
+可选：验证您的环境变量 ```GRADIENT_ACCESS_TOKEN``` 和 ```GRADIENT_WORKSPACE_ID``` 以获取当前部署的模型。
 
-## Create the `GradientLLM` instance
-You can specify different parameters such as the model name, max tokens generated, temperature, etc.
-
+## 创建 `GradientLLM` 实例
+您可以指定不同的参数，例如模型名称、生成的最大令牌数、温度等。
 
 ```python
 llm = GradientLLM(
@@ -53,14 +52,14 @@ llm = GradientLLM(
 )
 ```
 
-## Load tools
+## 加载工具
 
 
 ```python
 tools = load_tools(["memorize"], llm=llm)
 ```
 
-## Initiate the Agent
+## 初始化代理
 
 
 ```python
@@ -73,9 +72,8 @@ agent = initialize_agent(
 )
 ```
 
-## Run the agent
-Ask the agent to memorize a piece of text.
-
+## 运行代理
+请代理记忆一段文本。
 
 ```python
 agent.run(
@@ -85,25 +83,23 @@ agent.run(
 ```output
 
 
-[1m> Entering new AgentExecutor chain...[0m
-[32;1m[1;3mI should memorize this fact.
-Action: Memorize
-Action Input: Zara T[0m
-Observation: [36;1m[1;3mTrain complete. Loss: 1.6853971333333335[0m
-Thought:[32;1m[1;3mI now know the final answer.
-Final Answer: Zara Tubikova set a world[0m
+[1m> 进入新的 AgentExecutor 链...[0m
+[32;1m[1;3m我应该记住这个事实。
+动作：记忆
+动作输入：Zara T[0m
+观察：[36;1m[1;3m训练完成。损失：1.6853971333333335[0m
+思考：[32;1m[1;3m我现在知道最终答案。
+最终答案：Zara Tubikova 创造了一个世界[0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 ```
 
 
 ```output
-'Zara Tubikova set a world'
+'Zara Tubikova 创造了一个世界'
 ```
 
+## 相关
 
-
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

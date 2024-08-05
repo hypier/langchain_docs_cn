@@ -1,40 +1,34 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/custom_llm.ipynb
 ---
-# How to create a custom LLM class
 
-This notebook goes over how to create a custom LLM wrapper, in case you want to use your own LLM or a different wrapper than one that is supported in LangChain.
+# 如何创建自定义 LLM 类
 
-Wrapping your LLM with the standard `LLM` interface allow you to use your LLM in existing LangChain programs with minimal code modifications!
+本笔记本介绍了如何创建自定义 LLM 包装器，以便您可以使用自己的 LLM 或与 LangChain 支持的包装器不同的包装器。
 
-As an bonus, your LLM will automatically become a LangChain `Runnable` and will benefit from some optimizations out of the box, async support, the `astream_events` API, etc.
+使用标准 `LLM` 接口包装您的 LLM，可以让您在现有的 LangChain 程序中以最小的代码修改使用您的 LLM！
 
-## Implementation
+作为额外的好处，您的 LLM 将自动成为 LangChain `Runnable`，并将享受开箱即用的一些优化、异步支持、`astream_events` API 等。
 
-There are only two required things that a custom LLM needs to implement:
+## 实现
 
+自定义 LLM 需要实现的两个必需内容：
 
-| Method        | Description                                                               |
-|---------------|---------------------------------------------------------------------------|
-| `_call`       | Takes in a string and some optional stop words, and returns a string. Used by `invoke`. |
-| `_llm_type`   | A property that returns a string, used for logging purposes only.        
+| 方法          | 描述                                                                  |
+|---------------|-----------------------------------------------------------------------|
+| `_call`       | 接受一个字符串和一些可选的停止词，并返回一个字符串。由 `invoke` 使用。 |
+| `_llm_type`   | 返回一个字符串的属性，仅用于日志记录目的。                           |
 
+可选实现：
 
+| 方法                  | 描述                                                                                                  |
+|----------------------|-------------------------------------------------------------------------------------------------------|
+| `_identifying_params` | 用于帮助识别模型并打印 LLM；应返回一个字典。这是一个 **@property**。                                 |
+| `_acall`              | 提供 `_call` 的异步本地实现，由 `ainvoke` 使用。                                                     |
+| `_stream`             | 方法逐个输出流式生成的令牌。                                                                          |
+| `_astream`            | 提供 `_stream` 的异步本地实现；在较新的 LangChain 版本中，默认为 `_stream`。                        |
 
-Optional implementations: 
-
-
-| Method    | Description                                                                                               |
-|----------------------|-----------------------------------------------------------------------------------------------------------|
-| `_identifying_params` | Used to help with identifying the model and printing the LLM; should return a dictionary. This is a **@property**.                 |
-| `_acall`              | Provides an async native implementation of `_call`, used by `ainvoke`.                                    |
-| `_stream`             | Method to stream the output token by token.                                                               |
-| `_astream`            | Provides an async native implementation of `_stream`; in newer LangChain versions, defaults to `_stream`. |
-
-
-
-Let's implement a simple custom LLM that just returns the first n characters of the input.
-
+让我们实现一个简单的自定义 LLM，仅返回输入的前 n 个字符。
 
 ```python
 from typing import Any, Dict, Iterator, List, Mapping, Optional
@@ -45,14 +39,13 @@ from langchain_core.outputs import GenerationChunk
 
 
 class CustomLLM(LLM):
-    """A custom chat model that echoes the first `n` characters of the input.
+    """一个自定义聊天模型，回显输入的前 `n` 个字符。
 
-    When contributing an implementation to LangChain, carefully document
-    the model including the initialization parameters, include
-    an example of how to initialize the model and include any relevant
-    links to the underlying models documentation or API.
+    在向 LangChain 提交实现时，请仔细记录模型，包括初始化参数，
+    包含如何初始化模型的示例，并包含任何相关的
+    底层模型文档或 API 的链接。
 
-    Example:
+    示例：
 
         .. code-block:: python
 
@@ -63,7 +56,7 @@ class CustomLLM(LLM):
     """
 
     n: int
-    """The number of characters from the last message of the prompt to be echoed."""
+    """从提示的最后一条消息中回显的字符数。"""
 
     def _call(
         self,
@@ -72,24 +65,22 @@ class CustomLLM(LLM):
         run_manager: Optional[CallbackManagerForLLMRun] = None,
         **kwargs: Any,
     ) -> str:
-        """Run the LLM on the given input.
+        """在给定输入上运行 LLM。
 
-        Override this method to implement the LLM logic.
+        重写此方法以实现 LLM 逻辑。
 
-        Args:
-            prompt: The prompt to generate from.
-            stop: Stop words to use when generating. Model output is cut off at the
-                first occurrence of any of the stop substrings.
-                If stop tokens are not supported consider raising NotImplementedError.
-            run_manager: Callback manager for the run.
-            **kwargs: Arbitrary additional keyword arguments. These are usually passed
-                to the model provider API call.
+        参数：
+            prompt: 要生成的提示。
+            stop: 生成时使用的停止词。模型输出在任何停止子字符串的第一次出现处被截断。
+                如果不支持停止令牌，请考虑引发 NotImplementedError。
+            run_manager: 运行的回调管理器。
+            **kwargs: 任意其他关键字参数。这些通常传递给模型提供者 API 调用。
 
-        Returns:
-            The model output as a string. Actual completions SHOULD NOT include the prompt.
+        返回：
+            模型输出作为字符串。实际的完成不应包含提示。
         """
         if stop is not None:
-            raise ValueError("stop kwargs are not permitted.")
+            raise ValueError("不允许使用 stop kwargs。")
         return prompt[: self.n]
 
     def _stream(
@@ -99,24 +90,21 @@ class CustomLLM(LLM):
         run_manager: Optional[CallbackManagerForLLMRun] = None,
         **kwargs: Any,
     ) -> Iterator[GenerationChunk]:
-        """Stream the LLM on the given prompt.
+        """在给定提示上流式传输 LLM。
 
-        This method should be overridden by subclasses that support streaming.
+        支持流式传输的子类应重写此方法。
 
-        If not implemented, the default behavior of calls to stream will be to
-        fallback to the non-streaming version of the model and return
-        the output as a single chunk.
+        如果未实现，对流的调用的默认行为将回退到模型的非流式版本，并将
+        输出作为一个单独的块返回。
 
-        Args:
-            prompt: The prompt to generate from.
-            stop: Stop words to use when generating. Model output is cut off at the
-                first occurrence of any of these substrings.
-            run_manager: Callback manager for the run.
-            **kwargs: Arbitrary additional keyword arguments. These are usually passed
-                to the model provider API call.
+        参数：
+            prompt: 要生成的提示。
+            stop: 生成时使用的停止词。模型输出在这些子字符串的第一次出现处被截断。
+            run_manager: 运行的回调管理器。
+            **kwargs: 任意其他关键字参数。这些通常传递给模型提供者 API 调用。
 
-        Returns:
-            An iterator of GenerationChunks.
+        返回：
+            GenerationChunks 的迭代器。
         """
         for char in prompt[: self.n]:
             chunk = GenerationChunk(text=char)
@@ -127,24 +115,23 @@ class CustomLLM(LLM):
 
     @property
     def _identifying_params(self) -> Dict[str, Any]:
-        """Return a dictionary of identifying parameters."""
+        """返回一个识别参数的字典。"""
         return {
-            # The model name allows users to specify custom token counting
-            # rules in LLM monitoring applications (e.g., in LangSmith users
-            # can provide per token pricing for their model and monitor
-            # costs for the given LLM.)
+            # 模型名称允许用户在 LLM 监控应用中指定自定义令牌计数
+            # 规则（例如，在 LangSmith 中，用户可以为其模型提供每个令牌定价并监控
+            # 给定 LLM 的成本。）
             "model_name": "CustomChatModel",
         }
 
     @property
     def _llm_type(self) -> str:
-        """Get the type of language model used by this chat model. Used for logging purposes only."""
+        """获取此聊天模型使用的语言模型的类型。仅用于日志记录目的。"""
         return "custom"
 ```
 
-### Let's test it 🧪
+### 让我们测试一下 🧪
 
-This LLM will implement the standard `Runnable` interface of LangChain which many of the LangChain abstractions support!
+这个 LLM 将实现 LangChain 的标准 `Runnable` 接口，许多 LangChain 抽象都支持它！
 
 
 ```python
@@ -211,7 +198,7 @@ async for token in llm.astream("hello"):
 ```output
 h|e|l|l|o|
 ```
-Let's confirm that in integrates nicely with other `LangChain` APIs.
+让我们确认它与其他 `LangChain` API 的良好集成。
 
 
 ```python
@@ -251,31 +238,32 @@ async for event in chain.astream_events({"input": "hello there!"}, version="v1")
 {'event': 'on_llm_stream', 'name': 'CustomLLM', 'run_id': 'a8766beb-10f4-41de-8750-3ea7cf0ca7e2', 'tags': ['seq:step:2'], 'metadata': {}, 'data': {'chunk': 'y'}}
 {'event': 'on_chain_stream', 'run_id': '05f24b4f-7ea3-4fb6-8417-3aa21633462f', 'tags': [], 'metadata': {}, 'name': 'RunnableSequence', 'data': {'chunk': 'y'}}
 ```
-## Contributing
 
-We appreciate all chat model integration contributions. 
+## 贡献
 
-Here's a checklist to help make sure your contribution gets added to LangChain:
+我们感谢所有聊天模型集成的贡献。
 
-Documentation:
+以下是一个检查清单，以帮助确保您的贡献被添加到 LangChain：
 
-* The model contains doc-strings for all initialization arguments, as these will be surfaced in the [APIReference](https://api.python.langchain.com/en/stable/langchain_api_reference.html).
-* The class doc-string for the model contains a link to the model API if the model is powered by a service.
+文档：
 
-Tests:
+* 模型包含所有初始化参数的文档字符串，因为这些将在 [APIReference](https://api.python.langchain.com/en/stable/langchain_api_reference.html) 中显示。
+* 如果模型由服务提供支持，模型的类文档字符串中应包含指向模型 API 的链接。
 
-* [ ] Add unit or integration tests to the overridden methods. Verify that `invoke`, `ainvoke`, `batch`, `stream` work if you've over-ridden the corresponding code.
+测试：
 
-Streaming (if you're implementing it):
+* [ ] 为重写的方法添加单元或集成测试。如果您重写了相应的代码，请验证 `invoke`、`ainvoke`、`batch`、`stream` 是否正常工作。
 
-* [ ] Make sure to invoke the `on_llm_new_token` callback
-* [ ] `on_llm_new_token` is invoked BEFORE yielding the chunk
+流式处理（如果您正在实现）：
 
-Stop Token Behavior:
+* [ ] 确保调用 `on_llm_new_token` 回调
+* [ ] `on_llm_new_token` 在生成块之前被调用
 
-* [ ] Stop token should be respected
-* [ ] Stop token should be INCLUDED as part of the response
+停止令牌行为：
 
-Secret API Keys:
+* [ ] 应尊重停止令牌
+* [ ] 停止令牌应作为响应的一部分包含在内
 
-* [ ] If your model connects to an API it will likely accept API keys as part of its initialization. Use Pydantic's `SecretStr` type for secrets, so they don't get accidentally printed out when folks print the model.
+秘密 API 密钥：
+
+* [ ] 如果您的模型连接到 API，它可能会在初始化时接受 API 密钥。使用 Pydantic 的 `SecretStr` 类型来处理秘密，以便在打印模型时不会意外打印出来。

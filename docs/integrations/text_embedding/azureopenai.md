@@ -2,15 +2,14 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/azureopenai.ipynb
 keywords: [AzureOpenAIEmbeddings]
 ---
+
 # Azure OpenAI
 
-Let's load the Azure OpenAI Embedding class with environment variables set to indicate to use Azure endpoints.
-
+让我们加载 Azure OpenAI Embedding 类，并设置环境变量以指示使用 Azure 端点。
 
 ```python
 %pip install --upgrade --quiet langchain-openai
 ```
-
 
 ```python
 import os
@@ -18,7 +17,6 @@ import os
 os.environ["AZURE_OPENAI_API_KEY"] = "..."
 os.environ["AZURE_OPENAI_ENDPOINT"] = "https://<your-endpoint>.openai.azure.com/"
 ```
-
 
 ```python
 from langchain_openai import AzureOpenAIEmbeddings
@@ -29,27 +27,21 @@ embeddings = AzureOpenAIEmbeddings(
 )
 ```
 
-
 ```python
 text = "this is a test document"
 ```
-
 
 ```python
 query_result = embeddings.embed_query(text)
 ```
 
-
 ```python
 doc_result = embeddings.embed_documents([text])
 ```
 
-
 ```python
 doc_result[0][:5]
 ```
-
-
 
 ```output
 [-0.012222584727053133,
@@ -59,8 +51,7 @@ doc_result[0][:5]
  -0.0034330499700826883]
 ```
 
-
-## [Legacy] When using `openai<1`
+## [遗留] 当使用 `openai<1` 时
 
 
 ```python
@@ -95,8 +86,7 @@ query_result = embeddings.embed_query(text)
 doc_result = embeddings.embed_documents([text])
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

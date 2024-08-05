@@ -1,57 +1,56 @@
-# Baidu
+# 百度
 
->[Baidu Cloud](https://cloud.baidu.com/) is a cloud service provided by `Baidu, Inc.`, 
-> headquartered in Beijing. It offers a cloud storage service, client software, 
-> file management, resource sharing, and Third Party Integration.
+>[百度云](https://cloud.baidu.com/) 是由 `Baidu, Inc.` 提供的云服务， 
+> 总部位于北京。它提供云存储服务、客户端软件、 
+> 文件管理、资源共享和第三方集成。
 
+## 安装与设置
 
-## Installation and Setup
-
-Register and get the `Qianfan` `AK` and `SK` keys [here](https://cloud.baidu.com/product/wenxinworkshop).
+在[这里](https://cloud.baidu.com/product/wenxinworkshop)注册并获取`Qianfan` `AK`和`SK`密钥。
 
 ## LLMs
 
-### Baidu Qianfan
+### 百度千帆
 
-See a [usage example](/docs/integrations/llms/baidu_qianfan_endpoint).
+查看[用法示例](/docs/integrations/llms/baidu_qianfan_endpoint)。
 
 ```python
 from langchain_community.llms import QianfanLLMEndpoint
 ```
 
-## Chat models
+## 聊天模型
 
-### Qianfan Chat Endpoint
+### Qianfan 聊天端点
 
-See a [usage example](/docs/integrations/chat/baidu_qianfan_endpoint).
+查看 [使用示例](/docs/integrations/chat/baidu_qianfan_endpoint).
 
 ```python
 from langchain_community.chat_models import QianfanChatEndpoint
 ```
 
-## Embedding models
+## 嵌入模型
 
-### Baidu Qianfan
+### 百度千帆
 
-See a [usage example](/docs/integrations/text_embedding/baidu_qianfan_endpoint).
+查看[使用示例](/docs/integrations/text_embedding/baidu_qianfan_endpoint)。
 
 ```python
 from langchain_community.embeddings import QianfanEmbeddingsEndpoint
 ```
 
-## Vector stores
+## 向量存储
 
-### Baidu Cloud ElasticSearch VectorSearch
+### 百度云 ElasticSearch 向量搜索
 
-See a [usage example](/docs/integrations/vectorstores/baiducloud_vector_search).
+查看 [使用示例](/docs/integrations/vectorstores/baiducloud_vector_search)。
 
 ```python
 from langchain_community.vectorstores import BESVectorStore
 ```
 
-### Baidu VectorDB
+### 百度向量数据库
 
-See a [usage example](/docs/integrations/vectorstores/baiduvectordb).
+查看 [使用示例](/docs/integrations/vectorstores/baiduvectordb).
 
 ```python
 from langchain_community.vectorstores import BaiduVectorDB

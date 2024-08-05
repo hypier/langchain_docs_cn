@@ -1,12 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/cohere.ipynb
 ---
+
 # Cohere RAG
 
->[Cohere](https://cohere.ai/about) is a Canadian startup that provides natural language processing models that help companies improve human-machine interactions.
+>[Cohere](https://cohere.ai/about) 是一家加拿大初创公司，提供自然语言处理模型，帮助企业改善人机交互。
 
-This notebook covers how to get started with the `Cohere RAG` retriever. This allows you to leverage the ability to search documents over various connectors or by supplying your own.
-
+本笔记本涵盖如何开始使用 `Cohere RAG` 检索器。这使您能够利用通过各种连接器搜索文档的能力或提供您自己的文档。
 
 ```python
 import getpass
@@ -120,27 +120,26 @@ Reuters reported earlier in the year that Cohere was in talks to raise “hundre
 
 ```python
 docs = rag.invoke(
-    "Does langchain support cohere RAG?",
+    "langchain是否支持cohere RAG？",
     documents=[
-        Document(page_content="Langchain supports cohere RAG!"),
-        Document(page_content="The sky is blue!"),
+        Document(page_content="Langchain支持cohere RAG！"),
+        Document(page_content="天空是蓝色的！"),
     ],
 )
 _pretty_print(docs)
 ```
 ```output
-{'id': 'doc-0', 'snippet': 'Langchain supports cohere RAG!'}
+{'id': 'doc-0', 'snippet': 'Langchain支持cohere RAG！'}
 
 
-Langchain supports cohere RAG!
+Langchain支持cohere RAG！
 
 
 ------------------------------
 ```
-Please note that connectors and documents cannot be used simultaneously. If you choose to provide documents in the `invoke` method, they will take precedence, and connectors will not be utilized for that particular request, as shown in the snippet above!
+请注意，连接器和文档不能同时使用。如果您选择在`invoke`方法中提供文档，它们将优先使用，连接器将不会用于该特定请求，如上面的代码片段所示！
 
+## 相关
 
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

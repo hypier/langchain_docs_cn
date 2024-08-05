@@ -1,36 +1,36 @@
 # MyScale
 
-This page covers how to use MyScale vector database within LangChain.
-It is broken into two parts: installation and setup, and then references to specific MyScale wrappers.
+本页介绍如何在 LangChain 中使用 MyScale 向量数据库。
+它分为两个部分：安装和设置，以及对特定 MyScale 包装器的引用。
 
-With MyScale, you can manage both structured and unstructured (vectorized) data, and perform joint queries and analytics on both types of data using SQL. Plus, MyScale's cloud-native OLAP architecture, built on top of ClickHouse, enables lightning-fast data processing even on massive datasets.
+使用 MyScale，您可以管理结构化和非结构化（向量化）数据，并使用 SQL 对这两种类型的数据执行联合查询和分析。此外，MyScale 的云原生 OLAP 架构建立在 ClickHouse 之上，使得即使在海量数据集上也能实现闪电般快速的数据处理。
 
-## Introduction
+## 介绍
 
-[Overview to MyScale and High performance vector search](https://docs.myscale.com/en/overview/)
+[MyScale 和高性能向量搜索概述](https://docs.myscale.com/en/overview/)
 
-You can now register on our SaaS and [start a cluster now!](https://docs.myscale.com/en/quickstart/)
+您现在可以在我们的 SaaS 上注册并 [立即启动集群！](https://docs.myscale.com/en/quickstart/)
 
-If you are also interested in how we managed to integrate SQL and vector, please refer to [this document](https://docs.myscale.com/en/vector-reference/) for further syntax reference.
+如果您也对我们如何将 SQL 和向量集成感兴趣，请参考 [此文档](https://docs.myscale.com/en/vector-reference/) 以获取更多语法参考。
 
-We also deliver with live demo on huggingface! Please checkout our [huggingface space](https://huggingface.co/myscale)! They search millions of vector within a blink!
+我们还提供了在 huggingface 上的实时演示！请查看我们的 [huggingface 空间](https://huggingface.co/myscale)！他们在眨眼之间搜索数百万个向量！
 
-## Installation and Setup
-- Install the Python SDK with `pip install clickhouse-connect`
+## 安装与设置
+- 使用 `pip install clickhouse-connect` 安装 Python SDK
 
-### Setting up environments
+### 设置环境
 
-There are two ways to set up parameters for myscale index.
+有两种方法可以为 myscale 索引设置参数。
 
-1. Environment Variables
+1. 环境变量
 
-    Before you run the app, please set the environment variable with `export`:
+    在运行应用程序之前，请使用 `export` 设置环境变量：
     `export MYSCALE_HOST='<your-endpoints-url>' MYSCALE_PORT=<your-endpoints-port> MYSCALE_USERNAME=<your-username> MYSCALE_PASSWORD=<your-password> ...`
 
-    You can easily find your account, password and other info on our SaaS. For details please refer to [this document](https://docs.myscale.com/en/cluster-management/)
-    Every attributes under `MyScaleSettings` can be set with prefix `MYSCALE_` and is case insensitive.
+    您可以轻松地在我们的 SaaS 上找到您的帐户、密码和其他信息。有关详细信息，请参阅 [此文档](https://docs.myscale.com/en/cluster-management/)
+    `MyScaleSettings` 下的每个属性都可以使用前缀 `MYSCALE_` 设置，并且不区分大小写。
 
-2. Create `MyScaleSettings` object with parameters
+2. 使用参数创建 `MyScaleSettings` 对象
 
 
     ```python
@@ -39,9 +39,9 @@ There are two ways to set up parameters for myscale index.
     index = MyScale(embedding_function, config)
     index.add_documents(...)
     ```
-  
-## Wrappers
-supported functions:
+
+## 包装器
+支持的功能：
 - `add_texts`
 - `add_documents`
 - `from_texts`
@@ -55,12 +55,11 @@ supported functions:
 
 ### VectorStore
 
-There exists a wrapper around MyScale database, allowing you to use it as a vectorstore,
-whether for semantic search or similar example retrieval.
+存在一个围绕 MyScale 数据库的封装，使您可以将其用作向量存储，无论是用于语义搜索还是类似示例的检索。
 
-To import this vectorstore:
+要导入此向量存储：
 ```python
 from langchain_community.vectorstores import MyScale
 ```
 
-For a more detailed walkthrough of the MyScale wrapper, see [this notebook](/docs/integrations/vectorstores/myscale)
+有关 MyScale 封装的更详细指南，请参见 [此笔记本](/docs/integrations/vectorstores/myscale)

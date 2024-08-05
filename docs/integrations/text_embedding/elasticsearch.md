@@ -1,12 +1,13 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/elasticsearch.ipynb
 ---
-# Elasticsearch
-Walkthrough of how to generate embeddings using a hosted embedding model in Elasticsearch
 
-The easiest way to instantiate the `ElasticsearchEmbeddings` class it either
-- using the `from_credentials` constructor if you are using Elastic Cloud
-- or using the `from_es_connection` constructor with any Elasticsearch cluster
+# Elasticsearch
+在Elasticsearch中使用托管嵌入模型生成嵌入的操作指南
+
+实例化`ElasticsearchEmbeddings`类的最简单方法是
+- 如果您使用的是Elastic Cloud，可以使用`from_credentials`构造函数
+- 或者使用`from_es_connection`构造函数与任何Elasticsearch集群
 
 
 ```python
@@ -20,12 +21,12 @@ from langchain_elasticsearch import ElasticsearchEmbeddings
 
 
 ```python
-# Define the model ID
+# 定义模型ID
 model_id = "your_model_id"
 ```
 
-## Testing with `from_credentials`
-This required an Elastic Cloud `cloud_id`
+## 使用 `from_credentials` 进行测试
+这需要一个 Elastic Cloud `cloud_id`
 
 
 ```python
@@ -68,8 +69,8 @@ query_embedding = embeddings.embed_query(query)
 print(f"Embedding for query: {query_embedding}")
 ```
 
-## Testing with Existing Elasticsearch client connection
-This can be used with any Elasticsearch deployment
+## 使用现有的Elasticsearch客户端连接进行测试
+这可以与任何Elasticsearch部署一起使用
 
 
 ```python
@@ -120,8 +121,7 @@ query_embedding = embeddings.embed_query(query)
 print(f"Embedding for query: {query_embedding}")
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

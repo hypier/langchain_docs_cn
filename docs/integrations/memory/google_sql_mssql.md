@@ -1,36 +1,35 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/google_sql_mssql.ipynb
 ---
+
 # Google SQL for SQL Server
 
-> [Google Cloud SQL](https://cloud.google.com/sql) is a fully managed relational database service that offers high performance, seamless integration, and impressive scalability. It offers `MySQL`, `PostgreSQL`, and `SQL Server` database engines. Extend your database application to build AI-powered experiences leveraging Cloud SQL's Langchain integrations.
+> [Google Cloud SQL](https://cloud.google.com/sql) 是一个完全托管的关系数据库服务，提供高性能、无缝集成和令人印象深刻的可扩展性。它提供 `MySQL`、`PostgreSQL` 和 `SQL Server` 数据库引擎。扩展您的数据库应用程序，构建利用 Cloud SQL 的 Langchain 集成的 AI 驱动体验。
 
-This notebook goes over how to use `Google Cloud SQL for SQL Server` to store chat message history with the `MSSQLChatMessageHistory` class.
+本笔记本介绍了如何使用 `Google Cloud SQL for SQL Server` 通过 `MSSQLChatMessageHistory` 类存储聊天消息历史记录。
 
-Learn more about the package on [GitHub](https://github.com/googleapis/langchain-google-cloud-sql-mssql-python/).
+在 [GitHub](https://github.com/googleapis/langchain-google-cloud-sql-mssql-python/) 上了解更多关于该包的信息。
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/googleapis/langchain-google-cloud-sql-mssql-python/blob/main/docs/chat_message_history.ipynb)
 
-## Before You Begin
+## 开始之前
 
-To run this notebook, you will need to do the following:
+要运行此笔记本，您需要执行以下操作：
 
- * [Create a Google Cloud Project](https://developers.google.com/workspace/guides/create-project)
- * [Enable the Cloud SQL Admin API.](https://console.cloud.google.com/marketplace/product/google/sqladmin.googleapis.com)
- * [Create a Cloud SQL for SQL Server instance](https://cloud.google.com/sql/docs/sqlserver/create-instance)
- * [Create a Cloud SQL database](https://cloud.google.com/sql/docs/sqlserver/create-manage-databases)
- * [Create a database user](https://cloud.google.com/sql/docs/sqlserver/create-manage-users) (Optional if you choose to use the `sqlserver` user)
+ * [创建 Google Cloud 项目](https://developers.google.com/workspace/guides/create-project)
+ * [启用 Cloud SQL Admin API。](https://console.cloud.google.com/marketplace/product/google/sqladmin.googleapis.com)
+ * [创建 SQL Server 的 Cloud SQL 实例](https://cloud.google.com/sql/docs/sqlserver/create-instance)
+ * [创建 Cloud SQL 数据库](https://cloud.google.com/sql/docs/sqlserver/create-manage-databases)
+ * [创建数据库用户](https://cloud.google.com/sql/docs/sqlserver/create-manage-users)（如果您选择使用 `sqlserver` 用户，则为可选）
 
-### 🦜🔗 Library Installation
-The integration lives in its own `langchain-google-cloud-sql-mssql` package, so we need to install it.
-
+### 🦜🔗 库安装
+集成存在于其自己的 `langchain-google-cloud-sql-mssql` 包中，因此我们需要安装它。
 
 ```python
 %pip install --upgrade --quiet langchain-google-cloud-sql-mssql langchain-google-vertexai
 ```
 
-**Colab only:** Uncomment the following cell to restart the kernel or use the button to restart the kernel. For Vertex AI Workbench you can restart the terminal using the button on top.
-
+**仅限 Colab：** 取消注释以下单元以重启内核，或使用按钮重启内核。对于 Vertex AI Workbench，您可以使用顶部的按钮重启终端。
 
 ```python
 # # Automatically restart kernel after installs so that your environment can access the new packages
@@ -40,11 +39,11 @@ The integration lives in its own `langchain-google-cloud-sql-mssql` package, so 
 # app.kernel.do_shutdown(True)
 ```
 
-### 🔐 Authentication
-Authenticate to Google Cloud as the IAM user logged into this notebook in order to access your Google Cloud Project.
+### 🔐 身份验证
+作为登录此笔记本的 IAM 用户对 Google Cloud 进行身份验证，以便访问您的 Google Cloud 项目。
 
-* If you are using Colab to run this notebook, use the cell below and continue.
-* If you are using Vertex AI Workbench, check out the setup instructions [here](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env).
+* 如果您使用 Colab 运行此笔记本，请使用下面的单元格并继续。
+* 如果您使用 Vertex AI Workbench，请查看 [这里](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env) 的设置说明。
 
 
 ```python
@@ -53,27 +52,26 @@ from google.colab import auth
 auth.authenticate_user()
 ```
 
-### ☁ Set Your Google Cloud Project
-Set your Google Cloud project so that you can leverage Google Cloud resources within this notebook.
+### ☁ 设置您的 Google Cloud 项目
+设置您的 Google Cloud 项目，以便您可以在此笔记本中利用 Google Cloud 资源。
 
-If you don't know your project ID, try the following:
+如果您不知道您的项目 ID，请尝试以下方法：
 
-* Run `gcloud config list`.
-* Run `gcloud projects list`.
-* See the support page: [Locate the project ID](https://support.google.com/googleapi/answer/7014113).
-
+* 运行 `gcloud config list`。
+* 运行 `gcloud projects list`。
+* 请参阅支持页面：[查找项目 ID](https://support.google.com/googleapi/answer/7014113)。
 
 ```python
-# @markdown Please fill in the value below with your Google Cloud project ID and then run the cell.
+# @markdown 请在下面填写您的 Google Cloud 项目 ID，然后运行该单元格。
 
 PROJECT_ID = "my-project-id"  # @param {type:"string"}
 
-# Set the project id
+# 设置项目 ID
 !gcloud config set project {PROJECT_ID}
 ```
 
-### 💡 API Enablement
-The `langchain-google-cloud-sql-mssql` package requires that you [enable the Cloud SQL Admin API](https://console.cloud.google.com/flows/enableapi?apiid=sqladmin.googleapis.com) in your Google Cloud Project.
+### 💡 API 启用
+`langchain-google-cloud-sql-mssql` 包要求您在 Google Cloud 项目中 [启用 Cloud SQL Admin API](https://console.cloud.google.com/flows/enableapi?apiid=sqladmin.googleapis.com)。
 
 
 ```python
@@ -81,11 +79,10 @@ The `langchain-google-cloud-sql-mssql` package requires that you [enable the Clo
 !gcloud services enable sqladmin.googleapis.com
 ```
 
-## Basic Usage
+## 基本用法
 
-### Set Cloud SQL database values
-Find your database values, in the [Cloud SQL Instances page](https://console.cloud.google.com/sql?_ga=2.223735448.2062268965.1707700487-2088871159.1707257687).
-
+### 设置 Cloud SQL 数据库值
+在 [Cloud SQL 实例页面](https://console.cloud.google.com/sql?_ga=2.223735448.2062268965.1707700487-2088871159.1707257687) 中找到您的数据库值。
 
 ```python
 # @title Set Your Values Here { display-mode: "form" }
@@ -97,22 +94,20 @@ DB_PASS = "my-password"  # @param {type: "string"}
 TABLE_NAME = "message_store"  # @param {type: "string"}
 ```
 
-### MSSQLEngine Connection Pool
+### MSSQLEngine 连接池
 
-One of the requirements and arguments to establish Cloud SQL as a ChatMessageHistory memory store is a `MSSQLEngine` object. The `MSSQLEngine`  configures a connection pool to your Cloud SQL database, enabling successful connections from your application and following industry best practices.
+将 Cloud SQL 作为 ChatMessageHistory 存储的一个要求和参数是 `MSSQLEngine` 对象。`MSSQLEngine` 配置了一个连接池到您的 Cloud SQL 数据库，使您的应用程序能够成功连接并遵循行业最佳实践。
 
-To create a `MSSQLEngine` using `MSSQLEngine.from_instance()` you need to provide only 6 things:
+要使用 `MSSQLEngine.from_instance()` 创建 `MSSQLEngine`，您只需提供 6 个信息：
 
-1. `project_id` : Project ID of the Google Cloud Project where the Cloud SQL instance is located.
-1. `region` : Region where the Cloud SQL instance is located.
-1. `instance` : The name of the Cloud SQL instance.
-1. `database` : The name of the database to connect to on the Cloud SQL instance.
-1. `user` : Database user to use for built-in database authentication and login.
-1. `password` : Database password to use for built-in database authentication and login.
+1. `project_id` : Cloud SQL 实例所在的 Google Cloud 项目的项目 ID。
+1. `region` : Cloud SQL 实例所在的区域。
+1. `instance` : Cloud SQL 实例的名称。
+1. `database` : 要连接的 Cloud SQL 实例上的数据库名称。
+1. `user` : 用于内置数据库身份验证和登录的数据库用户。
+1. `password` : 用于内置数据库身份验证和登录的数据库密码。
 
-By default, [built-in database authentication](https://cloud.google.com/sql/docs/sqlserver/users) using a username and password to access the Cloud SQL database is used for database authentication.
-
-
+默认情况下，使用用户名和密码访问 Cloud SQL 数据库的 [内置数据库身份验证](https://cloud.google.com/sql/docs/sqlserver/users) 用于数据库身份验证。
 
 ```python
 from langchain_google_cloud_sql_mssql import MSSQLEngine
@@ -127,11 +122,10 @@ engine = MSSQLEngine.from_instance(
 )
 ```
 
-### Initialize a table
-The `MSSQLChatMessageHistory` class requires a database table with a specific schema in order to store the chat message history.
+### 初始化表
+`MSSQLChatMessageHistory` 类需要一个具有特定模式的数据库表，以存储聊天消息历史记录。
 
-The `MSSQLEngine` engine has a helper method `init_chat_history_table()` that can be used to create a table with the proper schema for you.
-
+`MSSQLEngine` 引擎有一个辅助方法 `init_chat_history_table()`，可以用来为您创建一个具有正确模式的表。
 
 ```python
 engine.init_chat_history_table(table_name=TABLE_NAME)
@@ -139,11 +133,11 @@ engine.init_chat_history_table(table_name=TABLE_NAME)
 
 ### MSSQLChatMessageHistory
 
-To initialize the `MSSQLChatMessageHistory` class you need to provide only 3 things:
+要初始化 `MSSQLChatMessageHistory` 类，您只需要提供以下三项内容：
 
-1. `engine` - An instance of a `MSSQLEngine` engine.
-1. `session_id` - A unique identifier string that specifies an id for the session.
-1. `table_name` : The name of the table within the Cloud SQL database to store the chat message history.
+1. `engine` - 一个 `MSSQLEngine` 引擎的实例。
+1. `session_id` - 一个唯一标识符字符串，用于指定会话的 ID。
+1. `table_name` : 存储聊天消息历史的 Cloud SQL 数据库中的表名。
 
 
 ```python
@@ -168,36 +162,32 @@ history.messages
 ```
 
 
-#### Cleaning up
-When the history of a specific session is obsolete and can be deleted, it can be done the following way.
+#### 清理
+当特定会话的历史记录过时时，可以通过以下方式删除。
 
-**Note:** Once deleted, the data is no longer stored in Cloud SQL and is gone forever.
+**注意：** 一旦删除，数据将不再存储在 Cloud SQL 中，且将永久丢失。
 
 
 ```python
 history.clear()
 ```
 
-## 🔗 Chaining
+## 🔗 链接
 
-We can easily combine this message history class with [LCEL Runnables](/docs/how_to/message_history)
+我们可以轻松地将此消息历史类与 [LCEL Runnables](/docs/how_to/message_history) 结合起来。
 
-To do this we will use one of [Google's Vertex AI chat models](/docs/integrations/chat/google_vertex_ai_palm) which requires that you [enable the Vertex AI API](https://console.cloud.google.com/flows/enableapi?apiid=aiplatform.googleapis.com) in your Google Cloud Project.
-
-
+为此，我们将使用 [Google 的 Vertex AI 聊天模型](/docs/integrations/chat/google_vertex_ai_palm)，这要求您在 Google Cloud 项目中 [启用 Vertex AI API](https://console.cloud.google.com/flows/enableapi?apiid=aiplatform.googleapis.com)。
 
 ```python
 # enable Vertex AI API
 !gcloud services enable aiplatform.googleapis.com
 ```
 
-
 ```python
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_google_vertexai import ChatVertexAI
 ```
-
 
 ```python
 prompt = ChatPromptTemplate.from_messages(
@@ -210,7 +200,6 @@ prompt = ChatPromptTemplate.from_messages(
 
 chain = prompt | ChatVertexAI(project=PROJECT_ID)
 ```
-
 
 ```python
 chain_with_history = RunnableWithMessageHistory(
@@ -225,32 +214,23 @@ chain_with_history = RunnableWithMessageHistory(
 )
 ```
 
-
 ```python
 # This is where we configure the session id
 config = {"configurable": {"session_id": "test_session"}}
 ```
 
-
 ```python
 chain_with_history.invoke({"question": "Hi! I'm bob"}, config=config)
 ```
-
-
 
 ```output
 AIMessage(content=' Hello Bob, how can I help you today?')
 ```
 
-
-
 ```python
 chain_with_history.invoke({"question": "Whats my name"}, config=config)
 ```
 
-
-
 ```output
 AIMessage(content=' Your name is Bob.')
 ```
-

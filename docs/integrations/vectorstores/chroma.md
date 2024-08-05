@@ -1,38 +1,36 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/chroma.ipynb
 ---
+
 # Chroma
 
->[Chroma](https://docs.trychroma.com/getting-started) is a AI-native open-source vector database focused on developer productivity and happiness. Chroma is licensed under Apache 2.0.
+>[Chroma](https://docs.trychroma.com/getting-started) 是一个以AI为原生的开源向量数据库，专注于开发者的生产力和幸福感。Chroma 采用 Apache 2.0 许可证。
 
-
-Install Chroma with:
+使用以下命令安装 Chroma：
 
 ```sh
 pip install langchain-chroma
 ```
 
-Chroma runs in various modes. See below for examples of each integrated with LangChain.
-- `in-memory` - in a python script or jupyter notebook
-- `in-memory with persistance` - in a script or notebook and save/load to disk
-- `in a docker container` - as a server running your local machine or in the cloud
+Chroma 可以在多种模式下运行。以下是与 LangChain 集成的每种模式的示例。
+- `in-memory` - 在 Python 脚本或 Jupyter Notebook 中
+- `in-memory with persistance` - 在脚本或 Notebook 中并保存/加载到磁盘
+- `in a docker container` - 作为在本地机器或云中运行的服务器
 
-Like any other database, you can: 
+像其他数据库一样，您可以：
 - `.add` 
 - `.get` 
 - `.update`
 - `.upsert`
 - `.delete`
 - `.peek`
-- and `.query` runs the similarity search.
+- 和 `.query` 进行相似性搜索。
 
-View full docs at [docs](https://docs.trychroma.com/reference/py-collection). To access these methods directly, you can do `._collection.method()`
+查看完整文档请访问 [docs](https://docs.trychroma.com/reference/py-collection)。要直接访问这些方法，您可以使用 `._collection.method()`
 
+## 基本示例
 
-## Basic Example
-
-In this basic example, we take the most recent State of the Union Address, split it into chunks, embed it using an open-source embedding model, load it into Chroma, and then query it.
-
+在这个基本示例中，我们获取最近的国情咨文，将其拆分成多个部分，使用开源嵌入模型进行嵌入，将其加载到 Chroma 中，然后进行查询。
 
 ```python
 # import
@@ -73,12 +71,12 @@ One of the most serious constitutional responsibilities a President has is nomin
 
 And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
 ```
-## Basic Example (including saving to disk)
 
-Extending the previous example, if you want to save to disk, simply initialize the Chroma client and pass the directory where you want the data to be saved to. 
+## 基本示例（包括保存到磁盘）
 
-`Caution`: Chroma makes a best-effort to automatically save data to disk, however multiple in-memory clients can stop each other's work. As a best practice, only have one client per path running at any given time.
+扩展前面的示例，如果您想保存到磁盘，只需初始化 Chroma 客户端并传递要保存数据的目录。
 
+`注意`：Chroma 尽力自动将数据保存到磁盘，然而多个内存客户端可能会相互干扰。作为最佳实践，在任何时候每个路径上只运行一个客户端。
 
 ```python
 # save to disk
@@ -99,11 +97,12 @@ One of the most serious constitutional responsibilities a President has is nomin
 
 And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
 ```
-## Passing a Chroma Client into Langchain
 
-You can also create a Chroma Client and pass it to LangChain. This is particularly useful if you want easier access to the underlying database.
+## 将 Chroma 客户端传递给 Langchain
 
-You can also specify the collection name that you want LangChain to use.
+您还可以创建一个 Chroma 客户端并将其传递给 LangChain。这在您希望更轻松地访问底层数据库时特别有用。
+
+您还可以指定希望 LangChain 使用的集合名称。
 
 
 ```python
@@ -137,18 +136,19 @@ Insert of existing embedding ID: 3
 ``````output
 There are 3 in the collection
 ```
-## Basic Example (using the Docker Container)
 
-You can also run the Chroma Server in a Docker container separately, create a Client to connect to it, and then pass that to LangChain. 
+## 基本示例（使用 Docker 容器）
 
-Chroma has the ability to handle multiple `Collections` of documents, but the LangChain interface expects one, so we need to specify the collection name. The default collection name used by LangChain is "langchain".
+您也可以在 Docker 容器中单独运行 Chroma 服务器，创建一个客户端与之连接，然后将其传递给 LangChain。
 
-Here is how to clone, build, and run the Docker Image:
+Chroma 能够处理多个 `Collections` 的文档，但 LangChain 接口期望只有一个，因此我们需要指定集合名称。LangChain 使用的默认集合名称是 "langchain"。
+
+以下是如何克隆、构建和运行 Docker 镜像：
 ```sh
 git clone git@github.com:chroma-core/chroma.git
 ```
 
-Edit the `docker-compose.yml` file and add `ALLOW_RESET=TRUE` under `environment`
+编辑 `docker-compose.yml` 文件，并在 `environment` 下添加 `ALLOW_RESET=TRUE`
 ```yaml
     ...
     command: uvicorn chromadb.app:app --reload --workers 1 --host 0.0.0.0 --port 8000 --log-config log_config.yml
@@ -160,7 +160,7 @@ Edit the `docker-compose.yml` file and add `ALLOW_RESET=TRUE` under `environment
     ...
 ```
 
-Then run `docker-compose up -d --build`
+然后运行 `docker-compose up -d --build`
 
 
 ```python
@@ -189,24 +189,24 @@ docs = db4.similarity_search(query)
 print(docs[0].page_content)
 ```
 ```output
-Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And while you’re at it, pass the Disclose Act so Americans can know who is funding our elections. 
+今晚。我呼吁参议院：通过《投票自由法案》。通过《约翰·刘易斯投票权法案》。同时，通过《披露法案》，让美国人知道谁在资助我们的选举。
 
-Tonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. 
+今晚，我想表彰一位为这个国家奉献一生的人：大法官斯蒂芬·布雷耶——一位退伍军人、宪法学者，以及即将退休的美国最高法院大法官。布雷耶大法官，感谢您的服务。
 
-One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. 
+总统最严肃的宪法责任之一是提名某人担任美国最高法院法官。
 
-And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
+而我在 4 天前就做了这一提名，当时我提名了巡回上诉法院法官凯坦吉·布朗·杰克逊。她是我们国家顶尖的法律人才之一，将继续布雷耶大法官卓越的遗产。
 ```
-## Update and Delete
 
-While building toward a real application, you want to go beyond adding data, and also update and delete data. 
+## 更新和删除
 
-Chroma has users provide `ids` to simplify the bookkeeping here. `ids` can be the name of the file, or a combined has like `filename_paragraphNumber`, etc.
+在构建真实应用程序时，您希望不仅添加数据，还要更新和删除数据。
 
-Chroma supports all these operations - though some of them are still being integrated all the way through the LangChain interface. Additional workflow improvements will be added soon.
+Chroma 让用户提供 `ids` 以简化这里的记账。`ids` 可以是文件名，或者是组合哈希，例如 `filename_paragraphNumber` 等等。
 
-Here is a basic example showing how to do various operations:
+Chroma 支持所有这些操作——尽管其中一些仍在通过 LangChain 接口进行集成。额外的工作流程改进将很快添加。
 
+以下是一个基本示例，展示如何执行各种操作：
 
 ```python
 # create simple ids
@@ -236,13 +236,13 @@ print("count after", example_db._collection.count())
 count before 46
 count after 45
 ```
-## Use OpenAI Embeddings
 
-Many people like to use OpenAIEmbeddings, here is how to set that up.
+## 使用 OpenAI 嵌入
 
+许多人喜欢使用 OpenAIEmbeddings，以下是如何设置它。
 
 ```python
-# get a token: https://platform.openai.com/account/api-keys
+# 获取令牌: https://platform.openai.com/account/api-keys
 
 from getpass import getpass
 
@@ -251,13 +251,11 @@ from langchain_openai import OpenAIEmbeddings
 OPENAI_API_KEY = getpass()
 ```
 
-
 ```python
 import os
 
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 ```
-
 
 ```python
 embeddings = OpenAIEmbeddings()
@@ -266,7 +264,7 @@ openai_lc_client = Chroma.from_documents(
     docs, embeddings, client=new_client, collection_name="openai_collection"
 )
 
-query = "What did the president say about Ketanji Brown Jackson"
+query = "总统对 Ketanji Brown Jackson 说了什么"
 docs = openai_lc_client.similarity_search(query)
 print(docs[0].page_content)
 ```
@@ -279,13 +277,12 @@ One of the most serious constitutional responsibilities a President has is nomin
 
 And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
 ```
-***
 
-## Other Information
+## 其他信息
 
-### Similarity search with score
+### 相似度搜索与得分
 
-The returned distance score is cosine distance. Therefore, a lower score is better.
+返回的距离得分是余弦距离。因此，得分越低越好。
 
 
 ```python
@@ -300,41 +297,35 @@ docs[0]
 
 
 ```output
-(Document(page_content='Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And while you’re at it, pass the Disclose Act so Americans can know who is funding our elections. \n\nTonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. \n\nOne of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. \n\nAnd I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.', metadata={'source': '../../../state_of_the_union.txt'}),
+(Document(page_content='今晚。我呼吁参议院：通过投票自由法案。通过约翰·刘易斯投票权法案。在此期间，通过披露法案，让美国人知道谁在资助我们的选举。\n\n今晚，我想向一位为国家奉献一生的人致敬：大法官斯蒂芬·布雷耶——一位陆军退伍军人、宪法学者，以及即将退休的美国最高法院大法官。布雷耶大法官，谢谢您的服务。\n\n总统最重要的宪法责任之一就是提名某人担任美国最高法院大法官。\n\n我在4天前做了这件事，当时我提名了巡回上诉法院法官凯坦吉·布朗·杰克逊。她是我们国家顶尖的法律人才之一，将继续布雷耶大法官卓越的遗产。', metadata={'source': '../../../state_of_the_union.txt'}),
  1.1972057819366455)
 ```
 
+### 检索器选项
 
-### Retriever options
-
-This section goes over different options for how to use Chroma as a retriever.
+本节讨论如何将 Chroma 用作检索器的不同选项。
 
 #### MMR
 
-In addition to using similarity search in the retriever object, you can also use `mmr`.
-
+除了在检索器对象中使用相似性搜索外，您还可以使用 `mmr`。
 
 ```python
 retriever = db.as_retriever(search_type="mmr")
 ```
 
-
 ```python
 retriever.invoke(query)[0]
 ```
-
-
 
 ```output
 Document(page_content='Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And while you’re at it, pass the Disclose Act so Americans can know who is funding our elections. \n\nTonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. \n\nOne of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. \n\nAnd I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.', metadata={'source': '../../../state_of_the_union.txt'})
 ```
 
+### 基于元数据的过滤
 
-### Filtering on metadata
+在处理集合之前，缩小范围可能会很有帮助。
 
-It can be helpful to narrow down the collection before working with it.
-
-For example, collections can be filtered on metadata using the get method.
+例如，可以使用 get 方法根据元数据过滤集合。
 
 
 ```python
@@ -348,9 +339,7 @@ example_db.get(where={"source": "some_other_source"})
 {'ids': [], 'embeddings': None, 'metadatas': [], 'documents': []}
 ```
 
+## 相关
 
-
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

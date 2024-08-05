@@ -1,12 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/toolkits/spark.ipynb
 ---
+
 # Spark Dataframe
 
-This notebook shows how to use agents to interact with a `Spark DataFrame` and `Spark Connect`. It is mostly optimized for question answering.
+本笔记本展示了如何使用代理与 `Spark DataFrame` 和 `Spark Connect` 进行交互。它主要针对问答进行了优化。
 
-**NOTE: this agent calls the Python agent under the hood, which executes LLM generated Python code - this can be bad if the LLM generated Python code is harmful. Use cautiously.**
-
+**注意：此代理在后台调用 Python 代理，该代理执行 LLM 生成的 Python 代码 - 如果 LLM 生成的 Python 代码有害，这可能会很糟糕。请谨慎使用。**
 
 ```python
 import os
@@ -14,7 +14,7 @@ import os
 os.environ["OPENAI_API_KEY"] = "...input your openai api key here..."
 ```
 
-## `Spark DataFrame` example
+## `Spark DataFrame` 示例
 
 
 ```python
@@ -67,7 +67,7 @@ agent = create_spark_dataframe_agent(llm=OpenAI(temperature=0), df=df, verbose=T
 
 
 ```python
-agent.run("how many rows are there?")
+agent.run("有多少行？")
 ```
 ```output
 
@@ -78,20 +78,20 @@ Action: python_repl_ast
 Action Input: df.count()[0m
 Observation: [36;1m[1;3m891[0m
 Thought:[32;1m[1;3m I now know the final answer
-Final Answer: There are 891 rows in the dataframe.[0m
+Final Answer: 数据框中有891行。[0m
 
 [1m> Finished chain.[0m
 ```
 
 
 ```output
-'There are 891 rows in the dataframe.'
+'数据框中有891行。'
 ```
 
 
 
 ```python
-agent.run("how many people have more than 3 siblings")
+agent.run("有多少人有超过3个兄弟姐妹")
 ```
 ```output
 
@@ -102,20 +102,20 @@ Action: python_repl_ast
 Action Input: df.filter(df.SibSp > 3).count()[0m
 Observation: [36;1m[1;3m30[0m
 Thought:[32;1m[1;3m I now know the final answer
-Final Answer: 30 people have more than 3 siblings.[0m
+Final Answer: 30人有超过3个兄弟姐妹。[0m
 
 [1m> Finished chain.[0m
 ```
 
 
 ```output
-'30 people have more than 3 siblings.'
+'30人有超过3个兄弟姐妹。'
 ```
 
 
 
 ```python
-agent.run("whats the square root of the average age?")
+agent.run("平均年龄的平方根是多少？")
 ```
 ```output
 
@@ -154,12 +154,12 @@ Final Answer: 5.449689683556195[0m
 spark.stop()
 ```
 
-## `Spark Connect` example
+## `Spark Connect` 示例
 
 
 ```python
-# in apache-spark root directory. (tested here with "spark-3.4.0-bin-hadoop3 and later")
-# To launch Spark with support for Spark Connect sessions, run the start-connect-server.sh script.
+# 在 apache-spark 根目录下。(在“spark-3.4.0-bin-hadoop3及更高版本”中测试)
+# 要启动支持 Spark Connect 会话的 Spark，请运行 start-connect-server.sh 脚本。
 !./sbin/start-connect-server.sh --packages org.apache.spark:spark-connect_2.12:3.4.0
 ```
 
@@ -167,10 +167,10 @@ spark.stop()
 ```python
 from pyspark.sql import SparkSession
 
-# Now that the Spark server is running, we can connect to it remotely using Spark Connect. We do this by
-# creating a remote Spark session on the client where our application runs. Before we can do that, we need
-# to make sure to stop the existing regular Spark session because it cannot coexist with the remote
-# Spark Connect session we are about to create.
+# 现在 Spark 服务器正在运行，我们可以使用 Spark Connect 远程连接到它。我们通过
+# 在客户端创建一个远程 Spark 会话来实现，客户端是我们应用程序运行的地方。在此之前，我们需要
+# 确保停止现有的常规 Spark 会话，因为它无法与我们即将创建的远程
+# Spark Connect 会话共存。
 SparkSession.builder.master("local[*]").getOrCreate().stop()
 ```
 ```output
@@ -178,8 +178,8 @@ SparkSession.builder.master("local[*]").getOrCreate().stop()
 ```
 
 ```python
-# The command we used above to launch the server configured Spark to run as localhost:15002.
-# So now we can create a remote Spark session on the client using the following command.
+# 我们上面用来启动服务器的命令配置了 Spark 运行在 localhost:15002。
+# 所以现在我们可以使用以下命令在客户端创建一个远程 Spark 会话。
 spark = SparkSession.builder.remote("sc://localhost:15002").getOrCreate()
 ```
 
@@ -223,7 +223,7 @@ import os
 from langchain_experimental.agents import create_spark_dataframe_agent
 from langchain_openai import OpenAI
 
-os.environ["OPENAI_API_KEY"] = "...input your openai api key here..."
+os.environ["OPENAI_API_KEY"] = "...在此输入您的 openai api 密钥..."
 
 agent = create_spark_dataframe_agent(llm=OpenAI(temperature=0), df=df, verbose=True)
 ```
@@ -232,24 +232,24 @@ agent = create_spark_dataframe_agent(llm=OpenAI(temperature=0), df=df, verbose=T
 ```python
 agent.run(
     """
-who bought the most expensive ticket?
-You can find all supported function types in https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/dataframe
+谁买了最贵的票？
+您可以在 https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/dataframe 中找到所有支持的函数类型
 """
 )
 ```
 ```output
 
 
-[1m> Entering new AgentExecutor chain...[0m
+[1m> 进入新 AgentExecutor 链...[0m
 [32;1m[1;3m
-Thought: I need to find the row with the highest fare
-Action: python_repl_ast
-Action Input: df.sort(df.Fare.desc()).first()[0m
-Observation: [36;1m[1;3mRow(PassengerId=259, Survived=1, Pclass=1, Name='Ward, Miss. Anna', Sex='female', Age=35.0, SibSp=0, Parch=0, Ticket='PC 17755', Fare=512.3292, Cabin=None, Embarked='C')[0m
-Thought:[32;1m[1;3m I now know the name of the person who bought the most expensive ticket
-Final Answer: Miss. Anna Ward[0m
+思考：我需要找到票价最高的那一行
+动作：python_repl_ast
+动作输入：df.sort(df.Fare.desc()).first()[0m
+观察：[36;1m[1;3mRow(PassengerId=259, Survived=1, Pclass=1, Name='Ward, Miss. Anna', Sex='female', Age=35.0, SibSp=0, Parch=0, Ticket='PC 17755', Fare=512.3292, Cabin=None, Embarked='C')[0m
+思考：[32;1m[1;3m我现在知道了买了最贵票的人的名字
+最终答案：Miss. Anna Ward[0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 ```
 
 

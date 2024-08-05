@@ -1,30 +1,29 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/airbyte.ipynb
 ---
+
 # AirbyteLoader
 
->[Airbyte](https://github.com/airbytehq/airbyte) is a data integration platform for ELT pipelines from APIs, databases & files to warehouses & lakes. It has the largest catalog of ELT connectors to data warehouses and databases.
+>[Airbyte](https://github.com/airbytehq/airbyte) 是一个用于从 API、数据库和文件到数据仓库和数据湖的 ELT 管道的数据集成平台。它拥有最大的 ELT 连接器目录，支持数据仓库和数据库。
 
-This covers how to load any source from Airbyte into LangChain documents
+这部分内容涵盖了如何将 Airbyte 中的任何源加载到 LangChain 文档中。
 
-## Installation
+## 安装
 
-In order to use `AirbyteLoader` you need to install the `langchain-airbyte` integration package.
-
+为了使用 `AirbyteLoader`，您需要安装 `langchain-airbyte` 集成包。
 
 ```python
 % pip install -qU langchain-airbyte
 ```
 
-Note: Currently, the `airbyte` library does not support Pydantic v2.
-Please downgrade to Pydantic v1 to use this package.
+注意：目前，`airbyte` 库不支持 Pydantic v2。
+请降级到 Pydantic v1 以使用此包。
 
-Note: This package also currently requires Python 3.10+.
+注意：此包目前也需要 Python 3.10 及以上版本。
 
-## Loading Documents
+## 加载文档
 
-By default, the `AirbyteLoader` will load any structured data from a stream and output yaml-formatted documents.
-
+默认情况下，`AirbyteLoader` 将从流中加载任何结构化数据并输出 yaml 格式的文档。
 
 ```python
 from langchain_airbyte import AirbyteLoader
@@ -64,8 +63,7 @@ title: M.Sc.Tech.
 updated_at: '2024-02-27T16:41:01+00:00'
 weight: 6
 ```
-You can also specify a custom prompt template for formatting documents:
-
+您还可以指定自定义提示模板来格式化文档：
 
 ```python
 from langchain_core.prompts import PromptTemplate
@@ -84,10 +82,9 @@ print(docs_templated[0].page_content)
 ```output
 My name is Verdie and I am 1.73 meters tall.
 ```
-## Lazy Loading Documents
+## 懒加载文档
 
-One of the powerful features of `AirbyteLoader` is its ability to load large documents from upstream sources. When working with large datasets, the default `.load()` behavior can be slow and memory-intensive. To avoid this, you can use the `.lazy_load()` method to load documents in a more memory-efficient manner.
-
+`AirbyteLoader` 的一个强大功能是能够从上游源加载大型文档。当处理大型数据集时，默认的 `.load()` 行为可能会很慢并且占用大量内存。为了避免这种情况，您可以使用 `.lazy_load()` 方法以更节省内存的方式加载文档。
 
 ```python
 import time
@@ -110,8 +107,7 @@ print(
 ```output
 Just calling lazy load is quick! This took 0.0001 seconds
 ```
-And you can iterate over documents as they're yielded:
-
+您可以在文档被生成时进行迭代：
 
 ```python
 for doc in my_iterator:
@@ -122,8 +118,7 @@ My name is Andera and I am 1.91 meters tall.
 My name is Jody and I am 1.85 meters tall.
 My name is Zonia and I am 1.53 meters tall.
 ```
-You can also lazy load documents in an async manner with `.alazy_load()`:
-
+您还可以使用 `.alazy_load()` 以异步方式懒加载文档：
 
 ```python
 loader = AirbyteLoader(
@@ -145,20 +140,19 @@ My name is Carmelina and I am 1.74 meters tall.
 My name is Ali and I am 1.90 meters tall.
 My name is Rochell and I am 1.83 meters tall.
 ```
-## Configuration
+## 配置
 
-`AirbyteLoader` can be configured with the following options:
+`AirbyteLoader` 可以通过以下选项进行配置：
 
-- `source` (str, required): The name of the Airbyte source to load from.
-- `stream` (str, required): The name of the stream to load from (Airbyte sources can return multiple streams)
-- `config` (dict, required): The configuration for the Airbyte source
-- `template` (PromptTemplate, optional): A custom prompt template for formatting documents
-- `include_metadata` (bool, optional, default True): Whether to include all fields as metadata in the output documents
+- `source` (str, 必需): 要加载的 Airbyte 源的名称。
+- `stream` (str, 必需): 要加载的流的名称（Airbyte 源可以返回多个流）
+- `config` (dict, 必需): Airbyte 源的配置
+- `template` (PromptTemplate, 可选): 用于格式化文档的自定义提示模板
+- `include_metadata` (bool, 可选，默认值为 True): 是否在输出文档中包含所有字段作为元数据
 
-The majority of the configuration will be in `config`, and you can find the specific configuration options in the "Config field reference" for each source in the [Airbyte documentation](https://docs.airbyte.com/integrations/).
+大多数配置将位于 `config` 中，您可以在 [Airbyte 文档](https://docs.airbyte.com/integrations/) 中找到每个源的具体配置选项的“配置字段参考”。
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

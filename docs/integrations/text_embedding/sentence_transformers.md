@@ -1,27 +1,27 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/sentence_transformers.ipynb
 ---
-# Sentence Transformers on Hugging Face
 
->[Hugging Face sentence-transformers](https://huggingface.co/sentence-transformers) is a Python framework for state-of-the-art sentence, text and image embeddings.
->You can use these embedding models from the `HuggingFaceEmbeddings` class.
+# Hugging Face上的句子变换器
+
+>[Hugging Face句子变换器](https://huggingface.co/sentence-transformers)是一个用于最先进的句子、文本和图像嵌入的Python框架。
+>您可以使用`HuggingFaceEmbeddings`类中的这些嵌入模型。
 
 :::caution
 
-Running sentence-transformers locally can be affected by your operating system and other global factors. It is recommended for experienced users only.
+在本地运行句子变换器可能会受到您的操作系统和其他全局因素的影响。建议仅供经验丰富的用户使用。
 
 :::
 
-## Setup
+## 设置
 
-You'll need to install the `langchain_huggingface` package as a dependency:
-
+您需要安装 `langchain_huggingface` 包作为依赖项：
 
 ```python
 %pip install -qU langchain-huggingface
 ```
 
-## Usage
+## 用法
 
 
 ```python
@@ -46,17 +46,16 @@ print(str(doc_result)[:100] + "...")
 ```output
 [[-0.038338497281074524, 0.12346471846103668, -0.028642890974879265, 0.05365274101495743, 0.00884535...
 ```
-## Troubleshooting
 
-If you are having issues with the `accelerate` package not being found or failing to import, installing/upgrading it may help:
+## 故障排除
 
+如果您遇到 `accelerate` 包无法找到或导入失败的问题，安装/升级它可能会有所帮助：
 
 ```python
 %pip install -qU accelerate
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

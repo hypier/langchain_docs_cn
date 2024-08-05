@@ -1,71 +1,69 @@
 # python-lint
 
-This agent specializes in generating high-quality Python code with a focus on proper formatting and linting. It uses `black`, `ruff`, and `mypy` to ensure the code meets standard quality checks.
+该代理专注于生成高质量的 Python 代码，重点关注正确的格式和代码检查。它使用 `black`、`ruff` 和 `mypy` 来确保代码符合标准质量检查。
 
-This streamlines the coding process by integrating and responding to these checks, resulting in reliable and consistent code output.
+这通过集成和响应这些检查来简化编码过程，从而生成可靠且一致的代码输出。
 
-It cannot actually execute the code it writes, as code execution may introduce additional dependencies and potential security vulnerabilities.
-This makes the agent both a secure and efficient solution for code generation tasks.
+它实际上无法执行所写的代码，因为代码执行可能引入额外的依赖项和潜在的安全漏洞。这使得该代理成为一个安全且高效的代码生成解决方案。
 
-You can use it to generate Python code directly, or network it with planning and execution agents.
+您可以直接使用它生成 Python 代码，或将其与规划和执行代理网络连接。
 
-## Environment Setup
+## 环境设置
 
-- Install `black`, `ruff`, and `mypy`: `pip install -U black ruff mypy`
-- Set `OPENAI_API_KEY` environment variable.
+- 安装 `black`、`ruff` 和 `mypy`：`pip install -U black ruff mypy`
+- 设置 `OPENAI_API_KEY` 环境变量。
 
-## Usage
+## 使用方法
 
-To use this package, you should first have the LangChain CLI installed:
+要使用此包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将此作为唯一包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package python-lint
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，只需运行：
 
 ```shell
 langchain app add python-lint
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 ```python
 from python_lint import agent_executor as python_lint_agent
 
 add_routes(app, python_lint_agent, path="/python-lint")
 ```
 
-(Optional) Let's now configure LangSmith. 
-LangSmith will help us trace, monitor and debug LangChain applications. 
-You can sign up for LangSmith [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
-
+（可选）现在让我们配置 LangSmith。
+LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接通过以下方式启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server is running locally at 
+这将启动 FastAPI 应用程序，服务器在本地运行于 
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/python-lint/playground](http://127.0.0.1:8000/python-lint/playground)  
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板
+我们可以在 [http://127.0.0.1:8000/python-lint/playground](http://127.0.0.1:8000/python-lint/playground) 访问游乐场  
 
-We can access the template from code with:
+我们可以通过以下代码从代码中访问模板：
 
 ```python
 from langserve.client import RemoteRunnable

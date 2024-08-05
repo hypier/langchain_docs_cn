@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/jupyter_notebook.ipynb
 ---
+
 # Jupyter Notebook
 
->[Jupyter Notebook](https://en.wikipedia.org/wiki/Project_Jupyter#Applications) (formerly `IPython Notebook`) is a web-based interactive computational environment for creating notebook documents.
+>[Jupyter Notebook](https://en.wikipedia.org/wiki/Project_Jupyter#Applications)（前身为 `IPython Notebook`）是一个基于网页的交互式计算环境，用于创建笔记本文档。
 
-This notebook covers how to load data from a `Jupyter notebook (.ipynb)` into a format suitable by LangChain.
+本笔记本介绍如何将数据从 `Jupyter notebook (.ipynb)` 加载到 LangChain 适用的格式中。
 
 
 ```python
@@ -22,14 +23,14 @@ loader = NotebookLoader(
 )
 ```
 
-`NotebookLoader.load()` loads the `.ipynb` notebook file into a `Document` object.
+`NotebookLoader.load()` 将 `.ipynb` 笔记本文件加载到 `Document` 对象中。
 
-**Parameters**:
+**参数**：
 
-* `include_outputs` (bool): whether to include cell outputs in the resulting document (default is False).
-* `max_output_length` (int): the maximum number of characters to include from each cell output (default is 10).
-* `remove_newline` (bool): whether to remove newline characters from the cell sources and outputs (default is False).
-* `traceback` (bool): whether to include full traceback (default is False).
+* `include_outputs`（bool）：是否在结果文档中包含单元格输出（默认值为 False）。
+* `max_output_length`（int）：从每个单元格输出中包含的最大字符数（默认值为 10）。
+* `remove_newline`（bool）：是否从单元格源和输出中移除换行符（默认值为 False）。
+* `traceback`（bool）：是否包含完整的回溯（默认值为 False）。
 
 
 ```python
@@ -42,9 +43,7 @@ loader.load()
 [Document(page_content='\'markdown\' cell: \'[\'# Notebook\', \'\', \'This notebook covers how to load data from an .html notebook into a format suitable by LangChain.\']\'\n\n \'code\' cell: \'[\'from langchain_community.document_loaders import NotebookLoader\']\'\n\n \'code\' cell: \'[\'loader = NotebookLoader("example_data/notebook.html")\']\'\n\n \'markdown\' cell: \'[\'`NotebookLoader.load()` loads the `.html` notebook file into a `Document` object.\', \'\', \'**Parameters**:\', \'\', \'* `include_outputs` (bool): whether to include cell outputs in the resulting document (default is False).\', \'* `max_output_length` (int): the maximum number of characters to include from each cell output (default is 10).\', \'* `remove_newline` (bool): whether to remove newline characters from the cell sources and outputs (default is False).\', \'* `traceback` (bool): whether to include full traceback (default is False).\']\'\n\n \'code\' cell: \'[\'loader.load(include_outputs=True, max_output_length=20, remove_newline=True)\']\'\n\n', metadata={'source': 'example_data/notebook.html'})]
 ```
 
+## 相关
 
-
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

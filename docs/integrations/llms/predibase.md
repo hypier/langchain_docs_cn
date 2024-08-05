@@ -1,18 +1,18 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/predibase.ipynb
 ---
+
 # Predibase
 
-[Predibase](https://predibase.com/) allows you to train, fine-tune, and deploy any ML model—from linear regression to large language model. 
+[Predibase](https://predibase.com/) 允许您训练、微调和部署任何机器学习模型——从线性回归到大型语言模型。
 
-This example demonstrates using Langchain with models deployed on Predibase
+本示例演示了如何使用 Langchain 与部署在 Predibase 上的模型。
 
-# Setup
+# 设置
 
-To run this notebook, you'll need a [Predibase account](https://predibase.com/free-trial/?utm_source=langchain) and an [API key](https://docs.predibase.com/sdk-guide/intro).
+要运行此笔记本，您需要一个 [Predibase 账户](https://predibase.com/free-trial/?utm_source=langchain) 和一个 [API 密钥](https://docs.predibase.com/sdk-guide/intro)。
 
-You'll also need to install the Predibase Python package:
-
+您还需要安装 Predibase Python 包：
 
 ```python
 %pip install --upgrade --quiet  predibase
@@ -21,7 +21,7 @@ import os
 os.environ["PREDIBASE_API_TOKEN"] = "{PREDIBASE_API_TOKEN}"
 ```
 
-## Initial Call
+## 初始调用
 
 
 ```python
@@ -37,11 +37,11 @@ model = Predibase(
 ```python
 from langchain_community.llms import Predibase
 
-# With a fine-tuned adapter hosted at Predibase (adapter_version must be specified).
+# 使用托管在Predibase上的微调适配器（必须指定adapter_version）。
 model = Predibase(
     model="mistral-7b",
     predibase_api_key=os.environ.get("PREDIBASE_API_TOKEN"),
-    predibase_sdk_version=None,  # optional parameter (defaults to the latest Predibase SDK version if omitted)
+    predibase_sdk_version=None,  # 可选参数（如果省略，则默认为最新的Predibase SDK版本）
     adapter_id="e2e_nlg",
     adapter_version=1,
 )
@@ -51,11 +51,11 @@ model = Predibase(
 ```python
 from langchain_community.llms import Predibase
 
-# With a fine-tuned adapter hosted at HuggingFace (adapter_version does not apply and will be ignored).
+# 使用托管在HuggingFace上的微调适配器（adapter_version不适用，将被忽略）。
 model = Predibase(
     model="mistral-7b",
     predibase_api_key=os.environ.get("PREDIBASE_API_TOKEN"),
-    predibase_sdk_version=None,  # optional parameter (defaults to the latest Predibase SDK version if omitted)
+    predibase_sdk_version=None,  # 可选参数（如果省略，则默认为最新的Predibase SDK版本）
     adapter_id="predibase/e2e_nlg",
 )
 ```
@@ -66,7 +66,7 @@ response = model.invoke("Can you recommend me a nice dry wine?")
 print(response)
 ```
 
-## Chain Call Setup
+## 链式调用设置
 
 
 ```python
@@ -81,7 +81,7 @@ model = Predibase(
 
 
 ```python
-# With a fine-tuned adapter hosted at Predibase (adapter_version must be specified).
+# 使用托管在Predibase的微调适配器（必须指定adapter_version）。
 model = Predibase(
     model="mistral-7b",
     predibase_api_key=os.environ.get("PREDIBASE_API_TOKEN"),
@@ -93,7 +93,7 @@ model = Predibase(
 
 
 ```python
-# With a fine-tuned adapter hosted at HuggingFace (adapter_version does not apply and will be ignored).
+# 使用托管在HuggingFace的微调适配器（adapter_version不适用，将被忽略）。
 llm = Predibase(
     model="mistral-7b",
     predibase_api_key=os.environ.get("PREDIBASE_API_TOKEN"),
@@ -112,7 +112,7 @@ from langchain_core.prompts import PromptTemplate
 
 
 ```python
-# This is an LLMChain to write a synopsis given a title of a play.
+# 这是一个 LLMChain，根据剧本标题撰写概要。
 template = """You are a playwright. Given the title of play, it is your job to write a synopsis for that title.
 
 Title: {title}
@@ -123,7 +123,7 @@ synopsis_chain = LLMChain(llm=llm, prompt=prompt_template)
 
 
 ```python
-# This is an LLMChain to write a review of a play given a synopsis.
+# 这是一个 LLMChain，根据概要撰写剧评。
 template = """You are a play critic from the New York Times. Given the synopsis of play, it is your job to write a review for that play.
 
 Play Synopsis:
@@ -135,7 +135,7 @@ review_chain = LLMChain(llm=llm, prompt=prompt_template)
 
 
 ```python
-# This is the overall chain where we run these two chains in sequence.
+# 这是整体链，我们按顺序运行这两个链。
 from langchain.chains import SimpleSequentialChain
 
 overall_chain = SimpleSequentialChain(
@@ -148,7 +148,7 @@ overall_chain = SimpleSequentialChain(
 review = overall_chain.run("Tragedy at sunset on the beach")
 ```
 
-## Fine-tuned LLM (Use your own fine-tuned LLM from Predibase)
+## 微调的 LLM（使用您自己从 Predibase 微调的 LLM）
 
 
 ```python
@@ -171,8 +171,7 @@ model = Predibase(
 # response = model.invoke("Can you help categorize the following emails into positive, negative, and neutral?")
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

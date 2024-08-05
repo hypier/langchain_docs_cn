@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/code_splitter.ipynb
 ---
-# How to split code
 
-[RecursiveCharacterTextSplitter](https://api.python.langchain.com/en/latest/character/langchain_text_splitters.character.RecursiveCharacterTextSplitter.html) includes pre-built lists of separators that are useful for splitting text in a specific programming language.
+# 如何拆分代码
 
-Supported languages are stored in the `langchain_text_splitters.Language` enum. They include:
+[RecursiveCharacterTextSplitter](https://api.python.langchain.com/en/latest/character/langchain_text_splitters.character.RecursiveCharacterTextSplitter.html) 包含用于在特定编程语言中拆分文本的预构建分隔符列表。
+
+支持的语言存储在 `langchain_text_splitters.Language` 枚举中。包括：
 
 ```
 "cpp",
@@ -34,23 +35,21 @@ Supported languages are stored in the `langchain_text_splitters.Language` enum. 
 "haskell"
 ```
 
-To view the list of separators for a given language, pass a value from this enum into
+要查看特定语言的分隔符列表，将该枚举中的值传递给
 ```python
-RecursiveCharacterTextSplitter.get_separators_for_language`
+RecursiveCharacterTextSplitter.get_separators_for_language
 ```
 
-To instantiate a splitter that is tailored for a specific language, pass a value from the enum into
+要实例化一个针对特定语言的分隔符，将该枚举中的值传递给
 ```python
 RecursiveCharacterTextSplitter.from_language
 ```
 
-Below we demonstrate examples for the various languages.
-
+下面我们展示了各种语言的示例。
 
 ```python
 %pip install -qU langchain-text-splitters
 ```
-
 
 ```python
 from langchain_text_splitters import (
@@ -59,14 +58,11 @@ from langchain_text_splitters import (
 )
 ```
 
-To view the full list of supported languages:
-
+要查看支持的语言的完整列表：
 
 ```python
 [e.value for e in Language]
 ```
-
-
 
 ```output
 ['cpp',
@@ -95,27 +91,19 @@ To view the full list of supported languages:
  'haskell']
 ```
 
-
-You can also see the separators used for a given language:
-
+您还可以查看给定语言使用的分隔符：
 
 ```python
 RecursiveCharacterTextSplitter.get_separators_for_language(Language.PYTHON)
 ```
 
-
-
 ```output
 ['\nclass ', '\ndef ', '\n\tdef ', '\n\n', '\n', ' ', '']
 ```
 
-
 ## Python
 
-Here's an example using the PythonTextSplitter:
-
-
-
+这是一个使用 PythonTextSplitter 的示例：
 
 ```python
 PYTHON_CODE = """
@@ -132,16 +120,13 @@ python_docs = python_splitter.create_documents([PYTHON_CODE])
 python_docs
 ```
 
-
-
 ```output
 [Document(page_content='def hello_world():\n    print("Hello, World!")'),
  Document(page_content='# Call the function\nhello_world()')]
 ```
 
-
 ## JS
-Here's an example using the JS text splitter:
+这是一个使用 JS 文本分割器的示例：
 
 
 ```python
@@ -168,10 +153,8 @@ js_docs
  Document(page_content='// Call the function\nhelloWorld();')]
 ```
 
-
 ## TS
-Here's an example using the TS text splitter:
-
+这是一个使用 TS 文本分割器的示例：
 
 ```python
 TS_CODE = """
@@ -198,10 +181,9 @@ ts_docs
  Document(page_content='// Call the function\nhelloWorld();')]
 ```
 
-
 ## Markdown
 
-Here's an example using the Markdown text splitter:
+这是一个使用 Markdown 文本分割器的示例：
 
 
 
@@ -241,12 +223,9 @@ md_docs
  Document(page_content='are extremely open to contributions.')]
 ```
 
-
 ## Latex
 
-Here's an example on Latex text:
-
-
+这是一个关于Latex文本的示例：
 
 ```python
 latex_text = """
@@ -269,7 +248,6 @@ LLMs have many applications in industry, including chatbots, content creation, a
 """
 ```
 
-
 ```python
 latex_splitter = RecursiveCharacterTextSplitter.from_language(
     language=Language.MARKDOWN, chunk_size=60, chunk_overlap=0
@@ -277,8 +255,6 @@ latex_splitter = RecursiveCharacterTextSplitter.from_language(
 latex_docs = latex_splitter.create_documents([latex_text])
 latex_docs
 ```
-
-
 
 ```output
 [Document(page_content='\\documentclass{article}\n\n\x08egin{document}\n\n\\maketitle'),
@@ -305,10 +281,9 @@ latex_docs
  Document(page_content='\\end{document}')]
 ```
 
-
 ## HTML
 
-Here's an example using an HTML text splitter:
+这是一个使用HTML文本分割器的示例：
 
 
 
@@ -367,9 +342,8 @@ html_docs
  Document(page_content='</div>\n    </body>\n</html>')]
 ```
 
-
 ## Solidity
-Here's an example using the Solidity text splitter:
+这是一个使用 Solidity 文本分割器的示例：
 
 
 ```python
@@ -396,9 +370,8 @@ sol_docs
  Document(page_content='contract HelloWorld {\n   function add(uint a, uint b) pure public returns(uint) {\n       return a + b;\n   }\n}')]
 ```
 
-
 ## C#
-Here's an example using the C# text splitter:
+这是一个使用 C# 文本分割器的示例：
 
 
 
@@ -444,9 +417,8 @@ c_docs
  Document(page_content='// Age is a senior citizen\n        }\n    }\n}')]
 ```
 
-
 ## Haskell
-Here's an example using the Haskell text splitter:
+这是一个使用 Haskell 文本分割器的示例：
 
 
 ```python
@@ -474,9 +446,8 @@ haskell_docs
  Document(page_content='= x + y')]
 ```
 
-
 ## PHP
-Here's an example using the PHP text splitter:
+这是使用 PHP 文本分割器的示例：
 
 
 ```python
@@ -516,9 +487,8 @@ php_docs
  Document(page_content='case Blue;\n}')]
 ```
 
-
 ## PowerShell
-Here's an example using the PowerShell text splitter:
+这是一个使用 PowerShell 文本分割器的示例：
 
 
 ```python

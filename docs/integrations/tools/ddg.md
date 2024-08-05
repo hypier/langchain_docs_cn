@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/ddg.ipynb
 ---
-# DuckDuckGo Search
 
-This guide shows over how to use the DuckDuckGo search component.
+# DuckDuckGo 搜索
 
-## Usage
+本指南展示了如何使用 DuckDuckGo 搜索组件。
+
+## 用法
 
 
 ```python
@@ -28,7 +29,7 @@ search.invoke("Obama's first name?")
 ```
 
 
-To get more additional information (e.g. link, source) use `DuckDuckGoSearchResults()`
+要获取更多附加信息（例如链接、来源），请使用 `DuckDuckGoSearchResults()`
 
 
 ```python
@@ -46,7 +47,7 @@ search.invoke("Obama")
 ```
 
 
-You can also just search for news articles. Use the keyword `backend="news"`
+您还可以仅搜索新闻文章。使用关键字 `backend="news"`
 
 
 ```python
@@ -62,7 +63,7 @@ search.invoke("Obama")
 ```
 
 
-You can also directly pass a custom `DuckDuckGoSearchAPIWrapper` to `DuckDuckGoSearchResults` to provide more control over the search results.
+您还可以直接将自定义的 `DuckDuckGoSearchAPIWrapper` 传递给 `DuckDuckGoSearchResults` 以提供对搜索结果的更多控制。
 
 
 ```python
@@ -81,13 +82,11 @@ search.invoke("Obama")
 '[snippet: So war das zum Beispiel bei Barack Obama, als er sich für Joe Biden als Kandidat für die Vizepräsidentschaft entschied. USA-Expertin Rachel Tausendfreund erklärt, wie sich Kamala Harris als ..., title: Interview: „Kamala Harris sieht die Welt eher wie Barack Obama - nicht ..., link: https://www.handelsblatt.com/politik/interview-kamala-harris-sieht-die-welt-eher-wie-barack-obama-nicht-wie-joe-biden/100054923.html], [snippet: Disput um Klimapolitik Der seltsame Moment, als Kamala Harris sogar Obama vor Gericht zerrte. Teilen. 0. Chip Somodevilla/Getty Images US-Vizepräsidentin Kamala Harris (links) und Ex-Präsident ..., title: Der seltsame Moment, als Kamala Harris sogar Obama vor Gericht zerrte, link: https://www.focus.de/earth/analyse/disput-um-klimapolitik-der-seltsame-moment-als-kamala-harris-sogar-obama-vor-gericht-zerrte_id_260165157.html], [snippet: Kamala Harris «Auf den Spuren von Obama»: Harris\' erste Rede überzeugt Experten. Kamala Harris hat ihre erste Rede als Präsidentschaftskandidatin gehalten. Zwei Experten sind sich einig: Sie ..., title: Kamala Harris\' erste Wahlkampfrede überzeugt Experten, link: https://www.20min.ch/story/kamala-harris-auf-den-spuren-von-obama-harris-erste-rede-ueberzeugt-experten-103154550], [snippet: Harris hat ihre erste Rede als Präsidentschaftskandidatin gehalten. Experten sind sich einig: Sie hat das Potenzial, ein Feuer zu entfachen wie Obama., title: "Auf Spuren von Obama": Harris-Rede überzeugt Experten, link: https://www.heute.at/s/auf-spuren-von-obama-harris-rede-ueberzeugt-experten-120049557]'
 ```
 
+## 相关
 
-## Related
+- [如何使用聊天模型调用工具](https://python.langchain.com/v0.2/docs/how_to/tool_calling/)
 
-- [How to use a chat model to call tools](https://python.langchain.com/v0.2/docs/how_to/tool_calling/)
+## 相关
 
-
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

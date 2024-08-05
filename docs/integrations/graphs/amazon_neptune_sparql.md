@@ -1,25 +1,24 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/graphs/amazon_neptune_sparql.ipynb
 ---
-# Amazon Neptune with SPARQL
 
->[Amazon Neptune](https://aws.amazon.com/neptune/) is a high-performance graph analytics and serverless database for superior scalability and availability.
+# Amazon Neptune与SPARQL
+
+>[Amazon Neptune](https://aws.amazon.com/neptune/) 是一个高性能图形分析和无服务器数据库，具有卓越的可扩展性和可用性。
 >
->This example shows the QA chain that queries [Resource Description Framework (RDF)](https://en.wikipedia.org/wiki/Resource_Description_Framework) data 
-in an `Amazon Neptune` graph database using the `SPARQL` query language and returns a human-readable response.
+>本示例展示了一个QA链，查询在`Amazon Neptune`图形数据库中的[资源描述框架（RDF）](https://en.wikipedia.org/wiki/Resource_Description_Framework)数据，使用`SPARQL`查询语言并返回可读的人类响应。
 >
->[SPARQL](https://en.wikipedia.org/wiki/SPARQL) is a standard query language for `RDF` graphs.
+>[SPARQL](https://en.wikipedia.org/wiki/SPARQL) 是一种用于`RDF`图的标准查询语言。
 
+本示例使用`NeptuneRdfGraph`类连接到Neptune数据库并加载其模式。 
+`NeptuneSparqlQAChain`用于将图形和LLM连接起来，以提出自然语言问题。
 
-This example uses a `NeptuneRdfGraph` class that connects with the Neptune database and loads its schema. 
-The `NeptuneSparqlQAChain` is used to connect the graph and LLM to ask natural language questions.
+该笔记本演示了一个使用组织数据的示例。
 
-This notebook demonstrates an example using organizational data.
-
-Requirements for running this notebook:
-- Neptune 1.2.x cluster accessible from this notebook
-- Kernel with Python 3.9 or higher
-- For Bedrock access, ensure IAM role has this policy
+运行该笔记本的要求：
+- 可从该笔记本访问的Neptune 1.2.x集群
+- Python 3.9或更高版本的内核
+- 对于Bedrock访问，请确保IAM角色具有以下策略
 
 ```json
 {
@@ -32,21 +31,19 @@ Requirements for running this notebook:
 }
 ```
 
-- S3 bucket for staging sample data. The bucket should be in the same account/region as Neptune.
+- 用于暂存示例数据的S3桶。该桶应与Neptune位于同一账户/区域。
 
-## Setting up
+## 设置
 
-### Seed the W3C organizational data
+### 种子 W3C 组织数据
 
-Seed the W3C organizational data, W3C org ontology plus some instances. 
- 
-You will need an S3 bucket in the same region and account. Set `STAGE_BUCKET`as the name of that bucket.
+种子 W3C 组织数据，W3C 组织本体及一些实例。
 
+您需要在同一地区和帐户中创建一个 S3 存储桶。将 `STAGE_BUCKET` 设置为该存储桶的名称。
 
 ```python
 STAGE_BUCKET = "<bucket-name>"
 ```
-
 
 ```bash
 %%bash  -s "$STAGE_BUCKET"
@@ -64,35 +61,32 @@ aws s3 cp example_org.ttl s3://$1/example_org.ttl
 
 ```
 
-Bulk-load the org ttl - both ontology and instances
-
+批量加载 org ttl - 包括本体和实例
 
 ```python
 %load -s s3://{STAGE_BUCKET} -f turtle --store-to loadres --run
 ```
 
-
 ```python
 %load_status {loadres['payload']['loadId']} --errors --details
 ```
 
-### Setup Chain
-
+### 设置链
 
 ```python
 !pip install --upgrade --quiet langchain langchain-community langchain-aws
 ```
 
-** Restart kernel **
+** 重启内核 **
 
-### Prepare an example
+### 准备一个示例
 
 
 ```python
 EXAMPLES = """
 
 <question>
-Find organizations.
+查找组织。
 </question>
 
 <sparql>
@@ -106,7 +100,7 @@ select ?org ?orgName where {{
 </sparql>
 
 <question>
-Find sites of an organization
+查找一个组织的站点
 </question>
 
 <sparql>
@@ -121,7 +115,7 @@ select ?org ?orgName ?siteName where {{
 </sparql>
 
 <question>
-Find suborganizations of an organization
+查找一个组织的子组织
 </question>
 
 <sparql>
@@ -136,7 +130,7 @@ select ?org ?orgName ?subName where {{
 </sparql>
 
 <question>
-Find organizational units of an organization
+查找一个组织的组织单位
 </question>
 
 <sparql>
@@ -151,7 +145,7 @@ select ?org ?orgName ?unitName where {{
 </sparql>
 
 <question>
-Find members of an organization. Also find their manager, or the member they report to.
+查找一个组织的成员。还要找到他们的经理或他们汇报的成员。
 </question>
 
 <sparql>
@@ -169,7 +163,7 @@ select * where {{
 
 
 <question>
-Find change events, such as mergers and acquisitions, of an organization
+查找一个组织的变更事件，例如合并和收购
 </question>
 
 <sparql>
@@ -218,8 +212,8 @@ chain = NeptuneSparqlQAChain.from_llm(
 )
 ```
 
-## Ask questions
-Depends on the data we ingested above
+## 提问
+取决于我们上面获取的数据
 
 
 ```python

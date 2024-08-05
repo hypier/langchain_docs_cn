@@ -1,23 +1,19 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/aerospike.ipynb
 ---
+
 # Aerospike
 
-[Aerospike Vector Search](https://aerospike.com/docs/vector) (AVS) is an
-extension to the Aerospike Database that enables searches across very large
-datasets stored in Aerospike. This new service lives outside of Aerospike and
-builds an index to perform those searches.
+[Aerospike Vector Search](https://aerospike.com/docs/vector) (AVS) 是对 Aerospike 数据库的扩展，能够在存储在 Aerospike 中的非常大数据集上进行搜索。这个新服务位于 Aerospike 之外，并构建一个索引以执行这些搜索。
 
-This notebook showcases the functionality of the LangChain Aerospike VectorStore
-integration.
+本笔记本展示了 LangChain Aerospike VectorStore 集成的功能。
 
-## Install AVS
+## 安装 AVS
 
-Before using this notebook, we need to have a running AVS instance. Use one of
-the [available installation methods](https://aerospike.com/docs/vector/install). 
+在使用此笔记本之前，我们需要有一个运行中的 AVS 实例。使用其中一种
+[可用的安装方法](https://aerospike.com/docs/vector/install)。
 
-When finished, store your AVS instance's IP address and port to use later
-in this demo:
+完成后，存储您的 AVS 实例的 IP 地址和端口，以便在此演示中使用：
 
 
 ```python
@@ -25,18 +21,16 @@ PROXIMUS_HOST = "<avs-ip>"
 PROXIMUS_PORT = 5000
 ```
 
-## Install Dependencies 
-The `sentence-transformers` dependency is large. This step could take several minutes to complete.
-
+## 安装依赖
+`sentence-transformers` 依赖项较大。此步骤可能需要几分钟才能完成。
 
 ```python
 !pip install --upgrade --quiet aerospike-vector-search==0.6.1 langchain-community sentence-transformers langchain
 ```
 
-## Download Quotes Dataset
+## 下载名言数据集
 
-We will download a dataset of approximately 100,000 quotes and use a subset of those quotes for semantic search.
-
+我们将下载一个大约包含100,000条名言的数据集，并使用其中的一个子集进行语义搜索。
 
 ```python
 !wget https://github.com/aerospike/aerospike-vector-search-examples/raw/7dfab0fccca0852a511c6803aba46578729694b5/quote-semantic-search/container-volumes/quote-search/data/quotes.csv.tgz
@@ -58,10 +52,10 @@ quotes.csv.tgz      100%[===================>]  11.06M  1.94MB/s    in 6.1s
 
 2024-05-10 17:28:23 (1.81 MB/s) - ‘quotes.csv.tgz’ saved [11597643/11597643]
 ```
-## Load the Quotes Into Documents
 
-We will load our quotes dataset using the `CSVLoader` document loader. In this case, `lazy_load` returns an iterator to ingest our quotes more efficiently. In this example, we only load 5,000 quotes.
+## 将引用加载到文档中
 
+我们将使用 `CSVLoader` 文档加载器加载我们的引用数据集。在这种情况下，`lazy_load` 返回一个迭代器，以更高效地引入我们的引用。在这个例子中，我们只加载 5,000 条引用。
 
 ```python
 import itertools
@@ -73,7 +67,7 @@ from langchain_community.document_loaders.csv_loader import CSVLoader
 filename = "./quotes.csv"
 
 if not os.path.exists(filename) and os.path.exists(filename + ".tgz"):
-    # Untar the file
+    # 解压文件
     with tarfile.open(filename + ".tgz", "r:gz") as tar:
         tar.extractall(path=os.path.dirname(filename))
 
@@ -81,9 +75,8 @@ NUM_QUOTES = 5000
 documents = CSVLoader(filename, metadata_columns=["author", "category"]).lazy_load()
 documents = list(
     itertools.islice(documents, NUM_QUOTES)
-)  # Allows us to slice an iterator
+)  # 允许我们切片一个迭代器
 ```
-
 
 ```python
 print(documents[0])
@@ -91,10 +84,10 @@ print(documents[0])
 ```output
 page_content="quote: I'm selfish, impatient and a little insecure. I make mistakes, I am out of control and at times hard to handle. But if you can't handle me at my worst, then you sure as hell don't deserve me at my best." metadata={'source': './quotes.csv', 'row': 0, 'author': 'Marilyn Monroe', 'category': 'attributed-no-source, best, life, love, mistakes, out-of-control, truth, worst'}
 ```
-## Create your Embedder
 
-In this step, we use HuggingFaceEmbeddings and the "all-MiniLM-L6-v2" sentence transformer model to embed our documents so we can perform a vector search.
+## 创建您的嵌入器
 
+在此步骤中，我们使用 HuggingFaceEmbeddings 和 "all-MiniLM-L6-v2" 句子变换模型来嵌入我们的文档，以便进行向量搜索。
 
 ```python
 from aerospike_vector_search.types import VectorDistanceMetric
@@ -155,10 +148,9 @@ special_tokens_map.json:   0%|          | 0.00/112 [00:00<?, ?B/s]
 1_Pooling/config.json:   0%|          | 0.00/190 [00:00<?, ?B/s]
 ```
 
-## Create an Aerospike Index and Embed Documents
+## 创建 Aerospike 索引并嵌入文档
 
-Before we add documents, we need to create an index in the Aerospike Database. In the example below, we use some convenience code that checks to see if the expected index already exists.
-
+在添加文档之前，我们需要在 Aerospike 数据库中创建一个索引。在下面的示例中，我们使用一些便利代码来检查预期的索引是否已经存在。
 
 ```python
 from aerospike_vector_search import AdminClient, Client, HostPort
@@ -219,11 +211,11 @@ docstore = Aerospike.from_documents(
 )
 ```
 ```output
-quote-miniLM-L6-v2 does not exist. Creating index
+quote-miniLM-L6-v2 不存在。正在创建索引
 ```
-## Search the Documents
-Now that we have embedded our vectors, we can use vector search on our quotes.
 
+## 搜索文档
+现在我们已经嵌入了我们的向量，我们可以对我们的引用进行向量搜索。
 
 ```python
 query = "A quote about the beauty of the cosmos"
@@ -274,10 +266,10 @@ author:  Thich Nhat Hanh, Teachings on Love
 quote: Through my love for you, I want to express my love for the whole cosmos, the whole of humanity, and all beings. By living with you, I want to learn to love everyone and all species. If I succeed in loving you, I will be able to love everyone and all species on Earth... This is the real message of love.
 ~~~~~~~~~~~~~~~~~~~~
 ```
-## Embedding Additional Quotes as Text
 
-We can use `add_texts` to add additional quotes.
+## 嵌入额外的引用作为文本
 
+我们可以使用 `add_texts` 来添加额外的引用。
 
 ```python
 docstore = Aerospike(
@@ -309,10 +301,10 @@ print(ids)
 New IDs
 ['972846bd-87ae-493b-8ba3-a3d023c03948', '8171122e-cbda-4eb7-a711-6625b120893b', '53b54409-ac19-4d90-b518-d7c40bf5ee5d']
 ```
-## Search Documents Using Max Marginal Relevance Search
 
-We can use max marginal relevance search to find vectors that are similar to our query but dissimilar to each other. In this example, we create a retriever object using `as_retriever`, but this could be done just as easily by calling `docstore.max_marginal_relevance_search` directly. The `lambda_mult` search argument determines the diversity of our query response. 0 corresponds to maximum diversity and 1 to minimum diversity.
+## 使用最大边际相关性搜索查找文档
 
+我们可以使用最大边际相关性搜索来查找与我们的查询相似但彼此不同的向量。在这个例子中，我们使用 `as_retriever` 创建一个检索器对象，但通过直接调用 `docstore.max_marginal_relevance_search` 也可以轻松完成。`lambda_mult` 搜索参数决定了我们查询响应的多样性。0 对应于最大多样性，1 对应于最小多样性。
 
 ```python
 query = "A quote about our favorite four-legged pets"
@@ -348,10 +340,10 @@ author:  Ray Bradbury
 quote: Stuff your eyes with wonder," he said, "live as if you'd drop dead in ten seconds. See the world. It's more fantastic than any dream made or paid for in factories. Ask no guarantees, ask for no security, there never was such an animal. And if there were, it would be related to the great sloth which hangs upside down in a tree all day every day, sleeping its life away. To hell with that," he said, "shake the tree and knock the great sloth down on his ass.
 ~~~~~~~~~~~~~~~~~~~~
 ```
-## Search Documents with a Relevance Threshold
 
-Another useful feature is a similarity search with a relevance threshold. Generally, we only want results that are most similar to our query but also within some range of proximity. A relevance of 1 is most similar and a relevance of 0 is most dissimilar.
+## 使用相关性阈值搜索文档
 
+另一个有用的功能是具有相关性阈值的相似性搜索。通常，我们只希望获得与查询最相似的结果，但也在某个接近范围内。相关性为 1 表示最相似，而相关性为 0 表示最不相似。
 
 ```python
 query = "A quote about stormy weather"
@@ -390,21 +382,20 @@ author:  Edwin Morgan, A Book of Lives
 quote: Valentine WeatherKiss me with rain on your eyelashes,come on, let us sway together,under the trees, and to hell with thunder.
 ~~~~~~~~~~~~~~~~~~~~
 ```
-## Clean up
 
-We need to make sure we close our client to release resources and clean up threads.
+## 清理
 
+我们需要确保关闭客户端以释放资源并清理线程。
 
 ```python
 client.close()
 ```
 
-## Ready. Set. Search!
+## 准备。开始。搜索！
 
-Now that you are up to speed with Aerospike Vector Search's LangChain integration, you have the power of the Aerospike Database and the LangChain ecosystem at your finger tips. Happy building!
+现在您已经熟悉了 Aerospike Vector Search 的 LangChain 集成，您可以随时使用 Aerospike 数据库和 LangChain 生态系统的强大功能。祝您构建愉快！
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

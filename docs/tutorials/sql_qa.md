@@ -1,50 +1,48 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/tutorials/sql_qa.ipynb
 ---
-# Build a Question/Answering system over SQL data
 
-:::info Prerequisites
+# 在 SQL 数据上构建问答系统
 
-This guide assumes familiarity with the following concepts:
+:::info 先决条件
 
-- [Chaining runnables](/docs/how_to/sequence/)
-- [Chat models](/docs/concepts/#chat-models)
-- [Tools](/docs/concepts/#tools)
-- [Agents](/docs/concepts/#agents)
+本指南假设您对以下概念有一定的了解：
+
+- [链接可运行的任务](/docs/how_to/sequence/)
+- [聊天模型](/docs/concepts/#chat-models)
+- [工具](/docs/concepts/#tools)
+- [代理](/docs/concepts/#agents)
 
 :::
 
-Enabling a LLM system to query structured data can be qualitatively different from unstructured text data. Whereas in the latter it is common to generate text that can be searched against a vector database, the approach for structured data is often for the LLM to write and execute queries in a DSL, such as SQL. In this guide we'll go over the basic ways to create a Q&A system over tabular data in databases. We will cover implementations using both chains and agents. These systems will allow us to ask a question about the data in a database and get back a natural language answer. The main difference between the two is that our agent can query the database in a loop as many times as it needs to answer the question.
+使 LLM 系统能够查询结构化数据与查询非结构化文本数据在性质上可能有很大不同。在后者中，生成可以与向量数据库搜索的文本是很常见的，而对于结构化数据，LLM 通常需要编写并执行 DSL 查询，例如 SQL。在本指南中，我们将介绍如何在数据库的表格数据上创建问答系统的基本方法。我们将涵盖使用链和代理的实现。这些系统将允许我们就数据库中的数据提出问题，并获得自然语言的回答。这两者之间的主要区别在于，我们的代理可以在循环中查询数据库多次，以满足回答问题的需要。
 
-## ⚠️ Security note ⚠️
+## ⚠️ 安全提示 ⚠️
 
-Building Q&A systems of SQL databases requires executing model-generated SQL queries. There are inherent risks in doing this. Make sure that your database connection permissions are always scoped as narrowly as possible for your chain/agent's needs. This will mitigate though not eliminate the risks of building a model-driven system. For more on general security best practices, [see here](/docs/security).
+构建 SQL 数据库的问答系统需要执行模型生成的 SQL 查询。这其中存在固有的风险。确保您的数据库连接权限始终根据您的链/代理的需求尽可能狭窄地范围化。这将减轻但不能消除构建模型驱动系统的风险。有关一般安全最佳实践的更多信息，请[查看这里](/docs/security)。
 
+## 架构
 
-## Architecture
+从高层次来看，这些系统的步骤是：
 
-At a high-level, the steps of these systems are:
+1. **将问题转换为 DSL 查询**：模型将用户输入转换为 SQL 查询。
+2. **执行 SQL 查询**：执行查询。
+3. **回答问题**：模型使用查询结果响应用户输入。
 
-1. **Convert question to DSL query**: Model converts user input to a SQL query.
-2. **Execute SQL query**: Execute the query.
-3. **Answer the question**: Model responds to user input using the query results.
-
-Note that querying data in CSVs can follow a similar approach. See our [how-to guide](/docs/how_to/sql_csv) on question-answering over CSV data for more detail.
+请注意，查询 CSV 中的数据可以遵循类似的方法。有关 CSV 数据问答的更多细节，请参阅我们的 [使用指南](/docs/how_to/sql_csv)。
 
 ![sql_usecase.png](../../static/img/sql_usecase.png)
 
-## Setup
+## 设置
 
-First, get required packages and set environment variables:
-
+首先，获取所需的包并设置环境变量：
 
 ```python
 %%capture --no-stderr
 %pip install --upgrade --quiet langchain langchain-community langchain-openai faiss-cpu
 ```
 
-We will use an OpenAI model and a [FAISS-powered vector store](/docs/integrations/vectorstores/faiss/) in this guide.
-
+在本指南中，我们将使用 OpenAI 模型和一个 [FAISS 支持的向量存储](/docs/integrations/vectorstores/faiss/)。
 
 ```python
 import getpass
@@ -53,21 +51,20 @@ import os
 if not os.environ.get("OPENAI_API_KEY"):
     os.environ["OPENAI_API_KEY"] = getpass.getpass()
 
-# Comment out the below to opt-out of using LangSmith in this notebook. Not required.
+# 注释掉下面的内容以选择不在此笔记本中使用 LangSmith。不是必需的。
 if not os.environ.get("LANGCHAIN_API_KEY"):
     os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
     os.environ["LANGCHAIN_TRACING_V2"] = "true"
 ```
 
-The below example will use a SQLite connection with Chinook database. Follow [these installation steps](https://database.guide/2-sample-databases-sqlite/) to create `Chinook.db` in the same directory as this notebook:
+下面的示例将使用与 Chinook 数据库的 SQLite 连接。按照 [这些安装步骤](https://database.guide/2-sample-databases-sqlite/) 在与此笔记本相同的目录中创建 `Chinook.db`：
 
-* Save [this file](https://raw.githubusercontent.com/lerocha/chinook-database/master/ChinookDatabase/DataSources/Chinook_Sqlite.sql) as `Chinook.sql`
-* Run `sqlite3 Chinook.db`
-* Run `.read Chinook.sql`
-* Test `SELECT * FROM Artist LIMIT 10;`
+* 将 [此文件](https://raw.githubusercontent.com/lerocha/chinook-database/master/ChinookDatabase/DataSources/Chinook_Sqlite.sql) 保存为 `Chinook.sql`
+* 运行 `sqlite3 Chinook.db`
+* 运行 `.read Chinook.sql`
+* 测试 `SELECT * FROM Artist LIMIT 10;`
 
-Now, `Chinhook.db` is in our directory and we can interface with it using the SQLAlchemy-driven `SQLDatabase` class:
-
+现在，`Chinook.db` 在我们的目录中，我们可以使用 SQLAlchemy 驱动的 `SQLDatabase` 类与它进行交互：
 
 ```python
 from langchain_community.utilities import SQLDatabase
@@ -88,25 +85,24 @@ sqlite
 ```
 
 
-Great! We've got a SQL database that we can query. Now let's try hooking it up to an LLM.
+太好了！我们有一个可以查询的 SQL 数据库。现在让我们尝试将其连接到一个 LLM。
 
 ## Chains {#chains}
 
-Chains (i.e., compositions of LangChain [Runnables](/docs/concepts#langchain-expression-language-lcel)) support applications whose steps are predictable. We can create a simple chain that takes a question and does the following:
-- convert the question into a SQL query;
-- execute the query;
-- use the result to answer the original question.
+链（即 LangChain [Runnables](/docs/concepts#langchain-expression-language-lcel) 的组合）支持步骤可预测的应用程序。我们可以创建一个简单的链，它接受一个问题并执行以下操作：
+- 将问题转换为 SQL 查询；
+- 执行查询；
+- 使用结果来回答原始问题。
 
-There are scenarios not supported by this arrangement. For example, this system will execute a SQL query for any user input-- even "hello". Importantly, as we'll see below, some questions require more than one query to answer. We will address these scenarios in the Agents section.
+这种安排不支持某些场景。例如，该系统将对任何用户输入执行 SQL 查询——甚至是“你好”。重要的是，正如我们在下面将看到的，有些问题需要多个查询才能回答。我们将在代理部分讨论这些场景。
 
-### Convert question to SQL query
+### 将问题转换为SQL查询
 
-The first step in a SQL chain or agent is to take the user input and convert it to a SQL query. LangChain comes with a built-in chain for this: [create_sql_query_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.sql_database.query.create_sql_query_chain.html).
+SQL链或代理的第一步是接受用户输入并将其转换为SQL查询。LangChain提供了一个内置链来实现这一点：[create_sql_query_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.sql_database.query.create_sql_query_chain.html)。
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
 <ChatModelTabs customVarName="llm" />
-
 
 ```python
 from langchain.chains import create_sql_query_chain
@@ -116,35 +112,27 @@ response = chain.invoke({"question": "How many employees are there"})
 response
 ```
 
-
-
 ```output
 'SELECT COUNT("EmployeeId") AS "TotalEmployees" FROM "Employee"\nLIMIT 1;'
 ```
 
-
-We can execute the query to make sure it's valid:
-
+我们可以执行查询以确保它是有效的：
 
 ```python
 db.run(response)
 ```
 
-
-
 ```output
 '[(8,)]'
 ```
 
+我们可以查看[LangSmith跟踪](https://smith.langchain.com/public/c8fa52ea-be46-4829-bde2-52894970b830/r)，以更好地理解这个链的功能。我们还可以直接检查链的提示。查看提示（如下），我们可以看到它是：
 
-We can look at the [LangSmith trace](https://smith.langchain.com/public/c8fa52ea-be46-4829-bde2-52894970b830/r) to get a better understanding of what this chain is doing. We can also inspect the chain directly for its prompts. Looking at the prompt (below), we can see that it is:
+* 特定于方言的。在这种情况下，它明确引用了SQLite。
+* 对所有可用表有定义。
+* 每个表有三个示例行。
 
-* Dialect-specific. In this case it references SQLite explicitly.
-* Has definitions for all the available tables.
-* Has three examples rows for each table.
-
-This technique is inspired by papers like [this](https://arxiv.org/pdf/2204.00498.pdf), which suggest showing examples rows and being explicit about tables improves performance. We can also inspect the full prompt like so:
-
+这项技术受到像[这篇论文](https://arxiv.org/pdf/2204.00498.pdf)的启发，建议展示示例行并明确表格可以提高性能。我们还可以像这样检查完整的提示：
 
 ```python
 chain.get_prompts()[0].pretty_print()
@@ -168,11 +156,12 @@ Only use the following tables:
 
 Question: [33;1m[1;3m{input}[0m
 ```
-### Execute SQL query
 
-Now that we've generated a SQL query, we'll want to execute it. **This is the most dangerous part of creating a SQL chain.** Consider carefully if it is OK to run automated queries over your data. Minimize the database connection permissions as much as possible. Consider adding a human approval step to you chains before query execution (see below).
+### 执行 SQL 查询
 
-We can use the `QuerySQLDatabaseTool` to easily add query execution to our chain:
+现在我们已经生成了一个 SQL 查询，我们需要执行它。**这是创建 SQL 链中最危险的部分。** 请仔细考虑是否可以对您的数据运行自动化查询。尽可能最小化数据库连接权限。在查询执行之前，考虑在您的链中添加一个人工审批步骤（见下文）。
+
+我们可以使用 `QuerySQLDatabaseTool` 来轻松地将查询执行添加到我们的链中：
 
 
 ```python
@@ -190,11 +179,9 @@ chain.invoke({"question": "How many employees are there"})
 '[(8,)]'
 ```
 
+### 回答问题
 
-### Answer the question
-
-Now that we've got a way to automatically generate and execute queries, we just need to combine the original question and SQL query result to generate a final answer. We can do this by passing question and result to the LLM once more:
-
+现在我们已经找到了一种自动生成和执行查询的方法，我们只需要将原始问题和 SQL 查询结果结合起来，生成最终答案。我们可以通过将问题和结果再次传递给 LLM 来实现这一点：
 
 ```python
 from operator import itemgetter
@@ -224,46 +211,43 @@ chain = (
 chain.invoke({"question": "How many employees are there"})
 ```
 
-
-
 ```output
 'There are a total of 8 employees.'
 ```
 
-
-Let's review what is happening in the above LCEL. Suppose this chain is invoked.
-- After the first `RunnablePassthrough.assign`, we have a runnable with two elements:  
+让我们回顾一下上述 LCEL 中发生的事情。假设这个链被调用。
+- 在第一次 `RunnablePassthrough.assign` 之后，我们得到了一个包含两个元素的可运行体：  
   `{"question": question, "query": write_query.invoke(question)}`  
-  Where `write_query` will generate a SQL query in service of answering the question.
-- After the second `RunnablePassthrough.assign`, we have add a third element `"result"` that contains `execute_query.invoke(query)`, where `query` was computed in the previous step.
-- These three inputs are formatted into the prompt and passed into the LLM.
-- The `StrOutputParser()` plucks out the string content of the output message.
+  其中 `write_query` 将生成一个 SQL 查询，以便回答问题。
+- 在第二次 `RunnablePassthrough.assign` 之后，我们添加了一个第三个元素 `"result"`，其中包含 `execute_query.invoke(query)`，而 `query` 是在前一步计算得出的。
+- 这三个输入被格式化到提示中，并传递给 LLM。
+- `StrOutputParser()` 从输出消息中提取字符串内容。
 
-Note that we are composing LLMs, tools, prompts, and other chains together, but because each implements the Runnable interface, their inputs and outputs can be tied together in a reasonable way.
+请注意，我们正在将 LLM、工具、提示和其他链组合在一起，但由于每个都实现了 Runnable 接口，因此它们的输入和输出可以以合理的方式连接在一起。
 
-### Next steps
+### 下一步
 
-For more complex query-generation, we may want to create few-shot prompts or add query-checking steps. For advanced techniques like this and more check out:
+对于更复杂的查询生成，我们可能需要创建少量示例提示或添加查询检查步骤。有关此类高级技术和更多信息，请查看：
 
-* [Prompting strategies](/docs/how_to/sql_prompting): Advanced prompt engineering techniques.
-* [Query checking](/docs/how_to/sql_query_checking): Add query validation and error handling.
-* [Large databses](/docs/how_to/sql_large_db): Techniques for working with large databases.
+* [提示策略](/docs/how_to/sql_prompting)：高级提示工程技术。
+* [查询检查](/docs/how_to/sql_query_checking)：添加查询验证和错误处理。
+* [大型数据库](/docs/how_to/sql_large_db)：处理大型数据库的技术。
 
 ## Agents {#agents}
 
-LangChain has a SQL Agent which provides a more flexible way of interacting with SQL Databases than a chain. The main advantages of using the SQL Agent are:
+LangChain 具有一个 SQL Agent，它提供了比链式方式与 SQL 数据库交互更灵活的方法。使用 SQL Agent 的主要优势包括：
 
-- It can answer questions based on the databases' schema as well as on the databases' content (like describing a specific table).
-- It can recover from errors by running a generated query, catching the traceback and regenerating it correctly.
-- It can query the database as many times as needed to answer the user question.
-- It will save tokens by only retrieving the schema from relevant tables.
+- 它可以基于数据库的模式和数据库的内容回答问题（例如描述特定的表）。
+- 它可以通过运行生成的查询来恢复错误，捕获回溯并正确重新生成。
+- 它可以根据需要多次查询数据库以回答用户问题。
+- 它将通过仅从相关表中检索模式来节省令牌。
 
-To initialize the agent we'll use the `SQLDatabaseToolkit` to create a bunch of tools:
+要初始化代理，我们将使用 `SQLDatabaseToolkit` 创建一组工具：
 
-* Create and execute queries
-* Check query syntax
-* Retrieve table descriptions
-* ... and more
+* 创建和执行查询
+* 检查查询语法
+* 检索表描述
+* ... 以及更多
 
 
 ```python
@@ -285,44 +269,40 @@ tools
  QuerySQLCheckerTool(description='Use this tool to double check if your query is correct before executing it. Always use this tool before executing a query with sql_db_query!', db=<langchain_community.utilities.sql_database.SQLDatabase object at 0x113403b50>, llm=ChatOpenAI(client=<openai.resources.chat.completions.Completions object at 0x115b7e890>, async_client=<openai.resources.chat.completions.AsyncCompletions object at 0x115457e10>, temperature=0.0, openai_api_key=SecretStr('**********'), openai_proxy=''), llm_chain=LLMChain(prompt=PromptTemplate(input_variables=['dialect', 'query'], template='\n{query}\nDouble check the {dialect} query above for common mistakes, including:\n- Using NOT IN with NULL values\n- Using UNION when UNION ALL should have been used\n- Using BETWEEN for exclusive ranges\n- Data type mismatch in predicates\n- Properly quoting identifiers\n- Using the correct number of arguments for functions\n- Casting to the correct data type\n- Using the proper columns for joins\n\nIf there are any of the above mistakes, rewrite the query. If there are no mistakes, just reproduce the original query.\n\nOutput the final SQL query only.\n\nSQL Query: '), llm=ChatOpenAI(client=<openai.resources.chat.completions.Completions object at 0x115b7e890>, async_client=<openai.resources.chat.completions.AsyncCompletions object at 0x115457e10>, temperature=0.0, openai_api_key=SecretStr('**********'), openai_proxy='')))]
 ```
 
+### 系统提示
 
-### System Prompt
-
-We will also want to create a system prompt for our agent. This will consist of instructions for how to behave.
-
+我们还想为我们的代理创建一个系统提示。这将包括行为指令。
 
 ```python
 from langchain_core.messages import SystemMessage
 
-SQL_PREFIX = """You are an agent designed to interact with a SQL database.
-Given an input question, create a syntactically correct SQLite query to run, then look at the results of the query and return the answer.
-Unless the user specifies a specific number of examples they wish to obtain, always limit your query to at most 5 results.
-You can order the results by a relevant column to return the most interesting examples in the database.
-Never query for all the columns from a specific table, only ask for the relevant columns given the question.
-You have access to tools for interacting with the database.
-Only use the below tools. Only use the information returned by the below tools to construct your final answer.
-You MUST double check your query before executing it. If you get an error while executing a query, rewrite the query and try again.
+SQL_PREFIX = """你是一个旨在与 SQL 数据库交互的代理。
+根据输入的问题，创建一个语法正确的 SQLite 查询，然后查看查询结果并返回答案。
+除非用户指定希望获得的示例数量，否则始终将查询限制为最多 5 个结果。
+你可以根据相关列对结果进行排序，以返回数据库中最有趣的示例。
+永远不要查询特定表中的所有列，只要求与问题相关的列。
+你可以使用与数据库交互的工具。
+仅使用以下工具。仅使用以下工具返回的信息来构建你的最终答案。
+在执行查询之前，你必须仔细检查你的查询。如果在执行查询时遇到错误，请重写查询并重试。
 
-DO NOT make any DML statements (INSERT, UPDATE, DELETE, DROP etc.) to the database.
+请勿对数据库进行任何 DML 语句（INSERT、UPDATE、DELETE、DROP 等）。
 
-To start you should ALWAYS look at the tables in the database to see what you can query.
-Do NOT skip this step.
-Then you should query the schema of the most relevant tables."""
+开始时，你应始终查看数据库中的表，以了解可以查询的内容。
+请勿跳过此步骤。
+然后，你应该查询最相关表的模式。"""
 
 system_message = SystemMessage(content=SQL_PREFIX)
 ```
 
-### Initializing agent
-First, get required package **LangGraph**
-
+### 初始化代理
+首先，获取所需的包 **LangGraph**
 
 ```python
 %%capture --no-stderr
 %pip install --upgrade --quiet langgraph
 ```
 
-We will use a prebuilt [LangGraph](/docs/concepts/#langgraph) agent to build our agent
-
+我们将使用预构建的 [LangGraph](/docs/concepts/#langgraph) 代理来构建我们的代理
 
 ```python
 from langchain_core.messages import HumanMessage
@@ -331,73 +311,39 @@ from langgraph.prebuilt import create_react_agent
 agent_executor = create_react_agent(llm, tools, messages_modifier=system_message)
 ```
 
-Consider how the agent responds to the below question:
-
+考虑代理如何回答以下问题：
 
 ```python
 for s in agent_executor.stream(
-    {"messages": [HumanMessage(content="Which country's customers spent the most?")]}
+    {"messages": [HumanMessage(content="哪个国家的客户消费最多？")]}
+):
+    print(s)
+    print("----")
+
+注意，代理会执行多个查询，直到获取到所需的信息：
+1. 列出可用的表；
+2. 检索三个表的架构；
+3. 通过连接操作查询多个表。
+
+然后，代理能够使用最终查询的结果生成对原始问题的回答。
+
+代理同样可以处理定性问题：
+
+```python
+for s in agent_executor.stream(
+    {"messages": [HumanMessage(content="描述 playlisttrack 表")]}
 ):
     print(s)
     print("----")
 ```
-```output
-{'agent': {'messages': [AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_vnHKe3oul1xbpX0Vrb2vsamZ', 'function': {'arguments': '{"query":"SELECT c.Country, SUM(i.Total) AS Total_Spent FROM customers c JOIN invoices i ON c.CustomerId = i.CustomerId GROUP BY c.Country ORDER BY Total_Spent DESC LIMIT 1"}', 'name': 'sql_db_query'}, 'type': 'function'}]}, response_metadata={'token_usage': {'completion_tokens': 53, 'prompt_tokens': 557, 'total_tokens': 610}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': 'fp_3b956da36b', 'finish_reason': 'tool_calls', 'logprobs': None}, id='run-da250593-06b5-414c-a9d9-3fc77036dd9c-0', tool_calls=[{'name': 'sql_db_query', 'args': {'query': 'SELECT c.Country, SUM(i.Total) AS Total_Spent FROM customers c JOIN invoices i ON c.CustomerId = i.CustomerId GROUP BY c.Country ORDER BY Total_Spent DESC LIMIT 1'}, 'id': 'call_vnHKe3oul1xbpX0Vrb2vsamZ'}])]}}
-----
-{'action': {'messages': [ToolMessage(content='Error: (sqlite3.OperationalError) no such table: customers\n[SQL: SELECT c.Country, SUM(i.Total) AS Total_Spent FROM customers c JOIN invoices i ON c.CustomerId = i.CustomerId GROUP BY c.Country ORDER BY Total_Spent DESC LIMIT 1]\n(Background on this error at: https://sqlalche.me/e/20/e3q8)', name='sql_db_query', id='1a5c85d4-1b30-4af3-ab9b-325cbce3b2b4', tool_call_id='call_vnHKe3oul1xbpX0Vrb2vsamZ')]}}
-----
-{'agent': {'messages': [AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_pp3BBD1hwpdwskUj63G3tgaQ', 'function': {'arguments': '{}', 'name': 'sql_db_list_tables'}, 'type': 'function'}]}, response_metadata={'token_usage': {'completion_tokens': 12, 'prompt_tokens': 699, 'total_tokens': 711}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': 'fp_3b956da36b', 'finish_reason': 'tool_calls', 'logprobs': None}, id='run-04cf0e05-61d0-4673-b5dc-1a9b5fd71fff-0', tool_calls=[{'name': 'sql_db_list_tables', 'args': {}, 'id': 'call_pp3BBD1hwpdwskUj63G3tgaQ'}])]}}
-----
-{'action': {'messages': [ToolMessage(content='Album, Artist, Customer, Employee, Genre, Invoice, InvoiceLine, MediaType, Playlist, PlaylistTrack, Track', name='sql_db_list_tables', id='c2668450-4d73-4d32-8d75-8aac8fa153fd', tool_call_id='call_pp3BBD1hwpdwskUj63G3tgaQ')]}}
-----
-{'agent': {'messages': [AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_22Asbqgdx26YyEvJxBuANVdY', 'function': {'arguments': '{"query":"SELECT c.Country, SUM(i.Total) AS Total_Spent FROM Customer c JOIN Invoice i ON c.CustomerId = i.CustomerId GROUP BY c.Country ORDER BY Total_Spent DESC LIMIT 1"}', 'name': 'sql_db_query'}, 'type': 'function'}]}, response_metadata={'token_usage': {'completion_tokens': 53, 'prompt_tokens': 744, 'total_tokens': 797}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': 'fp_3b956da36b', 'finish_reason': 'tool_calls', 'logprobs': None}, id='run-bdd94241-ca49-4f15-b31a-b7c728a34ea8-0', tool_calls=[{'name': 'sql_db_query', 'args': {'query': 'SELECT c.Country, SUM(i.Total) AS Total_Spent FROM Customer c JOIN Invoice i ON c.CustomerId = i.CustomerId GROUP BY c.Country ORDER BY Total_Spent DESC LIMIT 1'}, 'id': 'call_22Asbqgdx26YyEvJxBuANVdY'}])]}}
-----
-{'action': {'messages': [ToolMessage(content="[('USA', 523.0600000000003)]", name='sql_db_query', id='f647e606-8362-40ab-8d34-612ff166dbe1', tool_call_id='call_22Asbqgdx26YyEvJxBuANVdY')]}}
-----
-{'agent': {'messages': [AIMessage(content='Customers from the USA spent the most, with a total amount spent of $523.06.', response_metadata={'token_usage': {'completion_tokens': 20, 'prompt_tokens': 819, 'total_tokens': 839}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': 'fp_3b956da36b', 'finish_reason': 'stop', 'logprobs': None}, id='run-92e88de0-ff62-41da-8181-053fb5632af4-0')]}}
-----
-```
-Note that the agent executes multiple queries until it has the information it needs:
-1. List available tables;
-2. Retrieves the schema for three tables;
-3. Queries multiple of the tables via a join operation.
 
-The agent is then able to use the result of the final query to generate an answer to the original question.
+### 处理高基数列
 
-The agent can similarly handle qualitative questions:
+为了过滤包含专有名词（如地址、歌曲名称或艺术家）的列，我们首先需要仔细检查拼写，以便正确过滤数据。
 
+我们可以通过创建一个包含数据库中所有不同专有名词的向量存储来实现这一点。然后，每当用户在问题中包含专有名词时，代理可以查询该向量存储，以找到该词的正确拼写。通过这种方式，代理可以确保在构建目标查询之前理解用户所指的实体。
 
-```python
-for s in agent_executor.stream(
-    {"messages": [HumanMessage(content="Describe the playlisttrack table")]}
-):
-    print(s)
-    print("----")
-```
-```output
-{'agent': {'messages': [AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_WN0N3mm8WFvPXYlK9P7KvIEr', 'function': {'arguments': '{"table_names":"playlisttrack"}', 'name': 'sql_db_schema'}, 'type': 'function'}]}, response_metadata={'token_usage': {'completion_tokens': 17, 'prompt_tokens': 554, 'total_tokens': 571}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': 'fp_3b956da36b', 'finish_reason': 'tool_calls', 'logprobs': None}, id='run-be278326-4115-4c67-91a0-6dc97e7bffa4-0', tool_calls=[{'name': 'sql_db_schema', 'args': {'table_names': 'playlisttrack'}, 'id': 'call_WN0N3mm8WFvPXYlK9P7KvIEr'}])]}}
-----
-{'action': {'messages': [ToolMessage(content="Error: table_names {'playlisttrack'} not found in database", name='sql_db_schema', id='fe32b3d3-a40f-4802-a6b8-87a2453af8c2', tool_call_id='call_WN0N3mm8WFvPXYlK9P7KvIEr')]}}
-----
-{'agent': {'messages': [AIMessage(content='I apologize for the error. Let me first check the available tables in the database.', additional_kwargs={'tool_calls': [{'id': 'call_CzHt30847ql2MmnGxgYeVSL2', 'function': {'arguments': '{}', 'name': 'sql_db_list_tables'}, 'type': 'function'}]}, response_metadata={'token_usage': {'completion_tokens': 30, 'prompt_tokens': 592, 'total_tokens': 622}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': 'fp_3b956da36b', 'finish_reason': 'tool_calls', 'logprobs': None}, id='run-f6c107bb-e945-4848-a83c-f57daec1144e-0', tool_calls=[{'name': 'sql_db_list_tables', 'args': {}, 'id': 'call_CzHt30847ql2MmnGxgYeVSL2'}])]}}
-----
-{'action': {'messages': [ToolMessage(content='Album, Artist, Customer, Employee, Genre, Invoice, InvoiceLine, MediaType, Playlist, PlaylistTrack, Track', name='sql_db_list_tables', id='a4950f74-a0ad-4558-ba54-7bcf99539a02', tool_call_id='call_CzHt30847ql2MmnGxgYeVSL2')]}}
-----
-{'agent': {'messages': [AIMessage(content='The database contains a table named "PlaylistTrack". Let me retrieve the schema and sample rows from the "PlaylistTrack" table.', additional_kwargs={'tool_calls': [{'id': 'call_wX9IjHLgRBUmxlfCthprABRO', 'function': {'arguments': '{"table_names":"PlaylistTrack"}', 'name': 'sql_db_schema'}, 'type': 'function'}]}, response_metadata={'token_usage': {'completion_tokens': 44, 'prompt_tokens': 658, 'total_tokens': 702}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': 'fp_3b956da36b', 'finish_reason': 'tool_calls', 'logprobs': None}, id='run-e8d34372-1159-4654-a185-1e7d0cb70269-0', tool_calls=[{'name': 'sql_db_schema', 'args': {'table_names': 'PlaylistTrack'}, 'id': 'call_wX9IjHLgRBUmxlfCthprABRO'}])]}}
-----
-{'action': {'messages': [ToolMessage(content='\nCREATE TABLE "PlaylistTrack" (\n\t"PlaylistId" INTEGER NOT NULL, \n\t"TrackId" INTEGER NOT NULL, \n\tPRIMARY KEY ("PlaylistId", "TrackId"), \n\tFOREIGN KEY("TrackId") REFERENCES "Track" ("TrackId"), \n\tFOREIGN KEY("PlaylistId") REFERENCES "Playlist" ("PlaylistId")\n)\n\n/*\n3 rows from PlaylistTrack table:\nPlaylistId\tTrackId\n1\t3402\n1\t3389\n1\t3390\n*/', name='sql_db_schema', id='f6ffc37a-188a-4690-b84e-c9f2c78b1e49', tool_call_id='call_wX9IjHLgRBUmxlfCthprABRO')]}}
-----
-{'agent': {'messages': [AIMessage(content='The "PlaylistTrack" table has the following schema:\n- PlaylistId: INTEGER (NOT NULL)\n- TrackId: INTEGER (NOT NULL)\n- Primary Key: (PlaylistId, TrackId)\n- Foreign Key: TrackId references Track(TrackId)\n- Foreign Key: PlaylistId references Playlist(PlaylistId)\n\nHere are 3 sample rows from the "PlaylistTrack" table:\n1. PlaylistId: 1, TrackId: 3402\n2. PlaylistId: 1, TrackId: 3389\n3. PlaylistId: 1, TrackId: 3390\n\nIf you have any specific questions or queries regarding the "PlaylistTrack" table, feel free to ask!', response_metadata={'token_usage': {'completion_tokens': 145, 'prompt_tokens': 818, 'total_tokens': 963}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': 'fp_3b956da36b', 'finish_reason': 'stop', 'logprobs': None}, id='run-961a4552-3cbd-4d28-b338-4d2f1ac40ea0-0')]}}
-----
-```
-### Dealing with high-cardinality columns
-
-In order to filter columns that contain proper nouns such as addresses, song names or artists, we first need to double-check the spelling in order to filter the data correctly. 
-
-We can achieve this by creating a vector store with all the distinct proper nouns that exist in the database. We can then have the agent query that vector store each time the user includes a proper noun in their question, to find the correct spelling for that word. In this way, the agent can make sure it understands which entity the user is referring to before building the target query.
-
-First we need the unique values for each entity we want, for which we define a function that parses the result into a list of elements:
-
+首先，我们需要获取每个实体的唯一值，为此我们定义一个函数，将结果解析为元素列表：
 
 ```python
 import ast
@@ -416,8 +362,6 @@ albums = query_as_list(db, "SELECT Title FROM Album")
 albums[:5]
 ```
 
-
-
 ```output
 ['Big Ones',
  'Cidade Negra - Hits',
@@ -426,9 +370,7 @@ albums[:5]
  'Voodoo Lounge']
 ```
 
-
-Using this function, we can create a **retriever tool** that the agent can execute at its discretion.
-
+使用这个函数，我们可以创建一个 **检索工具**，代理可以根据需要执行。
 
 ```python
 from langchain.agents.agent_toolkits import create_retriever_tool
@@ -437,8 +379,7 @@ from langchain_openai import OpenAIEmbeddings
 
 vector_db = FAISS.from_texts(artists + albums, OpenAIEmbeddings())
 retriever = vector_db.as_retriever(search_kwargs={"k": 5})
-description = """Use to look up values to filter on. Input is an approximate spelling of the proper noun, output is \
-valid proper nouns. Use the noun most similar to the search."""
+description = """用于查找要过滤的值。输入是专有名词的近似拼写，输出是有效的专有名词。使用与搜索最相似的名词。"""
 retriever_tool = create_retriever_tool(
     retriever,
     name="search_proper_nouns",
@@ -446,8 +387,7 @@ retriever_tool = create_retriever_tool(
 )
 ```
 
-Let's try it out:
-
+让我们试试看：
 
 ```python
 print(retriever_tool.invoke("Alice Chains"))
@@ -463,27 +403,26 @@ Pearl Jam
 
 Audioslave
 ```
-This way, if the agent determines it needs to write a filter based on an artist along the lines of "Alice Chains", it can first use the retriever tool to observe relevant values of a column.
+这样，如果代理确定需要根据艺术家写一个过滤器，例如 "Alice Chains"，它可以首先使用检索工具来观察列的相关值。
 
-Putting this together:
-
+将这些结合起来：
 
 ```python
-system = """You are an agent designed to interact with a SQL database.
-Given an input question, create a syntactically correct SQLite query to run, then look at the results of the query and return the answer.
-Unless the user specifies a specific number of examples they wish to obtain, always limit your query to at most 5 results.
-You can order the results by a relevant column to return the most interesting examples in the database.
-Never query for all the columns from a specific table, only ask for the relevant columns given the question.
-You have access to tools for interacting with the database.
-Only use the given tools. Only use the information returned by the tools to construct your final answer.
-You MUST double check your query before executing it. If you get an error while executing a query, rewrite the query and try again.
+system = """您是一个与 SQL 数据库交互的代理。
+给定一个输入问题，创建一个语法正确的 SQLite 查询来运行，然后查看查询的结果并返回答案。
+除非用户指定他们希望获得的示例数量，否则始终将查询限制为最多 5 个结果。
+您可以按相关列对结果进行排序，以返回数据库中最有趣的示例。
+绝不要查询特定表的所有列，只请求与问题相关的列。
+您可以使用与数据库交互的工具。
+仅使用给定的工具。仅使用工具返回的信息来构建您的最终答案。
+在执行查询之前，您必须仔细检查您的查询。如果在执行查询时遇到错误，请重写查询并重试。
 
-DO NOT make any DML statements (INSERT, UPDATE, DELETE, DROP etc.) to the database.
+请勿对数据库进行任何 DML 语句（INSERT、UPDATE、DELETE、DROP 等）。
 
-You have access to the following tables: {table_names}
+您可以访问以下表：{table_names}
 
-If you need to filter on a proper noun, you must ALWAYS first look up the filter value using the "search_proper_nouns" tool!
-Do not try to guess at the proper name - use this function to find similar ones.""".format(
+如果您需要过滤专有名词，您必须始终首先使用“search_proper_nouns”工具查找过滤值！
+不要试图猜测专有名词 - 使用此函数找到相似的。""".format(
     table_names=db.get_usable_table_names()
 )
 
@@ -494,10 +433,9 @@ tools.append(retriever_tool)
 agent = create_react_agent(llm, tools, messages_modifier=system_message)
 ```
 
-
 ```python
 for s in agent.stream(
-    {"messages": [HumanMessage(content="How many albums does alis in chain have?")]}
+    {"messages": [HumanMessage(content="Alice In Chains 有多少张专辑？")]}
 ):
     print(s)
     print("----")
@@ -507,7 +445,7 @@ for s in agent.stream(
 ----
 {'action': {'messages': [ToolMessage(content='[(1,)]', name='sql_db_query', id='093058a9-f013-4be1-8e7a-ed839b0c90cd', tool_call_id='call_r5UlSwHKQcWDHx6LrttnqE56')]}}
 ----
-{'agent': {'messages': [AIMessage(content='Alice In Chains has 11 albums.', response_metadata={'token_usage': {'completion_tokens': 9, 'prompt_tokens': 665, 'total_tokens': 674}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': 'fp_3b956da36b', 'finish_reason': 'stop', 'logprobs': None}, id='run-f804eaab-9812-4fb3-ae8b-280af8594ac6-0')]}}
+{'agent': {'messages': [AIMessage(content='Alice In Chains 有 11 张专辑。', response_metadata={'token_usage': {'completion_tokens': 9, 'prompt_tokens': 665, 'total_tokens': 674}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': 'fp_3b956da36b', 'finish_reason': 'stop', 'logprobs': None}, id='run-f804eaab-9812-4fb3-ae8b-280af8594ac6-0')]}}
 ----
 ```
-As we can see, the agent used the `search_proper_nouns` tool in order to check how to correctly query the database for this specific artist.
+如我们所见，代理使用 `search_proper_nouns` 工具来检查如何正确查询数据库以获取该特定艺术家。

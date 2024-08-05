@@ -1,34 +1,32 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/google_drive.ipynb
 ---
+
 # Google Drive
 
-This notebook covers how to retrieve documents from `Google Drive`.
+本笔记本介绍如何从 `Google Drive` 中检索文档。
 
-## Prerequisites
+## 前提条件
 
-1. Create a Google Cloud project or use an existing project
-1. Enable the [Google Drive API](https://console.cloud.google.com/flows/enableapi?apiid=drive.googleapis.com)
-1. [Authorize credentials for desktop app](https://developers.google.com/drive/api/quickstart/python#authorize_credentials_for_a_desktop_application)
+1. 创建一个 Google Cloud 项目或使用现有项目
+1. 启用 [Google Drive API](https://console.cloud.google.com/flows/enableapi?apiid=drive.googleapis.com)
+1. [为桌面应用授权凭据](https://developers.google.com/drive/api/quickstart/python#authorize_credentials_for_a_desktop_application)
 1. `pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib`
 
-## Retrieve the Google Docs
+## 检索 Google 文档
 
-By default, the `GoogleDriveRetriever` expects the `credentials.json` file to be `~/.credentials/credentials.json`, but this is configurable using the `GOOGLE_ACCOUNT_FILE` environment variable. 
-The location of `token.json` uses the same directory (or use the parameter `token_path`). Note that `token.json` will be created automatically the first time you use the retriever.
+默认情况下，`GoogleDriveRetriever` 期望 `credentials.json` 文件位于 `~/.credentials/credentials.json`，但可以使用 `GOOGLE_ACCOUNT_FILE` 环境变量进行配置。 `token.json` 的位置使用相同的目录（或使用参数 `token_path`）。请注意，第一次使用检索器时将自动创建 `token.json`。
 
-`GoogleDriveRetriever` can retrieve a selection of files with some requests. 
+`GoogleDriveRetriever` 可以通过一些请求检索一组选定的文件。
 
-By default, If you use a `folder_id`, all the files inside this folder can be retrieved to `Document`.
+默认情况下，如果使用 `folder_id`，则可以将该文件夹内的所有文件检索到 `Document`。
 
+您可以从 URL 中获取文件夹和文档 ID：
 
-You can obtain your folder and document id from the URL:
+* 文件夹: https://drive.google.com/drive/u/0/folders/1yucgL9WGgWZdM1TOuKkeghlPizuzMYb5 -> 文件夹 ID 为 `"1yucgL9WGgWZdM1TOuKkeghlPizuzMYb5"`
+* 文档: https://docs.google.com/document/d/1bfaMQ18_i56204VaQDVeAFpqEijJTgvurupdEDiaUQw/edit -> 文档 ID 为 `"1bfaMQ18_i56204VaQDVeAFpqEijJTgvurupdEDiaUQw"`
 
-* Folder: https://drive.google.com/drive/u/0/folders/1yucgL9WGgWZdM1TOuKkeghlPizuzMYb5 -> folder id is `"1yucgL9WGgWZdM1TOuKkeghlPizuzMYb5"`
-* Document: https://docs.google.com/document/d/1bfaMQ18_i56204VaQDVeAFpqEijJTgvurupdEDiaUQw/edit -> document id is `"1bfaMQ18_i56204VaQDVeAFpqEijJTgvurupdEDiaUQw"`
-
-The special value `root` is for your personal home.
-
+特殊值 `root` 是您的个人主页。
 
 ```python
 from langchain_googledrive.retrievers import GoogleDriveRetriever
@@ -41,7 +39,7 @@ retriever = GoogleDriveRetriever(
 )
 ```
 
-By default, all files with these MIME types can be converted to `Document`.
+默认情况下，所有具有以下 MIME 类型的文件可以转换为 `Document`。
 
 - `text/text`
 - `text/plain`
@@ -60,46 +58,42 @@ By default, all files with these MIME types can be converted to `Document`.
 - `application/vnd.openxmlformats-officedocument.presentationml.presentation` (PPTX)
 - `application/vnd.openxmlformats-officedocument.wordprocessingml.document` (DOCX)
 
-It's possible to update or customize this. See the documentation of `GoogleDriveRetriever`.
+可以更新或自定义此设置。请参阅 `GoogleDriveRetriever` 的文档。
 
-But, the corresponding packages must be installed.
-
+但是，必须安装相应的包。
 
 ```python
 %pip install --upgrade --quiet  unstructured
 ```
 
-
 ```python
 retriever.invoke("machine learning")
 ```
 
-You can customize the criteria to select the files. A set of predefined filter are proposed:
+您可以自定义选择文件的标准。提供了一组预定义的过滤器：
 
-| Template                                 | Description                                                           |
-| --------------------------------------   | --------------------------------------------------------------------- |
-| `gdrive-all-in-folder`                   | Return all compatible files from a `folder_id`                        |
-| `gdrive-query`                           | Search `query` in all drives                                          |
-| `gdrive-by-name`                         | Search file with name `query`                                         |
-| `gdrive-query-in-folder`                 | Search `query` in `folder_id` (and sub-folders in `_recursive=true`)  |
-| `gdrive-mime-type`                       | Search a specific `mime_type`                                         |
-| `gdrive-mime-type-in-folder`             | Search a specific `mime_type` in `folder_id`                          |
-| `gdrive-query-with-mime-type`            | Search `query` with a specific `mime_type`                            |
-| `gdrive-query-with-mime-type-and-folder` | Search `query` with a specific `mime_type` and in `folder_id`         |
-
+| 模板                                     | 描述                                                               |
+| ---------------------------------------- | ------------------------------------------------------------------ |
+| `gdrive-all-in-folder`                  | 从 `folder_id` 返回所有兼容文件                                     |
+| `gdrive-query`                          | 在所有驱动器中搜索 `query`                                        |
+| `gdrive-by-name`                        | 按名称 `query` 搜索文件                                           |
+| `gdrive-query-in-folder`                | 在 `folder_id` 中搜索 `query`（并在 `_recursive=true` 中的子文件夹中） |
+| `gdrive-mime-type`                      | 搜索特定的 `mime_type`                                            |
+| `gdrive-mime-type-in-folder`            | 在 `folder_id` 中搜索特定的 `mime_type`                          |
+| `gdrive-query-with-mime-type`           | 使用特定的 `mime_type` 搜索 `query`                               |
+| `gdrive-query-with-mime-type-and-folder`| 使用特定的 `mime_type` 并在 `folder_id` 中搜索 `query`          |
 
 ```python
 retriever = GoogleDriveRetriever(
-    template="gdrive-query",  # Search everywhere
-    num_results=2,  # But take only 2 documents
+    template="gdrive-query",  # 在所有地方搜索
+    num_results=2,  # 但只取 2 个文档
 )
 for doc in retriever.invoke("machine learning"):
     print("---")
     print(doc.page_content.strip()[:60] + "...")
 ```
 
-Else, you can customize the prompt with a specialized `PromptTemplate`
-
+否则，您可以使用专业的 `PromptTemplate` 自定义提示。
 
 ```python
 from langchain_core.prompts import PromptTemplate
@@ -107,14 +101,14 @@ from langchain_core.prompts import PromptTemplate
 retriever = GoogleDriveRetriever(
     template=PromptTemplate(
         input_variables=["query"],
-        # See https://developers.google.com/drive/api/guides/search-files
+        # 请参见 https://developers.google.com/drive/api/guides/search-files
         template="(fullText contains '{query}') "
         "and mimeType='application/vnd.google-apps.document' "
         "and modifiedTime > '2000-01-01T00:00:00' "
         "and trashed=false",
     ),
     num_results=2,
-    # See https://developers.google.com/drive/api/v3/reference/files/list
+    # 请参见 https://developers.google.com/drive/api/v3/reference/files/list
     includeItemsFromAllDrives=False,
     supportsAllDrives=False,
 )
@@ -124,18 +118,16 @@ for doc in retriever.invoke("machine learning"):
     print(doc.page_content.strip()[:60] + "...")
 ```
 
-## Use Google Drive 'description' metadata
+## 使用 Google Drive 的“描述”元数据
 
-Each Google Drive has a `description` field in metadata (see the *details of a file*).
-Use the `snippets` mode to return the description of selected files.
-
-
+每个 Google Drive 在元数据中都有一个 `description` 字段（请参阅*文件详细信息*）。  
+使用 `snippets` 模式返回所选文件的描述。
 
 ```python
 retriever = GoogleDriveRetriever(
     template="gdrive-mime-type-in-folder",
     folder_id=folder_id,
-    mime_type="application/vnd.google-apps.document",  # Only Google Docs
+    mime_type="application/vnd.google-apps.document",  # 仅限 Google 文档
     num_results=2,
     mode="snippets",
     includeItemsFromAllDrives=False,
@@ -144,8 +136,7 @@ retriever = GoogleDriveRetriever(
 retriever.invoke("machine learning")
 ```
 
+## 相关
 
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

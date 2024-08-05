@@ -1,24 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/subtitle.ipynb
 ---
-# Subtitle
 
->[The SubRip file format](https://en.wikipedia.org/wiki/SubRip#SubRip_file_format) is described on the `Matroska` multimedia container format website as "perhaps the most basic of all subtitle formats." `SubRip (SubRip Text)` files are named with the extension `.srt`, and contain formatted lines of plain text in groups separated by a blank line. Subtitles are numbered sequentially, starting at 1. The timecode format used is hours:minutes:seconds,milliseconds with time units fixed to two zero-padded digits and fractions fixed to three zero-padded digits (00:00:00,000). The fractional separator used is the comma, since the program was written in France.
+# 副标题
 
-How to load data from subtitle (`.srt`) files
+>[SubRip 文件格式](https://en.wikipedia.org/wiki/SubRip#SubRip_file_format) 在 `Matroska` 多媒体容器格式网站上被描述为“可能是所有字幕格式中最基本的。” `SubRip (SubRip Text)` 文件的扩展名为 `.srt`，包含按空行分隔的格式化纯文本行。字幕按顺序编号，从 1 开始。使用的时间码格式为小时:分钟:秒,毫秒，时间单位固定为两位零填充数字，小数部分固定为三位零填充数字（00:00:00,000）。使用的分隔符是逗号，因为该程序是在法国编写的。
 
-Please, download the [example .srt file from here](https://www.opensubtitles.org/en/subtitles/5575150/star-wars-the-clone-wars-crisis-at-the-heart-en).
+如何从字幕 (`.srt`) 文件加载数据
 
+请从这里下载 [示例 .srt 文件](https://www.opensubtitles.org/en/subtitles/5575150/star-wars-the-clone-wars-crisis-at-the-heart-en)。
 
 ```python
 %pip install --upgrade --quiet  pysrt
 ```
 
-
 ```python
 from langchain_community.document_loaders import SRTLoader
 ```
-
 
 ```python
 loader = SRTLoader(
@@ -26,25 +24,19 @@ loader = SRTLoader(
 )
 ```
 
-
 ```python
 docs = loader.load()
 ```
-
 
 ```python
 docs[0].page_content[:100]
 ```
 
-
-
 ```output
 '<i>Corruption discovered\nat the core of the Banking Clan!</i> <i>Reunited, Rush Clovis\nand Senator A'
 ```
 
+## 相关
 
-
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

@@ -1,43 +1,44 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/kafka_chat_message_history.ipynb
 ---
+
 # Kafka
 
-[Kafka](https://github.com/apache/kafka) is a distributed messaging system that is used to publish and subscribe to streams of records. 
-This demo shows how to use `KafkaChatMessageHistory` to store and retrieve chat messages from a Kafka cluster.
+[Kafka](https://github.com/apache/kafka) 是一个分布式消息系统，用于发布和订阅记录流。 
+此演示展示了如何使用 `KafkaChatMessageHistory` 从 Kafka 集群中存储和检索聊天消息。
 
-A running Kafka cluster is required to run the demo. You can follow this [instruction](https://developer.confluent.io/get-started/python) to create a Kafka cluster locally.
+运行此演示需要一个正在运行的 Kafka 集群。您可以按照此 [说明](https://developer.confluent.io/get-started/python) 在本地创建 Kafka 集群。
 
 
 ```python
 from langchain_community.chat_message_histories import KafkaChatMessageHistory
 
 chat_session_id = "chat-message-history-kafka"
-bootstrap_servers = "localhost:64797"  # host:port. `localhost:Plaintext Ports` if setup Kafka cluster locally
+bootstrap_servers = "localhost:64797"  # host:port. `localhost:Plaintext Ports` 如果在本地设置 Kafka 集群
 history = KafkaChatMessageHistory(
     chat_session_id,
     bootstrap_servers,
 )
 ```
 
-Optional parameters to construct `KafkaChatMessageHistory`:
- - `ttl_ms`: Time to live in milliseconds for the chat messages.
- - `partition`: Number of partition of the topic to store the chat messages.
- - `replication_factor`: Replication factor of the topic to store the chat messages.
+构造 `KafkaChatMessageHistory` 的可选参数：
+ - `ttl_ms`: 聊天消息的生存时间（毫秒）。
+ - `partition`: 存储聊天消息的主题分区数。
+ - `replication_factor`: 存储聊天消息的主题的副本因子。
 
-`KafkaChatMessageHistory` internally uses Kafka consumer to read chat messages, and it has the ability to mark the consumed position persistently. It has following methods to retrieve chat messages:
-- `messages`: continue consuming chat messages from last one.
-- `messages_from_beginning`: reset the consumer to the beginning of the history and consume messages. Optional parameters:
-    1. `max_message_count`: maximum number of messages to read.
-    2. `max_time_sec`: maximum time in seconds to read messages.
-- `messages_from_latest`: reset the consumer to the end of the chat history and try consuming messages. Optional parameters same as above.
-- `messages_from_last_consumed`: return messages continuing from the last consumed message, similar to `messages`, but with optional parameters.
+`KafkaChatMessageHistory` 内部使用 Kafka 消费者读取聊天消息，并具有持久标记消费位置的能力。它具有以下方法来检索聊天消息：
+- `messages`: 从最后一条消息继续消费聊天消息。
+- `messages_from_beginning`: 将消费者重置到历史的开始并消费消息。可选参数：
+    1. `max_message_count`: 要读取的最大消息数量。
+    2. `max_time_sec`: 读取消息的最大时间（秒）。
+- `messages_from_latest`: 将消费者重置到聊天历史的末尾并尝试消费消息。可选参数与上述相同。
+- `messages_from_last_consumed`: 返回从最后消费的消息继续的消息，类似于 `messages`，但带有可选参数。
 
-`max_message_count` and `max_time_sec` are used to avoid blocking indefinitely when retrieving messages.
-As a result, `messages` and other methods to retrieve messages may not return all messages in the chat history. You will need to specify `max_message_count` and `max_time_sec` to retrieve all chat history in a single batch.
+`max_message_count` 和 `max_time_sec` 用于避免在检索消息时无限期阻塞。
+因此，`messages` 和其他检索消息的方法可能不会返回聊天历史中的所有消息。您需要指定 `max_message_count` 和 `max_time_sec` 以在单个批次中检索所有聊天历史。
 
 
-Add messages and retrieve.
+添加消息并检索。
 
 
 ```python
@@ -54,7 +55,7 @@ history.messages
 ```
 
 
-Calling `messages` again returns an empty list because the consumer is at the end of the chat history.
+再次调用 `messages` 返回一个空列表，因为消费者位于聊天历史的末尾。
 
 
 ```python
@@ -68,7 +69,7 @@ history.messages
 ```
 
 
-Add new messages and continue consuming.
+添加新消息并继续消费。
 
 
 ```python
@@ -84,7 +85,7 @@ history.messages
 ```
 
 
-To reset the consumer and read from beginning:
+重置消费者并从开头读取：
 
 
 ```python
@@ -101,7 +102,7 @@ history.messages_from_beginning()
 ```
 
 
-Set the consumer to the end of the chat history, add a couple of new messages, and consume:
+将消费者设置到聊天历史的末尾，添加几条新消息并消费：
 
 
 ```python
@@ -116,4 +117,3 @@ history.messages
 ```output
 [HumanMessage(content='HI!'), AIMessage(content='WHATS UP?')]
 ```
-

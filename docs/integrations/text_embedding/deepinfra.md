@@ -1,10 +1,10 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/deepinfra.ipynb
 ---
+
 # DeepInfra
 
-[DeepInfra](https://deepinfra.com/?utm_source=langchain) is a serverless inference as a service that provides access to a [variety of LLMs](https://deepinfra.com/models?utm_source=langchain) and [embeddings models](https://deepinfra.com/models?type=embeddings&utm_source=langchain). This notebook goes over how to use LangChain with DeepInfra for text embeddings.
-
+[DeepInfra](https://deepinfra.com/?utm_source=langchain) 是一种无服务器推理服务，提供对多种 [LLMs](https://deepinfra.com/models?utm_source=langchain) 和 [嵌入模型](https://deepinfra.com/models?type=embeddings&utm_source=langchain) 的访问。此笔记本介绍了如何将 LangChain 与 DeepInfra 结合使用进行文本嵌入。
 
 ```python
 # sign up for an account: https://deepinfra.com/login?utm_source=langchain
@@ -66,7 +66,7 @@ Cosine similarity between "Dog is not a cat" and query: 0.7489097144129355
 Cosine similarity between "Beta is the second letter of Greek alphabet" and query: 0.9519380640702013
 ```
 
-## Related
+## 相关
 
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

@@ -1,83 +1,83 @@
 ---
 sidebar_position: 2
-sidebar_label: Release Policy
+sidebar_label: 发布政策
 ---
 
-# LangChain releases
+# LangChain 发布
 
-The LangChain ecosystem is composed of different component packages (e.g., `langchain-core`, `langchain`, `langchain-community`, `langgraph`, `langserve`, partner packages etc.)
+LangChain 生态系统由不同的组件包组成（例如，`langchain-core`，`langchain`，`langchain-community`，`langgraph`，`langserve`，合作伙伴包等。）
 
-## Versioning
+## 版本控制
 
-### `langchain` and `langchain-core`
+### `langchain` 和 `langchain-core`
 
-`langchain` and `langchain-core` follow [semantic versioning](https://semver.org/) in the format of 0.**Y**.**Z**. The packages are under rapid development, and so are currently versioning the packages with a major version of 0.
+`langchain` 和 `langchain-core` 遵循 [语义版本控制](https://semver.org/) 格式为 0.**Y**.**Z**。这些包正在快速开发中，因此当前的主要版本为 0。
 
-Minor version increases will occur for:
+次要版本的增加将发生在：
 
-- Breaking changes for any public interfaces marked as `beta`.
+- 对任何标记为 `beta` 的公共接口的破坏性更改。
 
-Patch version increases will occur for:
+补丁版本的增加将发生在：
 
-- Bug fixes
-- New features
-- Any changes to private interfaces
-- Any changes to `beta` features
+- Bug 修复
+- 新功能
+- 对私有接口的任何更改
+- 对 `beta` 功能的任何更改
 
-When upgrading between minor versions, users should review the list of breaking changes and deprecations.
+在次要版本之间升级时，用户应查看破坏性更改和弃用的列表。
 
-From time to time, we will version packages as **release candidates**. These are versions that are intended to be released as stable versions, but we want to get feedback from the community before doing so. Release candidates will be versioned as 0.**Y**.**Z**rc**N**. For example, 0.2.0rc1. If no issues are found, the release candidate will be released as a stable version with the same version number. If issues are found, we will release a new release candidate with an incremented `N` value (e.g., 0.2.0rc2).
+我们会不时将包版本化为 **发布候选**。这些版本旨在作为稳定版本发布，但我们希望在此之前从社区获取反馈。发布候选将版本化为 0.**Y**.**Z**rc**N**。例如，0.2.0rc1。如果没有发现问题，发布候选将作为具有相同版本号的稳定版本发布。如果发现问题，我们将发布一个新的发布候选，并增加 `N` 值（例如，0.2.0rc2）。
 
-### Other packages in the langchain ecosystem
+### langchain生态系统中的其他包
 
-Other packages in the ecosystem (including user packages) can follow a different versioning scheme, but are generally expected to pin to specific minor versions of `langchain` and `langchain-core`.
+生态系统中的其他包（包括用户包）可以采用不同的版本控制方案，但通常期望固定到`langchain`和`langchain-core`的特定小版本。
 
-## Release cadence
+## 发布节奏
 
-We expect to space out **minor** releases (e.g., from 0.2.0 to 0.3.0) of `langchain` and `langchain-core` by at least 2-3 months, as such releases may contain breaking changes.
+我们预计将 **小版本** 的发布（例如，从 0.2.0 到 0.3.0）间隔至少 2-3 个月，因为这些版本可能包含重大更改。
 
-Patch versions are released frequently as they contain bug fixes and new features.
+补丁版本会频繁发布，因为它们包含错误修复和新功能。
 
-## API stability
+## API 稳定性
 
-The development of LLM applications is a rapidly evolving field, and we are constantly learning from our users and the community. As such, we expect that the APIs in `langchain` and `langchain-core` will continue to evolve to better serve the needs of our users.
+LLM 应用程序的开发是一个快速发展的领域，我们不断从用户和社区中学习。因此，我们预计 `langchain` 和 `langchain-core` 中的 API 将继续演变，以更好地满足用户的需求。
 
-Even though both `langchain` and `langchain-core` are currently in a pre-1.0 state, we are committed to maintaining API stability in these packages.
+尽管 `langchain` 和 `langchain-core` 目前都处于 1.0 之前的状态，但我们致力于保持这些软件包的 API 稳定性。
 
-- Breaking changes to the public API will result in a minor version bump (the second digit)
-- Any bug fixes or new features will result in a patch version bump (the third digit)
+- 对公共 API 的重大更改将导致次版本号增加（第二位数字）
+- 任何错误修复或新功能将导致补丁版本号增加（第三位数字）
 
-We will generally try to avoid making unnecessary changes, and will provide a deprecation policy for features that are being removed.
+我们通常会尽量避免不必要的更改，并将为被移除的功能提供弃用政策。
 
-### Stability of other packages
+### 其他包的稳定性
 
-The stability of other packages in the LangChain ecosystem may vary:
+LangChain 生态系统中其他包的稳定性可能有所不同：
 
-- `langchain-community` is a community maintained package that contains 3rd party integrations. While we do our best to review and test changes in `langchain-community`, `langchain-community` is expected to experience more breaking changes than `langchain` and `langchain-core` as it contains many community contributions.
-- Partner packages may follow different stability and versioning policies, and users should refer to the documentation of those packages for more information; however, in general these packages are expected to be stable.
+- `langchain-community` 是一个由社区维护的包，包含第三方集成。虽然我们尽力审查和测试 `langchain-community` 中的更改，但预计 `langchain-community` 会经历比 `langchain` 和 `langchain-core` 更多的破坏性更改，因为它包含许多社区贡献。
+- 合作伙伴包可能遵循不同的稳定性和版本控制政策，用户应参考这些包的文档以获取更多信息；然而，通常这些包预计是稳定的。
 
-### What is a "API stability"?
+### 什么是“API 稳定性”？
 
-API stability means:
+API 稳定性意味着：
 
-- All the public APIs (everything in this documentation) will not be moved or renamed without providing backwards-compatible aliases.
-- If new features are added to these APIs – which is quite possible – they will not break or change the meaning of existing methods. In other words, "stable" does not (necessarily) mean "complete."
-- If, for some reason, an API declared stable must be removed or replaced, it will be declared deprecated but will remain in the API for at least two minor releases. Warnings will be issued when the deprecated method is called.
+- 所有公共 API（本文档中的所有内容）在没有提供向后兼容的别名的情况下，不会被移动或重命名。
+- 如果这些 API 添加了新特性——这很有可能——它们不会破坏或改变现有方法的含义。换句话说，“稳定”并不（一定）意味着“完整”。
+- 如果由于某种原因，声明为稳定的 API 必须被移除或替换，它将被声明为弃用，但在至少两个小版本中仍然保留在 API 中。当调用被弃用的方法时，将发出警告。
 
-### **APIs marked as internal**
+### **标记为内部的API**
 
-Certain APIs are explicitly marked as “internal” in a couple of ways:
+某些API被明确标记为“内部”，有几种方式：
 
-- Some documentation refers to internals and mentions them as such. If the documentation says that something is internal, it may change.
-- Functions, methods, and other objects prefixed by a leading underscore (**`_`**). This is the standard Python convention of indicating that something is private; if any method starts with a single **`_`**, it’s an internal API.
-    - **Exception:** Certain methods are prefixed with `_` , but do not contain an implementation. These methods are *meant* to be overridden by sub-classes that provide the implementation. Such methods are generally part of the **Public API** of LangChain.
+- 一些文档提到内部内容，并将其称为内部。如果文档说明某个内容是内部的，则可能会发生变化。
+- 以前导下划线（**`_`**）开头的函数、方法和其他对象。这是Python标准的私有性指示约定；如果任何方法以单个**`_`**开头，则它是内部API。
+    - **例外：** 某些方法以`_`开头，但不包含实现。这些方法是*旨在*被提供实现的子类重写的。这些方法通常是LangChain的**公共API**的一部分。
 
-## Deprecation policy
+## 废弃政策
 
-We will generally avoid deprecating features until a better alternative is available.
+我们通常会避免废弃功能，直到有更好的替代方案可用。
 
-When a feature is deprecated, it will continue to work in the current and next minor version of `langchain` and `langchain-core`. After that, the feature will be removed.
+当某个功能被废弃时，它将在当前和下一个次要版本的 `langchain` 和 `langchain-core` 中继续有效。之后，该功能将被移除。
 
-Since we're expecting to space out minor releases by at least 2-3 months, this means that a feature can be removed within 2-6 months of being deprecated.
+由于我们预计次要版本的发布间隔至少为 2-3 个月，这意味着某个功能在被废弃后可能会在 2-6 个月内被移除。
 
-In some situations, we may allow the feature to remain in the code base for longer periods of time, if it's not causing issues in the packages, to reduce the burden on users.
+在某些情况下，如果该功能没有对软件包造成问题，我们可能会允许它在代码库中保留更长时间，以减轻用户的负担。

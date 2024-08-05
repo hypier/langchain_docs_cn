@@ -1,46 +1,46 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/ollama_functions.ipynb
-sidebar_label: Ollama Functions
+sidebar_label: Ollama 函数
 sidebar_class_name: hidden
 ---
+
 # OllamaFunctions
 
 :::warning
 
-This was an experimental wrapper that attempts to bolt-on tool calling support to models that do not natively support it. The [primary Ollama integration](/docs/integrations/chat/ollama/) now supports tool calling, and should be used instead.
+这是一个实验性的包装器，旨在为不原生支持工具调用的模型添加工具调用支持。现在的 [Ollama 集成](/docs/integrations/chat/ollama/) 已经支持工具调用，应该使用它。
 
 :::
-This notebook shows how to use an experimental wrapper around Ollama that gives it [tool calling capabilities](https://python.langchain.com/v0.2/docs/concepts/#functiontool-calling).
+本笔记本展示了如何使用一个围绕 Ollama 的实验性包装器，使其具备 [工具调用能力](https://python.langchain.com/v0.2/docs/concepts/#functiontool-calling)。
 
-Note that more powerful and capable models will perform better with complex schema and/or multiple functions. The examples below use llama3 and phi3 models.
-For a complete list of supported models and model variants, see the [Ollama model library](https://ollama.ai/library).
+请注意，更强大和更具能力的模型在处理复杂模式和/或多个函数时表现更佳。下面的示例使用了 llama3 和 phi3 模型。
+有关支持的模型和模型变体的完整列表，请参见 [Ollama 模型库](https://ollama.ai/library)。
 
-## Overview
+## 概述
 
-### Integration details
+### 集成细节
 
-|                                                                Class                                                                | Package | Local | Serializable | JS support | Package downloads | Package latest |
-|:-----------------------------------------------------------------------------------------------------------------------------------:|:-------:|:-----:|:------------:|:----------:|:-----------------:|:--------------:|
+|                                                                类                                                                | 包 | 本地 | 可序列化 | JS支持 | 包下载量 | 包最新版本 |
+|:-------------------------------------------------------------------------------------------------------------------------------:|:---:|:---:|:-------:|:-----:|:-------:|:---------:|
 | [OllamaFunctions](https://api.python.langchain.com/en/latest/llms/langchain_experimental.llms.ollama_function.OllamaFunctions.html) | [langchain-experimental](https://api.python.langchain.com/en/latest/openai_api_reference.html) | ✅ | ❌ | ❌ | ![PyPI - Downloads](https://img.shields.io/pypi/dm/langchain-experimental?style=flat-square&label=%20) | ![PyPI - Version](https://img.shields.io/pypi/v/langchain-experimental?style=flat-square&label=%20) |
 
-### Model features
+### 模型特性
 
-| [Tool calling](/docs/how_to/tool_calling/) | [Structured output](/docs/how_to/structured_output/) | JSON mode | Image input | Audio input | Video input | [Token-level streaming](/docs/how_to/chat_streaming/) | Native async | [Token usage](/docs/how_to/chat_token_usage_tracking/) | [Logprobs](/docs/how_to/logprobs/) |
+| [工具调用](/docs/how_to/tool_calling/) | [结构化输出](/docs/how_to/structured_output/) | JSON 模式 | 图像输入 | 音频输入 | 视频输入 | [令牌级流式传输](/docs/how_to/chat_streaming/) | 原生异步 | [令牌使用](/docs/how_to/chat_token_usage_tracking/) | [Logprobs](/docs/how_to/logprobs/) |
 | :---: | :---: | :---: | :---: |  :---: | :---: | :---: | :---: | :---: | :---: |
 | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
 
-## Setup
+## 设置
 
-To access `OllamaFunctions` you will need to install `langchain-experimental` integration package.
-Follow [these instructions](https://github.com/jmorganca/ollama) to set up and run a local Ollama instance as well as download and serve [supported models](https://ollama.com/library).
+要访问 `OllamaFunctions`，您需要安装 `langchain-experimental` 集成包。请按照 [这些说明](https://github.com/jmorganca/ollama) 设置并运行本地 Ollama 实例，以及下载和提供 [支持的模型](https://ollama.com/library)。
 
-### Credentials
+### 凭证
 
-Credentials support is not present at this time.
+目前不支持凭证。
 
-### Installation
+### 安装
 
-The `OllamaFunctions` class lives in the `langchain-experimental` package:
+`OllamaFunctions` 类位于 `langchain-experimental` 包中：
 
 
 
@@ -48,11 +48,11 @@ The `OllamaFunctions` class lives in the `langchain-experimental` package:
 %pip install -qU langchain-experimental
 ```
 
-## Instantiation
+## 实例化
 
-`OllamaFunctions` takes the same init parameters as `ChatOllama`. 
+`OllamaFunctions` 接受与 `ChatOllama` 相同的初始化参数。
 
-In order to use tool calling, you must also specify `format="json"`.
+为了使用工具调用，您还必须指定 `format="json"`。
 
 
 ```python
@@ -61,7 +61,7 @@ from langchain_experimental.llms.ollama_functions import OllamaFunctions
 llm = OllamaFunctions(model="phi3")
 ```
 
-## Invocation
+## 调用
 
 
 ```python
@@ -94,10 +94,9 @@ ai_msg.content
 "J'adore programmer."
 ```
 
+## 链接
 
-## Chaining
-
-We can [chain](https://python.langchain.com/v0.2/docs/how_to/sequence/) our model with a prompt template like so:
+我们可以像这样使用提示模板来[链接](https://python.langchain.com/v0.2/docs/how_to/sequence/)我们的模型：
 
 
 ```python
@@ -129,12 +128,11 @@ chain.invoke(
 AIMessage(content='Programmieren ist sehr verrückt! Es freut mich, dass Sie auf Programmierung so positiv eingestellt sind.', id='run-ee99be5e-4d48-4ab6-b602-35415f0bdbde-0')
 ```
 
-
-## Tool Calling
+## 工具调用
 
 ### OllamaFunctions.bind_tools()
 
-With `OllamaFunctions.bind_tools`, we can easily pass in Pydantic classes, dict schemas, LangChain tools, or even functions as tools to the model. Under the hood these are converted to a tool definition schemas, which looks like:
+使用 `OllamaFunctions.bind_tools`，我们可以轻松地将 Pydantic 类、字典模式、LangChain 工具或甚至函数作为工具传递给模型。在底层，这些会被转换为工具定义模式，格式如下：
 
 
 ```python
@@ -142,9 +140,9 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 
 
 class GetWeather(BaseModel):
-    """Get the current weather in a given location"""
+    """获取给定位置的当前天气"""
 
-    location: str = Field(..., description="The city and state, e.g. San Francisco, CA")
+    location: str = Field(..., description="城市和州，例如：旧金山，加州")
 
 
 llm_with_tools = llm.bind_tools([GetWeather])
@@ -153,7 +151,7 @@ llm_with_tools = llm.bind_tools([GetWeather])
 
 ```python
 ai_msg = llm_with_tools.invoke(
-    "what is the weather like in San Francisco",
+    "旧金山的天气怎么样",
 )
 ai_msg
 ```
@@ -164,10 +162,9 @@ ai_msg
 AIMessage(content='', id='run-b9769435-ec6a-4cb8-8545-5a5035fc19bd-0', tool_calls=[{'name': 'GetWeather', 'args': {'location': 'San Francisco, CA'}, 'id': 'call_064c4e1cb27e4adb9e4e7ed60362ecc9'}])
 ```
 
-
 ### AIMessage.tool_calls
 
-Notice that the AIMessage has a `tool_calls` attribute. This contains in a standardized `ToolCall` format that is model-provider agnostic.
+注意，AIMessage具有`tool_calls`属性。它包含以标准化的`ToolCall`格式表示的内容，该格式与模型提供者无关。
 
 
 ```python
@@ -183,15 +180,13 @@ ai_msg.tool_calls
 ```
 
 
-For more on binding tools and tool call outputs, head to the [tool calling](../../how_to/function_calling.md) docs.
+有关绑定工具和工具调用输出的更多信息，请查看[工具调用](../../how_to/function_calling.md)文档。
 
-## API reference
+## API 参考
 
-For detailed documentation of all ToolCallingLLM features and configurations head to the API reference: https://api.python.langchain.com/en/latest/llms/langchain_experimental.llms.ollama_functions.OllamaFunctions.html
+有关所有 ToolCallingLLM 功能和配置的详细文档，请访问 API 参考： https://api.python.langchain.com/en/latest/llms/langchain_experimental.llms.ollama_functions.OllamaFunctions.html
 
+## 相关
 
-
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

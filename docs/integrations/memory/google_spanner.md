@@ -1,33 +1,32 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/google_spanner.ipynb
 ---
-# Google Spanner
-> [Google Cloud Spanner](https://cloud.google.com/spanner) is a highly scalable database that combines unlimited scalability with relational semantics, such as secondary indexes, strong consistency, schemas, and SQL providing 99.999% availability in one easy solution.
 
-This notebook goes over how to use `Spanner` to store chat message history with the `SpannerChatMessageHistory` class.
-Learn more about the package on [GitHub](https://github.com/googleapis/langchain-google-spanner-python/).
+# Google Spanner
+> [Google Cloud Spanner](https://cloud.google.com/spanner) 是一个高度可扩展的数据库，它将无限的可扩展性与关系语义相结合，例如二级索引、强一致性、模式和 SQL，提供 99.999% 的可用性，提供一个简单的解决方案。
+
+本笔记本介绍如何使用 `Spanner` 来存储聊天消息历史记录，使用 `SpannerChatMessageHistory` 类。
+在 [GitHub](https://github.com/googleapis/langchain-google-spanner-python/) 上了解更多关于该包的信息。
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/googleapis/langchain-google-spanner-python/blob/main/samples/chat_message_history.ipynb)
 
-## Before You Begin
+## 开始之前
 
-To run this notebook, you will need to do the following:
+要运行此笔记本，您需要执行以下操作：
 
- * [Create a Google Cloud Project](https://developers.google.com/workspace/guides/create-project)
- * [Enable the Cloud Spanner API](https://console.cloud.google.com/flows/enableapi?apiid=spanner.googleapis.com)
- * [Create a Spanner instance](https://cloud.google.com/spanner/docs/create-manage-instances)
- * [Create a Spanner database](https://cloud.google.com/spanner/docs/create-manage-databases)
+ * [创建 Google Cloud 项目](https://developers.google.com/workspace/guides/create-project)
+ * [启用 Cloud Spanner API](https://console.cloud.google.com/flows/enableapi?apiid=spanner.googleapis.com)
+ * [创建 Spanner 实例](https://cloud.google.com/spanner/docs/create-manage-instances)
+ * [创建 Spanner 数据库](https://cloud.google.com/spanner/docs/create-manage-databases)
 
-### 🦜🔗 Library Installation
-The integration lives in its own `langchain-google-spanner` package, so we need to install it.
-
+### 🦜🔗 库安装
+集成在其自己的 `langchain-google-spanner` 包中，因此我们需要安装它。
 
 ```python
 %pip install --upgrade --quiet langchain-google-spanner
 ```
 
-**Colab only:** Uncomment the following cell to restart the kernel or use the button to restart the kernel. For Vertex AI Workbench you can restart the terminal using the button on top.
-
+**仅限 Colab:** 取消注释以下单元以重启内核，或使用按钮重启内核。对于 Vertex AI Workbench，您可以使用顶部的按钮重启终端。
 
 ```python
 # # Automatically restart kernel after installs so that your environment can access the new packages
@@ -37,11 +36,11 @@ The integration lives in its own `langchain-google-spanner` package, so we need 
 # app.kernel.do_shutdown(True)
 ```
 
-### 🔐 Authentication
-Authenticate to Google Cloud as the IAM user logged into this notebook in order to access your Google Cloud Project.
+### 🔐 身份验证
+以登录此笔记本的 IAM 用户身份对 Google Cloud 进行身份验证，以便访问您的 Google Cloud 项目。
 
-* If you are using Colab to run this notebook, use the cell below and continue.
-* If you are using Vertex AI Workbench, check out the setup instructions [here](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env).
+* 如果您使用 Colab 来运行此笔记本，请使用下面的单元并继续。
+* 如果您使用 Vertex AI Workbench，请查看 [此处](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env) 的设置说明。
 
 
 ```python
@@ -50,39 +49,36 @@ from google.colab import auth
 auth.authenticate_user()
 ```
 
-### ☁ Set Your Google Cloud Project
-Set your Google Cloud project so that you can leverage Google Cloud resources within this notebook.
+### ☁ 设置您的 Google Cloud 项目
+设置您的 Google Cloud 项目，以便您可以在此笔记本中利用 Google Cloud 资源。
 
-If you don't know your project ID, try the following:
+如果您不知道您的项目 ID，请尝试以下方法：
 
-* Run `gcloud config list`.
-* Run `gcloud projects list`.
-* See the support page: [Locate the project ID](https://support.google.com/googleapi/answer/7014113).
-
+* 运行 `gcloud config list`。
+* 运行 `gcloud projects list`。
+* 查看支持页面：[找到项目 ID](https://support.google.com/googleapi/answer/7014113)。
 
 ```python
-# @markdown Please fill in the value below with your Google Cloud project ID and then run the cell.
+# @markdown 请在下面填写您的 Google Cloud 项目 ID，然后运行该单元格。
 
 PROJECT_ID = "my-project-id"  # @param {type:"string"}
 
-# Set the project id
+# 设置项目 ID
 !gcloud config set project {PROJECT_ID}
 ```
 
-### 💡 API Enablement
-The `langchain-google-spanner` package requires that you [enable the Spanner API](https://console.cloud.google.com/flows/enableapi?apiid=spanner.googleapis.com) in your Google Cloud Project.
-
+### 💡 API启用
+`langchain-google-spanner`包要求您在Google Cloud项目中[启用Spanner API](https://console.cloud.google.com/flows/enableapi?apiid=spanner.googleapis.com)。
 
 ```python
 # enable Spanner API
 !gcloud services enable spanner.googleapis.com
 ```
 
-## Basic Usage
+## 基本用法
 
-### Set Spanner database values
-Find your database values, in the [Spanner Instances page](https://console.cloud.google.com/spanner).
-
+### 设置 Spanner 数据库值
+在 [Spanner 实例页面](https://console.cloud.google.com/spanner) 找到您的数据库值。
 
 ```python
 # @title Set Your Values Here { display-mode: "form" }
@@ -91,10 +87,10 @@ DATABASE = "my-database"  # @param {type: "string"}
 TABLE_NAME = "message_store"  # @param {type: "string"}
 ```
 
-### Initialize a table
-The `SpannerChatMessageHistory` class requires a database table with a specific schema in order to store the chat message history.
+### 初始化表
+`SpannerChatMessageHistory` 类需要一个具有特定架构的数据库表来存储聊天消息历史。
 
-The helper method `init_chat_history_table()` that can be used to create a table with the proper schema for you.
+辅助方法 `init_chat_history_table()` 可用于为您创建具有正确架构的表。
 
 
 ```python
@@ -107,12 +103,12 @@ SpannerChatMessageHistory.init_chat_history_table(table_name=TABLE_NAME)
 
 ### SpannerChatMessageHistory
 
-To initialize the `SpannerChatMessageHistory` class you need to provide only 3 things:
+要初始化 `SpannerChatMessageHistory` 类，您只需提供 3 个参数：
 
-1. `instance_id` - The name of the Spanner instance
-1. `database_id` - The name of the Spanner database
-1. `session_id` - A unique identifier string that specifies an id for the session.
-1. `table_name` - The name of the table within the database to store the chat message history.
+1. `instance_id` - Spanner 实例的名称
+1. `database_id` - Spanner 数据库的名称
+1. `session_id` - 一个唯一标识符字符串，用于指定会话的 ID。
+1. `table_name` - 用于存储聊天消息历史记录的数据库表的名称。
 
 
 ```python
@@ -132,9 +128,8 @@ message_history.add_ai_message("whats up?")
 message_history.messages
 ```
 
-## Custom client
-The client created by default is the default client. To use a non-default, a [custom client](https://cloud.google.com/spanner/docs/samples/spanner-create-client-with-query-options#spanner_create_client_with_query_options-python) can be passed to the constructor.
-
+## 自定义客户端
+默认创建的客户端是默认客户端。要使用非默认客户端，可以将 [自定义客户端](https://cloud.google.com/spanner/docs/samples/spanner-create-client-with-query-options#spanner_create_client_with_query_options-python) 传递给构造函数。
 
 ```python
 from google.cloud import spanner
@@ -146,11 +141,10 @@ custom_client_message_history = SpannerChatMessageHistory(
 )
 ```
 
-## Cleaning up
+## 清理
 
-When the history of a specific session is obsolete and can be deleted, it can be done the following way.
-Note: Once deleted, the data is no longer stored in Cloud Spanner and is gone forever.
-
+当特定会话的历史记录过时时，可以通过以下方式删除。  
+注意：一旦删除，数据将不再存储在 Cloud Spanner 中，并且将永久丢失。
 
 ```python
 message_history = SpannerChatMessageHistory(

@@ -5,54 +5,51 @@ sidebar_label: SQLDatabaseToolkit
 
 # SQLDatabaseToolkit
 
-This will help you getting started with the SQL Database [toolkit](/docs/concepts/#toolkits). For detailed documentation of all `SQLDatabaseToolkit` features and configurations head to the [API reference](https://api.python.langchain.com/en/latest/agent_toolkits/langchain_community.agent_toolkits.sql.toolkit.SQLDatabaseToolkit.html).
+这将帮助您开始使用 SQL 数据库 [工具包](/docs/concepts/#toolkits)。有关所有 `SQLDatabaseToolkit` 功能和配置的详细文档，请访问 [API 参考](https://api.python.langchain.com/en/latest/agent_toolkits/langchain_community.agent_toolkits.sql.toolkit.SQLDatabaseToolkit.html)。
 
-Tools within the `SQLDatabaseToolkit` are designed to interact with a `SQL` database. 
+`SQLDatabaseToolkit` 中的工具旨在与 `SQL` 数据库进行交互。
 
-A common application is to enable agents to answer questions using data in a relational database, potentially in an iterative fashion (e.g., recovering from errors).
+一个常见的应用是使代理能够使用关系数据库中的数据回答问题，可能以迭代的方式进行（例如，从错误中恢复）。
 
-**⚠️ Security note ⚠️**
+**⚠️ 安全提示 ⚠️**
 
-Building Q&A systems of SQL databases requires executing model-generated SQL queries. There are inherent risks in doing this. Make sure that your database connection permissions are always scoped as narrowly as possible for your chain/agent's needs. This will mitigate though not eliminate the risks of building a model-driven system. For more on general security best practices, [see here](/docs/security).
+构建 SQL 数据库的问答系统需要执行模型生成的 SQL 查询。这存在固有的风险。确保您的数据库连接权限始终针对您的链/代理的需求尽可能狭窄。这将缓解但不能消除构建模型驱动系统的风险。有关一般安全最佳实践的更多信息，[请参见此处](/docs/security).
 
-## Setup
+## 设置
 
-If you want to get automated tracing from runs of individual tools, you can also set your [LangSmith](https://docs.smith.langchain.com/) API key by uncommenting below:
-
+如果您想从单个工具的运行中获取自动化跟踪，您还可以通过取消注释以下内容来设置您的 [LangSmith](https://docs.smith.langchain.com/) API 密钥：
 
 ```python
 # os.environ["LANGSMITH_API_KEY"] = getpass.getpass("Enter your LangSmith API key: ")
 # os.environ["LANGSMITH_TRACING"] = "true"
 ```
 
-### Installation
+### 安装
 
-This toolkit lives in the `langchain-community` package:
-
+该工具包位于 `langchain-community` 包中：
 
 ```python
 %pip install --upgrade --quiet  langchain-community
 ```
 
-For demonstration purposes, we will access a prompt in the LangChain [Hub](https://smith.langchain.com/hub). We will also require `langgraph` to demonstrate the use of the toolkit with an agent. This is not required to use the toolkit.
-
+出于演示目的，我们将访问 LangChain [Hub](https://smith.langchain.com/hub) 中的一个提示。我们还需要 `langgraph` 来演示如何使用该工具包与代理。这并不是使用该工具包的必要条件。
 
 ```python
 %pip install --upgrade --quiet langchainhub langgraph
 ```
 
-## Instantiation
+## 实例化
 
-The `SQLDatabaseToolkit` toolkit requires:
+`SQLDatabaseToolkit` 工具包需要：
 
-- a [SQLDatabase](https://api.python.langchain.com/en/latest/utilities/langchain_community.utilities.sql_database.SQLDatabase.html) object;
-- a LLM or chat model (for instantiating the [QuerySQLCheckerTool](https://api.python.langchain.com/en/latest/tools/langchain_community.tools.sql_database.tool.QuerySQLCheckerTool.html) tool).
+- 一个 [SQLDatabase](https://api.python.langchain.com/en/latest/utilities/langchain_community.utilities.sql_database.SQLDatabase.html) 对象；
+- 一个 LLM 或聊天模型（用于实例化 [QuerySQLCheckerTool](https://api.python.langchain.com/en/latest/tools/langchain_community.tools.sql_database.tool.QuerySQLCheckerTool.html) 工具）。
 
-Below, we instantiate the toolkit with these objects. Let's first create a database object.
+下面，我们将使用这些对象实例化工具包。首先创建一个数据库对象。
 
-This guide uses the example `Chinook` database based on [these instructions](https://database.guide/2-sample-databases-sqlite/).
+本指南使用基于 [这些说明](https://database.guide/2-sample-databases-sqlite/) 的示例 `Chinook` 数据库。
 
-Below we will use the `requests` library to pull the `.sql` file and create an in-memory SQLite database. Note that this approach is lightweight, but ephemeral and not thread-safe. If you'd prefer, you can follow the instructions to save the file locally as `Chinook.db` and instantiate the database via `db = SQLDatabase.from_uri("sqlite:///Chinook.db")`.
+接下来，我们将使用 `requests` 库拉取 `.sql` 文件并创建一个内存中的 SQLite 数据库。请注意，这种方法轻量，但是短暂的且不线程安全。如果您愿意，可以按照说明将文件保存为 `Chinook.db` 并通过 `db = SQLDatabase.from_uri("sqlite:///Chinook.db")` 实例化数据库。
 
 
 ```python
@@ -85,13 +82,13 @@ engine = get_engine_for_chinook_db()
 db = SQLDatabase(engine)
 ```
 
-We will also need a LLM or chat model:
+我们还需要一个 LLM 或聊天模型：
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
 <ChatModelTabs customVarName="llm" />
 
-We can now instantiate the toolkit:
+现在我们可以实例化工具包：
 
 
 ```python
@@ -100,36 +97,24 @@ from langchain_community.agent_toolkits.sql.toolkit import SQLDatabaseToolkit
 toolkit = SQLDatabaseToolkit(db=db, llm=llm)
 ```
 
-## Tools
+## 工具
 
-View available tools:
-
+查看可用工具：
 
 ```python
 toolkit.get_tools()
 ```
 
-
-
-```output
-[QuerySQLDataBaseTool(description="Input to this tool is a detailed and correct SQL query, output is a result from the database. If the query is not correct, an error message will be returned. If an error is returned, rewrite the query, check the query, and try again. If you encounter an issue with Unknown column 'xxxx' in 'field list', use sql_db_schema to query the correct table fields.", db=<langchain_community.utilities.sql_database.SQLDatabase object at 0x105e02860>),
- InfoSQLDatabaseTool(description='Input to this tool is a comma-separated list of tables, output is the schema and sample rows for those tables. Be sure that the tables actually exist by calling sql_db_list_tables first! Example Input: table1, table2, table3', db=<langchain_community.utilities.sql_database.SQLDatabase object at 0x105e02860>),
- ListSQLDatabaseTool(db=<langchain_community.utilities.sql_database.SQLDatabase object at 0x105e02860>),
- QuerySQLCheckerTool(description='Use this tool to double check if your query is correct before executing it. Always use this tool before executing a query with sql_db_query!', db=<langchain_community.utilities.sql_database.SQLDatabase object at 0x105e02860>, llm=ChatOpenAI(client=<openai.resources.chat.completions.Completions object at 0x1148a97b0>, async_client=<openai.resources.chat.completions.AsyncCompletions object at 0x1148aaec0>, temperature=0.0, openai_api_key=SecretStr('**********'), openai_proxy=''), llm_chain=LLMChain(prompt=PromptTemplate(input_variables=['dialect', 'query'], template='\n{query}\nDouble check the {dialect} query above for common mistakes, including:\n- Using NOT IN with NULL values\n- Using UNION when UNION ALL should have been used\n- Using BETWEEN for exclusive ranges\n- Data type mismatch in predicates\n- Properly quoting identifiers\n- Using the correct number of arguments for functions\n- Casting to the correct data type\n- Using the proper columns for joins\n\nIf there are any of the above mistakes, rewrite the query. If there are no mistakes, just reproduce the original query.\n\nOutput the final SQL query only.\n\nSQL Query: '), llm=ChatOpenAI(client=<openai.resources.chat.completions.Completions object at 0x1148a97b0>, async_client=<openai.resources.chat.completions.AsyncCompletions object at 0x1148aaec0>, temperature=0.0, openai_api_key=SecretStr('**********'), openai_proxy='')))]
-```
-
-
-API references:
+API 参考：
 
 - [QuerySQLDataBaseTool](https://api.python.langchain.com/en/latest/tools/langchain_community.tools.sql_database.tool.QuerySQLDataBaseTool.html)
 - [InfoSQLDatabaseTool](https://api.python.langchain.com/en/latest/tools/langchain_community.tools.sql_database.tool.InfoSQLDatabaseTool.html)
 - [ListSQLDatabaseTool](https://api.python.langchain.com/en/latest/tools/langchain_community.tools.sql_database.tool.ListSQLDatabaseTool.html)
 - [QuerySQLCheckerTool](https://api.python.langchain.com/en/latest/tools/langchain_community.tools.sql_database.tool.QuerySQLCheckerTool.html)
 
-## Use within an agent
+## 在代理中使用
 
-Following the [SQL Q&A Tutorial](/docs/tutorials/sql_qa/#agents), below we equip a simple question-answering agent with the tools in our toolkit. First we pull a relevant prompt and populate it with its required parameters:
-
+根据 [SQL Q&A Tutorial](/docs/tutorials/sql_qa/#agents)，下面我们为一个简单的问题回答代理提供工具。首先，我们提取一个相关的提示并用所需参数填充它：
 
 ```python
 from langchain import hub
@@ -147,8 +132,7 @@ print(prompt_template.input_variables)
 system_message = prompt_template.format(dialect="SQLite", top_k=5)
 ```
 
-We then instantiate the agent:
-
+然后我们实例化代理：
 
 ```python
 from langgraph.prebuilt import create_react_agent
@@ -158,8 +142,7 @@ agent_executor = create_react_agent(
 )
 ```
 
-And issue it a query:
-
+并向它发出查询：
 
 ```python
 example_query = "Which country's customers spent the most?"
@@ -274,10 +257,9 @@ Name: sql_db_query
 [('USA', 523.0600000000003)]
 ==================================[1m Ai Message [0m==================================
 
-Customers from the USA spent the most, with a total amount spent of $523.06.
+来自美国的客户消费最多，总金额为 $523.06。
 ```
-We can also observe the agent recover from an error:
-
+我们还可以观察到代理从错误中恢复：
 
 ```python
 example_query = "Who are the top 3 best selling artists?"
@@ -386,18 +368,19 @@ Name: sql_db_query
 [('Iron Maiden', 140), ('U2', 107), ('Metallica', 91)]
 ==================================[1m Ai Message [0m==================================
 
-The top 3 best selling artists are:
-1. Iron Maiden - 140 units sold
-2. U2 - 107 units sold
-3. Metallica - 91 units sold
+排名前三的畅销艺术家是：
+1. Iron Maiden - 售出 140 件
+2. U2 - 售出 107 件
+3. Metallica - 售出 91 件
 ```
-## Specific functionality
 
-`SQLDatabaseToolkit` implements a [.get_context](https://api.python.langchain.com/en/latest/agent_toolkits/langchain_community.agent_toolkits.sql.toolkit.SQLDatabaseToolkit.html#langchain_community.agent_toolkits.sql.toolkit.SQLDatabaseToolkit.get_context) method as a convenience for use in prompts or other contexts.
+## 特定功能
 
-**⚠️ Disclaimer ⚠️** : The agent may generate insert/update/delete queries. When this is not expected, use a custom prompt or create a SQL users without write permissions.
+`SQLDatabaseToolkit` 实现了一个 [.get_context](https://api.python.langchain.com/en/latest/agent_toolkits/langchain_community.agent_toolkits.sql.toolkit.SQLDatabaseToolkit.html#langchain_community.agent_toolkits.sql.toolkit.SQLDatabaseToolkit.get_context) 方法，方便在提示或其他上下文中使用。
 
-The final user might overload your SQL database by asking a simple question such as "run the biggest query possible". The generated query might look like:
+**⚠️ 免责声明 ⚠️** : 代理可能会生成插入/更新/删除查询。当这不是预期时，请使用自定义提示或创建没有写权限的 SQL 用户。
+
+最终用户可能会通过询问简单的问题，例如“运行可能的最大查询”，来超载您的 SQL 数据库。生成的查询可能如下所示：
 
 ```sql
 SELECT * FROM "public"."users"
@@ -406,10 +389,10 @@ SELECT * FROM "public"."users"
     JOIN "public"."events" ON "public"."projects".id = "public"."events".project_id;
 ```
 
-For a transactional SQL database, if one of the table above contains millions of rows, the query might cause trouble to other applications using the same database.
+对于一个事务性 SQL 数据库，如果上述表中的某一个包含数百万行，查询可能会对使用同一数据库的其他应用程序造成麻烦。
 
-Most datawarehouse oriented databases support user-level quota, for limiting resource usage.
+大多数面向数据仓库的数据库支持用户级配额，以限制资源使用。
 
-## API reference
+## API 参考
 
-For detailed documentation of all SQLDatabaseToolkit features and configurations head to the [API reference](https://api.python.langchain.com/en/latest/agent_toolkits/langchain_community.agent_toolkits.sql.toolkit.SQLDatabaseToolkit.html).
+有关所有 SQLDatabaseToolkit 功能和配置的详细文档，请访问 [API 参考](https://api.python.langchain.com/en/latest/agent_toolkits/langchain_community.agent_toolkits.sql.toolkit.SQLDatabaseToolkit.html)。

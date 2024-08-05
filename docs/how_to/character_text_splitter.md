@@ -2,22 +2,21 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/character_text_splitter.ipynb
 keywords: [charactertextsplitter]
 ---
-# How to split by character
 
-This is the simplest method. This splits based on a given character sequence, which defaults to `"\n\n"`. Chunk length is measured by number of characters.
+# 如何按字符拆分
 
-1. How the text is split: by single character separator.
-2. How the chunk size is measured: by number of characters.
+这是最简单的方法。这基于给定的字符序列进行拆分，默认值为 `"\n\n"`。块的长度是通过字符数来测量的。
 
-To obtain the string content directly, use `.split_text`.
+1. 文本如何拆分：通过单个字符分隔符。
+2. 块大小如何测量：通过字符数。
 
-To create LangChain [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html) objects (e.g., for use in downstream tasks), use `.create_documents`.
+要直接获取字符串内容，请使用 `.split_text`。
 
+要创建 LangChain [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html) 对象（例如，用于后续任务），请使用 `.create_documents`。
 
 ```python
 %pip install -qU langchain-text-splitters
 ```
-
 
 ```python
 from langchain_text_splitters import CharacterTextSplitter
@@ -39,8 +38,7 @@ print(texts[0])
 ```output
 page_content='Madam Speaker, Madam Vice President, our First Lady and Second Gentleman. Members of Congress and the Cabinet. Justices of the Supreme Court. My fellow Americans.  \n\nLast year COVID-19 kept us apart. This year we are finally together again. \n\nTonight, we meet as Democrats Republicans and Independents. But most importantly as Americans. \n\nWith a duty to one another to the American people to the Constitution. \n\nAnd with an unwavering resolve that freedom will always triumph over tyranny. \n\nSix days ago, Russia’s Vladimir Putin sought to shake the foundations of the free world thinking he could make it bend to his menacing ways. But he badly miscalculated. \n\nHe thought he could roll into Ukraine and the world would roll over. Instead he met a wall of strength he never imagined. \n\nHe met the Ukrainian people. \n\nFrom President Zelenskyy to every Ukrainian, their fearlessness, their courage, their determination, inspires the world.'
 ```
-Use `.create_documents` to propagate metadata associated with each document to the output chunks:
-
+使用 `.create_documents` 将与每个文档相关的元数据传播到输出块：
 
 ```python
 metadatas = [{"document": 1}, {"document": 2}]
@@ -52,16 +50,12 @@ print(documents[0])
 ```output
 page_content='Madam Speaker, Madam Vice President, our First Lady and Second Gentleman. Members of Congress and the Cabinet. Justices of the Supreme Court. My fellow Americans.  \n\nLast year COVID-19 kept us apart. This year we are finally together again. \n\nTonight, we meet as Democrats Republicans and Independents. But most importantly as Americans. \n\nWith a duty to one another to the American people to the Constitution. \n\nAnd with an unwavering resolve that freedom will always triumph over tyranny. \n\nSix days ago, Russia’s Vladimir Putin sought to shake the foundations of the free world thinking he could make it bend to his menacing ways. But he badly miscalculated. \n\nHe thought he could roll into Ukraine and the world would roll over. Instead he met a wall of strength he never imagined. \n\nHe met the Ukrainian people. \n\nFrom President Zelenskyy to every Ukrainian, their fearlessness, their courage, their determination, inspires the world.' metadata={'document': 1}
 ```
-Use `.split_text` to obtain the string content directly:
-
+使用 `.split_text` 直接获取字符串内容：
 
 ```python
 text_splitter.split_text(state_of_the_union)[0]
 ```
 
-
-
 ```output
 'Madam Speaker, Madam Vice President, our First Lady and Second Gentleman. Members of Congress and the Cabinet. Justices of the Supreme Court. My fellow Americans.  \n\nLast year COVID-19 kept us apart. This year we are finally together again. \n\nTonight, we meet as Democrats Republicans and Independents. But most importantly as Americans. \n\nWith a duty to one another to the American people to the Constitution. \n\nAnd with an unwavering resolve that freedom will always triumph over tyranny. \n\nSix days ago, Russia’s Vladimir Putin sought to shake the foundations of the free world thinking he could make it bend to his menacing ways. But he badly miscalculated. \n\nHe thought he could roll into Ukraine and the world would roll over. Instead he met a wall of strength he never imagined. \n\nHe met the Ukrainian people. \n\nFrom President Zelenskyy to every Ukrainian, their fearlessness, their courage, their determination, inspires the world.'
 ```
-

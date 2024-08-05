@@ -1,15 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/rellm_experimental.ipynb
 ---
+
 # RELLM
 
-[RELLM](https://github.com/r2d4/rellm) is a library that wraps local Hugging Face pipeline models for structured decoding.
+[RELLM](https://github.com/r2d4/rellm) 是一个将本地 Hugging Face pipeline 模型封装用于结构化解码的库。
 
-It works by generating tokens one at a time. At each step, it masks tokens that don't conform to the provided partial regular expression.
+它通过一次生成一个 token 的方式工作。在每一步中，它会屏蔽不符合提供的部分正则表达式的 tokens。
 
-
-**Warning - this module is still experimental**
-
+**警告 - 该模块仍处于实验阶段**
 
 ```python
 %pip install --upgrade --quiet  rellm langchain-huggingface > /dev/null
@@ -17,7 +16,7 @@ It works by generating tokens one at a time. At each step, it masks tokens that 
 
 ### Hugging Face Baseline
 
-First, let's establish a qualitative baseline by checking the output of the model without structured decoding.
+首先，让我们通过检查模型的输出，建立一个定性基准，而不使用结构化解码。
 
 
 ```python
@@ -62,12 +61,11 @@ Setting `pad_token_id` to `eos_token_id`:50256 for open-end generation.
 ``````output
 generations=[[Generation(text=' "What\'s the capital of Maryland?"\n', generation_info=None)]] llm_output=None
 ```
-***That's not so impressive, is it? It didn't answer the question and it didn't follow the JSON format at all! Let's try with the structured decoder.***
+***这可真不怎么样，是吧？它没有回答问题，而且根本没有遵循 JSON 格式！让我们尝试使用结构化解码。***
 
 ## RELLM LLM Wrapper
 
-Let's try that again, now providing a regex to match the JSON structured format.
-
+让我们再试一次，这次提供一个正则表达式来匹配JSON结构格式。
 
 ```python
 import regex  # Note this is the regex library NOT python's re stdlib module
@@ -82,7 +80,6 @@ pattern = regex.compile(
 )
 ```
 
-
 ```python
 from langchain_experimental.llms import RELLM
 
@@ -96,10 +93,9 @@ print(generated)
   "action_input": "The capital of Maryland is Baltimore."
 }
 ```
-**Voila! Free of parsing errors.**
+**太好了！没有解析错误。**
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

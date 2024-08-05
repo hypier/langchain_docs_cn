@@ -2,33 +2,33 @@
 sidebar_position: 1
 ---
 
-# How to migrate chains to LCEL
+# 如何将链迁移到 LCEL
 
-:::info Prerequisites
+:::info 前提条件
 
-This guide assumes familiarity with the following concepts:
-- [LangChain Expression Language](/docs/concepts#langchain-expression-language-lcel)
+本指南假设您熟悉以下概念：
+- [LangChain 表达语言](/docs/concepts#langchain-expression-language-lcel)
 
 :::
 
-LCEL is designed to streamline the process of building useful apps with LLMs and combining related components. It does this by providing:
+LCEL 旨在简化使用 LLM 构建有用应用程序和组合相关组件的过程。它通过提供以下功能实现这一点：
 
-1. **A unified interface**: Every LCEL object implements the `Runnable` interface, which defines a common set of invocation methods (`invoke`, `batch`, `stream`, `ainvoke`, ...). This makes it possible to also automatically and consistently support useful operations like streaming of intermediate steps and batching, since every chain composed of LCEL objects is itself an LCEL object.
-2. **Composition primitives**: LCEL provides a number of primitives that make it easy to compose chains, parallelize components, add fallbacks, dynamically configure chain internals, and more.
+1. **统一接口**：每个 LCEL 对象都实现了 `Runnable` 接口，该接口定义了一组通用的调用方法（`invoke`、`batch`、`stream`、`ainvoke` 等）。这使得可以自动且一致地支持有用的操作，例如中间步骤的流式处理和批处理，因为由 LCEL 对象组成的每个链本身也是一个 LCEL 对象。
+2. **组合原语**：LCEL 提供了一些原语，使得组合链、并行化组件、添加后备、动态配置链内部等操作变得简单。
 
-LangChain maintains a number of legacy abstractions. Many of these can be reimplemented via short combinations of LCEL primitives. Doing so confers some general advantages:
+LangChain 维护了一些遗留抽象。这些抽象中的许多可以通过 LCEL 原语的简短组合重新实现。这样做有一些一般性的好处：
 
-- The resulting chains typically implement the full `Runnable` interface, including streaming and asynchronous support where appropriate;
-- The chains may be more easily extended or modified;
-- The parameters of the chain are typically surfaced for easier customization (e.g., prompts) over previous versions, which tended to be subclasses and had opaque parameters and internals.
+- 结果链通常实现了完整的 `Runnable` 接口，包括适当的流式处理和异步支持；
+- 链可能更容易扩展或修改；
+- 链的参数通常更易于定制（例如，提示），相比于以前的版本，后者往往是子类并且具有不透明的参数和内部结构。
 
-The LCEL implementations can be slightly more verbose, but there are significant benefits in transparency and customizability.
+LCEL 实现可能稍微冗长，但在透明性和可定制性方面有显著的好处。
 
-The below pages assist with migration from various specific chains to LCEL:
+以下页面帮助从各种特定链迁移到 LCEL：
 
 - [LLMChain](/docs/versions/migrating_chains/llm_chain)
 - [ConversationChain](/docs/versions/migrating_chains/conversation_chain)
 - [RetrievalQA](/docs/versions/migrating_chains/retrieval_qa)
 - [ConversationalRetrievalChain](/docs/versions/migrating_chains/conversation_retrieval_chain)
 
-Check out the [LCEL conceptual docs](/docs/concepts/#langchain-expression-language-lcel) for more background information.
+查看 [LCEL 概念文档](/docs/concepts/#langchain-expression-language-lcel) 以获取更多背景信息。

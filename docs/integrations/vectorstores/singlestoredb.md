@@ -1,21 +1,21 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/singlestoredb.ipynb
 ---
+
 # SingleStoreDB
->[SingleStoreDB](https://singlestore.com/) is a robust, high-performance distributed SQL database solution designed to excel in both [cloud](https://www.singlestore.com/cloud/) and on-premises environments. Boasting a versatile feature set, it offers seamless deployment options while delivering unparalleled performance.
+>[SingleStoreDB](https://singlestore.com/) 是一个强大、高性能的分布式 SQL 数据库解决方案，旨在在 [云](https://www.singlestore.com/cloud/) 和本地环境中表现出色。它拥有多功能的特性集，提供无缝的部署选项，同时提供无与伦比的性能。
 
-A standout feature of SingleStoreDB is its advanced support for vector storage and operations, making it an ideal choice for applications requiring intricate AI capabilities such as text similarity matching. With built-in vector functions like [dot_product](https://docs.singlestore.com/managed-service/en/reference/sql-reference/vector-functions/dot_product.html) and [euclidean_distance](https://docs.singlestore.com/managed-service/en/reference/sql-reference/vector-functions/euclidean_distance.html), SingleStoreDB empowers developers to implement sophisticated algorithms efficiently.
+SingleStoreDB 的一个突出特点是其对向量存储和操作的高级支持，使其成为需要复杂 AI 功能的应用程序（如文本相似度匹配）的理想选择。通过内置的向量函数，如 [dot_product](https://docs.singlestore.com/managed-service/en/reference/sql-reference/vector-functions/dot_product.html) 和 [euclidean_distance](https://docs.singlestore.com/managed-service/en/reference/sql-reference/vector-functions/euclidean_distance.html)，SingleStoreDB 使开发人员能够高效地实现复杂算法。
 
-For developers keen on leveraging vector data within SingleStoreDB, a comprehensive tutorial is available, guiding them through the intricacies of [working with vector data](https://docs.singlestore.com/managed-service/en/developer-resources/functional-extensions/working-with-vector-data.html). This tutorial delves into the Vector Store within SingleStoreDB, showcasing its ability to facilitate searches based on vector similarity. Leveraging vector indexes, queries can be executed with remarkable speed, enabling swift retrieval of relevant data.
+对于希望在 SingleStoreDB 中利用向量数据的开发人员，提供了全面的教程，指导他们了解 [处理向量数据](https://docs.singlestore.com/managed-service/en/developer-resources/functional-extensions/working-with-vector-data.html) 的细节。该教程深入探讨了 SingleStoreDB 中的向量存储，展示了其根据向量相似性进行搜索的能力。利用向量索引，可以以显著的速度执行查询，从而快速检索相关数据。
 
-Moreover, SingleStoreDB's Vector Store seamlessly integrates with [full-text indexing based on Lucene](https://docs.singlestore.com/cloud/developer-resources/functional-extensions/working-with-full-text-search/), enabling powerful text similarity searches. Users can filter search results based on selected fields of document metadata objects, enhancing query precision.
+此外，SingleStoreDB 的向量存储与基于 Lucene 的 [全文索引](https://docs.singlestore.com/cloud/developer-resources/functional-extensions/working-with-full-text-search/) 无缝集成，使得强大的文本相似性搜索成为可能。用户可以根据所选的文档元数据字段过滤搜索结果，从而提高查询的精确度。
 
-What sets SingleStoreDB apart is its ability to combine vector and full-text searches in various ways, offering flexibility and versatility. Whether prefiltering by text or vector similarity and selecting the most relevant data, or employing a weighted sum approach to compute a final similarity score, developers have multiple options at their disposal.
+SingleStoreDB 的独特之处在于其能够以多种方式结合向量和全文搜索，提供灵活性和多样性。无论是通过文本或向量相似性进行预过滤并选择最相关的数据，还是采用加权求和的方法计算最终相似度得分，开发人员都有多种选择可供使用。
 
-In essence, SingleStoreDB provides a comprehensive solution for managing and querying vector data, offering unparalleled performance and flexibility for AI-driven applications.
+总之，SingleStoreDB 提供了一个全面的解决方案，用于管理和查询向量数据，为 AI 驱动的应用程序提供无与伦比的性能和灵活性。
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
-
+您需要安装 `langchain-community`，使用 `pip install -qU langchain-community` 来使用此集成。
 
 ```python
 # Establishing a connection to the database is facilitated through the singlestoredb Python connector.
@@ -89,8 +89,7 @@ docs = [
 embeddings = OpenAIEmbeddings()
 ```
 
-There are several ways to establish a [connection](https://singlestoredb-python.labs.singlestore.com/generated/singlestoredb.connect.html) to the database. You can either set up environment variables or pass named parameters to the `SingleStoreDB constructor`. Alternatively, you may provide these parameters to the `from_documents` and `from_texts` methods.
-
+有几种方法可以与 [数据库](https://singlestoredb-python.labs.singlestore.com/generated/singlestoredb.connect.html) 建立连接。您可以设置环境变量或将命名参数传递给 `SingleStoreDB 构造函数`。另外，您还可以将这些参数提供给 `from_documents` 和 `from_texts` 方法。
 
 ```python
 # Setup connection url as environment variable
@@ -111,8 +110,7 @@ docs = docsearch.similarity_search(query)  # Find documents that correspond to t
 print(docs[0].page_content)
 ```
 
-SingleStoreDB elevates search capabilities by enabling users to enhance and refine search results through prefiltering based on metadata fields. This functionality empowers developers and data analysts to fine-tune queries, ensuring that search results are precisely tailored to their requirements. By filtering search results using specific metadata attributes, users can narrow down the scope of their queries, focusing only on relevant data subsets. 
-
+SingleStoreDB 通过使用户能够通过基于元数据字段的预过滤来增强和细化搜索结果，从而提升了搜索能力。这一功能使开发人员和数据分析师能够微调查询，确保搜索结果精确符合其要求。通过使用特定的元数据属性过滤搜索结果，用户可以缩小查询范围，仅关注相关数据子集。
 
 ```python
 query = "trees branches"
@@ -122,10 +120,9 @@ docs = docsearch.similarity_search(
 print(docs[0].page_content)
 ```
 
-Enhance your search efficiency with SingleStore DB version 8.5 or above by leveraging [ANN vector indexes](https://docs.singlestore.com/cloud/reference/sql-reference/vector-functions/vector-indexing/). By setting `use_vector_index=True` during vector store object creation, you can activate this feature. Additionally, if your vectors differ in dimensionality from the default OpenAI embedding size of 1536, ensure to specify the `vector_size` parameter accordingly. 
+通过利用 SingleStore DB 版本 8.5 或更高版本的 [ANN 向量索引](https://docs.singlestore.com/cloud/reference/sql-reference/vector-functions/vector-indexing/)，提升搜索效率。在创建向量存储对象时设置 `use_vector_index=True` 可以激活此功能。此外，如果您的向量维度与默认的 OpenAI 嵌入大小 1536 不同，请确保相应地指定 `vector_size` 参数。
 
-SingleStoreDB presents a diverse range of search strategies, each meticulously crafted to cater to specific use cases and user preferences. The default `VECTOR_ONLY` strategy utilizes vector operations such as `dot_product` or `euclidean_distance` to calculate similarity scores directly between vectors, while `TEXT_ONLY` employs Lucene-based full-text search, particularly advantageous for text-centric applications. For users seeking a balanced approach, `FILTER_BY_TEXT` first refines results based on text similarity before conducting vector comparisons, whereas `FILTER_BY_VECTOR` prioritizes vector similarity, filtering results before assessing text similarity for optimal matches. Notably, both `FILTER_BY_TEXT` and `FILTER_BY_VECTOR` necessitate a full-text index for operation. Additionally, `WEIGHTED_SUM` emerges as a sophisticated strategy, calculating the final similarity score by weighing vector and text similarities, albeit exclusively utilizing dot_product distance calculations and also requiring a full-text index. These versatile strategies empower users to fine-tune searches according to their unique needs, facilitating efficient and precise data retrieval and analysis. Moreover, SingleStoreDB's hybrid approaches, exemplified by `FILTER_BY_TEXT`, `FILTER_BY_VECTOR`, and `WEIGHTED_SUM` strategies, seamlessly blend vector and text-based searches to maximize efficiency and accuracy, ensuring users can fully leverage the platform's capabilities for a wide range of applications.
-
+SingleStoreDB 提供了多种搜索策略，每种策略都经过精心设计，以满足特定用例和用户偏好。默认的 `VECTOR_ONLY` 策略利用向量操作（如 `dot_product` 或 `euclidean_distance`）直接计算向量之间的相似度得分，而 `TEXT_ONLY` 则采用基于 Lucene 的全文搜索，特别适合以文本为中心的应用程序。对于寻求平衡的方法的用户，`FILTER_BY_TEXT` 首先根据文本相似性精炼结果，然后再进行向量比较，而 `FILTER_BY_VECTOR` 则优先考虑向量相似性，在评估文本相似性之前过滤结果以获得最佳匹配。值得注意的是，`FILTER_BY_TEXT` 和 `FILTER_BY_VECTOR` 都需要全文索引才能操作。此外，`WEIGHTED_SUM` 作为一种复杂的策略，通过加权向量和文本相似性来计算最终相似度得分，但仅使用 dot_product 距离计算，并且也需要全文索引。这些多样化的策略使用户能够根据其独特需求微调搜索，促进高效和精确的数据检索与分析。此外，SingleStoreDB 的混合方法，如 `FILTER_BY_TEXT`、`FILTER_BY_VECTOR` 和 `WEIGHTED_SUM` 策略，无缝结合了向量和基于文本的搜索，以最大化效率和准确性，确保用户能够充分利用该平台的能力，适用于广泛的应用程序。
 
 ```python
 docsearch = SingleStoreDB.from_documents(
@@ -177,17 +174,15 @@ weightedSumResults = docsearch.similarity_search(
 print(weightedSumResults[0].page_content)
 ```
 
-## Multi-modal Example: Leveraging CLIP and OpenClip Embeddings
+## 多模态示例：利用 CLIP 和 OpenClip 嵌入
 
-In the realm of multi-modal data analysis, the integration of diverse information types like images and text has become increasingly crucial. One powerful tool facilitating such integration is [CLIP](https://openai.com/research/clip), a cutting-edge model capable of embedding both images and text into a shared semantic space. By doing so, CLIP enables the retrieval of relevant content across different modalities through similarity search.
+在多模态数据分析领域，整合图像和文本等多种信息类型变得越来越重要。一个强大的工具是 [CLIP](https://openai.com/research/clip)，这是一个尖端模型，能够将图像和文本嵌入到共享的语义空间中。通过这种方式，CLIP 使得通过相似性搜索在不同模态之间检索相关内容成为可能。
 
-To illustrate, let's consider an application scenario where we aim to effectively analyze multi-modal data. In this example, we harness the capabilities of [OpenClip multimodal embeddings](/docs/integrations/text_embedding/open_clip), which leverage CLIP's framework. With OpenClip, we can seamlessly embed textual descriptions alongside corresponding images, enabling comprehensive analysis and retrieval tasks. Whether it's identifying visually similar images based on textual queries or finding relevant text passages associated with specific visual content, OpenClip empowers users to explore and extract insights from multi-modal data with remarkable efficiency and accuracy.
-
+为了说明这一点，我们考虑一个应用场景，旨在有效分析多模态数据。在这个示例中，我们利用 [OpenClip 多模态嵌入](/docs/integrations/text_embedding/open_clip) 的能力，该能力基于 CLIP 的框架。通过 OpenClip，我们可以无缝地将文本描述与相应的图像嵌入在一起，从而实现全面的分析和检索任务。无论是根据文本查询识别视觉上相似的图像，还是找到与特定视觉内容相关的文本段落，OpenClip 都使用户能够高效准确地探索和提取多模态数据中的洞察。
 
 ```python
 %pip install -U langchain openai singlestoredb langchain-experimental # (newest versions required for multi-modal)
 ```
-
 
 ```python
 import os
@@ -213,8 +208,7 @@ image_uris = sorted(
 docsearch.add_images(uris=image_uris)
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

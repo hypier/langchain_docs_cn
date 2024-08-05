@@ -1,16 +1,16 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/tidb_vector.ipynb
 ---
+
 # TiDB Vector
 
-> [TiDB Cloud](https://www.pingcap.com/tidb-serverless), is a comprehensive Database-as-a-Service (DBaaS) solution, that provides dedicated and serverless options. TiDB Serverless is now integrating a built-in vector search into the MySQL landscape. With this enhancement, you can seamlessly develop AI applications using TiDB Serverless without the need for a new database or additional technical stacks. Create a free TiDB Serverless cluster and start using the vector search feature at https://pingcap.com/ai.
+> [TiDB Cloud](https://www.pingcap.com/tidb-serverless) 是一个全面的数据库即服务（DBaaS）解决方案，提供专用和无服务器选项。TiDB Serverless 现在在 MySQL 生态系统中集成了内置的向量搜索。通过这一增强功能，您可以无缝地使用 TiDB Serverless 开发 AI 应用，而无需新的数据库或额外的技术栈。在 https://pingcap.com/ai 创建一个免费的 TiDB Serverless 集群，开始使用向量搜索功能。
 
-This notebook provides a detailed guide on utilizing the TiDB Vector functionality, showcasing its features and practical applications.
+本笔记本提供了关于如何利用 TiDB Vector 功能的详细指南，展示了其特点和实际应用。
 
-## Setting up environments
+## 设置环境
 
-Begin by installing the necessary packages.
-
+首先安装必要的包。
 
 ```python
 %pip install langchain langchain-community
@@ -19,8 +19,7 @@ Begin by installing the necessary packages.
 %pip install tidb-vector
 ```
 
-Configure both the OpenAI and TiDB host settings that you will need. In this notebook, we will follow the standard connection method provided by TiDB Cloud to establish a secure and efficient database connection.
-
+配置您需要的 OpenAI 和 TiDB 主机设置。在本笔记本中，我们将遵循 TiDB Cloud 提供的标准连接方法，以建立安全高效的数据库连接。
 
 ```python
 # Here we useimport getpass
@@ -37,8 +36,7 @@ tidb_connection_string = tidb_connection_string_template.replace(
 )
 ```
 
-Prepare the following data
-
+准备以下数据
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -46,7 +44,6 @@ from langchain_community.vectorstores import TiDBVectorStore
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import CharacterTextSplitter
 ```
-
 
 ```python
 loader = TextLoader("../../how_to/state_of_the_union.txt")
@@ -57,11 +54,11 @@ docs = text_splitter.split_documents(documents)
 embeddings = OpenAIEmbeddings()
 ```
 
-## Semantic similarity search
+## 语义相似性搜索
 
-TiDB supports both cosine and Euclidean distances ('cosine', 'l2'), with 'cosine' being the default choice.
+TiDB 支持余弦距离和欧几里得距离（'cosine', 'l2'），其中 'cosine' 是默认选择。
 
-The code snippet below creates a table named `TABLE_NAME` in TiDB, optimized for vector searching. Upon successful execution of this code, you will be able to view and access the `TABLE_NAME` table directly within your TiDB database.
+下面的代码片段在 TiDB 中创建一个名为 `TABLE_NAME` 的表，优化用于向量搜索。成功执行此代码后，您将能够直接在 TiDB 数据库中查看和访问 `TABLE_NAME` 表。
 
 
 ```python
@@ -81,7 +78,7 @@ query = "What did the president say about Ketanji Brown Jackson"
 docs_with_score = db.similarity_search_with_score(query, k=3)
 ```
 
-Please note that a lower cosine distance indicates higher similarity.
+请注意，较低的余弦距离表示更高的相似性。
 
 
 ```python
@@ -131,7 +128,7 @@ So tonight I’m offering a Unity Agenda for the Nation. Four big things we can 
 First, beat the opioid epidemic.
 --------------------------------------------------------------------------------
 ```
-Additionally, the similarity_search_with_relevance_scores method can be used to obtain relevance scores, where a higher score indicates greater similarity.
+此外，similarity_search_with_relevance_scores 方法可用于获取相关性分数，其中较高的分数表示更大的相似性。
 
 
 ```python
@@ -168,19 +165,20 @@ We’re putting in place dedicated immigration judges so families fleeing persec
 We’re securing commitments and supporting partners in South and Central America to host more refugees and secure their own borders.
 --------------------------------------------------------------------------------
 ```
-# Filter with metadata
 
-perform searches using metadata filters to retrieve a specific number of nearest-neighbor results that align with the applied filters.
+# 使用元数据过滤器
 
-## Supported metadata types
+使用元数据过滤器进行搜索，以检索与应用的过滤器相符的特定数量的最近邻结果。
 
-Each vector in the TiDB Vector Store can be paired with metadata, structured as key-value pairs within a JSON object. The keys are strings, and the values can be of the following types:
+## 支持的元数据类型
 
-- String
-- Number (integer or floating point)
-- Booleans (true, false)
+TiDB Vector Store 中的每个向量都可以与元数据配对，元数据结构为 JSON 对象中的键值对。键为字符串，值可以是以下类型：
 
-For instance, consider the following valid metadata payloads:
+- 字符串
+- 数字（整数或浮点数）
+- 布尔值（true, false）
+
+例如，考虑以下有效的元数据负载：
 
 ```json
 {
@@ -189,22 +187,22 @@ For instance, consider the following valid metadata payloads:
 }
 ```
 
-## Metadata filter syntax
+## 元数据过滤器语法
 
-The available filters include:
+可用的过滤器包括：
 
-- $or - Selects vectors that meet any one of the given conditions.
-- $and - Selects vectors that meet all of the given conditions.
-- $eq - Equal to
-- $ne - Not equal to
-- $gt - Greater than
-- $gte - Greater than or equal to
-- $lt - Less than
-- $lte - Less than or equal to
-- $in - In array
-- $nin - Not in array
+- $or - 选择满足任一给定条件的向量。
+- $and - 选择满足所有给定条件的向量。
+- $eq - 等于
+- $ne - 不等于
+- $gt - 大于
+- $gte - 大于或等于
+- $lt - 小于
+- $lte - 小于或等于
+- $in - 在数组中
+- $nin - 不在数组中
 
-Assuming one vector with metada:
+假设有一个带有元数据的向量：
 ```json
 {
     "page": 12,
@@ -212,7 +210,7 @@ Assuming one vector with metada:
 }
 ```
 
-The following metadata filters will match the vector
+以下元数据过滤器将匹配该向量
 
 ```json
 {"page": 12}
@@ -231,8 +229,7 @@ The following metadata filters will match the vector
 }
 ```
 
-Please note that each key-value pair in the metadata filters is treated as a separate filter clause, and these clauses are combined using the AND logical operator.
-
+请注意，元数据过滤器中的每个键值对都被视为单独的过滤子句，这些子句使用 AND 逻辑运算符组合。
 
 ```python
 db.add_texts(
@@ -247,14 +244,10 @@ db.add_texts(
 )
 ```
 
-
-
 ```output
 [UUID('c782cb02-8eec-45be-a31f-fdb78914f0a7'),
  UUID('08dcd2ba-9f16-4f29-a9b7-18141f8edae3')]
 ```
-
-
 
 ```python
 docs_with_score = db.similarity_search_with_score(
@@ -272,10 +265,10 @@ Score:  0.12761409169211535
 TiDB Vector offers advanced, high-speed vector processing capabilities, enhancing AI workflows with efficient data handling and analytics support.
 --------------------------------------------------------------------------------
 ```
-### Using as a Retriever
 
-In Langchain, a retriever is an interface that retrieves documents in response to an unstructured query, offering a broader functionality than a vector store. The code below demonstrates how to utilize TiDB Vector as a retriever.
+### 作为检索器的使用
 
+在 Langchain 中，检索器是一个接口，用于响应非结构化查询以检索文档，提供比向量存储更广泛的功能。下面的代码演示了如何将 TiDB Vector 用作检索器。
 
 ```python
 retriever = db.as_retriever(
@@ -299,13 +292,14 @@ One of the most serious constitutional responsibilities a President has is nomin
 And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
 --------------------------------------------------------------------------------
 ```
-## Advanced Use Case Scenario
 
-Let's look a advanced use case - a travel agent is crafting a custom travel report for clients who desire airports with specific amenities such as clean lounges and vegetarian options. The process involves:
-- A semantic search within airport reviews to extract airport codes meeting these amenities.
-- A subsequent SQL query that joins these codes with route information, detailing airlines and destinations aligned with the clients' preferences.
+## 高级用例场景
 
-First, let's prepare some airpod related data
+让我们看一个高级用例 - 一位旅行代理正在为希望找到具有特定设施（如干净的休息室和素食选项）的客户定制旅行报告。该过程包括：
+- 在机场评论中进行语义搜索，以提取符合这些设施的机场代码。
+- 随后执行 SQL 查询，将这些代码与航线信息连接，详细说明与客户偏好一致的航空公司和目的地。
+
+首先，让我们准备一些与航班相关的数据
 
 
 ```python
@@ -366,7 +360,7 @@ db.add_texts(
 ```
 
 
-Finding Airports with Clean Facilities and Vegetarian Options via Vector Search
+通过向量搜索查找具有干净设施和素食选项的机场
 
 
 ```python
@@ -413,7 +407,7 @@ airport_details.get("result")
 ```
 
 
-Alternatively, we can streamline the process by utilizing a single SQL query to accomplish the search in one step.
+或者，我们可以通过利用单个 SQL 查询来简化过程，一步完成搜索。
 
 
 ```python
@@ -456,18 +450,15 @@ db.tidb_vector_client.execute("DROP TABLE airplan_routes")
 {'success': True, 'result': 0, 'error': None}
 ```
 
+# 删除
 
-# Delete
-
-You can remove the TiDB Vector Store by using the `.drop_vectorstore()` method.
-
+您可以使用 `.drop_vectorstore()` 方法来移除 TiDB 向量存储。
 
 ```python
 db.drop_vectorstore()
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

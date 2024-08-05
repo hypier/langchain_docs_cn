@@ -1,16 +1,16 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/exa_search.ipynb
 ---
-# Exa Search
 
-Exa (formerly Metaphor Search) is a search engine fully designed for use by LLMs. Search for documents on the internet using **natural language queries**, then retrieve **cleaned HTML content** from desired documents.
+# Exa 搜索
 
-Unlike keyword-based search (Google), Exa's neural search capabilities allow it to semantically understand queries and return relevant documents. For example, we could search `"fascinating article about cats"` and compare the search results from [Google](https://www.google.com/search?q=fascinating+article+about+cats) and [Exa](https://search.exa.ai/search?q=fascinating%20article%20about%20cats&autopromptString=Here%20is%20a%20fascinating%20article%20about%20cats%3A). Google gives us SEO-optimized listicles based on the keyword "fascinating". Exa just works.
+Exa（前称 Metaphor Search）是一个专为 LLMs 设计的搜索引擎。使用 **自然语言查询** 在互联网上搜索文档，然后从所需文档中检索 **清理过的 HTML 内容**。
 
-This notebook goes over how to use Exa Search with LangChain.
+与基于关键字的搜索（如 Google）不同，Exa 的神经搜索能力使其能够语义理解查询并返回相关文档。例如，我们可以搜索 `"关于猫的迷人文章"`，并比较 [Google](https://www.google.com/search?q=fascinating+article+about+cats) 和 [Exa](https://search.exa.ai/search?q=fascinating%20article%20about%20cats&autopromptString=Here%20is%20a%20fascinating%20article%20about%20cats%3A) 的搜索结果。Google 根据关键字 "fascinating" 提供 SEO 优化的列表。Exa 则能直接工作。
 
-First, get an Exa API key and add it as an environment variable. Get 1000 free searches/month by [signing up here](https://dashboard.exa.ai/).
+本笔记本将介绍如何使用 Exa 搜索与 LangChain。
 
+首先，获取 Exa API 密钥并将其添加为环境变量。通过 [在这里注册](https://dashboard.exa.ai/) 获取每月 1000 次免费搜索。
 
 ```python
 import os
@@ -18,23 +18,22 @@ import os
 os.environ["EXA_API_KEY"] = "..."
 ```
 
-And install the integration package
-
+并安装集成包
 
 ```python
 %pip install --upgrade --quiet langchain-exa 
 
-# and some deps for this notebook
+# 以及本笔记本的一些依赖
 %pip install --upgrade --quiet langchain langchain-openai langchain-community
 ```
 
-## Using ExaSearchRetriever
+## 使用 ExaSearchRetriever
 
-ExaSearchRetriever is a retriever that uses Exa Search to retrieve relevant documents.
+ExaSearchRetriever 是一个使用 Exa Search 来检索相关文档的检索器。
 
 :::note
 
-The `max_characters` parameter for **TextContentsOptions** used to be called `max_length` which is now deprecated. Make sure to use `max_characters` instead.
+**TextContentsOptions** 的 `max_characters` 参数以前称为 `max_length`，现已被弃用。请确保使用 `max_characters`。
 
 :::
 
@@ -74,24 +73,21 @@ chain.invoke("When is the best time to visit japan?")
 
 
 ```output
-AIMessage(content='Based on the given context, there is no specific best time mentioned to visit Japan. Each season has its own special highlights, and Japan is a year-round destination with interesting activities, attractions, and festivities throughout the year. Therefore, the best time to visit Japan depends on personal preferences and the specific activities or events one wants to experience.')
+AIMessage(content='根据给定的上下文，没有提到访问日本的具体最佳时间。每个季节都有其独特的亮点，日本是一个全年都有有趣活动、景点和节庆的目的地。因此，访问日本的最佳时间取决于个人偏好以及想要体验的具体活动或事件。')
 ```
 
+## 使用 Exa SDK 作为 LangChain 代理工具
 
-## Using the Exa SDK as LangChain Agent Tools
+[Exa SDK](https://docs.exa.ai/) 创建一个客户端，可以使用 Exa API 执行三个功能：
+- `search`：根据自然语言搜索查询，检索搜索结果列表。
+- `find_similar`：给定一个 URL，检索与提供的 URL 对应的相似网页的搜索结果列表。
+- `get_content`：根据从 `search` 或 `find_similar` 获取的文档 ID 列表，获取每个文档的清理过的 HTML 内容。
 
-The [Exa SDK](https://docs.exa.ai/) creates a client that can use the Exa API to perform three functions:
-- `search`: Given a natural language search query, retrieve a list of search results.
-- `find_similar`: Given a URL, retrieve a list of search results corresponding to webpages which are similar to the document at the provided URL.
-- `get_content`: Given a list of document ids fetched from `search` or `find_similar`, get cleaned HTML content for each document.
-
-We can use the `@tool` decorator and docstrings to create LangChain Tool wrappers that tell an LLM agent how to use Exa.
-
+我们可以使用 `@tool` 装饰器和文档字符串来创建 LangChain 工具包装器，告诉 LLM 代理如何使用 Exa。
 
 ```python
 %pip install --upgrade --quiet  langchain-exa
 ```
-
 
 ```python
 from exa_py import Exa
@@ -125,10 +121,9 @@ def get_contents(ids: list[str]):
 tools = [search, get_contents, find_similar]
 ```
 
-### Providing Exa Tools to an Agent
+### 将 Exa 工具提供给代理
 
-We can provide the Exa tools we just created to a LangChain `OpenAIFunctionsAgent`. When asked to `Summarize for me a fascinating article about cats`, the agent uses the `search` tool to perform a Exa search with an appropriate search query, uses the `get_contents` tool to perform Exa content retrieval, and then returns a summary of the retrieved content.
-
+我们可以将刚创建的 Exa 工具提供给 LangChain `OpenAIFunctionsAgent`。当被要求 `为我总结一篇关于猫的迷人文章` 时，代理使用 `search` 工具执行 Exa 搜索，并使用适当的搜索查询，使用 `get_contents` 工具进行 Exa 内容检索，然后返回所检索内容的摘要。
 
 ```python
 from langchain.agents import AgentExecutor, OpenAIFunctionsAgent
@@ -146,9 +141,8 @@ agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=agent_prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 ```
 
-
 ```python
-agent_executor.run("Summarize for me a fascinating article about cats.")
+agent_executor.run("为我总结一篇关于猫的迷人文章。")
 ```
 ```output
 
@@ -205,20 +199,18 @@ Invoking: `get_contents` with `{'ids': ['8uIICapOJD68i8iKEaRfPg']}`
 [0m[33;1m[1;3mID: 8uIICapOJD68i8iKEaRfPg
 URL: https://www.theatlantic.com/magazine/archive/2022/12/paying-for-pet-critical-care-cost-health-insurance/671896/
 Title: How Much Would You Pay to Save Your Cat’s Life?
-Extract: <div><article><header><div><div><p>For $15,000, you can get your pet a new kidney.</p><div><address>By <a href="https://www.theatlantic.com/author/sarah-zhang/">Sarah Zhang</a><p>Photographs by Caroline Tompkins for <i>The Atlantic</i></p></address></div></div><div><figure><div></div><figcaption>Sherlock donated a kidney in 2019. (Caroline Tompkins for The Atlantic)</figcaption></figure></div></div></header><section><figure></figure><p><small><i>This article was featured in One Story to Read Today, a newsletter in which our editors recommend a single must-read from </i>The Atlantic<i>, Monday through Friday. </i><a href="https://www.theatlantic.com/newsletters/sign-up/one-story-to-read-today/"><i>Sign up for it here.</i></a><i>      </i></small></p><p>When I first met Strawberry, age 16, she was lying on her back, paws akimbo. Her cat belly was shaved bare, and black stitches ran several inches down her naked pink skin.</p><p>A radiologist squirted ultrasound goop on her abdomen while two veterinary students in dark-blue scrubs gently held down her legs—not that this was really necessary. Strawberry was too tired, too drugged, or simply too out of it from her surgery the previous day to protest. In the dim light of the radiology room, her pupils were dilated into deep black pools. She slowly turned her head toward me. She turned away. She looked around at the small crowd of doctors and students surrounding her, as if to wonder what on God’s green earth had happened for her to end up like this.</p><section><figure><a href="https://www.theatlantic.com/magazine/toc/2022/12/"></a></figure><div><h2>Explore the December 2022 Issue</h2><p>Check out more from this issue and find your next story to read.</p></div><a href="https://www.theatlantic.com/magazine/toc/2022/12/">View More</a></section><p>What had happened was that Strawberry had received a kidney transplant. A surgical team at the University of Georgia had shaved off patches of her long ginger fur, inserting catheters in her leg and neck to deliver the cocktail of drugs she would need during her hospital stay: anesthesia, painkillers, antibiotics, blood thinners, and immunosuppressants. Then a surgeon named Chad Schmiedt carefully cut down the midline of her belly—past the two shriveled kidneys that were no longer doing their job and almost to her groin. Next, he stitched into place a healthy new kidney, freshly retrieved from a living donor just hours earlier.</p><p>Schmiedt is one of only a few surgeons who perform transplants on cats, and is therefore one of the world’s foremost experts at connecting cat kidneys. When he first greeted me with a broad smile and a handshake, I was struck by how his large, callused hand engulfed mine. In the operating room, though, his hands work with microscopic precision, stitching up arteries and veins only millimeters wide. This is the hardest part, he told me, like sewing “wet rice paper.” Once the donor kidney was in place, it flushed pink and Schmiedt closed Strawberry back up. (As in human transplants, the old kidneys can stay in place.) It was then a matter of waiting for her to wake up and pee. She had done both by the time of her ultrasound.</p><p>Not that Strawberry could understand any of this—or that any cat understands why we humans insist on bringing them to vet offices to be poked and prodded by strangers. But without the transplant, she would die of kidney failure, an affliction akin to being gradually poisoned from within. Other treatments could slow her kidney disease, which is common in older cats, but they could not stop it. This is why Strawberry’s owner decided to spend $15,000 on a kidney—a last resort to save her life, or at least extend it.</p><p>I didn’t meet her owner in the hospital that day. Strawberry would need to be hospitalized for at least a week afterAuthor: None[0m[32;1m[1;3mHere is a fascinating article about cats titled "How Much Would You Pay to Save Your Cat’s Life?" by Sarah Zhang. The article discusses the cost of critical care for pets and the lengths that some owners are willing to go to save their cat's life. It highlights a case of a cat named Strawberry who underwent a kidney transplant, a procedure performed by one of the few surgeons who specialize in cat transplants. The article explores the emotional and financial decisions involved in providing life-saving treatments for pets. You can read the full article [here](https://www.theatlantic.com/magazine/archive/2022/12/paying-for-pet-critical-care-cost-health-insurance/671896/).[0m
+Extract: <div><article><header><div><div><p>For $15,000, you can get your pet a new kidney.</p><div><address>By <a href="https://www.theatlantic.com/author/sarah-zhang/">Sarah Zhang</a><p>Photographs by Caroline Tompkins for <i>The Atlantic</i></p></address></div></div><div><figure><div></div><figcaption>Sherlock donated a kidney in 2019. (Caroline Tompkins for The Atlantic)</figcaption></figure></div><div></div></header><section><figure></figure><p><small><i>This article was featured in One Story to Read Today, a newsletter in which our editors recommend a single must-read from </i>The Atlantic<i>, Monday through Friday. </i><a href="https://www.theatlantic.com/newsletters/sign-up/one-story-to-read-today/"><i>Sign up for it here.</i></a><i>      </i></small></p><p>When I first met Strawberry, age 16, she was lying on her back, paws akimbo. Her cat belly was shaved bare, and black stitches ran several inches down her naked pink skin.</p><p>A radiologist squirted ultrasound goop on her abdomen while two veterinary students in dark-blue scrubs gently held down her legs—not that this was really necessary. Strawberry was too tired, too drugged, or simply too out of it from her surgery the previous day to protest. In the dim light of the radiology room, her pupils were dilated into deep black pools. She slowly turned her head toward me. She turned away. She looked around at the small crowd of doctors and students surrounding her, as if to wonder what on God’s green earth had happened for her to end up like this.</p><section><figure><a href="https://www.theatlantic.com/magazine/toc/2022/12/"></a></figure><div><h2>Explore the December 2022 Issue</h2><p>Check out more from this issue and find your next story to read.</p></div><a href="https://www.theatlantic.com/magazine/toc/2022/12/">View More</a></section><p>What had happened was that Strawberry had received a kidney transplant. A surgical team at the University of Georgia had shaved off patches of her long ginger fur, inserting catheters in her leg and neck to deliver the cocktail of drugs she would need during her hospital stay: anesthesia, painkillers, antibiotics, blood thinners, and immunosuppressants. Then a surgeon named Chad Schmiedt carefully cut down the midline of her belly—past the two shriveled kidneys that were no longer doing their job and almost to her groin. Next, he stitched into place a healthy new kidney, freshly retrieved from a living donor just hours earlier.</p><p>Schmiedt is one of only a few surgeons who perform transplants on cats, and is therefore one of the world’s foremost experts at connecting cat kidneys. When he first greeted me with a broad smile and a handshake, I was struck by how his large, callused hand engulfed mine. In the operating room, though, his hands work with microscopic precision, stitching up arteries and veins only millimeters wide. This is the hardest part, he told me, like sewing “wet rice paper.” Once the donor kidney was in place, it flushed pink and Schmiedt closed Strawberry back up. (As in human transplants, the old kidneys can stay in place.) It was then a matter of waiting for her to wake up and pee. She had done both by the time of her ultrasound.</p><p>Not that Strawberry could understand any of this—or that any cat understands why we humans insist on bringing them to vet offices to be poked and prodded by strangers. But without the transplant, she would die of kidney failure, an affliction akin to being gradually poisoned from within. Other treatments could slow her kidney disease, which is common in older cats, but they could not stop it. This is why Strawberry’s owner decided to spend $15,000 on a kidney—a last resort to save her life, or at least extend it.</p><p>I didn’t meet her owner in the hospital that day. Strawberry would need to be hospitalized for at least a week afterAuthor: None[0m[32;1m[1;3mHere is a fascinating article about cats titled "How Much Would You Pay to Save Your Cat’s Life?" by Sarah Zhang. The article discusses the cost of critical care for pets and the lengths that some owners are willing to go to save their cat's life. It highlights a case of a cat named Strawberry who underwent a kidney transplant, a procedure performed by one of the few surgeons who specialize in cat transplants. The article explores the emotional and financial decisions involved in providing life-saving treatments for pets. You can read the full article [here](https://www.theatlantic.com/magazine/archive/2022/12/paying-for-pet-critical-care-cost-health-insurance/671896/).[0m
 
 [1m> Finished chain.[0m
 ```
-
 
 ```output
 'Here is a fascinating article about cats titled "How Much Would You Pay to Save Your Cat’s Life?" by Sarah Zhang. The article discusses the cost of critical care for pets and the lengths that some owners are willing to go to save their cat\'s life. It highlights a case of a cat named Strawberry who underwent a kidney transplant, a procedure performed by one of the few surgeons who specialize in cat transplants. The article explores the emotional and financial decisions involved in providing life-saving treatments for pets. You can read the full article [here](https://www.theatlantic.com/magazine/archive/2022/12/paying-for-pet-critical-care-cost-health-insurance/671896/).'
 ```
 
+## 高级 Exa 特性
 
-## Advanced Exa Features
-
-Exa supports powerful filters by domain and date. We can provide a more powerful `search` tool to the agent that lets it decide to apply filters if they are useful for the objective. See all of Exa's search features [here](https://github.com/metaphorsystems/metaphor-python/).
+Exa 支持按域和日期进行强大的过滤。我们可以为代理提供更强大的 `search` 工具，让其决定在有助于目标时是否应用过滤器。查看 Exa 的所有搜索功能 [这里](https://github.com/metaphorsystems/metaphor-python/)。
 
 [//]: # "TODO(erick): switch metaphor github link to exa github link when sdk published"
 
@@ -264,9 +256,9 @@ def get_contents(ids: list[str]):
 tools = [search, get_contents, find_similar]
 ```
 
-Now we ask the agent to summarize an article with constraints on domain and publish date. We will use a GPT-4 agent for extra powerful reasoning capability to support more complex tool usage.
+现在我们要求代理总结一篇具有域和发布日期约束的文章。我们将使用 GPT-4 代理，以增强推理能力，支持更复杂的工具使用。
 
-The agent correctly uses the search filters to find an article with the desired constraints, and once again retrieves the content and returns a summary.
+代理正确使用搜索过滤器找到符合所需约束的文章，并再次检索内容并返回摘要。
 
 
 ```python
@@ -361,14 +353,21 @@ Source: [LessWrong](https://www.lesswrong.com/posts/K9GP2ZSsugRAGfFns/a-dialecti
 [1m> Finished chain.[0m
 ```
 
-
 ```output
-'The article titled "A dialectical view of the history of AI, Part 1: We’re only in the antithesis phase. [A synthesis is in the future.]" on LessWrong provides a unique perspective on the evolution of AI. The author, Bill Benzon, uses the concept of dialectical change, primarily attributed to Hegel and Marx, to explain the history of AI. \n\nThe dialectical process is described as a movement from a thesis, to an antithesis, and finally, to a synthesis on a higher level. The author applies this concept to AI by identifying three eras. The first era, the THESIS, ran from the 1950s to the 1980s and was based on top-down deductive symbolic methods. The second era, the ANTITHESIS, began in the 1990s and is based on bottom-up statistical methods. These two eras are conceptually and computationally quite different. \n\nAs for the third era, the SYNTHESIS, the author speculates that it will involve a synthesis of conceptual ideas and computational techniques from the previous eras. However, it is unclear if this era will occur or if the current era will take us "all the way". \n\nThe author also notes that the focus of the article is on efforts to model language, as it is the work on language that is currently evoking the most speculation about the future of AI. The article then delves into the history of symbolic AI, starting from the 1950s when the term "artificial intelligence" was coined by John McCarthy. \n\nThe article provides a comprehensive and thought-provoking view on the history and potential future of AI, particularly in the context of language modeling. \n\nSource: [LessWrong](https://www.lesswrong.com/posts/K9GP2ZSsugRAGfFns/a-dialectical-view-of-the-history-of-ai-part-1-we-re-only-in)'
+《题为“人工智能历史的辩证视角，第一部分：我们仅处于对立阶段。[综合在未来。]”的文章在LessWrong上提供了对人工智能演变的独特视角。作者比尔·本宗使用了主要归因于黑格尔和马克思的辩证变化概念来解释人工智能的历史。
+
+辩证过程被描述为从一个命题到对立命题，最后到更高层次的综合。作者通过识别三个时代将这一概念应用于人工智能。第一个时代，即命题阶段，持续从1950年代到1980年代，基于自上而下的演绎符号方法。第二个时代，即对立阶段，从1990年代开始，基于自下而上的统计方法。这两个时代在概念和计算上是相当不同的。
+
+至于第三个时代，即综合阶段，作者推测这将涉及从前两个时代的概念思想和计算技术的综合。然而，目前尚不清楚这一时代是否会发生，或者当前时代是否会将我们“带到尽头”。
+
+作者还指出，文章的重点是对语言建模的努力，因为目前关于语言的工作引发了对人工智能未来的最大猜测。文章接着探讨了符号人工智能的历史，从1950年代约翰·麦卡锡首次提出“人工智能”这一术语开始。
+
+这篇文章提供了对人工智能历史和潜在未来的全面而发人深省的看法，特别是在语言建模的背景下。
+
+来源：[LessWrong](https://www.lesswrong.com/posts/K9GP2ZSsugRAGfFns/a-dialectical-view-of-the-history-of-ai-part-1-we-re-only-in)
 ```
 
+## 相关
 
-
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

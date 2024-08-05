@@ -1,34 +1,30 @@
 # VDMS
 
-> [VDMS](https://github.com/IntelLabs/vdms/blob/master/README.md) is a storage solution for efficient access
-> of big-”visual”-data that aims to achieve cloud scale by searching for relevant visual data via visual metadata
-> stored as a graph and enabling machine friendly enhancements to visual data for faster access.
+> [VDMS](https://github.com/IntelLabs/vdms/blob/master/README.md) 是一种存储解决方案，旨在通过存储为图形的视觉元数据来搜索相关的视觉数据，从而实现对大规模“视觉”数据的高效访问，并使视觉数据能够进行机器友好的增强，以实现更快的访问。
 
-## Installation and Setup
+## 安装与设置
 
-### Install Client
+### 安装客户端
 
 ```bash
 pip install vdms
 ```
 
-### Install Database
+### 安装数据库
 
-There are two ways to get started with VDMS:
+有两种方法可以开始使用 VDMS：
 
-#### Install VDMS on your local machine via docker
+#### 通过 Docker 在本地机器上安装 VDMS
 ```bash
     docker run -d -p 55555:55555 intellabs/vdms:latest
 ```
 
-#### Install VDMS directly on your local machine
-Please see [installation instructions](https://github.com/IntelLabs/vdms/blob/master/INSTALL.md).
-
-
+#### 直接在本地机器上安装 VDMS
+请参阅 [安装说明](https://github.com/IntelLabs/vdms/blob/master/INSTALL.md)。
 
 ## VectorStore
 
-The vector store is a simple wrapper around VDMS. It provides a simple interface to store and retrieve data.
+向量存储是对 VDMS 的简单封装。它提供了一个简单的接口来存储和检索数据。
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -57,6 +53,4 @@ query = "What did the president say about Ketanji Brown Jackson"
 results = vectorstore.similarity_search(query)
 ```
 
-For a more detailed walkthrough of the VDMS wrapper, see [this notebook](/docs/integrations/vectorstores/vdms)
-
-
+有关 VDMS 封装的更详细的讲解，请参见 [此笔记本](/docs/integrations/vectorstores/vdms)

@@ -1,20 +1,19 @@
-
 # rag_lantern
 
-This template performs RAG with Lantern.
+此模板使用 Lantern 执行 RAG。
 
-[Lantern](https://lantern.dev) is an open-source vector database built on top of [PostgreSQL](https://en.wikipedia.org/wiki/PostgreSQL). It enables vector search and embedding generation inside your database.
+[Lantern](https://lantern.dev) 是一个基于 [PostgreSQL](https://en.wikipedia.org/wiki/PostgreSQL) 的开源向量数据库。它使您能够在数据库中进行向量搜索和嵌入生成。
 
-## Environment Setup
+## 环境设置
 
-Set the `OPENAI_API_KEY` environment variable to access the OpenAI models.
+设置 `OPENAI_API_KEY` 环境变量以访问 OpenAI 模型。
 
-To get your `OPENAI_API_KEY`, navigate to [API keys](https://platform.openai.com/account/api-keys) on your OpenAI account and create a new secret key.
+要获取您的 `OPENAI_API_KEY`，请登录您的 OpenAI 账户并导航至 [API 密钥](https://platform.openai.com/account/api-keys) 以创建新的密钥。
 
-To find your `LANTERN_URL` and `LANTERN_SERVICE_KEY`, head to your Lantern project's [API settings](https://lantern.dev/dashboard/project/_/settings/api). 
+要找到您的 `LANTERN_URL` 和 `LANTERN_SERVICE_KEY`，请前往您的 Lantern 项目的 [API 设置](https://lantern.dev/dashboard/project/_/settings/api)。
 
-- `LANTERN_URL` corresponds to the Project URL
-- `LANTERN_SERVICE_KEY` corresponds to the `service_role` API key
+- `LANTERN_URL` 对应项目 URL
+- `LANTERN_SERVICE_KEY` 对应 `service_role` API 密钥
 
 
 ```shell
@@ -23,12 +22,12 @@ export LANTERN_SERVICE_KEY=
 export OPENAI_API_KEY=
 ```
 
-## Setup Lantern Database
+## 设置 Lantern 数据库
 
-Use these steps to setup your Lantern database if you haven't already.
+如果您还没有设置 Lantern 数据库，请按照以下步骤操作。
 
-1. Head to [https://lantern.dev](https://lantern.dev) to create your Lantern database.
-2. In your favorite SQL client, jump to the SQL editor and run the following script to setup your database as a vector store:
+1. 前往 [https://lantern.dev](https://lantern.dev) 创建您的 Lantern 数据库。
+2. 在您喜欢的 SQL 客户端中，跳转到 SQL 编辑器并运行以下脚本以将您的数据库设置为向量存储：
 
    ```sql
    -- Create a table to store your documents
@@ -65,31 +64,31 @@ Use these steps to setup your Lantern database if you haven't already.
    $$;
    ```
 
-## Setup Environment Variables
+## 设置环境变量
 
-Since we are using [`Lantern`](https://python.langchain.com/docs/integrations/vectorstores/lantern) and [`OpenAIEmbeddings`](https://python.langchain.com/docs/integrations/text_embedding/openai), we need to load their API keys.
+由于我们使用 [`Lantern`](https://python.langchain.com/docs/integrations/vectorstores/lantern) 和 [`OpenAIEmbeddings`](https://python.langchain.com/docs/integrations/text_embedding/openai)，我们需要加载它们的 API 密钥。
 
-## Usage
+## 使用方法
 
-First, install the LangChain CLI:
+首先，安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将其安装为唯一的包，可以执行：
 
 ```shell
 langchain app new my-app --package rag-lantern
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，只需运行：
 
 ```shell
 langchain app add rag-lantern
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 
 ```python
 from rag_lantern.chain import chain as rag_lantern_chain
@@ -97,30 +96,30 @@ from rag_lantern.chain import chain as rag_lantern_chain
 add_routes(app, rag_lantern_chain, path="/rag-lantern")
 ```
 
-(Optional) Let's now configure LangSmith. 
-LangSmith will help us trace, monitor and debug LangChain applications. 
-You can sign up for LangSmith [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
+（可选）现在让我们配置 LangSmith。 
+LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。 
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。 
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接通过以下命令启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server is running locally at 
+这将启动 FastAPI 应用程序，服务器在本地运行，地址为 
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/rag-lantern/playground](http://127.0.0.1:8000/rag-lantern/playground)  
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板。
+我们可以在 [http://127.0.0.1:8000/rag-lantern/playground](http://127.0.0.1:8000/rag-lantern/playground) 访问游乐场。
 
-We can access the template from code with:
+我们可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable

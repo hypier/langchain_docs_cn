@@ -1,44 +1,45 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/tool_calling.ipynb
-keywords: [tool calling, tool call]
+keywords: [工具调用, 工具调用]
 ---
-# How to use chat models to call tools
 
-:::info Prerequisites
+# 如何使用聊天模型调用工具
 
-This guide assumes familiarity with the following concepts:
+:::info 前提条件
 
-- [Chat models](/docs/concepts/#chat-models)
-- [Tool calling](/docs/concepts/#functiontool-calling)
-- [Tools](/docs/concepts/#tools)
-- [Output parsers](/docs/concepts/#output-parsers)
+本指南假设您对以下概念有一定了解：
+
+- [聊天模型](/docs/concepts/#chat-models)
+- [工具调用](/docs/concepts/#functiontool-calling)
+- [工具](/docs/concepts/#tools)
+- [输出解析器](/docs/concepts/#output-parsers)
 :::
 
-[Tool calling](/docs/concepts/#functiontool-calling) allows a chat model to respond to a given prompt by "calling a tool".
+[工具调用](/docs/concepts/#functiontool-calling)允许聊天模型通过“调用工具”来响应给定的提示。
 
-Remember, while the name "tool calling" implies that the model is directly performing some action, this is actually not the case! The model only generates the arguments to a tool, and actually running the tool (or not) is up to the user.
+请记住，虽然“工具调用”这个名称暗示模型直接执行某些操作，但实际上并非如此！模型只是生成工具的参数，实际运行工具（或不运行）由用户决定。
 
-Tool calling is a general technique that generates structured output from a model, and you can use it even when you don't intend to invoke any tools. An example use-case of that is [extraction from unstructured text](/docs/tutorials/extraction/).
+工具调用是一种通用技术，可以从模型生成结构化输出，即使您不打算调用任何工具，也可以使用它。一个示例用例是[从非结构化文本中提取](/docs/tutorials/extraction/)。
 
-![Diagram of calling a tool](/img/tool_call.png)
+![调用工具的示意图](/img/tool_call.png)
 
-If you want to see how to use the model-generated tool call to actually run a tool [check out this guide](/docs/how_to/tool_results_pass_to_model/).
+如果您想查看如何使用模型生成的工具调用来实际运行工具，请[查看本指南](/docs/how_to/tool_results_pass_to_model/)。
 
-:::note Supported models
+:::note 支持的模型
 
-Tool calling is not universal, but is supported by many popular LLM providers. You can find a [list of all models that support tool calling here](/docs/integrations/chat/).
+工具调用并不是普遍适用的，但许多流行的LLM提供商支持它。您可以在这里找到[支持工具调用的所有模型的列表](/docs/integrations/chat/)。
 
 :::
 
-LangChain implements standard interfaces for defining tools, passing them to LLMs, and representing tool calls.
-This guide will cover how to bind tools to an LLM, then invoke the LLM to generate these arguments.
+LangChain实现了定义工具、将其传递给LLM以及表示工具调用的标准接口。
+本指南将介绍如何将工具绑定到LLM，然后调用LLM生成这些参数。
 
-## Defining tool schemas
+## 定义工具模式
 
-For a model to be able to call tools, we need to pass in tool schemas that describe what the tool does and what it's arguments are. Chat models that support tool calling features implement a `.bind_tools()` method for passing tool schemas to the model. Tool schemas can be passed in as Python functions (with typehints and docstrings), Pydantic models, TypedDict classes, or LangChain [Tool objects](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.BaseTool.html#langchain_core.tools.BaseTool). Subsequent invocations of the model will pass in these tool schemas along with the prompt.
+为了使模型能够调用工具，我们需要传入描述工具功能及其参数的工具模式。支持工具调用功能的聊天模型实现了 `.bind_tools()` 方法，以将工具模式传递给模型。工具模式可以作为 Python 函数（带有类型提示和文档字符串）、Pydantic 模型、TypedDict 类或 LangChain [工具对象](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.BaseTool.html#langchain_core.tools.BaseTool) 传递。模型的后续调用将与提示一起传入这些工具模式。
 
-### Python functions
-Our tool schemas can be Python functions:
+### Python 函数
+我们的工具模式可以是 Python 函数：
 
 
 ```python
@@ -66,14 +67,13 @@ def multiply(a: int, b: int) -> int:
     return a * b
 ```
 
-### LangChain Tool
+### LangChain 工具
 
-LangChain also implements a `@tool` decorator that allows for further control of the tool schema, such as tool names and argument descriptions. See the how-to guide [here](/docs/how_to/custom_tools/#creating-tools-from-functions) for details.
+LangChain 还实现了一个 `@tool` 装饰器，允许进一步控制工具架构，例如工具名称和参数描述。有关详细信息，请参阅如何指南 [here](/docs/how_to/custom_tools/#creating-tools-from-functions)。
 
-### Pydantic class
+### Pydantic 类
 
-You can equivalently define the schemas without the accompanying functions using [Pydantic](https://docs.pydantic.dev):
-
+您可以使用 [Pydantic](https://docs.pydantic.dev) 等效地定义没有附带函数的模式：
 
 ```python
 from langchain_core.pydantic_v1 import BaseModel, Field
@@ -93,38 +93,36 @@ class multiply(BaseModel):
     b: int = Field(..., description="Second integer")
 ```
 
-### TypedDict class
+### TypedDict 类
 
-:::info Requires `langchain-core>=0.2.25`
+:::info 需要 `langchain-core>=0.2.25`
 :::
 
-Or using TypedDicts and annotations:
-
+或者使用 TypedDict 和注解：
 
 ```python
 from typing_extensions import Annotated, TypedDict
 
 
 class add(TypedDict):
-    """Add two integers."""
+    """添加两个整数。"""
 
-    # Annotations must have the type and can optionally include a default value and description (in that order).
-    a: Annotated[int, ..., "First integer"]
-    b: Annotated[int, ..., "Second integer"]
+    # 注解必须包含类型，并可以选择性地包括默认值和描述（按此顺序）。
+    a: Annotated[int, ..., "第一个整数"]
+    b: Annotated[int, ..., "第二个整数"]
 
 
 class multiply(BaseModel):
-    """Multiply two integers."""
+    """乘以两个整数。"""
 
-    a: Annotated[int, ..., "First integer"]
-    b: Annotated[int, ..., "Second integer"]
+    a: Annotated[int, ..., "第一个整数"]
+    b: Annotated[int, ..., "第二个整数"]
 
 
 tools = [add, multiply]
 ```
 
-To actually bind those schemas to a chat model, we'll use the `.bind_tools()` method. This handles converting
-the `add` and `multiply` schemas to the proper format for the model. The tool schema will then be passed it in each time the model is invoked.
+要将这些模式实际绑定到聊天模型，我们将使用 `.bind_tools()` 方法。这将处理将 `add` 和 `multiply` 模式转换为模型所需的格式。工具模式将在每次调用模型时传入。
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
@@ -137,7 +135,7 @@ import ChatModelTabs from "@theme/ChatModelTabs";
 ```python
 llm_with_tools = llm.bind_tools(tools)
 
-query = "What is 3 * 12?"
+query = "3 * 12 是多少？"
 
 llm_with_tools.invoke(query)
 ```
@@ -149,21 +147,18 @@ AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_BwYJ4UgU5pR
 ```
 
 
-As we can see our LLM generated arguments to a tool! You can look at the docs for [bind_tools()](https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.base.BaseChatOpenAI.html#langchain_openai.chat_models.base.BaseChatOpenAI.bind_tools) to learn about all the ways to customize how your LLM selects tools, as well as [this guide on how to force the LLM to call a tool](/docs/how_to/tool_choice/) rather than letting it decide.
+如我们所见，我们的 LLM 生成了工具的参数！您可以查看 [bind_tools()](https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.base.BaseChatOpenAI.html#langchain_openai.chat_models.base.BaseChatOpenAI.bind_tools) 的文档，了解自定义 LLM 选择工具的所有方法，以及 [如何强制 LLM 调用工具]( /docs/how_to/tool_choice/) 的指南，而不是让它自己决定。
 
-## Tool calls
+## 工具调用
 
-If tool calls are included in a LLM response, they are attached to the corresponding 
-[message](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessage.html#langchain_core.messages.ai.AIMessage) 
-or [message chunk](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessageChunk.html#langchain_core.messages.ai.AIMessageChunk) 
-as a list of [tool call](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.tool.ToolCall.html#langchain_core.messages.tool.ToolCall) 
-objects in the `.tool_calls` attribute.
+如果工具调用包含在 LLM 响应中，它们将作为工具调用对象的列表附加到相应的 
+[消息](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessage.html#langchain_core.messages.ai.AIMessage) 
+或 [消息块](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessageChunk.html#langchain_core.messages.ai.AIMessageChunk) 
+的 `.tool_calls` 属性中。
 
-Note that chat models can call multiple tools at once.
+请注意，聊天模型可以同时调用多个工具。
 
-A `ToolCall` is a typed dict that includes a 
-tool name, dict of argument values, and (optionally) an identifier. Messages with no 
-tool calls default to an empty list for this attribute.
+`ToolCall` 是一个类型字典，包含工具名称、参数值字典和（可选的）标识符。没有工具调用的消息在此属性上默认为空列表。
 
 
 ```python
@@ -186,19 +181,11 @@ llm_with_tools.invoke(query).tool_calls
 ```
 
 
-The `.tool_calls` attribute should contain valid tool calls. Note that on occasion, 
-model providers may output malformed tool calls (e.g., arguments that are not 
-valid JSON). When parsing fails in these cases, instances 
-of [InvalidToolCall](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.tool.InvalidToolCall.html#langchain_core.messages.tool.InvalidToolCall) 
-are populated in the `.invalid_tool_calls` attribute. An `InvalidToolCall` can have 
-a name, string arguments, identifier, and error message.
+`.tool_calls` 属性应包含有效的工具调用。请注意，模型提供者有时可能会输出格式不正确的工具调用（例如，不有效的 JSON 参数）。在这些情况下，如果解析失败，`.invalid_tool_calls` 属性中将填充 [InvalidToolCall](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.tool.InvalidToolCall.html#langchain_core.messages.tool.InvalidToolCall) 的实例。`InvalidToolCall` 可以具有名称、字符串参数、标识符和错误消息。
 
+## 解析
 
-## Parsing
-
-If desired, [output parsers](/docs/how_to#output-parsers) can further process the output. For example, we can convert existing values populated on the `.tool_calls` to Pydantic objects using the
-[PydanticToolsParser](https://api.python.langchain.com/en/latest/output_parsers/langchain_core.output_parsers.openai_tools.PydanticToolsParser.html):
-
+如果需要，可以进一步处理输出的 [输出解析器](/docs/how_to#output-parsers)。例如，我们可以使用 [PydanticToolsParser](https://api.python.langchain.com/en/latest/output_parsers/langchain_core.output_parsers.openai_tools.PydanticToolsParser.html) 将 `.tool_calls` 中填充的现有值转换为 Pydantic 对象：
 
 ```python
 from langchain_core.output_parsers import PydanticToolsParser
@@ -223,24 +210,21 @@ chain = llm_with_tools | PydanticToolsParser(tools=[add, multiply])
 chain.invoke(query)
 ```
 
-
-
 ```output
 [multiply(a=3, b=12), add(a=11, b=49)]
 ```
 
+## 下一步
 
-## Next steps
+现在您已经学习了如何将工具模式绑定到聊天模型，并让模型调用该工具。
 
-Now you've learned how to bind tool schemas to a chat model and have the model call the tool.
+接下来，请查看此指南，了解如何通过调用函数并将结果传递回模型来实际使用该工具：
 
-Next, check out this guide on actually using the tool by invoking the function and passing the results back to the model:
+- 将 [工具结果传递回模型](/docs/how_to/tool_results_pass_to_model)
 
-- Pass [tool results back to model](/docs/how_to/tool_results_pass_to_model)
+您还可以查看一些更具体的工具调用用法：
 
-You can also check out some more specific uses of tool calling:
-
-- Getting [structured outputs](/docs/how_to/structured_output/) from models
-- Few shot prompting [with tools](/docs/how_to/tools_few_shot/)
-- Stream [tool calls](/docs/how_to/tool_streaming/)
-- Pass [runtime values to tools](/docs/how_to/tool_runtime)
+- 从模型获取 [结构化输出](/docs/how_to/structured_output/)
+- 使用工具进行少量示例提示 [with tools](/docs/how_to/tools_few_shot/)
+- 流式 [工具调用](/docs/how_to/tool_streaming/)
+- 将 [运行时值传递给工具](/docs/how_to/tool_runtime)

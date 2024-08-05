@@ -1,9 +1,10 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/pyspark_dataframe.ipynb
 ---
+
 # PySpark
 
-This notebook goes over how to load data from a [PySpark](https://spark.apache.org/docs/latest/api/python/) DataFrame.
+本笔记本介绍如何从 [PySpark](https://spark.apache.org/docs/latest/api/python/) DataFrame 加载数据。
 
 
 ```python
@@ -20,9 +21,9 @@ from pyspark.sql import SparkSession
 spark = SparkSession.builder.getOrCreate()
 ```
 ```output
-Setting default log level to "WARN".
-To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
-23/05/31 14:08:33 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+设置默认日志级别为 "WARN"。
+要调整日志级别，请使用 sc.setLogLevel(newLevel)。对于 SparkR，请使用 setLogLevel(newLevel)。
+23/05/31 14:08:33 WARN NativeCodeLoader: 无法加载适合您平台的本地 Hadoop 库... 在适用的情况下使用内置 Java 类
 ```
 
 ```python
@@ -81,9 +82,7 @@ loader.load()
  Document(page_content='Astros', metadata={' "Payroll (millions)"': '        60.65', ' "Wins"': ' 55'})]
 ```
 
+## 相关
 
-
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

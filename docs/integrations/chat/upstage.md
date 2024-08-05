@@ -2,25 +2,26 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/upstage.ipynb
 sidebar_label: Upstage
 ---
+
 # ChatUpstage
 
-This notebook covers how to get started with Upstage chat models.
+本笔记本介绍如何开始使用 Upstage 聊天模型。
 
-## Installation
+## 安装
 
-Install `langchain-upstage` package.
+安装 `langchain-upstage` 包。
 
 ```bash
 pip install -U langchain-upstage
 ```
 
-## Environment Setup
+## 环境设置
 
-Make sure to set the following environment variables:
+确保设置以下环境变量：
 
-- `UPSTAGE_API_KEY`: Your Upstage API key from [Upstage console](https://console.upstage.ai/).
+- `UPSTAGE_API_KEY`: 您来自 [Upstage 控制台](https://console.upstage.ai/) 的 Upstage API 密钥。
 
-## Usage
+## 用法
 
 
 ```python
@@ -39,18 +40,18 @@ chat = ChatUpstage()
 
 
 ```python
-# using chat invoke
+# 使用聊天调用
 chat.invoke("Hello, how are you?")
 ```
 
 
 ```python
-# using chat stream
+# 使用聊天流
 for m in chat.stream("Hello, how are you?"):
     print(m)
 ```
 
-## Chaining
+## 链接
 
 
 ```python
@@ -66,8 +67,7 @@ chain = prompt | chat
 chain.invoke({"english_text": "Hello, how are you?"})
 ```
 
+## 相关
 
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

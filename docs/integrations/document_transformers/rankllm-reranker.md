@@ -1,26 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_transformers/rankllm-reranker.ipynb
 ---
+
 # RankLLM Reranker
 
-
-[RankLLM](https://github.com/castorini/rank_llm) offers a suite of listwise rerankers, albeit with focus on open source LLMs finetuned for the task - RankVicuna and RankZephyr being two of them.
-
+[RankLLM](https://github.com/castorini/rank_llm) 提供了一系列基于列表的重排序器，重点是针对该任务微调的开源 LLM，RankVicuna 和 RankZephyr 是其中两个。
 
 ```python
 %pip install --upgrade --quiet  rank_llm
 ```
 
-
 ```python
 %pip install --upgrade --quiet  langchain_openai
 ```
 
-
 ```python
 %pip install --upgrade --quiet  faiss-cpu
 ```
-
 
 ```python
 import getpass
@@ -28,7 +24,6 @@ import os
 
 os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API Key:")
 ```
-
 
 ```python
 # Helper function for printing docs
@@ -40,9 +35,8 @@ def pretty_print_docs(docs):
     )
 ```
 
-## Set up the base vector store retriever
-Let's start by initializing a simple vector store retriever and storing the 2023 State of the Union speech (in chunks). We can set up the retriever to retrieve a high number (20) of docs.
-
+## 设置基础向量存储检索器
+让我们开始初始化一个简单的向量存储检索器，并存储 2023 年的国情咨文（分块）。我们可以设置检索器以检索大量文档（20）。
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -60,9 +54,9 @@ embedding = OpenAIEmbeddings(model="text-embedding-ada-002")
 retriever = FAISS.from_documents(texts, embedding).as_retriever(search_kwargs={"k": 20})
 ```
 
-# Retrieval + RankLLM Reranking (RankZephyr)
+# 检索 + RankLLM 重新排序 (RankZephyr)
 
-Retrieval without reranking
+无重新排序的检索
 
 
 ```python
@@ -259,8 +253,6 @@ We will buy American to make sure everything from the deck of an aircraft carrie
 
 But to compete for the best jobs of the future, we also need to level the playing field with China and other competitors.
 ```
-Retrieval + Reranking with RankZephyr
-
 
 ```python
 from langchain.retrievers.contextual_compression import ContextualCompressionRetriever
@@ -272,41 +264,40 @@ compression_retriever = ContextualCompressionRetriever(
 )
 ```
 
-
 ```python
 compressed_docs = compression_retriever.invoke(query)
 pretty_print_docs(compressed_docs)
 ```
 ```output
-Document 1:
+文档 1:
 
-Together with our allies –we are right now enforcing powerful economic sanctions. 
+我们与盟友一起——现在正在实施强有力的经济制裁。
 
-We are cutting off Russia’s largest banks from the international financial system.  
+我们正在切断俄罗斯最大的银行与国际金融体系的联系。
 
-Preventing Russia’s central bank from defending the Russian Ruble making Putin’s $630 Billion “war fund” worthless.   
+阻止俄罗斯中央银行捍卫俄罗斯卢布，使普京的6300亿美元“战争基金”变得毫无价值。
 
-We are choking off Russia’s access to technology that will sap its economic strength and weaken its military for years to come.
+我们正在切断俄罗斯获取技术的途径，这将削弱其经济实力，并在未来数年削弱其军事力量。
 ----------------------------------------------------------------------------------------------------
-Document 2:
+文档 2:
 
-And tonight I am announcing that we will join our allies in closing off American air space to all Russian flights – further isolating Russia – and adding an additional squeeze –on their economy. The Ruble has lost 30% of its value. 
+今晚我宣布，我们将与盟友一起关闭美国领空，禁止所有俄罗斯航班——进一步孤立俄罗斯——并对其经济施加额外压力。卢布贬值了30%。
 
-The Russian stock market has lost 40% of its value and trading remains suspended. Russia’s economy is reeling and Putin alone is to blame.
+俄罗斯股市贬值了40%，交易仍然暂停。俄罗斯经济正处于动荡之中，普京应对此负责。
 ----------------------------------------------------------------------------------------------------
-Document 3:
+文档 3:
 
-And now that he has acted the free world is holding him accountable. 
+现在他已经采取行动，自由世界正在追究他的责任。
 
-Along with twenty-seven members of the European Union including France, Germany, Italy, as well as countries like the United Kingdom, Canada, Japan, Korea, Australia, New Zealand, and many others, even Switzerland. 
+与包括法国、德国、意大利在内的二十七个欧盟成员国，以及英国、加拿大、日本、韩国、澳大利亚、新西兰等国家，甚至瑞士一起。
 
-We are inflicting pain on Russia and supporting the people of Ukraine. Putin is now isolated from the world more than ever. 
+我们正在对俄罗斯施加压力，并支持乌克兰人民。普京现在比以往任何时候都更加孤立于世界。
 
-Together with our allies –we are right now enforcing powerful economic sanctions.
+我们与盟友一起——现在正在实施强有力的经济制裁。
 ``````output
 
 ```
-Can be used within a QA pipeline
+可以在问答管道中使用
 
 
 ```python
@@ -325,15 +316,13 @@ chain({"query": query})
 
 
 ```output
-{'query': 'What was done to Russia?',
- 'result': 'Russia has been subjected to powerful economic sanctions, including cutting off its largest banks from the international financial system, preventing its central bank from defending the Russian Ruble, and choking off its access to technology. Additionally, American airspace has been closed to all Russian flights, further isolating Russia and adding pressure on its economy. These actions have led to a significant devaluation of the Ruble, a sharp decline in the Russian stock market, and overall economic turmoil in Russia.'}
+{'query': '对俄罗斯做了什么？',
+ 'result': '俄罗斯遭受了强有力的经济制裁，包括切断其最大的银行与国际金融体系的联系，阻止其中央银行捍卫俄罗斯卢布，并切断其获取技术的途径。此外，美国已经关闭了所有俄罗斯航班的领空，进一步孤立俄罗斯，并对其经济施加压力。这些措施导致卢布大幅贬值，俄罗斯股市急剧下跌，整体经济动荡不安。'}
 ```
 
+# 检索 + RankLLM 重新排序 (RankGPT)
 
-# Retrieval + RankLLM Reranking (RankGPT)
-
-Retrieval without reranking
-
+不带重新排序的检索
 
 ```python
 query = "What did the president say about Ketanji Brown Jackson"
@@ -542,8 +531,6 @@ The United States of America.
 
 May God bless you all. May God protect our troops.
 ```
-Retrieval + Reranking with RankGPT
-
 
 ```python
 from langchain.retrievers.contextual_compression import ContextualCompressionRetriever
@@ -561,27 +548,27 @@ compressed_docs = compression_retriever.invoke(query)
 pretty_print_docs(compressed_docs)
 ```
 ```output
-Document 1:
+文档 1:
 
-One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. 
+总统最严肃的宪法责任之一是提名某人担任美国最高法院法官。
 
-And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
+我在4天前提名了巡回上诉法院法官Ketanji Brown Jackson。她是我们国家顶尖的法律人才之一，将继续布雷耶法官的卓越遗产。
 ----------------------------------------------------------------------------------------------------
-Document 2:
+文档 2:
 
-A former top litigator in private practice. A former federal public defender. And from a family of public school educators and police officers. A consensus builder. Since she’s been nominated, she’s received a broad range of support—from the Fraternal Order of Police to former judges appointed by Democrats and Republicans. 
+一位曾在私人执业中担任顶尖诉讼律师的人。一位前联邦公设辩护人。来自一个公共学校教育工作者和警察的家庭。一位共识建立者。自从她被提名以来，她得到了广泛的支持——从兄弟警察协会到由民主党和共和党任命的前法官。
 
-And if we are to advance liberty and justice, we need to secure the Border and fix the immigration system.
+如果我们要推进自由和正义，我们需要确保边界安全并修复移民系统。
 ----------------------------------------------------------------------------------------------------
-Document 3:
+文档 3:
 
-As I said last year, especially to our younger transgender Americans, I will always have your back as your President, so you can be yourself and reach your God-given potential. 
+正如我去年对年轻的跨性别美国人所说的，我将始终支持你们，作为你们的总统，让你们能够做自己，达到上天赋予你们的潜力。
 
-While it often appears that we never agree, that isn’t true. I signed 80 bipartisan bills into law last year. From preventing government shutdowns to protecting Asian-Americans from still-too-common hate crimes to reforming military justice.
+虽然看起来我们从未达成一致，但这并不真实。去年我签署了80项两党法案。从防止政府关门到保护亚裔美国人免受仍然过于常见的仇恨犯罪，再到改革军事司法。
 ``````output
 
 ```
-You can use this retriever within a QA pipeline
+您可以在问答管道中使用此检索器
 
 
 ```python
@@ -600,7 +587,6 @@ chain({"query": query})
 
 
 ```output
-{'query': 'What did the president say about Ketanji Brown Jackson',
- 'result': "The President mentioned that Ketanji Brown Jackson is one of the nation's top legal minds and that she will continue Justice Breyer's legacy of excellence. He highlighted her background as a former top litigator in private practice and a former federal public defender, as well as coming from a family of public school educators and police officers. He also mentioned that since her nomination, she has received broad support from various groups, including the Fraternal Order of Police and former judges appointed by Democrats and Republicans."}
+{'query': '总统对Ketanji Brown Jackson说了什么',
+ 'result': "总统提到Ketanji Brown Jackson是国家顶尖的法律人才之一，并且她将继续布雷耶法官的卓越遗产。他强调了她作为前顶尖诉讼律师和前联邦公设辩护人的背景，以及她来自公共学校教育工作者和警察的家庭。他还提到，自从她被提名以来，她得到了来自包括兄弟警察协会和由民主党和共和党任命的前法官在内的各个团体的广泛支持。"}
 ```
-

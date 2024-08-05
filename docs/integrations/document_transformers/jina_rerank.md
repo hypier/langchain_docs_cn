@@ -1,10 +1,10 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_transformers/jina_rerank.ipynb
 ---
+
 # Jina Reranker
 
-This notebook shows how to use Jina Reranker for document compression and retrieval.
-
+本笔记本展示了如何使用 Jina Reranker 进行文档压缩和检索。
 
 ```python
 %pip install -qU langchain langchain-openai langchain-community langchain-text-splitters langchainhub
@@ -16,10 +16,8 @@ This notebook shows how to use Jina Reranker for document compression and retrie
 %pip install --upgrade --quiet  faiss_cpu
 ```
 
-
 ```python
 # Helper function for printing docs
-
 
 def pretty_print_docs(docs):
     print(
@@ -29,11 +27,11 @@ def pretty_print_docs(docs):
     )
 ```
 
-## Set up the base vector store retriever
+## 设置基础向量存储检索器
 
-Let's start by initializing a simple vector store retriever and storing the 2023 State of the Union speech (in chunks). We can set up the retriever to retrieve a high number (20) of docs.
+让我们开始初始化一个简单的向量存储检索器，并存储2023年国情咨文演讲（分块）。我们可以设置检索器以检索大量（20）文档。
 
-##### Set the Jina and OpenAI API keys
+##### 设置Jina和OpenAI API密钥
 
 
 ```python
@@ -65,9 +63,9 @@ docs = retriever.get_relevant_documents(query)
 pretty_print_docs(docs)
 ```
 
-## Doing reranking with JinaRerank
+## 使用 JinaRerank 进行重排序
 
-Now let's wrap our base retriever with a ContextualCompressionRetriever, using Jina Reranker as a compressor.
+现在让我们用 ContextualCompressionRetriever 包装我们的基础检索器，使用 Jina Reranker 作为压缩器。
 
 
 ```python
@@ -89,8 +87,7 @@ compressed_docs = compression_retriever.get_relevant_documents(
 pretty_print_docs(compressed_docs)
 ```
 
-## QA reranking with Jina Reranker
-
+## QA 重新排序与 Jina Reranker
 
 ```python
 from langchain import hub
@@ -101,19 +98,19 @@ retrieval_qa_chat_prompt = hub.pull("langchain-ai/retrieval-qa-chat")
 retrieval_qa_chat_prompt.pretty_print()
 ```
 ```output
-================================[1m System Message [0m================================
+================================[1m 系统消息 [0m================================
 
-Answer any use questions based solely on the context below:
+仅基于以下上下文回答任何使用问题：
 
 <context>
 [33;1m[1;3m{context}[0m
 </context>
 
-=============================[1m Messages Placeholder [0m=============================
+=============================[1m 消息占位符 [0m=============================
 
 [33;1m[1;3m{chat_history}[0m
 
-================================[1m Human Message [0m=================================
+================================[1m 人类消息 [0m=================================
 
 [33;1m[1;3m{input}[0m
 ```
@@ -125,7 +122,6 @@ llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 combine_docs_chain = create_stuff_documents_chain(llm, retrieval_qa_chat_prompt)
 chain = create_retrieval_chain(compression_retriever, combine_docs_chain)
 ```
-
 
 ```python
 chain.invoke({"input": query})

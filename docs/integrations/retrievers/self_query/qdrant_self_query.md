@@ -1,24 +1,23 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/self_query/qdrant_self_query.ipynb
 ---
+
 # Qdrant
 
->[Qdrant](https://qdrant.tech/documentation/) (read: quadrant) is a vector similarity search engine. It provides a production-ready service with a convenient API to store, search, and manage points - vectors with an additional payload. `Qdrant` is tailored to extended filtering support.
+>[Qdrant](https://qdrant.tech/documentation/)（读作：四分之一）是一个向量相似性搜索引擎。它提供了一个生产就绪的服务，带有方便的 API 来存储、搜索和管理点 - 带有附加负载的向量。`Qdrant` 针对扩展过滤支持进行了优化。
 
-In the notebook, we'll demo the `SelfQueryRetriever` wrapped around a `Qdrant` vector store. 
+在笔记本中，我们将演示围绕 `Qdrant` 向量存储的 `SelfQueryRetriever`。
 
-## Creating a Qdrant vector store
-First we'll want to create a Qdrant vector store and seed it with some data. We've created a small demo set of documents that contain summaries of movies.
+## 创建 Qdrant 向量存储
+首先，我们需要创建一个 Qdrant 向量存储，并用一些数据进行初始化。我们创建了一小组包含电影摘要的文档作为演示集。
 
-**Note:** The self-query retriever requires you to have `lark` installed (`pip install lark`). We also need the `qdrant-client` package.
-
+**注意：** 自查询检索器需要您安装 `lark` (`pip install lark`)。我们还需要 `qdrant-client` 包。
 
 ```python
 %pip install --upgrade --quiet  lark qdrant-client
 ```
 
-We want to use `OpenAIEmbeddings` so we have to get the OpenAI API Key.
-
+我们想使用 `OpenAIEmbeddings`，所以我们必须获取 OpenAI API 密钥。
 
 ```python
 # import os
@@ -40,46 +39,45 @@ embeddings = OpenAIEmbeddings()
 ```python
 docs = [
     Document(
-        page_content="A bunch of scientists bring back dinosaurs and mayhem breaks loose",
-        metadata={"year": 1993, "rating": 7.7, "genre": "science fiction"},
+        page_content="一群科学家复活了恐龙，结果引发了混乱",
+        metadata={"year": 1993, "rating": 7.7, "genre": "科幻"},
     ),
     Document(
-        page_content="Leo DiCaprio gets lost in a dream within a dream within a dream within a ...",
-        metadata={"year": 2010, "director": "Christopher Nolan", "rating": 8.2},
+        page_content="莱昂纳多·迪卡普里奥在梦中迷失，梦中又有梦...",
+        metadata={"year": 2010, "director": "克里斯托弗·诺兰", "rating": 8.2},
     ),
     Document(
-        page_content="A psychologist / detective gets lost in a series of dreams within dreams within dreams and Inception reused the idea",
-        metadata={"year": 2006, "director": "Satoshi Kon", "rating": 8.6},
+        page_content="一位心理学家/侦探在一系列梦中迷失，盗梦空间重用了这个想法",
+        metadata={"year": 2006, "director": "今敏", "rating": 8.6},
     ),
     Document(
-        page_content="A bunch of normal-sized women are supremely wholesome and some men pine after them",
-        metadata={"year": 2019, "director": "Greta Gerwig", "rating": 8.3},
+        page_content="一群普通身材的女性非常健康，一些男性对她们心生向往",
+        metadata={"year": 2019, "director": "格蕾塔·葛韦格", "rating": 8.3},
     ),
     Document(
-        page_content="Toys come alive and have a blast doing so",
-        metadata={"year": 1995, "genre": "animated"},
+        page_content="玩具复活并乐在其中",
+        metadata={"year": 1995, "genre": "动画"},
     ),
     Document(
-        page_content="Three men walk into the Zone, three men walk out of the Zone",
+        page_content="三名男子走进区域，三名男子走出区域",
         metadata={
             "year": 1979,
             "rating": 9.9,
-            "director": "Andrei Tarkovsky",
-            "genre": "science fiction",
+            "director": "安德烈·塔尔科夫斯基",
+            "genre": "科幻",
         },
     ),
 ]
 vectorstore = Qdrant.from_documents(
     docs,
     embeddings,
-    location=":memory:",  # Local mode with in-memory storage only
+    location=":memory:",  # 仅使用内存存储的本地模式
     collection_name="my_documents",
 )
 ```
 
-## Creating our self-querying retriever
-Now we can instantiate our retriever. To do this we'll need to provide some information upfront about the metadata fields that our documents support and a short description of the document contents.
-
+## 创建自查询检索器
+现在我们可以实例化我们的检索器。为此，我们需要提前提供一些关于我们的文档支持的元数据字段的信息，以及文档内容的简短描述。
 
 ```python
 from langchain.chains.query_constructor.base import AttributeInfo
@@ -113,8 +111,8 @@ retriever = SelfQueryRetriever.from_llm(
 )
 ```
 
-## Testing it out
-And now we can try actually using our retriever!
+## 测试一下
+现在我们可以尝试实际使用我们的检索器了！
 
 
 ```python
@@ -196,13 +194,11 @@ query='toys' filter=Operation(operator=<Operator.AND: 'and'>, arguments=[Compari
 [Document(page_content='Toys come alive and have a blast doing so', metadata={'year': 1995, 'genre': 'animated'})]
 ```
 
+## 过滤 k
 
-## Filter k
+我们还可以使用自查询检索器来指定 `k`：要获取的文档数量。
 
-We can also use the self query retriever to specify `k`: the number of documents to fetch.
-
-We can do this by passing `enable_limit=True` to the constructor.
-
+我们可以通过将 `enable_limit=True` 传递给构造函数来实现这一点。
 
 ```python
 retriever = SelfQueryRetriever.from_llm(
@@ -215,18 +211,15 @@ retriever = SelfQueryRetriever.from_llm(
 )
 ```
 
-
 ```python
-# This example only specifies a relevant query
+# 这个示例仅指定一个相关查询
 retriever.invoke("what are two movies about dinosaurs")
 ```
 ```output
 query='dinosaur' filter=None limit=2
 ```
 
-
 ```output
 [Document(page_content='A bunch of scientists bring back dinosaurs and mayhem breaks loose', metadata={'year': 1993, 'rating': 7.7, 'genre': 'science fiction'}),
  Document(page_content='Toys come alive and have a blast doing so', metadata={'year': 1995, 'genre': 'animated'})]
 ```
-

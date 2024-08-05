@@ -3,30 +3,31 @@ custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs
 sidebar_position: 3
 keywords: [RunnableBranch, LCEL]
 ---
-# How to route between sub-chains
 
-:::info Prerequisites
+# 如何在子链之间进行路由
 
-This guide assumes familiarity with the following concepts:
-- [LangChain Expression Language (LCEL)](/docs/concepts/#langchain-expression-language)
-- [Chaining runnables](/docs/how_to/sequence/)
-- [Configuring chain parameters at runtime](/docs/how_to/configure)
-- [Prompt templates](/docs/concepts/#prompt-templates)
-- [Chat Messages](/docs/concepts/#message-types)
+:::info 前提条件
+
+本指南假设您熟悉以下概念：
+- [LangChain 表达式语言 (LCEL)](/docs/concepts/#langchain-expression-language)
+- [链式可运行对象](/docs/how_to/sequence/)
+- [运行时配置链参数](/docs/how_to/configure)
+- [提示模板](/docs/concepts/#prompt-templates)
+- [聊天消息](/docs/concepts/#message-types)
 
 :::
 
-Routing allows you to create non-deterministic chains where the output of a previous step defines the next step. Routing can help provide structure and consistency around interactions with models by allowing you to define states and use information related to those states as context to model calls.
+路由允许您创建非确定性的链，其中前一步的输出定义了下一步。路由可以通过允许您定义状态并使用与这些状态相关的信息作为模型调用的上下文，帮助提供与模型交互的结构和一致性。
 
-There are two ways to perform routing:
+有两种方法可以执行路由：
 
-1. Conditionally return runnables from a [`RunnableLambda`](/docs/how_to/functions) (recommended)
-2. Using a `RunnableBranch` (legacy)
+1. 有条件地从 [`RunnableLambda`](/docs/how_to/functions) 返回可运行对象（推荐）
+2. 使用 `RunnableBranch`（遗留方法）
 
-We'll illustrate both methods using a two step sequence where the first step classifies an input question as being about `LangChain`, `Anthropic`, or `Other`, then routes to a corresponding prompt chain.
+我们将通过一个两步序列来说明这两种方法，其中第一步将输入问题分类为 `LangChain`、`Anthropic` 或 `Other`，然后路由到相应的提示链。
 
-## Example Setup
-First, let's create a chain that will identify incoming questions as being about `LangChain`, `Anthropic`, or `Other`:
+## 示例设置
+首先，让我们创建一个链，用于识别传入的问题是关于 `LangChain`、`Anthropic` 还是 `Other`：
 
 
 ```python
@@ -60,7 +61,7 @@ chain.invoke({"question": "how do I call Anthropic?"})
 ```
 
 
-Now, let's create three sub chains:
+现在，让我们创建三个子链：
 
 
 ```python
@@ -88,10 +89,9 @@ Answer:"""
 ) | ChatAnthropic(model_name="claude-3-haiku-20240307")
 ```
 
-## Using a custom function (Recommended)
+## 使用自定义函数（推荐）
 
-You can also use a custom function to route between different outputs. Here's an example:
-
+您还可以使用自定义函数在不同输出之间进行路由。以下是一个示例：
 
 ```python
 def route(info):
@@ -103,7 +103,6 @@ def route(info):
         return general_chain
 ```
 
-
 ```python
 from langchain_core.runnables import RunnableLambda
 
@@ -112,52 +111,39 @@ full_chain = {"topic": chain, "question": lambda x: x["question"]} | RunnableLam
 )
 ```
 
-
 ```python
-full_chain.invoke({"question": "how do I use Anthropic?"})
+full_chain.invoke({"question": "如何使用Anthropic？"})
 ```
-
-
 
 ```output
-AIMessage(content="As Dario Amodei told me, to use Anthropic, you can start by exploring the company's website and learning about their mission, values, and the different services and products they offer. Anthropic is focused on developing safe and ethical AI systems, so they have a strong emphasis on transparency and responsible AI development. \n\nDepending on your specific needs, you can look into Anthropic's AI research and development services, which cover areas like natural language processing, computer vision, and reinforcement learning. They also offer consulting and advisory services to help organizations navigate the challenges and opportunities of AI integration.\n\nAdditionally, Anthropic has released some open-source AI models and tools that you can explore and experiment with. These can be a great way to get hands-on experience with Anthropic's approach to AI development.\n\nOverall, Anthropic aims to be a reliable and trustworthy partner in the AI space, so I'd encourage you to reach out to them directly to discuss how they can best support your specific requirements.", response_metadata={'id': 'msg_01CtLFgFSwvTaJomrihE87Ra', 'content': [ContentBlock(text="As Dario Amodei told me, to use Anthropic, you can start by exploring the company's website and learning about their mission, values, and the different services and products they offer. Anthropic is focused on developing safe and ethical AI systems, so they have a strong emphasis on transparency and responsible AI development. \n\nDepending on your specific needs, you can look into Anthropic's AI research and development services, which cover areas like natural language processing, computer vision, and reinforcement learning. They also offer consulting and advisory services to help organizations navigate the challenges and opportunities of AI integration.\n\nAdditionally, Anthropic has released some open-source AI models and tools that you can explore and experiment with. These can be a great way to get hands-on experience with Anthropic's approach to AI development.\n\nOverall, Anthropic aims to be a reliable and trustworthy partner in the AI space, so I'd encourage you to reach out to them directly to discuss how they can best support your specific requirements.", type='text')], 'model': 'claude-3-haiku-20240307', 'role': 'assistant', 'stop_reason': 'end_turn', 'stop_sequence': None, 'type': 'message', 'usage': Usage(input_tokens=53, output_tokens=219)})
+AIMessage(content="正如Dario Amodei告诉我的，要使用Anthropic，您可以从探索该公司的官方网站开始，了解他们的使命、价值观以及他们提供的不同服务和产品。Anthropic专注于开发安全和伦理的AI系统，因此他们非常重视透明度和负责任的AI开发。\n\n根据您的具体需求，您可以查看Anthropic的AI研究和开发服务，涵盖自然语言处理、计算机视觉和强化学习等领域。他们还提供咨询和顾问服务，以帮助组织应对AI集成的挑战和机遇。\n\n此外，Anthropic还发布了一些开源AI模型和工具，您可以探索和实验。这些可以是获得Anthropic AI开发方法的实践经验的好方法。\n\n总的来说，Anthropic旨在成为AI领域可靠和值得信赖的合作伙伴，因此我鼓励您直接与他们联系，讨论他们如何最好地支持您的具体需求。", response_metadata={'id': 'msg_01CtLFgFSwvTaJomrihE87Ra', 'content': [ContentBlock(text="正如Dario Amodei告诉我的，要使用Anthropic，您可以从探索该公司的官方网站开始，了解他们的使命、价值观以及他们提供的不同服务和产品。Anthropic专注于开发安全和伦理的AI系统，因此他们非常重视透明度和负责任的AI开发。\n\n根据您的具体需求，您可以查看Anthropic的AI研究和开发服务，涵盖自然语言处理、计算机视觉和强化学习等领域。他们还提供咨询和顾问服务，以帮助组织应对AI集成的挑战和机遇。\n\n此外，Anthropic还发布了一些开源AI模型和工具，您可以探索和实验。这些可以是获得Anthropic AI开发方法的实践经验的好方法。\n\n总的来说，Anthropic旨在成为AI领域可靠和值得信赖的合作伙伴，因此我鼓励您直接与他们联系，讨论他们如何最好地支持您的具体需求。", type='text')], 'model': 'claude-3-haiku-20240307', 'role': 'assistant', 'stop_reason': 'end_turn', 'stop_sequence': None, 'type': 'message', 'usage': Usage(input_tokens=53, output_tokens=219)})
 ```
-
-
 
 ```python
-full_chain.invoke({"question": "how do I use LangChain?"})
+full_chain.invoke({"question": "如何使用LangChain？"})
 ```
-
-
 
 ```output
-AIMessage(content="As Harrison Chase told me, using LangChain involves a few key steps:\n\n1. **Set up your environment**: Install the necessary Python packages, including the LangChain library itself, as well as any other dependencies your application might require, such as language models or other integrations.\n\n2. **Understand the core concepts**: LangChain revolves around a few core concepts, like Agents, Chains, and Tools. Familiarize yourself with these concepts and how they work together to build powerful language-based applications.\n\n3. **Identify your use case**: Determine what kind of task or application you want to build using LangChain, such as a chatbot, a question-answering system, or a document summarization tool.\n\n4. **Choose the appropriate components**: Based on your use case, select the right LangChain components, such as agents, chains, and tools, to build your application.\n\n5. **Integrate with language models**: LangChain is designed to work seamlessly with various language models, such as OpenAI's GPT-3 or Anthropic's models. Connect your chosen language model to your LangChain application.\n\n6. **Implement your application logic**: Use LangChain's building blocks to implement the specific functionality of your application, such as prompting the language model, processing the response, and integrating with other services or data sources.\n\n7. **Test and iterate**: Thoroughly test your application, gather feedback, and iterate on your design and implementation to improve its performance and user experience.\n\nAs Harrison Chase emphasized, LangChain provides a flexible and powerful framework for building language-based applications, making it easier to leverage the capabilities of modern language models. By following these steps, you can get started with LangChain and create innovative solutions tailored to your specific needs.", response_metadata={'id': 'msg_01H3UXAAHG4TwxJLpxwuuVU7', 'content': [ContentBlock(text="As Harrison Chase told me, using LangChain involves a few key steps:\n\n1. **Set up your environment**: Install the necessary Python packages, including the LangChain library itself, as well as any other dependencies your application might require, such as language models or other integrations.\n\n2. **Understand the core concepts**: LangChain revolves around a few core concepts, like Agents, Chains, and Tools. Familiarize yourself with these concepts and how they work together to build powerful language-based applications.\n\n3. **Identify your use case**: Determine what kind of task or application you want to build using LangChain, such as a chatbot, a question-answering system, or a document summarization tool.\n\n4. **Choose the appropriate components**: Based on your use case, select the right LangChain components, such as agents, chains, and tools, to build your application.\n\n5. **Integrate with language models**: LangChain is designed to work seamlessly with various language models, such as OpenAI's GPT-3 or Anthropic's models. Connect your chosen language model to your LangChain application.\n\n6. **Implement your application logic**: Use LangChain's building blocks to implement the specific functionality of your application, such as prompting the language model, processing the response, and integrating with other services or data sources.\n\n7. **Test and iterate**: Thoroughly test your application, gather feedback, and iterate on your design and implementation to improve its performance and user experience.\n\nAs Harrison Chase emphasized, LangChain provides a flexible and powerful framework for building language-based applications, making it easier to leverage the capabilities of modern language models. By following these steps, you can get started with LangChain and create innovative solutions tailored to your specific needs.", type='text')], 'model': 'claude-3-haiku-20240307', 'role': 'assistant', 'stop_reason': 'end_turn', 'stop_sequence': None, 'type': 'message', 'usage': Usage(input_tokens=50, output_tokens=400)})
+AIMessage(content="正如Harrison Chase告诉我的，使用LangChain涉及几个关键步骤：\n\n1. **设置您的环境**：安装必要的Python包，包括LangChain库本身，以及您的应用程序可能需要的其他依赖项，例如语言模型或其他集成。\n\n2. **了解核心概念**：LangChain围绕几个核心概念展开，如代理、链和工具。熟悉这些概念及其如何协同工作以构建强大的基于语言的应用程序。\n\n3. **确定您的用例**：确定您想使用LangChain构建的任务或应用程序类型，例如聊天机器人、问答系统或文档摘要工具。\n\n4. **选择适当的组件**：根据您的用例，选择合适的LangChain组件，如代理、链和工具，以构建您的应用程序。\n\n5. **与语言模型集成**：LangChain旨在与各种语言模型无缝协作，例如OpenAI的GPT-3或Anthropic的模型。将您选择的语言模型连接到您的LangChain应用程序。\n\n6. **实现您的应用程序逻辑**：使用LangChain的构建块来实现应用程序的特定功能，例如提示语言模型、处理响应以及与其他服务或数据源集成。\n\n7. **测试和迭代**：全面测试您的应用程序，收集反馈，并对设计和实现进行迭代，以提高其性能和用户体验。\n\n正如Harrison Chase强调的，LangChain提供了一个灵活且强大的框架，用于构建基于语言的应用程序，使得更容易利用现代语言模型的能力。通过遵循这些步骤，您可以开始使用LangChain，并创建针对您特定需求的创新解决方案。", response_metadata={'id': 'msg_01H3UXAAHG4TwxJLpxwuuVU7', 'content': [ContentBlock(text="正如Harrison Chase告诉我的，使用LangChain涉及几个关键步骤：\n\n1. **设置您的环境**：安装必要的Python包，包括LangChain库本身，以及您的应用程序可能需要的其他依赖项，例如语言模型或其他集成。\n\n2. **了解核心概念**：LangChain围绕几个核心概念展开，如代理、链和工具。熟悉这些概念及其如何协同工作以构建强大的基于语言的应用程序。\n\n3. **确定您的用例**：确定您想使用LangChain构建的任务或应用程序类型，例如聊天机器人、问答系统或文档摘要工具。\n\n4. **选择适当的组件**：根据您的用例，选择合适的LangChain组件，如代理、链和工具，以构建您的应用程序。\n\n5. **与语言模型集成**：LangChain旨在与各种语言模型无缝协作，例如OpenAI的GPT-3或Anthropic的模型。将您选择的语言模型连接到您的LangChain应用程序。\n\n6. **实现您的应用程序逻辑**：使用LangChain的构建块来实现应用程序的特定功能，例如提示语言模型、处理响应以及与其他服务或数据源集成。\n\n7. **测试和迭代**：全面测试您的应用程序，收集反馈，并对设计和实现进行迭代，以提高其性能和用户体验。\n\n正如Harrison Chase强调的，LangChain提供了一个灵活且强大的框架，用于构建基于语言的应用程序，使得更容易利用现代语言模型的能力。通过遵循这些步骤，您可以开始使用LangChain，并创建针对您特定需求的创新解决方案。", type='text')], 'model': 'claude-3-haiku-20240307', 'role': 'assistant', 'stop_reason': 'end_turn', 'stop_sequence': None, 'type': 'message', 'usage': Usage(input_tokens=50, output_tokens=400)})
 ```
-
-
 
 ```python
-full_chain.invoke({"question": "whats 2 + 2"})
+full_chain.invoke({"question": "2 + 2等于多少？"})
 ```
-
-
 
 ```output
 AIMessage(content='4', response_metadata={'id': 'msg_01UAKP81jTZu9fyiyFYhsbHc', 'content': [ContentBlock(text='4', type='text')], 'model': 'claude-3-haiku-20240307', 'role': 'assistant', 'stop_reason': 'end_turn', 'stop_sequence': None, 'type': 'message', 'usage': Usage(input_tokens=28, output_tokens=5)})
 ```
 
+## 使用 RunnableBranch
 
-## Using a RunnableBranch
+`RunnableBranch` 是一种特殊类型的可运行对象，它允许您根据输入定义一组条件和可运行对象。它并不提供您无法通过上述自定义函数实现的功能，因此我们建议使用自定义函数。
 
-A `RunnableBranch` is a special type of runnable that allows you to define a set of conditions and runnables to execute based on the input. It does **not** offer anything that you can't achieve in a custom function as described above, so we recommend using a custom function instead.
+`RunnableBranch` 通过一组 (条件, 可运行对象) 对和一个默认可运行对象进行初始化。它通过将每个条件与调用时传入的输入进行比较来选择分支。它选择第一个评估为 True 的条件，并使用输入运行与该条件对应的可运行对象。
 
-A `RunnableBranch` is initialized with a list of (condition, runnable) pairs and a default runnable. It selects which branch by passing each condition the input it's invoked with. It selects the first condition to evaluate to True, and runs the corresponding runnable to that condition with the input. 
+如果没有提供的条件匹配，它将运行默认可运行对象。
 
-If no provided conditions match, it runs the default runnable.
-
-Here's an example of what it looks like in action:
-
+以下是其实际应用示例：
 
 ```python
 from langchain_core.runnables import RunnableBranch
@@ -201,11 +187,9 @@ full_chain.invoke({"question": "whats 2 + 2"})
 AIMessage(content='4', response_metadata={'id': 'msg_01T6T3TS6hRCtU8JayN93QEi', 'content': [ContentBlock(text='4', type='text')], 'model': 'claude-3-haiku-20240307', 'role': 'assistant', 'stop_reason': 'end_turn', 'stop_sequence': None, 'type': 'message', 'usage': Usage(input_tokens=28, output_tokens=5)})
 ```
 
+## 语义相似度路由
 
-## Routing by semantic similarity
-
-One especially useful technique is to use embeddings to route a query to the most relevant prompt. Here's an example.
-
+一种特别有用的技术是使用嵌入将查询路由到最相关的提示。以下是一个示例。
 
 ```python
 from langchain_community.utils.math import cosine_similarity
@@ -237,7 +221,7 @@ def prompt_router(input):
     query_embedding = embeddings.embed_query(input["query"])
     similarity = cosine_similarity([query_embedding], prompt_embeddings)[0]
     most_similar = prompt_templates[similarity.argmax()]
-    print("Using MATH" if most_similar == math_template else "Using PHYSICS")
+    print("使用数学" if most_similar == math_template else "使用物理")
     return PromptTemplate.from_template(most_similar)
 
 
@@ -254,43 +238,44 @@ chain = (
 print(chain.invoke("What's a black hole"))
 ```
 ```output
-Using PHYSICS
-As a physics professor, I would be happy to provide a concise and easy-to-understand explanation of what a black hole is.
+使用物理
+作为一名物理教授，我很高兴能提供关于黑洞的简明易懂的解释。
 
-A black hole is an incredibly dense region of space-time where the gravitational pull is so strong that nothing, not even light, can escape from it. This means that if you were to get too close to a black hole, you would be pulled in and crushed by the intense gravitational forces.
+黑洞是一个极其密集的时空区域，其引力如此强大，以至于没有任何东西，甚至光，都无法逃脱。这意味着如果你靠近黑洞，你会被强大的引力所吸引并压碎。
 
-The formation of a black hole occurs when a massive star, much larger than our Sun, reaches the end of its life and collapses in on itself. This collapse causes the matter to become extremely dense, and the gravitational force becomes so strong that it creates a point of no return, known as the event horizon.
+黑洞的形成发生在一个比我们的太阳大得多的巨大恒星达到生命终点并坍缩自身时。这种坍缩使物质变得极其密集，引力变得如此强大，以至于形成了一个不可逆转的点，称为事件视界。
 
-Beyond the event horizon, the laws of physics as we know them break down, and the intense gravitational forces create a singularity, which is a point of infinite density and curvature in space-time.
+在事件视界之外，我们所知道的物理定律失效，强大的引力产生了一个奇点，这是时空中无限密度和曲率的点。
 
-Black holes are fascinating and mysterious objects, and there is still much to be learned about their properties and behavior. If I were unsure about any specific details or aspects of black holes, I would readily admit that I do not have a complete understanding and would encourage further research and investigation.
+黑洞是迷人而神秘的物体，关于它们的性质和行为仍有许多需要了解的地方。如果我对黑洞的任何具体细节或方面不确定，我会坦诚地承认我并没有完全理解，并鼓励进一步的研究和调查。
 ```
 
 ```python
 print(chain.invoke("What's a path integral"))
 ```
 ```output
-Using MATH
-A path integral is a powerful mathematical concept in physics, particularly in the field of quantum mechanics. It was developed by the renowned physicist Richard Feynman as an alternative formulation of quantum mechanics.
+使用数学
+路径积分是物理学中一个强大的数学概念，特别是在量子力学领域。它是由著名物理学家理查德·费曼发展起来的，作为量子力学的一种替代表述。
 
-In a path integral, instead of considering a single, definite path that a particle might take from one point to another, as in classical mechanics, the particle is considered to take all possible paths simultaneously. Each path is assigned a complex-valued weight, and the total probability amplitude for the particle to go from one point to another is calculated by summing (integrating) over all possible paths.
+在路径积分中，不再考虑粒子从一个点到另一个点的单一路径，正如经典力学中那样，而是考虑粒子同时采取所有可能的路径。每条路径都被赋予一个复值权重，粒子从一个点到另一个点的总概率振幅通过对所有可能路径进行求和（积分）来计算。
 
-The key ideas behind the path integral formulation are:
+路径积分表述背后的关键思想有：
 
-1. Superposition principle: In quantum mechanics, particles can exist in a superposition of multiple states or paths simultaneously.
+1. 叠加原理：在量子力学中，粒子可以同时存在于多种状态或路径的叠加中。
 
-2. Probability amplitude: The probability amplitude for a particle to go from one point to another is calculated by summing the complex-valued weights of all possible paths.
+2. 概率振幅：粒子从一个点到另一个点的概率振幅是通过对所有可能路径的复值权重进行求和来计算的。
 
-3. Weighting of paths: Each path is assigned a weight based on the action (the time integral of the Lagrangian) along that path. Paths with lower action have a greater weight.
+3. 路径加权：每条路径根据沿该路径的作用（拉格朗日量的时间积分）赋予权重。作用较低的路径具有更大的权重。
 
-4. Feynman's approach: Feynman developed the path integral formulation as an alternative to the traditional wave function approach in quantum mechanics, providing a more intuitive and conceptual understanding of quantum phenomena.
+4. 费曼的方法：费曼将路径积分表述发展为量子力学中传统波函数方法的替代方案，提供了对量子现象更直观和概念性的理解。
 
-The path integral approach is particularly useful in quantum field theory, where it provides a powerful framework for calculating transition probabilities and understanding the behavior of quantum systems. It has also found applications in various areas of physics, such as condensed matter, statistical mechanics, and even in finance (the path integral approach to option pricing).
+路径积分方法在量子场论中特别有用，它为计算转变概率和理解量子系统的行为提供了强大的框架。它还在物理学的各个领域找到了应用，如凝聚态、统计力学，甚至在金融学中（路径积分在期权定价中的应用）。
 
-The mathematical construction of the path integral involves the use of advanced concepts from functional analysis and measure theory, making it a powerful and sophisticated tool in the physicist's arsenal.
+路径积分的数学构造涉及功能分析和测度理论中的高级概念，使其成为物理学家工具箱中的强大而复杂的工具。
 ```
-## Next steps
 
-You've now learned how to add routing to your composed LCEL chains.
+## 下一步
 
-Next, check out the other how-to guides on runnables in this section.
+您现在已经学习了如何为您的组合 LCEL 链添加路由。
+
+接下来，查看本节中关于可运行项的其他操作指南。

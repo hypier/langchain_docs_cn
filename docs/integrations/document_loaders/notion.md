@@ -1,30 +1,30 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/notion.ipynb
 ---
+
 # Notion DB 1/2
 
->[Notion](https://www.notion.so/) is a collaboration platform with modified Markdown support that integrates kanban boards, tasks, wikis and databases. It is an all-in-one workspace for notetaking, knowledge and data management, and project and task management.
+>[Notion](https://www.notion.so/) 是一个协作平台，支持修改过的 Markdown，集成了看板、任务、维基和数据库。它是一个用于笔记、知识和数据管理，以及项目和任务管理的全能工作空间。
 
-This notebook covers how to load documents from a Notion database dump.
+本笔记本涵盖了如何从 Notion 数据库导出中加载文档。
 
-In order to get this notion dump, follow these instructions:
+要获取这个 Notion 导出，请按照以下说明操作：
 
-## 🧑 Instructions for ingesting your own dataset
+## 🧑 导入您自己的数据集的说明
 
-Export your dataset from Notion. You can do this by clicking on the three dots in the upper right hand corner and then clicking `Export`.
+从 Notion 导出您的数据集。您可以通过点击右上角的三个点，然后点击 `Export` 来完成此操作。
 
-When exporting, make sure to select the `Markdown & CSV` format option.
+导出时，请确保选择 `Markdown & CSV` 格式选项。
 
-This will produce a `.zip` file in your Downloads folder. Move the `.zip` file into this repository.
+这将生成一个 `.zip` 文件在您的下载文件夹中。将 `.zip` 文件移动到此存储库中。
 
-Run the following command to unzip the zip file (replace the `Export...` with your own file name as needed).
+运行以下命令以解压缩 zip 文件（根据需要将 `Export...` 替换为您自己的文件名）。
 
 ```shell
 unzip Export-d3adfe0f-3131-4bf3-8987-a52017fc1bae.zip -d Notion_DB
 ```
 
-Run the following command to ingest the data.
-
+运行以下命令以导入数据。
 
 ```python
 from langchain_community.document_loaders import NotionDirectoryLoader
@@ -40,8 +40,7 @@ loader = NotionDirectoryLoader("Notion_DB")
 docs = loader.load()
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

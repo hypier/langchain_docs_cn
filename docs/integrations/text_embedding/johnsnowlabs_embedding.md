@@ -1,15 +1,15 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/johnsnowlabs_embedding.ipynb
 ---
+
 # John Snow Labs
 
->[John Snow Labs](https://nlp.johnsnowlabs.com/) NLP & LLM ecosystem includes software libraries for state-of-the-art AI at scale, Responsible AI, No-Code AI, and access to over 20,000 models for Healthcare, Legal, Finance, etc.
+>[John Snow Labs](https://nlp.johnsnowlabs.com/) NLP与LLM生态系统包括用于大规模最先进AI的软件库、负责任的AI、无代码AI，以及访问超过20,000个医疗、法律、金融等领域的模型。
 >
->Models are loaded with [nlp.load](https://nlp.johnsnowlabs.com/docs/en/jsl/load_api) and spark session is started >with [nlp.start()](https://nlp.johnsnowlabs.com/docs/en/jsl/start-a-sparksession) under the hood.
->For all 24.000+ models, see the [John Snow Labs Model Models Hub](https://nlp.johnsnowlabs.com/models)
+>模型通过[nlp.load](https://nlp.johnsnowlabs.com/docs/en/jsl/load_api)加载，Spark会话在后台通过[nlp.start()](https://nlp.johnsnowlabs.com/docs/en/jsl/start-a-sparksession)启动。
+>有关所有24,000+模型，请参见[John Snow Labs模型中心](https://nlp.johnsnowlabs.com/models)
 
-
-## Setting up
+## 设置
 
 
 ```python
@@ -18,33 +18,33 @@ custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs
 
 
 ```python
-# If you have a enterprise license, you can run this to install enterprise features
+# 如果您拥有企业许可证，可以运行此命令以安装企业功能
 # from johnsnowlabs import nlp
 # nlp.install()
 ```
 
-## Example
+## 示例
 
 
 ```python
 from langchain_community.embeddings.johnsnowlabs import JohnSnowLabsEmbeddings
 ```
 
-Initialize Johnsnowlabs Embeddings and Spark Session
+初始化 Johnsnowlabs Embeddings 和 Spark 会话
 
 
 ```python
 embedder = JohnSnowLabsEmbeddings("en.embed_sentence.biobert.clinical_base_cased")
 ```
 
-Define some example texts . These could be any documents that you want to analyze - for example, news articles, social media posts, or product reviews.
+定义一些示例文本。这些可以是您想要分析的任何文档，例如新闻文章、社交媒体帖子或产品评论。
 
 
 ```python
 texts = ["Cancer is caused by smoking", "Antibiotics aren't painkiller"]
 ```
 
-Generate and print embeddings for the texts . The JohnSnowLabsEmbeddings class generates an embedding for each document, which is a numerical representation of the document's content. These embeddings can be used for various natural language processing tasks, such as document similarity comparison or text classification.
+为文本生成并打印嵌入。JohnSnowLabsEmbeddings 类为每个文档生成一个嵌入，这是文档内容的数值表示。这些嵌入可以用于各种自然语言处理任务，例如文档相似性比较或文本分类。
 
 
 ```python
@@ -53,7 +53,7 @@ for i, embedding in enumerate(embeddings):
     print(f"Embedding for document {i+1}: {embedding}")
 ```
 
-Generate and print an embedding for a single piece of text. You can also generate an embedding for a single piece of text, such as a search query. This can be useful for tasks like information retrieval, where you want to find documents that are similar to a given query.
+为单个文本生成并打印嵌入。您还可以为单个文本生成嵌入，例如搜索查询。这对于信息检索等任务非常有用，您希望找到与给定查询相似的文档。
 
 
 ```python
@@ -62,8 +62,7 @@ query_embedding = embedder.embed_query(query)
 print(f"Embedding for query: {query_embedding}")
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

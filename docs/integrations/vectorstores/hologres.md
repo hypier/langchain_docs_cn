@@ -1,16 +1,17 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/hologres.ipynb
 ---
+
 # Hologres
 
->[Hologres](https://www.alibabacloud.com/help/en/hologres/latest/introduction) is a unified real-time data warehousing service developed by Alibaba Cloud. You can use Hologres to write, update, process, and analyze large amounts of data in real time. 
->Hologres supports standard SQL syntax, is compatible with PostgreSQL, and supports most PostgreSQL functions. Hologres supports online analytical processing (OLAP) and ad hoc analysis for up to petabytes of data, and provides high-concurrency and low-latency online data services. 
+>[Hologres](https://www.alibabacloud.com/help/en/hologres/latest/introduction) 是阿里云开发的统一实时数据仓库服务。您可以使用 Hologres 实时写入、更新、处理和分析大量数据。 
+>Hologres 支持标准 SQL 语法，兼容 PostgreSQL，并支持大多数 PostgreSQL 函数。Hologres 支持高达 PB 级数据的在线分析处理（OLAP）和临时分析，并提供高并发和低延迟的在线数据服务。
 
->Hologres provides **vector database** functionality by adopting [Proxima](https://www.alibabacloud.com/help/en/hologres/latest/vector-processing).
->Proxima is a high-performance software library developed by Alibaba DAMO Academy. It allows you to search for the nearest neighbors of vectors. Proxima provides higher stability and performance than similar open-source software such as Faiss. Proxima allows you to search for similar text or image embeddings with high throughput and low latency. Hologres is deeply integrated with Proxima to provide a high-performance vector search service.
+>Hologres 通过采用 [Proxima](https://www.alibabacloud.com/help/en/hologres/latest/vector-processing) 提供 **向量数据库** 功能。
+>Proxima 是阿里巴巴达摩院开发的高性能软件库。它允许您搜索向量的最近邻。Proxima 提供比类似的开源软件（如 Faiss）更高的稳定性和性能。Proxima 允许您以高吞吐量和低延迟搜索相似的文本或图像嵌入。Hologres 与 Proxima 深度集成，以提供高性能的向量搜索服务。
 
-This notebook shows how to use functionality related to the `Hologres Proxima` vector database.
-Click [here](https://www.alibabacloud.com/zh/product/hologres) to fast deploy a Hologres cloud instance.
+本笔记本展示了如何使用与 `Hologres Proxima` 向量数据库相关的功能。
+点击 [这里](https://www.alibabacloud.com/zh/product/hologres) 快速部署 Hologres 云实例。
 
 
 ```python
@@ -24,7 +25,7 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import CharacterTextSplitter
 ```
 
-Split documents and get embeddings by call OpenAI API
+通过调用 OpenAI API 拆分文档并获取嵌入
 
 
 ```python
@@ -38,16 +39,16 @@ docs = text_splitter.split_documents(documents)
 embeddings = OpenAIEmbeddings()
 ```
 
-Connect to Hologres by setting related ENVIRONMENTS.
+通过设置相关环境变量连接 Hologres。
 ```
 export PG_HOST={host}
-export PG_PORT={port} # Optional, default is 80
-export PG_DATABASE={db_name} # Optional, default is postgres
+export PG_PORT={port} # 可选，默认是 80
+export PG_DATABASE={db_name} # 可选，默认是 postgres
 export PG_USER={username}
 export PG_PASSWORD={password}
 ```
 
-Then store your embeddings and documents into Hologres
+然后将您的嵌入和文档存储到 Hologres
 
 
 ```python
@@ -69,7 +70,7 @@ vector_db = Hologres.from_documents(
 )
 ```
 
-Query and retrieve data
+查询和检索数据
 
 
 ```python
@@ -91,7 +92,7 @@ One of the most serious constitutional responsibilities a President has is nomin
 And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
 ```
 
-## Related
+## 相关
 
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

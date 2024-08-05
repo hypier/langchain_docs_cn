@@ -1,23 +1,24 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/HTML_header_metadata_splitter.ipynb
 ---
-# How to split by HTML header 
-## Description and motivation
 
-[HTMLHeaderTextSplitter](https://api.python.langchain.com/en/latest/html/langchain_text_splitters.html.HTMLHeaderTextSplitter.html) is a "structure-aware" chunker that splits text at the HTML element level and adds metadata for each header "relevant" to any given chunk. It can return chunks element by element or combine elements with the same metadata, with the objectives of (a) keeping related text grouped (more or less) semantically and (b) preserving context-rich information encoded in document structures. It can be used with other text splitters as part of a chunking pipeline.
+# 如何按 HTML 标头拆分
 
-It is analogous to the [MarkdownHeaderTextSplitter](/docs/how_to/markdown_header_metadata_splitter) for markdown files.
+## 描述和动机
 
-To specify what headers to split on, specify `headers_to_split_on` when instantiating `HTMLHeaderTextSplitter` as shown below.
+[HTMLHeaderTextSplitter](https://api.python.langchain.com/en/latest/html/langchain_text_splitters.html.HTMLHeaderTextSplitter.html) 是一个“结构感知”的分块器，它在 HTML 元素级别拆分文本，并为每个与给定块“相关”的标题添加元数据。它可以逐个返回块或将具有相同元数据的元素组合在一起，目的是 (a) 在语义上（或多或少）保持相关文本的分组，以及 (b) 保留编码在文档结构中的丰富上下文信息。它可以与其他文本分割器一起使用，作为分块管道的一部分。
 
-## Usage examples
-### 1) How to split HTML strings:
+它类似于用于 markdown 文件的 [MarkdownHeaderTextSplitter](/docs/how_to/markdown_header_metadata_splitter)。
 
+要指定要拆分的标题，请在实例化 `HTMLHeaderTextSplitter` 时指定 `headers_to_split_on`，如下所示。
+
+## 使用示例
+
+### 1) 如何拆分 HTML 字符串：
 
 ```python
 %pip install -qU langchain-text-splitters
 ```
-
 
 ```python
 from langchain_text_splitters import HTMLHeaderTextSplitter
@@ -59,8 +60,6 @@ html_header_splits = html_splitter.split_text(html_string)
 html_header_splits
 ```
 
-
-
 ```output
 [Document(page_content='Foo'),
  Document(page_content='Some intro text about Foo.  \nBar main section Bar subsection 1 Bar subsection 2', metadata={'Header 1': 'Foo'}),
@@ -72,9 +71,7 @@ html_header_splits
  Document(page_content='Some concluding text about Foo', metadata={'Header 1': 'Foo'})]
 ```
 
-
-To return each element together with their associated headers, specify `return_each_element=True` when instantiating `HTMLHeaderTextSplitter`:
-
+要将每个元素与其关联的标题一起返回，在实例化 `HTMLHeaderTextSplitter` 时指定 `return_each_element=True`：
 
 ```python
 html_splitter = HTMLHeaderTextSplitter(
@@ -84,8 +81,7 @@ html_splitter = HTMLHeaderTextSplitter(
 html_header_splits_elements = html_splitter.split_text(html_string)
 ```
 
-Comparing with the above, where elements are aggregated by their headers:
-
+与上述内容相比，其中元素按其标题聚合：
 
 ```python
 for element in html_header_splits[:2]:
@@ -95,8 +91,7 @@ for element in html_header_splits[:2]:
 page_content='Foo'
 page_content='Some intro text about Foo.  \nBar main section Bar subsection 1 Bar subsection 2' metadata={'Header 1': 'Foo'}
 ```
-Now each element is returned as a distinct `Document`:
-
+现在每个元素作为一个独立的 `Document` 返回：
 
 ```python
 for element in html_header_splits_elements[:3]:
@@ -107,12 +102,11 @@ page_content='Foo'
 page_content='Some intro text about Foo.' metadata={'Header 1': 'Foo'}
 page_content='Bar main section Bar subsection 1 Bar subsection 2' metadata={'Header 1': 'Foo'}
 ```
-#### 2) How to split from a URL or HTML file:
+#### 2) 如何从 URL 或 HTML 文件中拆分：
 
-To read directly from a URL, pass the URL string into the `split_text_from_url` method.
+要直接从 URL 读取，将 URL 字符串传递给 `split_text_from_url` 方法。
 
-Similarly, a local HTML file can be passed to the `split_text_from_file` method.
-
+同样，可以将本地 HTML 文件传递给 `split_text_from_file` 方法。
 
 ```python
 url = "https://plato.stanford.edu/entries/goedel/"
@@ -126,15 +120,15 @@ headers_to_split_on = [
 
 html_splitter = HTMLHeaderTextSplitter(headers_to_split_on)
 
-# for local file use html_splitter.split_text_from_file(<path_to_file>)
+# 对于本地文件使用 html_splitter.split_text_from_file(<path_to_file>)
 html_header_splits = html_splitter.split_text_from_url(url)
 ```
 
-### 2) How to constrain chunk sizes:
+### 2) 如何限制块大小：
 
-`HTMLHeaderTextSplitter`, which splits based on HTML headers, can be composed with another splitter which constrains splits based on character lengths, such as `RecursiveCharacterTextSplitter`.
+`HTMLHeaderTextSplitter` 可以与另一个基于字符长度限制分割的分割器组合，例如 `RecursiveCharacterTextSplitter`。
 
-This can be done using the `.split_documents` method of the second splitter:
+这可以通过第二个分割器的 `.split_documents` 方法来完成：
 
 
 ```python
@@ -161,12 +155,9 @@ splits[80:85]
  Document(page_content='We now describe the proof of the two theorems, formulating Gödel’s results in Peano arithmetic. Gödel himself used a system related to that defined in Principia Mathematica, but containing Peano arithmetic. In our presentation of the First and Second Incompleteness Theorems we refer to Peano arithmetic as P, following Gödel’s notation.', metadata={'Header 1': 'Kurt Gödel', 'Header 2': '2. Gödel’s Mathematical Work', 'Header 3': '2.2 The Incompleteness Theorems', 'Header 4': '2.2.2 The proof of the First Incompleteness Theorem'})]
 ```
 
+## 限制
 
-## Limitations
-
-There can be quite a bit of structural variation from one HTML document to another, and while `HTMLHeaderTextSplitter` will attempt to attach all "relevant" headers to any given chunk, it can sometimes miss certain headers. For example, the algorithm assumes an informational hierarchy in which headers are always at nodes "above" associated text, i.e. prior siblings, ancestors, and combinations thereof. In the following news article (as of the writing of this document), the document is structured such that the text of the top-level headline, while tagged "h1", is in a *distinct* subtree from the text elements that we'd expect it to be *"above"*&mdash;so we can observe that the "h1" element and its associated text do not show up in the chunk metadata (but, where applicable, we do see "h2" and its associated text):   
-
-
+不同的 HTML 文档之间可能存在相当大的结构差异，虽然 `HTMLHeaderTextSplitter` 会尝试将所有“相关”的标题附加到任何给定的块上，但有时它可能会遗漏某些标题。例如，该算法假设存在一个信息层次结构，其中标题总是位于与之关联的文本的“上方”节点，即先前的兄弟节点、祖先节点及其组合。在以下新闻文章中（截至本文撰写时），文档的结构使得顶级标题的文本虽然标记为“h1”，但却处于一个与我们期望它位于的文本元素*“上方”*的*不同*子树中——因此我们可以观察到“h1”元素及其关联文本未出现在块元数据中（但在适用的情况下，我们确实看到了“h2”及其关联文本）：
 
 ```python
 url = "https://www.cnn.com/2023/09/25/weather/el-nino-winter-us-climate/index.html"

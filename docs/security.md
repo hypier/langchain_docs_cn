@@ -1,30 +1,28 @@
-# Security
+# 安全性
 
-LangChain has a large ecosystem of integrations with various external resources like local and remote file systems, APIs and databases. These integrations allow developers to create versatile applications that combine the power of LLMs with the ability to access, interact with and manipulate external resources.
+LangChain 拥有一个庞大的生态系统，与各种外部资源如本地和远程文件系统、API 和数据库进行集成。这些集成使开发者能够创建多功能的应用程序，将 LLM 的强大功能与访问、交互和操作外部资源的能力相结合。
 
-## Best practices
+## 最佳实践
 
-When building such applications developers should remember to follow good security practices:
+在构建此类应用程序时，开发人员应记住遵循良好的安全实践：
 
-* [**Limit Permissions**](https://en.wikipedia.org/wiki/Principle_of_least_privilege): Scope permissions specifically to the application's need. Granting broad or excessive permissions can introduce significant security vulnerabilities. To avoid such vulnerabilities, consider using read-only credentials, disallowing access to sensitive resources, using sandboxing techniques (such as running inside a container), etc. as appropriate for your application.
-* **Anticipate Potential Misuse**: Just as humans can err, so can Large Language Models (LLMs). Always assume that any system access or credentials may be used in any way allowed by the permissions they are assigned. For example, if a pair of database credentials allows deleting data, it’s safest to assume that any LLM able to use those credentials may in fact delete data.
-* [**Defense in Depth**](https://en.wikipedia.org/wiki/Defense_in_depth_(computing)): No security technique is perfect. Fine-tuning and good chain design can reduce, but not eliminate, the odds that a Large Language Model (LLM) may make a mistake. It’s best to combine multiple layered security approaches rather than relying on any single layer of defense to ensure security. For example: use both read-only permissions and sandboxing to ensure that LLMs are only able to access data that is explicitly meant for them to use.
+* [**限制权限**](https://en.wikipedia.org/wiki/Principle_of_least_privilege)：根据应用程序的需求具体限制权限。授予广泛或过多的权限可能会引入显著的安全漏洞。为了避免此类漏洞，考虑根据应用程序的需要使用只读凭证，禁止访问敏感资源，使用沙箱技术（如在容器内运行）等。
+* **预见潜在的误用**：正如人类可能会犯错一样，大型语言模型（LLMs）也可能会犯错。始终假设任何系统访问或凭证可能会以其被分配的权限允许的任何方式使用。例如，如果一对数据库凭证允许删除数据，最安全的假设是，任何能够使用这些凭证的LLM实际上可能会删除数据。
+* [**深度防御**](https://en.wikipedia.org/wiki/Defense_in_depth_(computing))：没有任何安全技术是完美的。微调和良好的链设计可以减少，但不能消除大型语言模型（LLM）犯错的可能性。最好结合多层安全方法，而不是依赖任何单一的防御层来确保安全。例如：同时使用只读权限和沙箱技术，以确保LLM只能访问明确为其使用的数据。
 
-Risks of not doing so include, but are not limited to:
-* Data corruption or loss.
-* Unauthorized access to confidential information.
-* Compromised performance or availability of critical resources.
+不这样做的风险包括但不限于：
+* 数据损坏或丢失。
+* 未经授权访问机密信息。
+* 关键资源的性能或可用性受到影响。
 
-Example scenarios with mitigation strategies:
+带有缓解策略的示例场景：
 
-* A user may ask an agent with access to the file system to delete files that should not be deleted or read the content of files that contain sensitive information. To mitigate, limit the agent to only use a specific directory and only allow it to read or write files that are safe to read or write. Consider further sandboxing the agent by running it in a container.
-* A user may ask an agent with write access to an external API to write malicious data to the API, or delete data from that API. To mitigate, give the agent read-only API keys, or limit it to only use endpoints that are already resistant to such misuse.
-* A user may ask an agent with access to a database to drop a table or mutate the schema. To mitigate, scope the credentials to only the tables that the agent needs to access and consider issuing READ-ONLY credentials.
+* 用户可能会要求具有文件系统访问权限的代理删除不应删除的文件或读取包含敏感信息的文件内容。为缓解此问题，将代理限制为仅使用特定目录，并仅允许其读取或写入安全的文件。考虑通过在容器中运行代理进一步进行沙箱化。
+* 用户可能会要求具有对外部API的写入访问权限的代理向API写入恶意数据，或从该API删除数据。为缓解此问题，给代理只读API密钥，或限制其仅使用已经抵御此类误用的端点。
+* 用户可能会要求具有数据库访问权限的代理删除表或修改架构。为缓解此问题，将凭证范围限制为代理需要访问的表，并考虑发放只读凭证。
 
-If you're building applications that access external resources like file systems, APIs
-or databases, consider speaking with your company's security team to determine how to best
-design and secure your applications.
+如果您正在构建访问外部资源（如文件系统、API或数据库）的应用程序，请考虑与您公司的安全团队沟通，以确定如何最佳设计和保护您的应用程序。
 
-## Reporting a vulnerability
+## 报告漏洞
 
-Please report security vulnerabilities by email to security@langchain.dev. This will ensure the issue is promptly triaged and acted upon as needed.
+请通过电子邮件将安全漏洞报告发送至 security@langchain.dev。这将确保问题得到及时分类和处理。

@@ -1,14 +1,15 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/mlx.ipynb
 ---
+
 # MLX
 
-This notebook shows how to get started using `MLX` LLM's as chat models.
+本笔记本展示了如何开始使用 `MLX` LLM 作为聊天模型。
 
-In particular, we will:
-1. Utilize the [MLXPipeline](https://github.com/langchain-ai/langchain/blob/master/libs/community/langchain_community/llms/mlx_pipeline.py), 
-2. Utilize the `ChatMLX` class to enable any of these LLMs to interface with LangChain's [Chat Messages](https://python.langchain.com/docs/modules/model_io/chat/#messages) abstraction.
-3. Demonstrate how to use an open-source LLM to power an `ChatAgent` pipeline
+特别地，我们将：
+1. 利用 [MLXPipeline](https://github.com/langchain-ai/langchain/blob/master/libs/community/langchain_community/llms/mlx_pipeline.py)，
+2. 利用 `ChatMLX` 类使这些 LLM 能够与 LangChain 的 [聊天消息](https://python.langchain.com/docs/modules/model_io/chat/#messages) 抽象接口交互。
+3. 演示如何使用开源 LLM 来驱动 `ChatAgent` 管道。
 
 
 
@@ -16,9 +17,9 @@ In particular, we will:
 %pip install --upgrade --quiet  mlx-lm transformers huggingface_hub
 ```
 
-## 1. Instantiate an LLM
+## 1. 实例化 LLM
 
-There are three LLM options to choose from.
+有三个 LLM 选项可供选择。
 
 
 ```python
@@ -30,10 +31,9 @@ llm = MLXPipeline.from_model_id(
 )
 ```
 
-## 2. Instantiate the `ChatMLX` to apply chat templates
+## 2. 实例化 `ChatMLX` 以应用聊天模板
 
-Instantiate the chat model and some messages to pass.
-
+实例化聊天模型和一些要传递的消息。
 
 ```python
 from langchain_community.chat_models.mlx import ChatMLX
@@ -48,26 +48,24 @@ messages = [
 chat_model = ChatMLX(llm=llm)
 ```
 
-Inspect how the chat messages are formatted for the LLM call.
-
+检查聊天消息在 LLM 调用中的格式。
 
 ```python
 chat_model._to_chat_prompt(messages)
 ```
 
-Call the model.
-
+调用模型。
 
 ```python
 res = chat_model.invoke(messages)
 print(res.content)
 ```
 
-## 3. Take it for a spin as an agent!
+## 3. 作为代理进行测试！
 
-Here we'll test out `gemma-2b-it` as a zero-shot `ReAct` Agent. The example below is taken from [here](https://python.langchain.com/docs/modules/agents/agent_types/react#using-chat-models).
+在这里，我们将测试 `gemma-2b-it` 作为一个零-shot `ReAct` 代理。下面的例子取自 [这里](https://python.langchain.com/docs/modules/agents/agent_types/react#using-chat-models)。
 
-> Note: To run this section, you'll need to have a [SerpAPI Token](https://serpapi.com/) saved as an environment variable: `SERPAPI_API_KEY`
+> 注意：要运行此部分，您需要将 [SerpAPI Token](https://serpapi.com/) 保存为环境变量：`SERPAPI_API_KEY`
 
 
 ```python
@@ -81,7 +79,7 @@ from langchain.tools.render import render_text_description
 from langchain_community.utilities import SerpAPIWrapper
 ```
 
-Configure the agent with a `react-json` style prompt and access to a search engine and calculator.
+使用 `react-json` 风格的提示和访问搜索引擎及计算器来配置代理。
 
 
 ```python
@@ -120,8 +118,7 @@ agent_executor.invoke(
 )
 ```
 
+## 相关
 
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_transformers/openvino_rerank.ipynb
 ---
+
 # OpenVINO Reranker
 
-[OpenVINO™](https://github.com/openvinotoolkit/openvino) is an open-source toolkit for optimizing and deploying AI inference. The OpenVINO™ Runtime supports various hardware [devices](https://github.com/openvinotoolkit/openvino?tab=readme-ov-file#supported-hardware-matrix) including x86 and ARM CPUs, and Intel GPUs. It can help to boost deep learning performance in Computer Vision, Automatic Speech Recognition, Natural Language Processing and other common tasks.
+[OpenVINO™](https://github.com/openvinotoolkit/openvino) 是一个开源工具包，用于优化和部署 AI 推理。OpenVINO™ Runtime 支持各种硬件 [设备](https://github.com/openvinotoolkit/openvino?tab=readme-ov-file#supported-hardware-matrix)，包括 x86 和 ARM CPU 以及 Intel GPU。它可以帮助提升计算机视觉、自动语音识别、自然语言处理和其他常见任务中的深度学习性能。
 
-Hugging Face rerank model can be supported by OpenVINO through ``OpenVINOReranker`` class. If you have an Intel GPU, you can specify `model_kwargs={"device": "GPU"}` to run inference on it.
+Hugging Face 的重排序模型可以通过 ``OpenVINOReranker`` 类支持 OpenVINO。如果您有 Intel GPU，可以指定 `model_kwargs={"device": "GPU"}` 在其上运行推理。
 
 
 ```python
@@ -29,9 +30,8 @@ def pretty_print_docs(docs):
     )
 ```
 
-## Set up the base vector store retriever
-Let's start by initializing a simple vector store retriever and storing the 2023 State of the Union speech (in chunks). We can set up the retriever to retrieve a high number (20) of docs.
-
+## 设置基础向量存储检索器
+让我们开始初始化一个简单的向量存储检索器，并存储2023年国情咨文（以块的形式）。我们可以设置检索器以检索大量文档（20个）。
 
 ```python
 from langchain.embeddings import OpenVINOEmbeddings
@@ -284,9 +284,9 @@ Imagine what it’s like to look at your child who needs insulin and have no ide
 What it does to your dignity, your ability to look your child in the eye, to be the parent you expect to be.
 Metadata: {'source': '../../how_to/state_of_the_union.txt', 'id': 40}
 ```
-## Reranking with OpenVINO
-Now let's wrap our base retriever with a `ContextualCompressionRetriever`, using `OpenVINOReranker` as a compressor.
 
+## 使用 OpenVINO 的重新排序
+现在让我们用 `ContextualCompressionRetriever` 包装我们的基础检索器，使用 `OpenVINOReranker` 作为压缩器。
 
 ```python
 from langchain.retrievers import ContextualCompressionRetriever
@@ -305,8 +305,7 @@ compressed_docs = compression_retriever.invoke(
 print([doc.metadata["id"] for doc in compressed_docs])
 ```
 
-After reranking, the top 4 documents are different from the top 4 documents retrieved by the base retriever.
-
+经过重新排序后，前 4 个文档与基础检索器检索的前 4 个文档不同。
 
 ```python
 pretty_print_docs(compressed_docs)
@@ -348,9 +347,9 @@ And I’m taking robust action to make sure the pain of our sanctions  is target
 Tonight, I can announce that the United States has worked with 30 other countries to release 60 Million barrels of oil from reserves around the world.
 Metadata: {'id': 6, 'relevance_score': tensor(0.0098)}
 ```
-## Export IR model
-It is possible to export your rerank model to the OpenVINO IR format with ``OVModelForSequenceClassification``, and load the model from local folder.
 
+## 导出 IR 模型
+可以使用 ``OVModelForSequenceClassification`` 将您的重排序模型导出为 OpenVINO IR 格式，并从本地文件夹加载模型。
 
 ```python
 from pathlib import Path
@@ -360,19 +359,18 @@ if not Path(ov_model_dir).exists():
     ov_compressor.save_model(ov_model_dir)
 ```
 
-
 ```python
 ov_compressor = OpenVINOReranker(model_name_or_path=ov_model_dir)
 ```
 ```output
-Compiling the model to CPU ...
+正在将模型编译为 CPU ...
 ```
-For more information refer to:
+有关更多信息，请参阅：
 
-* [OpenVINO LLM guide](https://docs.openvino.ai/2024/learn-openvino/llm_inference_guide.html).
+* [OpenVINO LLM 指南](https://docs.openvino.ai/2024/learn-openvino/llm_inference_guide.html)。
 
-* [OpenVINO Documentation](https://docs.openvino.ai/2024/home.html).
+* [OpenVINO 文档](https://docs.openvino.ai/2024/home.html)。
 
-* [OpenVINO Get Started Guide](https://www.intel.com/content/www/us/en/content-details/819067/openvino-get-started-guide.html).
+* [OpenVINO 入门指南](https://www.intel.com/content/www/us/en/content-details/819067/openvino-get-started-guide.html)。
 
-* [RAG Notebook with LangChain](https://github.com/openvinotoolkit/openvino_notebooks/tree/latest/notebooks/llm-rag-langchain).
+* [带 LangChain 的 RAG 笔记本](https://github.com/openvinotoolkit/openvino_notebooks/tree/latest/notebooks/llm-rag-langchain)。

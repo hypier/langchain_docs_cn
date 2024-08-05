@@ -1,24 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/versions/migrating_chains/conversation_retrieval_chain.ipynb
-title: Migrating from ConversationalRetrievalChain
+title: 从 ConversationalRetrievalChain 迁移
 ---
 
-The [`ConversationalRetrievalChain`](https://api.python.langchain.com/en/latest/chains/langchain.chains.conversational_retrieval.base.ConversationalRetrievalChain.html) was an all-in one way that combined retrieval-augmented generation with chat history, allowing you to "chat with" your documents.
+[`ConversationalRetrievalChain`](https://api.python.langchain.com/en/latest/chains/langchain.chains.conversational_retrieval.base.ConversationalRetrievalChain.html) 是一种将检索增强生成与聊天历史相结合的全能方式，允许您与文档进行“对话”。
 
-Advantages of switching to the LCEL implementation are similar to the `RetrievalQA` section above:
+切换到 LCEL 实现的优势与上面的 `RetrievalQA` 部分类似：
 
-- Clearer internals. The `ConversationalRetrievalChain` chain hides an entire question rephrasing step which dereferences the initial query against the chat history.
-  - This means the class contains two sets of configurable prompts, LLMs, etc.
-- More easily return source documents.
-- Support for runnable methods like streaming and async operations.
+- 更清晰的内部结构。`ConversationalRetrievalChain` 链隐藏了一个完整的问题重述步骤，该步骤将初始查询与聊天历史进行解引用。
+  - 这意味着该类包含两组可配置的提示、LLMs 等。
+- 更容易返回源文档。
+- 支持可运行的方法，如流式和异步操作。
 
-Here are side-by-side implementations with custom prompts. We'll reuse the loaded documents and vector store from the previous section:
-
+以下是带有自定义提示的并排实现。我们将重用上一部分加载的文档和向量存储：
 
 ```python
 %pip install --upgrade --quiet langchain-community langchain langchain-openai faiss-cpu
 ```
-
 
 ```python
 import os
@@ -26,7 +24,6 @@ from getpass import getpass
 
 os.environ["OPENAI_API_KEY"] = getpass()
 ```
-
 
 ```python
 # Load docs
@@ -56,7 +53,7 @@ import { ColumnContainer, Column } from "@theme/Columns";
 
 <Column>
 
-#### Legacy
+#### 传统
 
 
 ```python
@@ -108,23 +105,17 @@ convo_qa_chain(
 )
 ```
 
-
-
 ```output
 {'question': 'What are autonomous agents?',
  'chat_history': '',
  'answer': 'Autonomous agents are entities empowered with capabilities like planning, task decomposition, and memory to perform complex tasks independently. These agents can leverage tools like browsing the internet, reading documentation, executing code, and calling APIs to achieve their objectives. They are designed to handle tasks like scientific discovery and experimentation autonomously.'}
 ```
 
-
 </Column>
 
 <Column>
 
 #### LCEL
-
-
-
 
 ```python
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
@@ -178,8 +169,6 @@ convo_qa_chain.invoke(
 )
 ```
 
-
-
 ```output
 {'input': 'What are autonomous agents?',
  'chat_history': [],
@@ -190,13 +179,12 @@ convo_qa_chain.invoke(
  'answer': 'Autonomous agents are entities that can act independently to achieve specific goals or tasks without direct human intervention. These agents have the ability to perceive their environment, make decisions, and take actions based on their programming or learning. They can perform tasks such as planning, execution, and problem-solving autonomously.'}
 ```
 
-
 </Column>
 
 </ColumnContainer>
 
-## Next steps
+## 下一步
 
-You've now seen how to migrate existing usage of some legacy chains to LCEL.
+您现在已经了解了如何将现有的一些遗留链的使用迁移到 LCEL。
 
-Next, check out the [LCEL conceptual docs](/docs/concepts/#langchain-expression-language-lcel) for more background information.
+接下来，查看 [LCEL 概念文档](/docs/concepts/#langchain-expression-language-lcel) 以获取更多背景信息。

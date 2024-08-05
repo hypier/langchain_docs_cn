@@ -1,28 +1,29 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/mongodb.ipynb
 ---
+
 # MongoDB
 
-[MongoDB](https://www.mongodb.com/) is a NoSQL , document-oriented database that supports JSON-like documents with a dynamic schema.
+[MongoDB](https://www.mongodb.com/) 是一种 NoSQL 文档导向数据库，支持具有动态模式的类似 JSON 的文档。
 
-## Overview
+## 概述
 
-The MongoDB Document Loader returns a list of Langchain Documents from a MongoDB database.
+MongoDB 文档加载器从 MongoDB 数据库返回 Langchain 文档列表。
 
-The Loader requires the following parameters:
+加载器需要以下参数：
 
-*   MongoDB connection string
-*   MongoDB database name
-*   MongoDB collection name
-*   (Optional) Content Filter dictionary
-*   (Optional) List of field names to include in the output
+*   MongoDB 连接字符串
+*   MongoDB 数据库名称
+*   MongoDB 集合名称
+*   （可选）内容过滤字典
+*   （可选）要包含在输出中的字段名称列表
 
-The output takes the following format:
+输出格式如下：
 
 - pageContent= Mongo Document
 - metadata={'database': '[database_name]', 'collection': '[collection_name]'}
 
-## Load the Document Loader
+## 加载文档加载器
 
 
 ```python
@@ -73,9 +74,7 @@ docs[0]
 Document(page_content="Morris Park Bake Shop {'building': '1007', 'coord': [-73.856077, 40.848447], 'street': 'Morris Park Ave', 'zipcode': '10462'}", metadata={'database': 'sample_restaurants', 'collection': 'restaurants'})
 ```
 
+## 相关
 
-
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

@@ -1,14 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/adapters/openai.ipynb
 ---
-# OpenAI Adapter
 
-**Please ensure OpenAI library is version 1.0.0 or higher; otherwise, refer to the older doc [OpenAI Adapter(Old)](/docs/integrations/adapters/openai-old/).**
+# OpenAI 适配器
 
-A lot of people get started with OpenAI but want to explore other models. LangChain's integrations with many model providers make this easy to do so. While LangChain has it's own message and model APIs, we've also made it as easy as possible to explore other models by exposing an adapter to adapt LangChain models to the OpenAI api.
+**请确保 OpenAI 库版本为 1.0.0 或更高；否则，请参考旧文档 [OpenAI 适配器(旧)](/docs/integrations/adapters/openai-old/)。**
 
-At the moment this only deals with output and does not return other information (token counts, stop reasons, etc).
+很多人开始使用 OpenAI，但想要探索其他模型。LangChain 与许多模型提供商的集成使这变得简单。虽然 LangChain 有自己消息和模型的 API，但我们也尽可能简化了探索其他模型的过程，通过提供适配器将 LangChain 模型适配到 OpenAI API。
 
+目前这仅处理输出，不返回其他信息（令牌计数、停止原因等）。
 
 ```python
 import openai
@@ -22,7 +22,7 @@ from langchain_community.adapters import openai as lc_openai
 messages = [{"role": "user", "content": "hi"}]
 ```
 
-Original OpenAI call
+原始 OpenAI 调用
 
 
 ```python
@@ -42,7 +42,7 @@ result.choices[0].message.model_dump()
 ```
 
 
-LangChain OpenAI wrapper call
+LangChain OpenAI 包装器调用
 
 
 ```python
@@ -50,7 +50,7 @@ lc_result = lc_openai.chat.completions.create(
     messages=messages, model="gpt-3.5-turbo", temperature=0
 )
 
-lc_result.choices[0].message  # Attribute access
+lc_result.choices[0].message  # 属性访问
 ```
 
 
@@ -62,7 +62,7 @@ lc_result.choices[0].message  # Attribute access
 
 
 ```python
-lc_result["choices"][0]["message"]  # Also compatible with index access
+lc_result["choices"][0]["message"]  # 也兼容索引访问
 ```
 
 
@@ -72,7 +72,7 @@ lc_result["choices"][0]["message"]  # Also compatible with index access
 ```
 
 
-Swapping out model providers
+更换模型提供者
 
 
 ```python
@@ -88,10 +88,9 @@ lc_result.choices[0].message
 {'role': 'assistant', 'content': 'Hello! How can I assist you today?'}
 ```
 
-
 ## chat.completions.stream
 
-Original OpenAI call
+原始 OpenAI 调用
 
 
 ```python
@@ -113,7 +112,7 @@ for c in openai.chat.completions.create(
 {'content': '?', 'function_call': None, 'role': None, 'tool_calls': None}
 {'content': None, 'function_call': None, 'role': None, 'tool_calls': None}
 ```
-LangChain OpenAI wrapper call
+LangChain OpenAI 包装调用
 
 
 ```python
@@ -135,7 +134,7 @@ for c in lc_openai.chat.completions.create(
 {'content': '?'}
 {}
 ```
-Swapping out model providers
+更换模型提供者
 
 
 ```python

@@ -1,52 +1,50 @@
 # Clarifai
 
->[Clarifai](https://clarifai.com) is one of first deep learning platforms having been founded in 2013. Clarifai provides an AI platform with the full AI lifecycle for data exploration, data labeling, model training, evaluation and inference around images, video, text and audio data. In the LangChain ecosystem, as far as we're aware, Clarifai is the only provider that supports LLMs, embeddings and a vector store in one production scale platform, making it an excellent choice to operationalize your LangChain implementations.
+>[Clarifai](https://clarifai.com) 是最早的深度学习平台之一，成立于2013年。Clarifai 提供一个涵盖数据探索、数据标注、模型训练、评估和推理的完整 AI 生命周期的平台，支持图像、视频、文本和音频数据。在 LangChain 生态系统中，据我们所知，Clarifai 是唯一一个在一个生产规模的平台上支持 LLM、嵌入和向量存储的提供商，使其成为将 LangChain 实现投入生产的绝佳选择。
 
-## Installation and Setup
-- Install the Python SDK:
+## 安装与设置
+- 安装 Python SDK：
 ```bash
 pip install clarifai
 ```
-[Sign-up](https://clarifai.com/signup) for a Clarifai account, then get a personal access token to access the Clarifai API from your [security settings](https://clarifai.com/settings/security) and set it as an environment variable (`CLARIFAI_PAT`).
+[注册](https://clarifai.com/signup)一个 Clarifai 账户，然后从你的 [安全设置](https://clarifai.com/settings/security) 获取个人访问令牌以访问 Clarifai API，并将其设置为环境变量 (`CLARIFAI_PAT`)。
 
+## 模型
 
-## Models
+Clarifai 提供了数千个 AI 模型，适用于多种不同的用例。您可以在 [这里探索](https://clarifai.com/explore) 以找到最适合您用例的模型。这些模型包括其他提供商创建的模型，如 OpenAI、Anthropic、Cohere、AI21 等，以及来自开源的最先进模型，如 Falcon、InstructorXL 等，以便您将最佳 AI 技术融入您的产品。您会发现这些模型按创建者的 user_id 组织，并分为我们称之为应用程序的项目，标识为 app_id。找到最适合您用例的模型后，您需要记录这些 ID，除了 model_id 之外，还可以选择记录 version_id。
 
-Clarifai provides 1,000s of AI models for many different use cases. You can [explore them here](https://clarifai.com/explore) to find the one most suited for your use case. These models include those created by other providers such as OpenAI, Anthropic, Cohere, AI21, etc. as well as state of the art from open source such as Falcon, InstructorXL, etc. so that you build the best in AI into your products. You'll find these organized by the creator's user_id and into projects we call applications denoted by their app_id. Those IDs will be needed in additional to the model_id and optionally the version_id, so make note of all these IDs once you found the best model for your use case!
-
-Also note that given there are many models for images, video, text and audio understanding, you can build some interested AI agents that utilize the variety of AI models as experts to understand those data types.
+还请注意，由于图像、视频、文本和音频理解的模型众多，您可以构建一些有趣的 AI 代理，利用各种 AI 模型作为专家来理解这些数据类型。
 
 ### LLMs
 
-To find the selection of LLMs in the Clarifai platform you can select the text to text model type [here](https://clarifai.com/explore/models?filterData=%5B%7B%22field%22%3A%22model_type_id%22%2C%22value%22%3A%5B%22text-to-text%22%5D%7D%5D&page=1&perPage=24).
+要在Clarifai平台中找到LLMs的选择，可以在[这里](https://clarifai.com/explore/models?filterData=%5B%7B%22field%22%3A%22model_type_id%22%2C%22value%22%3A%5B%22text-to-text%22%5D%7D%5D&page=1&perPage=24)选择文本到文本模型类型。
 
 ```python
 from langchain_community.llms import Clarifai
 llm = Clarifai(pat=CLARIFAI_PAT, user_id=USER_ID, app_id=APP_ID, model_id=MODEL_ID)
 ```
 
-For more details, the docs on the Clarifai LLM wrapper provide a [detailed walkthrough](/docs/integrations/llms/clarifai).
+有关更多详细信息，Clarifai LLM包装器的文档提供了[详细指南](/docs/integrations/llms/clarifai)。
 
+### 文本嵌入模型
 
-### Text Embedding Models
+要在 Clarifai 平台上查找文本嵌入模型的选择，可以在 [这里](https://clarifai.com/explore/models?page=1&perPage=24&filterData=%5B%7B%22field%22%3A%22model_type_id%22%2C%22value%22%3A%5B%22text-embedder%22%5D%7D%5D) 选择文本嵌入模型类型。
 
-To find the selection of text embeddings models in the Clarifai platform you can select the text to embedding model type [here](https://clarifai.com/explore/models?page=1&perPage=24&filterData=%5B%7B%22field%22%3A%22model_type_id%22%2C%22value%22%3A%5B%22text-embedder%22%5D%7D%5D).
-
-There is a Clarifai Embedding model in LangChain, which you can access with:
+在 LangChain 中有一个 Clarifai 嵌入模型，您可以通过以下方式访问：
 ```python
 from langchain_community.embeddings import ClarifaiEmbeddings
 embeddings = ClarifaiEmbeddings(pat=CLARIFAI_PAT, user_id=USER_ID, app_id=APP_ID, model_id=MODEL_ID)
 ```
-For more details, the docs on the Clarifai Embeddings wrapper provide a [detailed walkthrough](/docs/integrations/text_embedding/clarifai).
+有关更多详细信息，Clarifai Embeddings 包装器的文档提供了一个 [详细指南](/docs/integrations/text_embedding/clarifai)。
 
-## Vectorstore
+## 向量存储
 
-Clarifai's vector DB was launched in 2016 and has been optimized to support live search queries. With workflows in the Clarifai platform, you data is automatically indexed by am embedding model and optionally other models as well to index that information in the DB for search. You can query the DB not only via the vectors but also filter by metadata matches, other AI predicted concepts, and even do geo-coordinate search. Simply create an application, select the appropriate base workflow for your type of data, and upload it (through the API as [documented here](https://docs.clarifai.com/api-guide/data/create-get-update-delete) or the UIs at clarifai.com).
+Clarifai 的向量数据库于 2016 年推出，并已优化以支持实时搜索查询。通过 Clarifai 平台中的工作流程，您的数据会通过嵌入模型自动进行索引，并可选择其他模型来将该信息索引到数据库中以供搜索。您不仅可以通过向量查询数据库，还可以通过元数据匹配、其他 AI 预测概念进行过滤，甚至可以进行地理坐标搜索。只需创建一个应用程序，选择适合您数据类型的基本工作流程，然后通过 API（如 [此处所述](https://docs.clarifai.com/api-guide/data/create-get-update-delete)）或在 clarifai.com 的用户界面上传数据。
 
-You can also add data directly from LangChain as well, and the auto-indexing will take place for you. You'll notice this is a little different than other vectorstores where you need to provide an embedding model in their constructor and have LangChain coordinate getting the embeddings from text and writing those to the index. Not only is it more convenient, but it's much more scalable to use Clarifai's distributed cloud to do all the index in the background.
+您还可以直接从 LangChain 添加数据，自动索引将为您进行。您会注意到，这与其他向量存储有些不同，后者需要在构造函数中提供嵌入模型，并让 LangChain 协调从文本获取嵌入并将其写入索引。使用 Clarifai 的分布式云在后台进行所有索引，不仅更方便，而且更具可扩展性。
 
 ```python
 from langchain_community.vectorstores import Clarifai
 clarifai_vector_db = Clarifai.from_texts(user_id=USER_ID, app_id=APP_ID, texts=texts, pat=CLARIFAI_PAT, number_of_docs=NUMBER_OF_DOCS, metadatas = metadatas)
 ```
-For more details, the docs on the Clarifai vector store provide a [detailed walkthrough](/docs/integrations/vectorstores/clarifai).
+有关更多详细信息，Clarifai 向量存储的文档提供了 [详细指南](/docs/integrations/vectorstores/clarifai)。

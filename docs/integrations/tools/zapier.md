@@ -1,25 +1,26 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/zapier.ipynb
 ---
-# Zapier Natural Language Actions
 
-**Deprecated** This API will be sunset on 2023-11-17: https://nla.zapier.com/start/
- 
->[Zapier Natural Language Actions](https://nla.zapier.com/start/) gives you access to the 5k+ apps, 20k+ actions on Zapier's platform through a natural language API interface.
+# Zapier 自然语言操作
+
+**已弃用** 此 API 将于 2023-11-17 停止服务: https://nla.zapier.com/start/
+
+>[Zapier 自然语言操作](https://nla.zapier.com/start/) 通过自然语言 API 接口为您提供对 Zapier 平台上 5000 多个应用程序和 20000 多个操作的访问权限。
 >
->NLA supports apps like `Gmail`, `Salesforce`, `Trello`, `Slack`, `Asana`, `HubSpot`, `Google Sheets`, `Microsoft Teams`, and thousands more apps: https://zapier.com/apps
->`Zapier NLA` handles ALL the underlying API auth and translation from natural language --> underlying API call --> return simplified output for LLMs. The key idea is you, or your users, expose a set of actions via an oauth-like setup window, which you can then query and execute via a REST API.
+>NLA 支持的应用程序包括 `Gmail`、`Salesforce`、`Trello`、`Slack`、`Asana`、`HubSpot`、`Google Sheets`、`Microsoft Teams` 以及其他数千个应用程序: https://zapier.com/apps
+>`Zapier NLA` 处理所有底层 API 认证和从自然语言到底层 API 调用的转换，并为 LLM 返回简化输出。关键思想是您或您的用户通过类似 oauth 的设置窗口暴露一组操作，然后您可以通过 REST API 查询和执行这些操作。
 
-NLA offers both API Key and OAuth for signing NLA API requests.
+NLA 提供 API 密钥和 OAuth 两种方式来签署 NLA API 请求。
 
-1. Server-side (API Key): for quickly getting started, testing, and production scenarios where LangChain will only use actions exposed in the developer's Zapier account (and will use the developer's connected accounts on Zapier.com)
+1. 服务器端（API 密钥）：用于快速入门、测试和生产场景，在这些场景中，LangChain 仅使用开发者的 Zapier 账户中暴露的操作（并将使用开发者在 Zapier.com 上连接的账户）。
 
-2. User-facing (Oauth): for production scenarios where you are deploying an end-user facing application and LangChain needs access to end-user's exposed actions and connected accounts on Zapier.com
+2. 面向用户（Oauth）：用于您正在部署面向最终用户的应用程序的生产场景，LangChain 需要访问最终用户在 Zapier.com 上暴露的操作和连接的账户。
 
-This quick start focus mostly on the server-side use case for brevity. Jump to [Example Using OAuth Access Token](#oauth) to see a short example how to set up Zapier for user-facing situations. Review [full docs](https://nla.zapier.com/start/) for full user-facing oauth developer support.
+本快速入门主要集中于服务器端用例以简洁为主。跳转到 [使用 OAuth 访问令牌的示例](#oauth) 查看如何为面向用户的情况设置 Zapier 的简短示例。查看 [完整文档](https://nla.zapier.com/start/) 以获取完整的面向用户的 oauth 开发者支持。
 
-This example goes over how to use the Zapier integration with a `SimpleSequentialChain`, then an `Agent`.
-In code, below:
+此示例介绍了如何使用 `SimpleSequentialChain` 和 `Agent` 的 Zapier 集成。
+代码如下：
 
 
 ```python
@@ -32,9 +33,8 @@ os.environ["OPENAI_API_KEY"] = os.environ.get("OPENAI_API_KEY", "")
 os.environ["ZAPIER_NLA_API_KEY"] = os.environ.get("ZAPIER_NLA_API_KEY", "")
 ```
 
-## Example with Agent
-Zapier tools can be used with an agent. See the example below.
-
+## 示例与代理
+Zapier 工具可以与代理一起使用。请参见下面的示例。
 
 ```python
 from langchain.agents import AgentType, initialize_agent
@@ -43,14 +43,12 @@ from langchain_community.utilities.zapier import ZapierNLAWrapper
 from langchain_openai import OpenAI
 ```
 
-
 ```python
-## step 0. expose gmail 'find email' and slack 'send channel message' actions
+## 步骤 0. 暴露 Gmail 的“查找邮件”和 Slack 的“发送频道消息”操作
 
-# first go here, log in, expose (enable) the two actions: https://nla.zapier.com/demo/start -- for this example, can leave all fields "Have AI guess"
-# in an oauth scenario, you'd get your own <provider> id (instead of 'demo') which you route your users through first
+# 首先访问此处，登录，暴露（启用）这两个操作：https://nla.zapier.com/demo/start -- 对于此示例，可以将所有字段留为“让 AI 猜测”
+# 在 OAuth 场景中，您将获得自己的 <provider> id（而不是 'demo'），您首先将用户引导到该 id
 ```
-
 
 ```python
 llm = OpenAI(temperature=0)
@@ -61,10 +59,9 @@ agent = initialize_agent(
 )
 ```
 
-
 ```python
 agent.run(
-    "Summarize the last email I received regarding Silicon Valley Bank. Send the summary to the #test-zapier channel in slack."
+    "总结我收到的关于硅谷银行的最后一封邮件。将摘要发送到 Slack 中的 #test-zapier 频道。"
 )
 ```
 ```output
@@ -85,15 +82,12 @@ Final Answer: I have sent a summary of the last email from Silicon Valley Bank t
 [1m> Finished chain.[0m
 ```
 
-
 ```output
 'I have sent a summary of the last email from Silicon Valley Bank to the #test-zapier channel in Slack.'
 ```
 
-
-## Example with SimpleSequentialChain
-If you need more explicit control, use a chain, like below.
-
+## 示例：使用 SimpleSequentialChain
+如果您需要更明确的控制，请使用如下链。
 
 ```python
 from langchain.chains import LLMChain, SimpleSequentialChain, TransformChain
@@ -103,21 +97,19 @@ from langchain_core.prompts import PromptTemplate
 from langchain_openai import OpenAI
 ```
 
-
 ```python
-## step 0. expose gmail 'find email' and slack 'send direct message' actions
+## 步骤 0. 暴露 Gmail 的“查找电子邮件”和 Slack 的“发送直接消息”操作
 
-# first go here, log in, expose (enable) the two actions: https://nla.zapier.com/demo/start -- for this example, can leave all fields "Have AI guess"
-# in an oauth scenario, you'd get your own <provider> id (instead of 'demo') which you route your users through first
+# 首先访问此处，登录，暴露（启用）这两个操作：https://nla.zapier.com/demo/start -- 对于这个示例，可以将所有字段留为“让 AI 猜测”
+# 在 OAuth 场景中，您将获得自己的 <provider> id（而不是 'demo'），您需要先通过它引导用户
 
 actions = ZapierNLAWrapper().list()
 ```
 
-
 ```python
-## step 1. gmail find email
+## 步骤 1. Gmail 查找电子邮件
 
-GMAIL_SEARCH_INSTRUCTIONS = "Grab the latest email from Silicon Valley Bank"
+GMAIL_SEARCH_INSTRUCTIONS = "获取来自硅谷银行的最新电子邮件"
 
 
 def nla_gmail(inputs):
@@ -140,11 +132,10 @@ gmail_chain = TransformChain(
 )
 ```
 
-
 ```python
-## step 2. generate draft reply
+## 步骤 2. 生成草稿回复
 
-template = """You are an assisstant who drafts replies to an incoming email. Output draft reply in plain text (not JSON).
+template = """您是一个助手，负责草拟对 incoming email 的回复。以纯文本格式输出草稿回复（而不是 JSON）。
 
 Incoming email:
 {email_data}
@@ -155,9 +146,8 @@ prompt_template = PromptTemplate(input_variables=["email_data"], template=templa
 reply_chain = LLMChain(llm=OpenAI(temperature=0.7), prompt=prompt_template)
 ```
 
-
 ```python
-## step 3. send draft reply via a slack direct message
+## 步骤 3. 通过 Slack 直接消息发送草稿回复
 
 SLACK_HANDLE = "@Ankush Gola"
 
@@ -171,7 +161,7 @@ def nla_slack(inputs):
         ),
         None,
     )
-    instructions = f'Send this to {SLACK_HANDLE} in Slack: {inputs["draft_reply"]}'
+    instructions = f'将此发送给 {SLACK_HANDLE} 在 Slack 中: {inputs["draft_reply"]}'
     return {
         "slack_data": ZapierNLARunAction(
             action_id=action["id"],
@@ -188,9 +178,8 @@ slack_chain = TransformChain(
 )
 ```
 
-
 ```python
-## finally, execute
+## 最后，执行
 
 overall_chain = SimpleSequentialChain(
     chains=[gmail_chain, reply_chain, slack_chain], verbose=True
@@ -200,31 +189,27 @@ overall_chain.run(GMAIL_SEARCH_INSTRUCTIONS)
 ```output
 
 
-[1m> Entering new SimpleSequentialChain chain...[0m
-[36;1m[1;3m{"from__name": "Silicon Valley Bridge Bank, N.A.", "from__email": "sreply@svb.com", "body_plain": "Dear Clients, After chaotic, tumultuous & stressful days, we have clarity on path for SVB, FDIC is fully insuring all deposits & have an ask for clients & partners as we rebuild. Tim Mayopoulos <https://eml.svb.com/NjEwLUtBSy0yNjYAAAGKgoxUeBCLAyF_NxON97X4rKEaNBLG", "reply_to__email": "sreply@svb.com", "subject": "Meet the new CEO Tim Mayopoulos", "date": "Tue, 14 Mar 2023 23:42:29 -0500 (CDT)", "message_url": "https://mail.google.com/mail/u/0/#inbox/186e393b13cfdf0a", "attachment_count": "0", "to__emails": "ankush@langchain.dev", "message_id": "186e393b13cfdf0a", "labels": "IMPORTANT, CATEGORY_UPDATES, INBOX"}[0m
+[1m> 进入新的 SimpleSequentialChain 链...[0m
+[36;1m[1;3m{"from__name": "Silicon Valley Bridge Bank, N.A.", "from__email": "sreply@svb.com", "body_plain": "亲爱的客户，经过混乱、动荡和压力重重的日子后，我们对 SVB 的路径有了清晰的认识，FDIC 完全保障所有存款，并且在我们重建时有一个请求给客户和合作伙伴。Tim Mayopoulos <https://eml.svb.com/NjEwLUtBSy0yNjYAAAGKgoxUeBCLAyF_NxON97X4rKEaNBLG", "reply_to__email": "sreply@svb.com", "subject": "认识新 CEO Tim Mayopoulos", "date": "2023年3月14日 星期二 23:42:29 -0500 (CDT)", "message_url": "https://mail.google.com/mail/u/0/#inbox/186e393b13cfdf0a", "attachment_count": "0", "to__emails": "ankush@langchain.dev", "message_id": "186e393b13cfdf0a", "labels": "重要, 更新类别, 收件箱"}[0m
 [33;1m[1;3m
-Dear Silicon Valley Bridge Bank, 
+亲爱的硅谷桥银行， 
 
-Thank you for your email and the update regarding your new CEO Tim Mayopoulos. We appreciate your dedication to keeping your clients and partners informed and we look forward to continuing our relationship with you. 
+感谢您的电子邮件以及关于您新任 CEO Tim Mayopoulos 的更新。我们感谢您保持客户和合作伙伴知情的奉献精神，并期待继续与您保持关系。 
 
-Best regards, 
-[Your Name][0m
-[38;5;200m[1;3m{"message__text": "Dear Silicon Valley Bridge Bank, \n\nThank you for your email and the update regarding your new CEO Tim Mayopoulos. We appreciate your dedication to keeping your clients and partners informed and we look forward to continuing our relationship with you. \n\nBest regards, \n[Your Name]", "message__permalink": "https://langchain.slack.com/archives/D04TKF5BBHU/p1678859968241629", "channel": "D04TKF5BBHU", "message__bot_profile__name": "Zapier", "message__team": "T04F8K3FZB5", "message__bot_id": "B04TRV4R74K", "message__bot_profile__deleted": "false", "message__bot_profile__app_id": "A024R9PQM", "ts_time": "2023-03-15T05:59:28Z", "message__blocks[]block_id": "p7i", "message__blocks[]elements[]elements[]type": "[['text']]", "message__blocks[]elements[]type": "['rich_text_section']"}[0m
+此致， 
+[您的名字][0m
+[38;5;200m[1;3m{"message__text": "亲爱的硅谷桥银行， \\n\\n感谢您的电子邮件以及关于您新任 CEO Tim Mayopoulos 的更新。我们感谢您保持客户和合作伙伴知情的奉献精神，并期待继续与您保持关系。 \\n\\n此致， \\n[您的名字]", "message__permalink": "https://langchain.slack.com/archives/D04TKF5BBHU/p1678859968241629", "channel": "D04TKF5BBHU", "message__bot_profile__name": "Zapier", "message__team": "T04F8K3FZB5", "message__bot_id": "B04TRV4R74K", "message__bot_profile__deleted": "false", "message__bot_profile__app_id": "A024R9PQM", "ts_time": "2023-03-15T05:59:28Z", "message__blocks[]block_id": "p7i", "message__blocks[]elements[]elements[]type": "[['text']]", "message__blocks[]elements[]type": "['rich_text_section']"}[0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 ```
-
-
 ```output
-'{"message__text": "Dear Silicon Valley Bridge Bank, \\n\\nThank you for your email and the update regarding your new CEO Tim Mayopoulos. We appreciate your dedication to keeping your clients and partners informed and we look forward to continuing our relationship with you. \\n\\nBest regards, \\n[Your Name]", "message__permalink": "https://langchain.slack.com/archives/D04TKF5BBHU/p1678859968241629", "channel": "D04TKF5BBHU", "message__bot_profile__name": "Zapier", "message__team": "T04F8K3FZB5", "message__bot_id": "B04TRV4R74K", "message__bot_profile__deleted": "false", "message__bot_profile__app_id": "A024R9PQM", "ts_time": "2023-03-15T05:59:28Z", "message__blocks[]block_id": "p7i", "message__blocks[]elements[]elements[]type": "[[\'text\']]", "message__blocks[]elements[]type": "[\'rich_text_section\']"}'
+'{"message__text": "亲爱的硅谷桥银行， \\n\\n感谢您的电子邮件以及关于您新任 CEO Tim Mayopoulos 的更新。我们感谢您保持客户和合作伙伴知情的奉献精神，并期待继续与您保持关系。 \\n\\n此致， \\n[您的名字]", "message__permalink": "https://langchain.slack.com/archives/D04TKF5BBHU/p1678859968241629", "channel": "D04TKF5BBHU", "message__bot_profile__name": "Zapier", "message__team": "T04F8K3FZB5", "message__bot_id": "B04TRV4R74K", "message__bot_profile__deleted": "false", "message__bot_profile__app_id": "A024R9PQM", "ts_time": "2023-03-15T05:59:28Z", "message__blocks[]block_id": "p7i", "message__blocks[]elements[]elements[]type": "[[\'text\']]", "message__blocks[]elements[]type": "[\'rich_text_section\']"}'
 ```
 
+## <a id="oauth">使用 OAuth 访问令牌的示例</a>
+以下代码片段展示了如何使用获取的 OAuth 访问令牌初始化包装器。请注意传入的参数与设置环境变量的区别。请查看 [认证文档](https://nla.zapier.com/docs/authentication/#oauth-credentials) 以获取完整的面向用户的 oauth 开发者支持。
 
-## <a id="oauth">Example Using OAuth Access Token</a>
-The below snippet shows how to initialize the wrapper with a procured OAuth access token. Note the argument being passed in as opposed to setting an environment variable. Review the [authentication docs](https://nla.zapier.com/docs/authentication/#oauth-credentials) for full user-facing oauth developer support.
-
-The developer is tasked with handling the OAuth handshaking to procure and refresh the access token.
-
+开发者的任务是处理 OAuth 握手，以获取和刷新访问令牌。
 
 ```python
 llm = OpenAI(temperature=0)
@@ -239,8 +224,7 @@ agent.run(
 )
 ```
 
+## 相关
 
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

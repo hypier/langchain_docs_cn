@@ -1,60 +1,60 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/meilisearch.ipynb
 ---
+
 # Meilisearch
 
-> [Meilisearch](https://meilisearch.com) is an open-source, lightning-fast, and hyper relevant search engine. It comes with great defaults to help developers build snappy search experiences. 
+> [Meilisearch](https://meilisearch.com) 是一个开源、快速且高度相关的搜索引擎。它提供了优秀的默认设置，帮助开发者构建流畅的搜索体验。
 >
-> You can [self-host Meilisearch](https://www.meilisearch.com/docs/learn/getting_started/installation#local-installation) or run on [Meilisearch Cloud](https://www.meilisearch.com/pricing).
+> 您可以选择 [自托管 Meilisearch](https://www.meilisearch.com/docs/learn/getting_started/installation#local-installation) 或者在 [Meilisearch Cloud](https://www.meilisearch.com/pricing) 上运行。
 
-Meilisearch v1.3 supports vector search. This page guides you through integrating Meilisearch as a vector store and using it to perform vector search.
+Meilisearch v1.3 支持向量搜索。本页面将指导您如何将 Meilisearch 集成作为向量存储并使用它进行向量搜索。
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
+您需要使用 `pip install -qU langchain-community` 安装 `langchain-community` 以使用此集成。
 
-## Setup
+## 设置
 
-### Launching a Meilisearch instance
+### 启动 Meilisearch 实例
 
-You will need a running Meilisearch instance to use as your vector store. You can run [Meilisearch in local](https://www.meilisearch.com/docs/learn/getting_started/installation#local-installation) or create a [Meilisearch Cloud](https://cloud.meilisearch.com/) account.
+您需要一个正在运行的 Meilisearch 实例作为您的向量存储。您可以在 [本地运行 Meilisearch](https://www.meilisearch.com/docs/learn/getting_started/installation#local-installation) 或创建一个 [Meilisearch Cloud](https://cloud.meilisearch.com/) 账户。
 
-As of Meilisearch v1.3, vector storage is an experimental feature. After launching your Meilisearch instance, you need to **enable vector storage**. For self-hosted Meilisearch, read the docs on [enabling experimental features](https://www.meilisearch.com/docs/learn/experimental/overview). On **Meilisearch Cloud**, enable _Vector Store_ via your project _Settings_ page.
+从 Meilisearch v1.3 开始，向量存储是一个实验性功能。启动您的 Meilisearch 实例后，您需要 **启用向量存储**。对于自托管的 Meilisearch，请阅读关于 [启用实验性功能](https://www.meilisearch.com/docs/learn/experimental/overview) 的文档。在 **Meilisearch Cloud** 上，通过您的项目 _设置_ 页面启用 _向量存储_。
 
-You should now have a running Meilisearch instance with vector storage enabled. 🎉
+您现在应该有一个启用了向量存储的运行中的 Meilisearch 实例。🎉
 
-### Credentials
+### 凭证
 
-To interact with your Meilisearch instance, the Meilisearch SDK needs a host (URL of your instance) and an API key.
+要与您的 Meilisearch 实例进行交互，Meilisearch SDK 需要一个主机（您实例的 URL）和一个 API 密钥。
 
-**Host**
+**主机**
 
-- In **local**, the default host is `localhost:7700`
-- On **Meilisearch Cloud**, find the host in your project _Settings_ page
+- 在 **本地**，默认主机是 `localhost:7700`
+- 在 **Meilisearch Cloud** 上，可以在您的项目 _设置_ 页面找到主机
 
-**API keys**
+**API 密钥**
 
-Meilisearch instance provides you with three API keys out of the box: 
-- A `MASTER KEY` — it should only be used to create your Meilisearch instance
-- A `ADMIN KEY` — use it only server-side to update your database and its settings
-- A `SEARCH KEY` — a key that you can safely share in front-end applications
+Meilisearch 实例为您提供了三种 API 密钥：
+- 一个 `MASTER KEY` — 仅应用于创建您的 Meilisearch 实例
+- 一个 `ADMIN KEY` — 仅在服务器端使用以更新您的数据库及其设置
+- 一个 `SEARCH KEY` — 您可以在前端应用中安全共享的密钥
 
-You can create [additional API keys](https://www.meilisearch.com/docs/learn/security/master_api_keys) as needed.
+您可以根据需要创建 [其他 API 密钥](https://www.meilisearch.com/docs/learn/security/master_api_keys)。
 
-### Installing dependencies
+### 安装依赖
 
-This guide uses the [Meilisearch Python SDK](https://github.com/meilisearch/meilisearch-python). You can install it by running:
-
+本指南使用 [Meilisearch Python SDK](https://github.com/meilisearch/meilisearch-python)。您可以通过运行以下命令来安装它：
 
 ```python
 %pip install --upgrade --quiet  meilisearch
 ```
 
-For more information, refer to the [Meilisearch Python SDK documentation](https://meilisearch.github.io/meilisearch-python/).
+有关更多信息，请参阅 [Meilisearch Python SDK 文档](https://meilisearch.github.io/meilisearch-python/)。
 
-## Examples
+## 示例
 
-There are multiple ways to initialize the Meilisearch vector store: providing a Meilisearch client or the _URL_ and _API key_ as needed. In our examples, the credentials will be loaded from the environment.
+有多种方法可以初始化 Meilisearch 向量存储：根据需要提供 Meilisearch 客户端或 _URL_ 和 _API 密钥_。在我们的示例中，凭据将从环境中加载。
 
-You can make environment variables available in your Notebook environment by using `os` and `getpass`. You can use this technique for all the following examples.
+您可以通过使用 `os` 和 `getpass` 在 Notebook 环境中提供环境变量。您可以对以下所有示例使用此技术。
 
 
 ```python
@@ -65,17 +65,16 @@ os.environ["MEILI_HTTP_ADDR"] = getpass.getpass("Meilisearch HTTP address and po
 os.environ["MEILI_MASTER_KEY"] = getpass.getpass("Meilisearch API Key:")
 ```
 
-We want to use OpenAIEmbeddings so we have to get the OpenAI API Key.
+我们想使用 OpenAIEmbeddings，因此我们必须获取 OpenAI API 密钥。
 
 
 ```python
 os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API Key:")
 ```
 
-### Adding text and embeddings
+### 添加文本和嵌入
 
-This example adds text to the Meilisearch vector database without having to initialize a Meilisearch vector store.
-
+此示例将文本添加到 Meilisearch 向量数据库，而无需初始化 Meilisearch 向量存储。
 
 ```python
 from langchain_community.vectorstores import Meilisearch
@@ -92,7 +91,6 @@ embedders = {
 embedder_name = "default"
 ```
 
-
 ```python
 with open("../../how_to/state_of_the_union.txt") as f:
     state_of_the_union = f.read()
@@ -100,20 +98,18 @@ text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
 texts = text_splitter.split_text(state_of_the_union)
 ```
 
-
 ```python
-# Use Meilisearch vector store to store texts & associated embeddings as vector
+# 使用 Meilisearch 向量存储来存储文本及其相关嵌入作为向量
 vector_store = Meilisearch.from_texts(
     texts=texts, embedding=embeddings, embedders=embedders, embedder_name=embedder_name
 )
 ```
 
-Behind the scenes, Meilisearch will convert the text to multiple vectors. This will bring us to the same result as the following example.
+在后台，Meilisearch 将文本转换为多个向量。这将使我们获得与以下示例相同的结果。
 
-### Adding documents and embeddings
+### 添加文档和嵌入
 
-In this example, we'll use Langchain TextSplitter to split the text in multiple documents. Then, we'll store these documents along with their embeddings.
-
+在这个例子中，我们将使用 Langchain TextSplitter 将多个文档中的文本进行拆分。然后，我们将存储这些文档及其嵌入。
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -140,9 +136,9 @@ docs = vector_store.similarity_search(query, embedder_name=embedder_name)
 print(docs[0].page_content)
 ```
 
-## Add documents by creating a Meilisearch Vectorstore
+## 通过创建 Meilisearch 向量存储添加文档
 
-In this approach, we create a vector store object and add documents to it.
+在此方法中，我们创建一个向量存储对象并向其中添加文档。
 
 
 ```python
@@ -160,9 +156,9 @@ vector_store = Meilisearch(
 vector_store.add_documents(documents)
 ```
 
-## Similarity Search with score
+## 带分数的相似性搜索
 
-This specific method allows you to return the documents and the distance score of the query to them. `embedder_name` is the name of the embedder that should be used for semantic search, defaults to "default".
+此特定方法允许您返回文档及查询与它们之间的距离分数。`embedder_name` 是用于语义搜索的嵌入器名称，默认为 "default"。
 
 
 ```python
@@ -172,8 +168,8 @@ docs_and_scores = vector_store.similarity_search_with_score(
 docs_and_scores[0]
 ```
 
-## Similarity Search by vector
-`embedder_name` is the name of the embedder that should be used for semantic search, defaults to "default".
+## 基于向量的相似性搜索
+`embedder_name` 是用于语义搜索的嵌入器名称，默认为 "default"。
 
 
 ```python
@@ -184,18 +180,17 @@ docs_and_scores = vector_store.similarity_search_by_vector(
 docs_and_scores[0]
 ```
 
-## Additional resources
+## 附加资源
 
-Documentation
+文档
 - [Meilisearch](https://www.meilisearch.com/docs/)
 - [Meilisearch Python SDK](https://python-sdk.meilisearch.com)
 
-Open-source repositories
-- [Meilisearch repository](https://github.com/meilisearch/meilisearch)
+开源代码库
+- [Meilisearch 仓库](https://github.com/meilisearch/meilisearch)
 - [Meilisearch Python SDK](https://github.com/meilisearch/meilisearch-python)
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

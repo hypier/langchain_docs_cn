@@ -1,15 +1,13 @@
 # OpenLLM
 
-This page demonstrates how to use [OpenLLM](https://github.com/bentoml/OpenLLM)
-with LangChain.
+本页面演示如何使用 [OpenLLM](https://github.com/bentoml/OpenLLM) 
+与 LangChain。
 
-`OpenLLM` is an open platform for operating large language models (LLMs) in
-production. It enables developers to easily run inference with any open-source
-LLMs, deploy to the cloud or on-premises, and build powerful AI apps.
+`OpenLLM` 是一个用于在生产环境中操作大型语言模型（LLMs）的开放平台。它使开发人员能够轻松地使用任何开源 LLM 进行推理，部署到云端或本地，并构建强大的 AI 应用程序。
 
-## Installation and Setup
+## 安装和设置
 
-Install the OpenLLM package via PyPI:
+通过 PyPI 安装 OpenLLM 包：
 
 ```bash
 pip install openllm
@@ -17,31 +15,27 @@ pip install openllm
 
 ## LLM
 
-OpenLLM supports a wide range of open-source LLMs as well as serving users' own
-fine-tuned LLMs. Use `openllm model` command to see all available models that
-are pre-optimized for OpenLLM.
+OpenLLM 支持广泛的开源 LLM 以及用户自己微调的 LLM。使用 `openllm model` 命令查看所有为 OpenLLM 预优化的可用模型。
 
-## Wrappers
+## 包装器
 
-There is a OpenLLM Wrapper which supports loading LLM in-process or accessing a
-remote OpenLLM server:
+有一个 OpenLLM 包装器，支持在进程中加载 LLM 或访问远程 OpenLLM 服务器：
 
 ```python
 from langchain_community.llms import OpenLLM
 ```
 
-### Wrapper for OpenLLM server
+### OpenLLM 服务器的封装
 
-This wrapper supports connecting to an OpenLLM server via HTTP or gRPC. The
-OpenLLM server can run either locally or on the cloud.
+此封装支持通过 HTTP 或 gRPC 连接到 OpenLLM 服务器。OpenLLM 服务器可以在本地或云端运行。
 
-To try it out locally, start an OpenLLM server:
+要在本地试用，请启动 OpenLLM 服务器：
 
 ```bash
 openllm start flan-t5
 ```
 
-Wrapper usage:
+封装用法：
 
 ```python
 from langchain_community.llms import OpenLLM
@@ -51,10 +45,9 @@ llm = OpenLLM(server_url='http://localhost:3000')
 llm("What is the difference between a duck and a goose? And why there are so many Goose in Canada?")
 ```
 
-### Wrapper for Local Inference
+### 本地推理的封装器
 
-You can also use the OpenLLM wrapper to load LLM in current Python process for
-running inference.
+您还可以使用 OpenLLM 封装器在当前 Python 进程中加载 LLM 以进行推理。
 
 ```python
 from langchain_community.llms import OpenLLM
@@ -64,7 +57,7 @@ llm = OpenLLM(model_name="dolly-v2", model_id='databricks/dolly-v2-7b')
 llm("What is the difference between a duck and a goose? And why there are so many Goose in Canada?")
 ```
 
-### Usage
+### 使用方法
 
-For a more detailed walkthrough of the OpenLLM Wrapper, see the
-[example notebook](/docs/integrations/llms/openllm)
+有关 OpenLLM Wrapper 的更详细说明，请参见
+[示例笔记本](/docs/integrations/llms/openllm)

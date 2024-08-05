@@ -2,159 +2,140 @@
 sidebar_class_name: "hidden"
 ---
 
-# Documentation Style Guide
+# 文档风格指南
 
-As LangChain continues to grow, the surface area of documentation required to cover it continues to grow too.
-This page provides guidelines for anyone writing documentation for LangChain, as well as some of our philosophies around
-organization and structure.
+随着 LangChain 的不断发展，所需的文档范围也在不断扩大。本页面为任何撰写 LangChain 文档的人提供指导，以及我们在组织和结构方面的一些理念。
 
-## Philosophy
+## 哲学
 
-LangChain's documentation follows the [Diataxis framework](https://diataxis.fr).
-Under this framework, all documentation falls under one of four categories: [Tutorials](/docs/contributing/documentation/style_guide/#tutorials),
-[How-to guides](/docs/contributing/documentation/style_guide/#how-to-guides),
-[References](/docs/contributing/documentation/style_guide/#references), and [Explanations](/docs/contributing/documentation/style_guide/#conceptual-guide).
+LangChain 的文档遵循 [Diataxis 框架](https://diataxis.fr)。  
+在此框架下，所有文档都属于以下四个类别之一：[教程](/docs/contributing/documentation/style_guide/#tutorials)、  
+[操作指南](/docs/contributing/documentation/style_guide/#how-to-guides)、  
+[参考文献](/docs/contributing/documentation/style_guide/#references) 和 [解释](/docs/contributing/documentation/style_guide/#conceptual-guide)。
 
-### Tutorials
+### 教程
 
-Tutorials are lessons that take the reader through a practical activity. Their purpose is to help the user
-gain understanding of concepts and how they interact by showing one way to achieve some goal in a hands-on way. They should **avoid** giving
-multiple permutations of ways to achieve that goal in-depth. Instead, it should guide a new user through a recommended path to accomplishing the tutorial's goal. While the end result of a tutorial does not necessarily need to
-be completely production-ready, it should be useful and practically satisfy the the goal that you clearly stated in the tutorial's introduction. Information on how to address additional scenarios
-belongs in how-to guides.
+教程是引导读者进行实际活动的课程。它们的目的是帮助用户理解概念及其相互作用，通过展示实现某个目标的一种实践方式。它们应该**避免**深入提供多种实现该目标的变体。相反，它应该引导新用户通过推荐的路径来完成教程的目标。虽然教程的最终结果不一定需要完全准备好投入生产，但它应该是有用的，并在实践中满足您在教程介绍中明确陈述的目标。关于如何处理其他场景的信息应包含在操作指南中。
 
-To quote the Diataxis website:
+引用Diataxis网站的话：
 
-> A tutorial serves the user’s *acquisition* of skills and knowledge - their study. Its purpose is not to help the user get something done, but to help them learn.
+> 教程服务于用户的*技能和知识的获取*——他们的学习。它的目的是帮助用户学习，而不是帮助他们完成某件事。
 
-In LangChain, these are often higher level guides that show off end-to-end use cases.
+在LangChain中，这些通常是展示端到端用例的高级指南。
 
-Some examples include:
+一些示例包括：
 
-- [Build a Simple LLM Application with LCEL](/docs/tutorials/llm_chain/)
-- [Build a Retrieval Augmented Generation (RAG) App](/docs/tutorials/rag/)
+- [构建一个简单的LLM应用程序与LCEL](/docs/tutorials/llm_chain/)
+- [构建一个检索增强生成（RAG）应用程序](/docs/tutorials/rag/)
 
-A good structural rule of thumb is to follow the structure of this [example from Numpy](https://numpy.org/numpy-tutorials/content/tutorial-svd.html).
-  
-Here are some high-level tips on writing a good tutorial:
+一个好的结构性经验法则是遵循这个[Numpy示例](https://numpy.org/numpy-tutorials/content/tutorial-svd.html)的结构。
 
-- Focus on guiding the user to get something done, but keep in mind the end-goal is more to impart principles than to create a perfect production system.
-- Be specific, not abstract and follow one path.
-  - No need to go deeply into alternative approaches, but it’s ok to reference them, ideally with a link to an appropriate how-to guide.
-- Get "a point on the board" as soon as possible - something the user can run that outputs something.
-  - You can iterate and expand afterwards.
-  - Try to frequently checkpoint at given steps where the user can run code and see progress.
-- Focus on results, not technical explanation.
-  - Crosslink heavily to appropriate conceptual/reference pages.
-- The first time you mention a LangChain concept, use its full name (e.g. "LangChain Expression Language (LCEL)"), and link to its conceptual/other documentation page.
-  - It's also helpful to add a prerequisite callout that links to any pages with necessary background information.
-- End with a recap/next steps section summarizing what the tutorial covered and future reading, such as related how-to guides.
-  
-### How-to guides
+以下是撰写良好教程的一些高级提示：
 
-A how-to guide, as the name implies, demonstrates how to do something discrete and specific.
-It should assume that the user is already familiar with underlying concepts, and is trying to solve an immediate problem, but
-should still give some background or list the scenarios where the information contained within can be relevant.
-They can and should discuss alternatives if one approach may be better than another in certain cases.
+- 专注于引导用户完成某项工作，但要记住最终目标更多是传授原则，而不是创建一个完美的生产系统。
+- 具体，而不是抽象，并遵循一条路径。
+  - 不需要深入探讨替代方法，但可以提及它们，理想情况下附上指向适当操作指南的链接。
+- 尽快“在板上得分”——用户可以运行并输出某些内容的东西。
+  - 您可以在之后进行迭代和扩展。
+  - 尝试在用户可以运行代码并看到进展的特定步骤上频繁设置检查点。
+- 专注于结果，而不是技术解释。
+  - 大量交叉链接到适当的概念/参考页面。
+- 第一次提到LangChain概念时，使用其全名（例如“LangChain表达语言（LCEL）”），并链接到其概念/其他文档页面。
+  - 添加一个先决条件的提示，链接到任何具有必要背景信息的页面也是有帮助的。
+- 以总结/下一步部分结束，概述教程所涵盖的内容和未来阅读，例如相关的操作指南。
 
-To quote the Diataxis website:
+### 操作指南
 
-> A how-to guide serves the work of the already-competent user, whom you can assume to know what they want to do, and to be able to follow your instructions correctly.
+操作指南顾名思义，演示如何完成某个具体的任务。它应假设用户已经熟悉相关的基本概念，并试图解决一个直接的问题，但仍应提供一些背景信息或列出包含的信息在何种场景中可能相关。它们可以并且应该讨论替代方案，如果一种方法在某些情况下可能比另一种更好。
 
-Some examples include:
+引用Diataxis网站的话：
 
-- [How to: return structured data from a model](/docs/how_to/structured_output/)
-- [How to: write a custom chat model](/docs/how_to/custom_chat_model/)
+> 操作指南服务于已经具备能力的用户，您可以假设他们知道自己想要做什么，并能够正确地遵循您的指示。
 
-Here are some high-level tips on writing a good how-to guide:
+一些示例包括：
 
-- Clearly explain what you are guiding the user through at the start.
-- Assume higher intent than a tutorial and show what the user needs to do to get that task done.
-- Assume familiarity of concepts, but explain why suggested actions are helpful.
-  - Crosslink heavily to conceptual/reference pages.
-- Discuss alternatives and responses to real-world tradeoffs that may arise when solving a problem.
-- Use lots of example code.
-  - Prefer full code blocks that the reader can copy and run.
-- End with a recap/next steps section summarizing what the tutorial covered and future reading, such as other related how-to guides.
+- [如何从模型返回结构化数据](/docs/how_to/structured_output/)
+- [如何编写自定义聊天模型](/docs/how_to/custom_chat_model/)
 
-### Conceptual guide
+以下是编写良好操作指南的一些高级提示：
 
-LangChain's conceptual guide falls under the **Explanation** quadrant of Diataxis. They should cover LangChain terms and concepts
-in a more abstract way than how-to guides or tutorials, and should be geared towards curious users interested in
-gaining a deeper understanding of the framework. Try to avoid excessively large code examples - the goal here is to
-impart perspective to the user rather than to finish a practical project. These guides should cover **why** things work they way they do.
+- 在开始时清楚地解释您正在引导用户完成的内容。
+- 假设用户的意图高于教程，展示用户需要做什么以完成该任务。
+- 假设对概念的熟悉，但解释建议的行动为何有帮助。
+  - 大量交叉链接到概念/参考页面。
+- 讨论解决问题时可能出现的替代方案和现实世界的权衡反应。
+- 使用大量示例代码。
+  - 优先使用完整的代码块，方便读者复制和运行。
+- 以回顾/后续步骤部分结束，总结教程所涵盖的内容和未来的阅读，例如其他相关的操作指南。
 
-This guide on documentation style is meant to fall under this category.
+### 概念指南
 
-To quote the Diataxis website:
+LangChain 的概念指南属于 Diataxis 的 **解释** 象限。它们应该以比操作指南或教程更抽象的方式涵盖 LangChain 的术语和概念，并面向那些希望深入理解该框架的好奇用户。尽量避免过于庞大的代码示例 - 这里的目标是为用户提供视角，而不是完成一个实际项目。这些指南应该涵盖 **为什么** 事情会以这样的方式运作。
 
-> The perspective of explanation is higher and wider than that of the other types. It does not take the user’s eye-level view, as in a how-to guide, or a close-up view of the machinery, like reference material. Its scope in each case is a topic - “an area of knowledge”, that somehow has to be bounded in a reasonable, meaningful way.
+这份关于文档风格的指南旨在归入此类别。
 
-Some examples include:
+引用 Diataxis 网站：
 
-- [Retrieval conceptual docs](/docs/concepts/#retrieval)
-- [Chat model conceptual docs](/docs/concepts/#chat-models)
+> 解释的视角比其他类型更高、更广。它并不以用户的视角为中心，如同操作指南，也不是对机器的特写，就像参考材料一样。它的范围在每种情况下都是一个主题 - “一个知识领域”，必须以合理、有意义的方式进行界定。
 
-Here are some high-level tips on writing a good conceptual guide:
+一些示例包括：
 
-- Explain design decisions. Why does concept X exist and why was it designed this way?
-- Use analogies and reference other concepts and alternatives
-- Avoid blending in too much reference content
-- You can and should reference content covered in other guides, but make sure to link to them
+- [检索概念文档](/docs/concepts/#retrieval)
+- [聊天模型概念文档](/docs/concepts/#chat-models)
 
-### References
+以下是撰写良好概念指南的一些高层提示：
 
-References contain detailed, low-level information that describes exactly what functionality exists and how to use it.
-In LangChain, this is mainly our API reference pages, which are populated from docstrings within code.
-References pages are generally not read end-to-end, but are consulted as necessary when a user needs to know
-how to use something specific.
+- 解释设计决策。为什么概念 X 存在，它为何以这种方式设计？
+- 使用类比并参考其他概念和替代方案
+- 避免过多混合参考内容
+- 你可以并且应该引用其他指南中涵盖的内容，但确保链接到它们
 
-To quote the Diataxis website:
+### 参考文献
 
-> The only purpose of a reference guide is to describe, as succinctly as possible, and in an orderly way. Whereas the content of tutorials and how-to guides are led by needs of the user, reference material is led by the product it describes.
+参考文献包含详细的、低级的信息，准确描述了现有的功能及其使用方法。在 LangChain 中，这主要是我们的 API 参考页面，这些页面是从代码中的文档字符串生成的。参考页面通常不会被逐页阅读，而是在用户需要了解某个特定内容时进行查阅。
 
-Many of the reference pages in LangChain are automatically generated from code,
-but here are some high-level tips on writing a good docstring:
+引用 Diataxis 网站的话：
 
-- Be concise
-- Discuss special cases and deviations from a user's expectations
-- Go into detail on required inputs and outputs
-- Light details on when one might use the feature are fine, but in-depth details belong in other sections.
+> 参考指南的唯一目的是尽可能简洁、有序地描述。而教程和操作指南的内容是由用户的需求驱动的，参考材料则是由其描述的产品驱动的。
 
-Each category serves a distinct purpose and requires a specific approach to writing and structuring the content.
+LangChain 中的许多参考页面是从代码自动生成的，但以下是编写良好文档字符串的一些高级提示：
 
-## General guidelines
+- 简洁明了
+- 讨论特殊情况和与用户预期的偏差
+- 详细说明所需的输入和输出
+- 轻微提及何时使用该功能是可以的，但深入的细节应放在其他部分。
 
-Here are some other guidelines you should think about when writing and organizing documentation.
+每个类别都有其独特的目的，并且需要特定的方法来编写和构建内容。
 
-We generally do not merge new tutorials from outside contributors without an actue need.
-We welcome updates as well as new integration docs, how-tos, and references.
+## 一般指南
 
-### Avoid duplication
+在编写和组织文档时，您应该考虑一些其他指南。
 
-Multiple pages that cover the same material in depth are difficult to maintain and cause confusion. There should
-be only one (very rarely two), canonical pages for a given concept or feature. Instead, you should link to other guides.
+我们通常不会在没有迫切需要的情况下合并外部贡献者的新教程。  
+我们欢迎更新以及新的集成文档、操作指南和参考资料。
 
-### Link to other sections
+### 避免重复
 
-Because sections of the docs do not exist in a vacuum, it is important to link to other sections as often as possible
-to allow a developer to learn more about an unfamiliar topic inline.
+多个页面深入覆盖相同内容会导致维护困难并造成混淆。对于给定的概念或功能，应该只有一个（极少数情况下两个）权威页面。相反，您应该链接到其他指南。
 
-This includes linking to the API references as well as conceptual sections!
+### 链接到其他部分
 
-### Be concise
+由于文档的各个部分并不是孤立存在的，因此尽可能地链接到其他部分非常重要，以便开发人员能够在线了解更多有关不熟悉主题的信息。
 
-In general, take a less-is-more approach. If a section with a good explanation of a concept already exists, you should link to it rather than
-re-explain it, unless the concept you are documenting presents some new wrinkle.
+这包括链接到 API 参考以及概念部分！
 
-Be concise, including in code samples.
+### 简洁明了
 
-### General style
+一般来说，采用少即是多的方法。如果某个部分已经对一个概念进行了很好的解释，您应该链接到该部分，而不是重新解释，除非您所记录的概念有一些新的变化。
 
-- Use active voice and present tense whenever possible
-- Use examples and code snippets to illustrate concepts and usage
-- Use appropriate header levels (`#`, `##`, `###`, etc.) to organize the content hierarchically
-- Use fewer cells with more code to make copy/paste easier
-- Use bullet points and numbered lists to break down information into easily digestible chunks
-- Use tables (especially for **Reference** sections) and diagrams often to present information visually
-- Include the table of contents for longer documentation pages to help readers navigate the content, but hide it for shorter pages
+保持简洁，包括代码示例。
+
+### 一般风格
+
+- 尽可能使用主动语态和现在时
+- 使用示例和代码片段来说明概念和用法
+- 使用适当的标题等级（`#`、`##`、`###` 等）来层次化组织内容
+- 使用较少的单元格和更多的代码，以便更容易复制/粘贴
+- 使用项目符号和编号列表将信息分解为易于消化的部分
+- 经常使用表格（尤其是**参考**部分）和图表以视觉方式呈现信息
+- 对于较长的文档页面包含目录，以帮助读者导航内容，但对于较短的页面隐藏目录

@@ -1,14 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/arcgis.ipynb
 ---
+
 # ArcGIS
 
-This notebook demonstrates the use of the `langchain_community.document_loaders.ArcGISLoader` class.
+本笔记本演示了 `langchain_community.document_loaders.ArcGISLoader` 类的使用。
 
-You will need to install the ArcGIS API for Python `arcgis` and, optionally, `bs4.BeautifulSoup`.
+您需要安装 ArcGIS API for Python `arcgis`，并可选安装 `bs4.BeautifulSoup`。
 
-You can use an `arcgis.gis.GIS` object for authenticated data loading, or leave it blank to access public data.
-
+您可以使用 `arcgis.gis.GIS` 对象进行认证数据加载，或者留空以访问公共数据。
 
 ```python
 from langchain_community.document_loaders import ArcGISLoader
@@ -19,8 +19,7 @@ loader = ArcGISLoader(URL)
 docs = loader.load()
 ```
 
-Let's measure loader latency.
-
+让我们测量加载器的延迟。
 
 ```python
 %%time
@@ -35,8 +34,6 @@ Wall time: 1.05 s
 ```python
 docs[0].metadata
 ```
-
-
 
 ```output
 {'accessed': '2023-09-13T19:58:32.546576+00:00Z',
@@ -214,19 +211,15 @@ docs[0].metadata
  }}
 ```
 
+### 检索几何形状  
 
-### Retrieving Geometries  
+如果您想检索特征几何形状，可以使用 `return_geometry` 关键字。
 
-
-If you want to retrieve feature geometries, you may do so with the `return_geometry` keyword.
-
-Each document's geometry will be stored in its metadata dictionary.
-
+每个文档的几何形状将存储在其元数据字典中。
 
 ```python
 loader_geom = ArcGISLoader(URL, return_geometry=True)
 ```
-
 
 ```python
 %%time
@@ -242,15 +235,11 @@ Wall time: 1.06 s
 docs[0].metadata["geometry"]
 ```
 
-
-
 ```output
 {'x': -81.01508803280349,
  'y': 29.24246579525828,
  'spatialReference': {'wkid': 4326, 'latestWkid': 4326}}
 ```
-
-
 
 ```python
 for doc in docs:
@@ -282,7 +271,7 @@ for doc in docs:
 {"OBJECTID": 174, "AccessName": "EL PORTAL ST", "AccessID": "DBS-076", "AccessType": "OPEN VEHICLE RAMP", "GeneralLoc": "3200 BLK S ATLANTIC AV", "MilePost": 20.04, "City": "DAYTONA BEACH SHORES", "AccessStatus": "OPEN", "Entry_Date_Time": 1694601124000, "DrivingZone": "YES"}
 ```
 
-## Related
+## 相关
 
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

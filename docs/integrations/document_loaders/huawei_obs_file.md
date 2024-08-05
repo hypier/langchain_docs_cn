@@ -1,25 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/huawei_obs_file.ipynb
 ---
-# Huawei OBS File
-The following code demonstrates how to load an object from the Huawei OBS (Object Storage Service) as document.
 
+# Huawei OBS 文件
+以下代码演示了如何从华为 OBS（对象存储服务）加载一个对象作为文档。
 
 ```python
-# Install the required package
+# 安装所需的包
 # pip install esdk-obs-python
 ```
-
 
 ```python
 from langchain_community.document_loaders.obs_file import OBSFileLoader
 ```
 
-
 ```python
 endpoint = "your-endpoint"
 ```
-
 
 ```python
 from obs import ObsClient
@@ -32,13 +29,12 @@ obs_client = ObsClient(
 loader = OBSFileLoader("your-bucket-name", "your-object-key", client=obs_client)
 ```
 
-
 ```python
 loader.load()
 ```
 
-## Each Loader with Separate Authentication Information
-If you don't need to reuse OBS connections between different loaders, you can directly configure the `config`. The loader will use the config information to initialize its own OBS client.
+## 每个加载器都有独立的身份验证信息
+如果您不需要在不同的加载器之间重用 OBS 连接，您可以直接配置 `config`。加载器将使用配置信息来初始化其自己的 OBS 客户端。
 
 
 ```python
@@ -54,8 +50,8 @@ loader = OBSFileLoader(
 loader.load()
 ```
 
-## Get Authentication Information from ECS
-If your langchain is deployed on Huawei Cloud ECS and [Agency is set up](https://support.huaweicloud.com/intl/en-us/usermanual-ecs/ecs_03_0166.html#section7), the loader can directly get the security token from ECS without needing access key and secret key. 
+## 从ECS获取认证信息
+如果您的langchain部署在华为云ECS上，并且[已设置代理](https://support.huaweicloud.com/intl/en-us/usermanual-ecs/ecs_03_0166.html#section7)，则加载器可以直接从ECS获取安全令牌，而无需访问密钥和秘密密钥。 
 
 
 ```python
@@ -70,21 +66,18 @@ loader = OBSFileLoader(
 loader.load()
 ```
 
-## Access a Publicly Accessible Object
-If the object you want to access allows anonymous user access (anonymous users have `GetObject` permission), you can directly load the object without configuring the `config` parameter.
-
+## 访问公开可访问对象
+如果您要访问的对象允许匿名用户访问（匿名用户具有 `GetObject` 权限），您可以直接加载该对象，而无需配置 `config` 参数。
 
 ```python
 loader = OBSFileLoader("your-bucket-name", "your-object-key", endpoint=endpoint)
 ```
 
-
 ```python
 loader.load()
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

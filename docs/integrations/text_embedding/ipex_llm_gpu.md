@@ -1,49 +1,48 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/ipex_llm_gpu.ipynb
 ---
-# Local BGE Embeddings with IPEX-LLM on Intel GPU
 
-> [IPEX-LLM](https://github.com/intel-analytics/ipex-llm) is a PyTorch library for running LLM on Intel CPU and GPU (e.g., local PC with iGPU, discrete GPU such as Arc, Flex and Max) with very low latency.
+# 在 Intel GPU 上使用 IPEX-LLM 的本地 BGE 嵌入
 
-This example goes over how to use LangChain to conduct embedding tasks with `ipex-llm` optimizations on Intel GPU. This would be helpful in applications such as RAG, document QA, etc.
+> [IPEX-LLM](https://github.com/intel-analytics/ipex-llm) 是一个用于在 Intel CPU 和 GPU（例如，带有 iGPU 的本地 PC、离散 GPU，如 Arc、Flex 和 Max）上以极低延迟运行 LLM 的 PyTorch 库。
 
-> **Note**
+本示例介绍了如何使用 LangChain 在 Intel GPU 上通过 `ipex-llm` 优化执行嵌入任务。这对于 RAG、文档问答等应用将非常有帮助。
+
+> **注意**
 >
-> It is recommended that only Windows users with Intel Arc A-Series GPU (except for Intel Arc A300-Series or Pro A60) run this Jupyter notebook directly. For other cases (e.g. Linux users, Intel iGPU, etc.), it is recommended to run the code with Python scripts in terminal for best experiences.
+> 建议仅让使用 Intel Arc A 系列 GPU（不包括 Intel Arc A300 系列或 Pro A60）的 Windows 用户直接运行此 Jupyter notebook。对于其他情况（例如，Linux 用户、Intel iGPU 等），建议在终端中使用 Python 脚本运行代码，以获得最佳体验。
 
-## Install Prerequisites
-To benefit from IPEX-LLM on Intel GPUs, there are several prerequisite steps for tools installation and environment preparation.
+## 安装前提条件
+为了在Intel GPU上使用IPEX-LLM，有几个工具安装和环境准备的前提步骤。
 
-If you are a Windows user, visit the [Install IPEX-LLM on Windows with Intel GPU Guide](https://ipex-llm.readthedocs.io/en/latest/doc/LLM/Quickstart/install_windows_gpu.html), and follow [Install Prerequisites](https://ipex-llm.readthedocs.io/en/latest/doc/LLM/Quickstart/install_windows_gpu.html#install-prerequisites) to update GPU driver (optional) and install Conda.
+如果您是Windows用户，请访问[在Windows上安装带Intel GPU的IPEX-LLM指南](https://ipex-llm.readthedocs.io/en/latest/doc/LLM/Quickstart/install_windows_gpu.html)，并按照[安装前提条件](https://ipex-llm.readthedocs.io/en/latest/doc/LLM/Quickstart/install_windows_gpu.html#install-prerequisites)更新GPU驱动程序（可选）并安装Conda。
 
-If you are a Linux user, visit the [Install IPEX-LLM on Linux with Intel GPU](https://ipex-llm.readthedocs.io/en/latest/doc/LLM/Quickstart/install_linux_gpu.html), and follow [**Install Prerequisites**](https://ipex-llm.readthedocs.io/en/latest/doc/LLM/Quickstart/install_linux_gpu.html#install-prerequisites) to install GPU driver, Intel® oneAPI Base Toolkit 2024.0, and Conda.
+如果您是Linux用户，请访问[在Linux上安装带Intel GPU的IPEX-LLM](https://ipex-llm.readthedocs.io/en/latest/doc/LLM/Quickstart/install_linux_gpu.html)，并按照[**安装前提条件**](https://ipex-llm.readthedocs.io/en/latest/doc/LLM/Quickstart/install_linux_gpu.html#install-prerequisites)安装GPU驱动程序，Intel® oneAPI基础工具包2024.0和Conda。
 
-## Setup
+## 设置
 
-After the prerequisites installation, you should have created a conda environment with all prerequisites installed. **Start the jupyter service in this conda environment**:
-
+在安装完先决条件后，您应该已经创建了一个包含所有先决条件的 conda 环境。**在该 conda 环境中启动 jupyter 服务**：
 
 ```python
 %pip install -qU langchain langchain-community
 ```
 
-Install IPEX-LLM for optimizations on Intel GPU, as well as `sentence-transformers`.
-
+安装 IPEX-LLM 以优化 Intel GPU，以及 `sentence-transformers`。
 
 ```python
 %pip install --pre --upgrade ipex-llm[xpu] --extra-index-url https://pytorch-extension.intel.com/release-whl/stable/xpu/us/
 %pip install sentence-transformers
 ```
 
-> **Note**
+> **注意**
 >
-> You can also use `https://pytorch-extension.intel.com/release-whl/stable/xpu/cn/` as the extra-indel-url.
+> 您也可以使用 `https://pytorch-extension.intel.com/release-whl/stable/xpu/cn/` 作为额外索引 URL。
 
-## Runtime Configuration
+## 运行时配置
 
-For optimal performance, it is recommended to set several environment variables based on your device:
+为了获得最佳性能，建议根据您的设备设置几个环境变量：
 
-### For Windows Users with Intel Core Ultra integrated GPU
+### 针对使用 Intel Core Ultra 集成 GPU 的 Windows 用户
 
 
 ```python
@@ -53,7 +52,7 @@ os.environ["SYCL_CACHE_PERSISTENT"] = "1"
 os.environ["BIGDL_LLM_XMX_DISABLED"] = "1"
 ```
 
-### For Windows Users with Intel Arc A-Series GPU
+### 对于使用 Intel Arc A 系列 GPU 的 Windows 用户
 
 
 ```python
@@ -62,17 +61,15 @@ import os
 os.environ["SYCL_CACHE_PERSISTENT"] = "1"
 ```
 
-> **Note**
+> **注意**
 >
-> For the first time that each model runs on Intel iGPU/Intel Arc A300-Series or Pro A60, it may take several minutes to compile.
+> 每个模型第一次在 Intel iGPU/Intel Arc A300 系列或 Pro A60 上运行时，可能需要几分钟进行编译。
 >
-> For other GPU type, please refer to [here](https://ipex-llm.readthedocs.io/en/latest/doc/LLM/Overview/install_gpu.html#runtime-configuration) for Windows users, and  [here](https://ipex-llm.readthedocs.io/en/latest/doc/LLM/Overview/install_gpu.html#id5) for Linux users.
+> 对于其他类型的 GPU，请参阅 [这里](https://ipex-llm.readthedocs.io/en/latest/doc/LLM/Overview/install_gpu.html#runtime-configuration) 以获取 Windows 用户的信息，以及 [这里](https://ipex-llm.readthedocs.io/en/latest/doc/LLM/Overview/install_gpu.html#id5) 以获取 Linux 用户的信息。
 
+## 基本用法
 
-## Basic Usage
-
-Setting `device` to `"xpu"` in `model_kwargs` when initializing `IpexLLMBgeEmbeddings` will put the embedding model on Intel GPU and benefit from IPEX-LLM optimizations:
-
+在初始化 `IpexLLMBgeEmbeddings` 时，将 `model_kwargs` 中的 `device` 设置为 `"xpu"` 将使嵌入模型运行在 Intel GPU 上，并受益于 IPEX-LLM 的优化：
 
 ```python
 from langchain_community.embeddings import IpexLLMBgeEmbeddings
@@ -84,7 +81,7 @@ embedding_model = IpexLLMBgeEmbeddings(
 )
 ```
 
-API Reference
+API 参考
 - [IpexLLMBgeEmbeddings](https://api.python.langchain.com/en/latest/embeddings/langchain_community.embeddings.ipex_llm.IpexLLMBgeEmbeddings.html)
 
 
@@ -100,8 +97,7 @@ query_embedding = embedding_model.embed_query(query)
 print(f"query_embedding[:10]: {query_embedding[:10]}")
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

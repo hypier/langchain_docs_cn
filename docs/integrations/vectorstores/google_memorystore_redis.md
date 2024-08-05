@@ -1,37 +1,36 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/google_memorystore_redis.ipynb
 ---
+
 # Google Memorystore for Redis
 
-> [Google Memorystore for Redis](https://cloud.google.com/memorystore/docs/redis/memorystore-for-redis-overview) is a fully-managed service that is powered by the Redis in-memory data store to build application caches that provide sub-millisecond data access. Extend your database application to build AI-powered experiences leveraging Memorystore for Redis's Langchain integrations.
+> [Google Memorystore for Redis](https://cloud.google.com/memorystore/docs/redis/memorystore-for-redis-overview) 是一个完全托管的服务，基于 Redis 内存数据存储构建应用程序缓存，提供亚毫秒的数据访问。扩展您的数据库应用程序，利用 Memorystore for Redis 的 Langchain 集成构建 AI 驱动的体验。
 
-This notebook goes over how to use [Memorystore for Redis](https://cloud.google.com/memorystore/docs/redis/memorystore-for-redis-overview) to store vector embeddings with the `MemorystoreVectorStore` class.
+本笔记本介绍如何使用 [Memorystore for Redis](https://cloud.google.com/memorystore/docs/redis/memorystore-for-redis-overview) 使用 `MemorystoreVectorStore` 类存储向量嵌入。
 
-Learn more about the package on [GitHub](https://github.com/googleapis/langchain-google-memorystore-redis-python/).
+在 [GitHub](https://github.com/googleapis/langchain-google-memorystore-redis-python/) 上了解更多关于该包的信息。
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/googleapis/langchain-google-memorystore-redis-python/blob/main/docs/vector_store.ipynb)
 
-## Pre-reqs
+## 前提条件
 
-## Before You Begin
+## 开始之前
 
-To run this notebook, you will need to do the following:
+要运行此笔记本，您需要执行以下操作：
 
-* [Create a Google Cloud Project](https://developers.google.com/workspace/guides/create-project)
-* [Enable the Memorystore for Redis API](https://console.cloud.google.com/flows/enableapi?apiid=redis.googleapis.com)
-* [Create a Memorystore for Redis instance](https://cloud.google.com/memorystore/docs/redis/create-instance-console). Ensure that the version is greater than or equal to 7.2.
+* [创建一个 Google Cloud 项目](https://developers.google.com/workspace/guides/create-project)
+* [启用 Memorystore for Redis API](https://console.cloud.google.com/flows/enableapi?apiid=redis.googleapis.com)
+* [创建一个 Memorystore for Redis 实例](https://cloud.google.com/memorystore/docs/redis/create-instance-console)。确保版本大于或等于 7.2。
 
-### 🦜🔗 Library Installation
+### 🦜🔗 库安装
 
-The integration lives in its own `langchain-google-memorystore-redis` package, so we need to install it.
-
+集成在其自己的 `langchain-google-memorystore-redis` 包中，因此我们需要安装它。
 
 ```python
 %pip install -upgrade --quiet langchain-google-memorystore-redis langchain
 ```
 
-**Colab only:** Uncomment the following cell to restart the kernel or use the button to restart the kernel. For Vertex AI Workbench you can restart the terminal using the button on top.
-
+**仅限 Colab:** 取消注释以下单元以重启内核，或使用按钮重启内核。对于 Vertex AI Workbench，您可以使用顶部的按钮重启终端。
 
 ```python
 # # Automatically restart kernel after installs so that your environment can access the new packages
@@ -41,31 +40,29 @@ The integration lives in its own `langchain-google-memorystore-redis` package, s
 # app.kernel.do_shutdown(True)
 ```
 
-### ☁ Set Your Google Cloud Project
-Set your Google Cloud project so that you can leverage Google Cloud resources within this notebook.
+### ☁ 设置您的 Google Cloud 项目
+设置您的 Google Cloud 项目，以便您可以在此笔记本中利用 Google Cloud 资源。
 
-If you don't know your project ID, try the following:
+如果您不知道您的项目 ID，请尝试以下方法：
 
-* Run `gcloud config list`.
-* Run `gcloud projects list`.
-* See the support page: [Locate the project ID](https://support.google.com/googleapi/answer/7014113).
-
+* 运行 `gcloud config list`。
+* 运行 `gcloud projects list`。
+* 查看支持页面：[查找项目 ID](https://support.google.com/googleapi/answer/7014113)。
 
 ```python
-# @markdown Please fill in the value below with your Google Cloud project ID and then run the cell.
+# @markdown 请在下面填写您的 Google Cloud 项目 ID，然后运行该单元格。
 
 PROJECT_ID = "my-project-id"  # @param {type:"string"}
 
-# Set the project id
+# 设置项目 ID
 !gcloud config set project {PROJECT_ID}
 ```
 
-### 🔐 Authentication
-Authenticate to Google Cloud as the IAM user logged into this notebook in order to access your Google Cloud Project.
+### 🔐 身份验证
+作为登录此笔记本的 IAM 用户，进行 Google Cloud 身份验证，以访问您的 Google Cloud 项目。
 
-* If you are using Colab to run this notebook, use the cell below and continue.
-* If you are using Vertex AI Workbench, check out the setup instructions [here](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env).
-
+* 如果您使用 Colab 运行此笔记本，请使用下面的单元并继续。
+* 如果您使用 Vertex AI Workbench，请查看 [这里](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env) 的设置说明。
 
 ```python
 from google.colab import auth
@@ -73,9 +70,9 @@ from google.colab import auth
 auth.authenticate_user()
 ```
 
-## Basic Usage
+## 基本用法
 
-### Initialize a Vector Index
+### 初始化向量索引
 
 
 ```python
@@ -86,25 +83,24 @@ from langchain_google_memorystore_redis import (
     RedisVectorStore,
 )
 
-# Connect to a Memorystore for Redis instance
+# 连接到 Redis 的 Memorystore 实例
 redis_client = redis.from_url("redis://127.0.0.1:6379")
 
-# Configure HNSW index with descriptive parameters
+# 使用描述性参数配置 HNSW 索引
 index_config = HNSWConfig(
     name="my_vector_index", distance_strategy=DistanceStrategy.COSINE, vector_size=128
 )
 
-# Initialize/create the vector store index
+# 初始化/创建向量存储索引
 RedisVectorStore.init_index(client=redis_client, index_config=index_config)
 ```
 
-### Prepare Documents
+### 准备文档
 
-Text needs processing and numerical representation before interacting with a vector store. This involves:
+在与向量存储交互之前，文本需要处理和数值表示。这包括：
 
-* Loading Text: The TextLoader obtains text data from a file (e.g., "state_of_the_union.txt").
-* Text Splitting: The CharacterTextSplitter breaks the text into smaller chunks for embedding models.
-
+* 加载文本：TextLoader 从文件中获取文本数据（例如，"state_of_the_union.txt"）。
+* 文本拆分：CharacterTextSplitter 将文本拆分成更小的块，以便于嵌入模型使用。
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -116,14 +112,13 @@ text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
 docs = text_splitter.split_documents(documents)
 ```
 
-### Add Documents to the Vector Store
+### 将文档添加到向量存储
 
-After text preparation and embedding generation, the following methods insert them into the Redis vector store.
+在文本准备和嵌入生成之后，以下方法将它们插入到 Redis 向量存储中。
 
-#### Method 1: Classmethod for Direct Insertion
+#### 方法 1：用于直接插入的类方法
 
-This approach combines embedding creation and insertion into a single step using the from_documents classmethod:
-
+这种方法将嵌入创建和插入合并为一个步骤，使用 from_documents 类方法：
 
 ```python
 from langchain_community.embeddings.fake import FakeEmbeddings
@@ -135,12 +130,11 @@ rvs = RedisVectorStore.from_documents(
 )
 ```
 
-#### Method 2: Instance-Based Insertion
-This approach offers flexibility when working with a new or existing RedisVectorStore:
+#### 方法 2：基于实例的插入
+这种方法在处理新的或现有的 RedisVectorStore 时提供灵活性：
 
-* [Optional] Create a RedisVectorStore Instance: Instantiate a RedisVectorStore object for customization. If you already have an instance, proceed to the next step.
-* Add Text with Metadata: Provide raw text and metadata to the instance. Embedding generation and insertion into the vector store are handled automatically.
-
+* [可选] 创建 RedisVectorStore 实例：实例化一个 RedisVectorStore 对象以进行自定义。如果您已经有一个实例，请继续执行下一步。
+* 添加带元数据的文本：向实例提供原始文本和元数据。嵌入生成和插入向量存储的过程会自动处理。
 
 ```python
 rvs = RedisVectorStore(
@@ -151,13 +145,12 @@ ids = rvs.add_texts(
 )
 ```
 
-### Perform a Similarity Search (KNN)
+### 执行相似性搜索 (KNN)
 
-With the vector store populated, it's possible to search for text semantically similar to a query.  Here's how to use KNN (K-Nearest Neighbors) with default settings:
+在向量存储填充后，可以搜索与查询语义相似的文本。以下是如何使用默认设置进行 KNN (K-Nearest Neighbors) 的步骤：
 
-* Formulate the Query: A natural language question expresses the search intent (e.g., "What did the president say about Ketanji Brown Jackson").
-* Retrieve Similar Results: The `similarity_search` method finds items in the vector store closest to the query in meaning.
-
+* 制定查询：自然语言问题表达搜索意图（例如，“总统对 Ketanji Brown Jackson 说了什么”）。
+* 检索相似结果：`similarity_search` 方法查找在意义上与查询最接近的向量存储中的项目。
 
 ```python
 import pprint
@@ -167,13 +160,13 @@ knn_results = rvs.similarity_search(query=query)
 pprint.pprint(knn_results)
 ```
 
-### Perform a Range-Based Similarity Search
+### 执行基于范围的相似性搜索
 
-Range queries provide more control by specifying a desired similarity threshold along with the query text:
+范围查询通过指定期望的相似性阈值以及查询文本提供了更多控制：
 
-* Formulate the Query: A natural language question defines the search intent.
-* Set Similarity Threshold: The distance_threshold parameter determines how close a match must be considered relevant.
-* Retrieve Results: The `similarity_search_with_score` method finds items from the vector store that fall within the specified similarity threshold.
+* 制定查询：自然语言问题定义了搜索意图。
+* 设置相似性阈值：distance_threshold 参数确定匹配项必须多接近才能被视为相关。
+* 检索结果：`similarity_search_with_score` 方法从向量存储中查找符合指定相似性阈值的项目。
 
 
 ```python
@@ -181,13 +174,13 @@ rq_results = rvs.similarity_search_with_score(query=query, distance_threshold=0.
 pprint.pprint(rq_results)
 ```
 
-### Perform a Maximal Marginal Relevance (MMR) Search
+### 执行最大边际相关性 (MMR) 搜索
 
-MMR queries aim to find results that are both relevant to the query and diverse from each other, reducing redundancy in search results.
+MMR 查询旨在找到与查询相关且彼此多样的结果，从而减少搜索结果中的冗余。
 
-* Formulate the Query: A natural language question defines the search intent.
-* Balance Relevance and Diversity: The lambda_mult parameter controls the trade-off between strict relevance and promoting variety in the results.
-* Retrieve MMR Results: The `max_marginal_relevance_search` method returns items that optimize the combination of relevance and diversity based on the lambda setting.
+* 制定查询：自然语言问题定义了搜索意图。
+* 平衡相关性和多样性：lambda_mult 参数控制严格相关性与促进结果多样性之间的权衡。
+* 检索 MMR 结果：`max_marginal_relevance_search` 方法返回基于 lambda 设置优化相关性和多样性的项目。
 
 
 ```python
@@ -195,13 +188,12 @@ mmr_results = rvs.max_marginal_relevance_search(query=query, lambda_mult=0.90)
 pprint.pprint(mmr_results)
 ```
 
-## Use the Vector Store as a Retriever
+## 将向量存储用作检索器
 
-For seamless integration with other LangChain components, a vector store can be converted into a Retriever. This offers several advantages:
+为了与其他 LangChain 组件无缝集成，向量存储可以转换为检索器。这提供了几个优势：
 
-* LangChain Compatibility: Many LangChain tools and methods are designed to directly interact with retrievers.
-* Ease of Use: The `as_retriever()` method converts the vector store into a format that simplifies querying.
-
+* LangChain 兼容性：许多 LangChain 工具和方法旨在直接与检索器交互。
+* 使用简便：`as_retriever()` 方法将向量存储转换为简化查询的格式。
 
 ```python
 retriever = rvs.as_retriever()
@@ -209,34 +201,31 @@ results = retriever.invoke(query)
 pprint.pprint(results)
 ```
 
-## Clean up
+## 清理
 
-### Delete Documents from the Vector Store
+### 从向量存储中删除文档
 
-Occasionally, it's necessary to remove documents (and their associated vectors) from the vector store.  The `delete` method provides this functionality.
-
+有时，有必要从向量存储中删除文档（及其相关向量）。`delete` 方法提供了此功能。
 
 ```python
 rvs.delete(ids)
 ```
 
-### Delete a Vector Index
+### 删除向量索引
 
-There might be circumstances where the deletion of an existing vector index is necessary. Common reasons include:
+在某些情况下，可能需要删除现有的向量索引。常见原因包括：
 
-* Index Configuration Changes: If index parameters need modification, it's often required to delete and recreate the index.
-* Storage Management: Removing unused indices can help free up space within the Redis instance.
+* 索引配置更改：如果需要修改索引参数，通常需要删除并重新创建索引。
+* 存储管理：删除未使用的索引可以帮助释放 Redis 实例中的空间。
 
-Caution: Vector index deletion is an irreversible operation. Be certain that the stored vectors and search functionality are no longer required before proceeding.
-
+注意：向量索引删除是不可逆的操作。在继续操作之前，请确保不再需要存储的向量和搜索功能。
 
 ```python
 # Delete the vector index
 RedisVectorStore.drop_index(client=redis_client, index_name="my_vector_index")
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

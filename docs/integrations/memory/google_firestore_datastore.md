@@ -1,37 +1,36 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/google_firestore_datastore.ipynb
 ---
-# Google Firestore (Datastore Mode)
 
-> [Google Cloud Firestore in Datastore](https://cloud.google.com/datastore) is a serverless document-oriented database that scales to meet any demand. Extend your database application to build AI-powered experiences leveraging `Datastore's` Langchain integrations.
+# Google Firestore (Datastore 模式)
 
-This notebook goes over how to use [Google Cloud Firestore in Datastore](https://cloud.google.com/datastore) to store chat message history with the `DatastoreChatMessageHistory` class.
+> [Google Cloud Firestore in Datastore](https://cloud.google.com/datastore) 是一个无服务器的文档导向数据库，可以根据需求进行扩展。扩展您的数据库应用程序，构建利用 `Datastore` 的 Langchain 集成的 AI 驱动体验。
 
-Learn more about the package on [GitHub](https://github.com/googleapis/langchain-google-datastore-python/).
+本笔记本介绍了如何使用 [Google Cloud Firestore in Datastore](https://cloud.google.com/datastore) 存储聊天消息历史记录，使用 `DatastoreChatMessageHistory` 类。
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/googleapis/langchain-google-datastore-python/blob/main/docs/chat_message_history.ipynb)
+在 [GitHub](https://github.com/googleapis/langchain-google-datastore-python/) 上了解有关该软件包的更多信息。
 
-## Before You Begin
+[![在 Colab 中打开](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/googleapis/langchain-google-datastore-python/blob/main/docs/chat_message_history.ipynb)
 
-To run this notebook, you will need to do the following:
+## 开始之前
 
-* [Create a Google Cloud Project](https://developers.google.com/workspace/guides/create-project)
-* [Enable the Datastore API](https://console.cloud.google.com/flows/enableapi?apiid=datastore.googleapis.com)
-* [Create a Datastore database](https://cloud.google.com/datastore/docs/manage-databases)
+要运行此笔记本，您需要执行以下操作：
 
-After confirming access to the database in the runtime environment of this notebook, filling the following values and run the cell before running example scripts.
+* [创建一个 Google Cloud 项目](https://developers.google.com/workspace/guides/create-project)
+* [启用 Datastore API](https://console.cloud.google.com/flows/enableapi?apiid=datastore.googleapis.com)
+* [创建一个 Datastore 数据库](https://cloud.google.com/datastore/docs/manage-databases)
 
-### 🦜🔗 Library Installation
+在确认对该笔记本运行时环境中数据库的访问权限后，请填写以下值并在运行示例脚本之前运行该单元。
 
-The integration lives in its own `langchain-google-datastore` package, so we need to install it.
+### 🦜🔗 库安装
 
+集成存在于其自己的 `langchain-google-datastore` 包中，因此我们需要安装它。
 
 ```python
 %pip install -upgrade --quiet langchain-google-datastore
 ```
 
-**Colab only**: Uncomment the following cell to restart the kernel or use the button to restart the kernel. For Vertex AI Workbench you can restart the terminal using the button on top.
-
+**仅限 Colab**：取消注释以下单元以重启内核，或使用按钮重启内核。对于 Vertex AI Workbench，您可以使用顶部的按钮重启终端。
 
 ```python
 # # Automatically restart kernel after installs so that your environment can access the new packages
@@ -41,31 +40,30 @@ The integration lives in its own `langchain-google-datastore` package, so we nee
 # app.kernel.do_shutdown(True)
 ```
 
-### ☁ Set Your Google Cloud Project
-Set your Google Cloud project so that you can leverage Google Cloud resources within this notebook.
+### ☁ 设置您的 Google Cloud 项目
+设置您的 Google Cloud 项目，以便您可以在此笔记本中利用 Google Cloud 资源。
 
-If you don't know your project ID, try the following:
+如果您不知道您的项目 ID，请尝试以下方法：
 
-* Run `gcloud config list`.
-* Run `gcloud projects list`.
-* See the support page: [Locate the project ID](https://support.google.com/googleapi/answer/7014113).
-
+* 运行 `gcloud config list`。
+* 运行 `gcloud projects list`。
+* 查看支持页面：[查找项目 ID](https://support.google.com/googleapi/answer/7014113)。
 
 ```python
-# @markdown Please fill in the value below with your Google Cloud project ID and then run the cell.
+# @markdown 请在下面填写您的 Google Cloud 项目 ID，然后运行该单元格。
 
 PROJECT_ID = "my-project-id"  # @param {type:"string"}
 
-# Set the project id
+# 设置项目 ID
 !gcloud config set project {PROJECT_ID}
 ```
 
-### 🔐 Authentication
+### 🔐 身份验证
 
-Authenticate to Google Cloud as the IAM user logged into this notebook in order to access your Google Cloud Project.
+以登录此笔记本的 IAM 用户身份对 Google Cloud 进行身份验证，以访问您的 Google Cloud 项目。
 
-- If you are using Colab to run this notebook, use the cell below and continue.
-- If you are using Vertex AI Workbench, check out the setup instructions [here](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env).
+- 如果您使用 Colab 运行此笔记本，请使用下面的单元格并继续。
+- 如果您使用 Vertex AI Workbench，请查看 [此处](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env) 的设置说明。
 
 
 ```python
@@ -74,24 +72,23 @@ from google.colab import auth
 auth.authenticate_user()
 ```
 
-### API Enablement
-The `langchain-google-datastore` package requires that you [enable the Datastore API](https://console.cloud.google.com/flows/enableapi?apiid=datastore.googleapis.com) in your Google Cloud Project.
-
+### API 启用
+`langchain-google-datastore` 包要求您在 Google Cloud 项目中 [启用 Datastore API](https://console.cloud.google.com/flows/enableapi?apiid=datastore.googleapis.com)。
 
 ```python
 # enable Datastore API
 !gcloud services enable datastore.googleapis.com
 ```
 
-## Basic Usage
+## 基本用法
 
 ### DatastoreChatMessageHistory
 
-To initialize the `DatastoreChatMessageHistory` class you need to provide only 3 things:
+要初始化 `DatastoreChatMessageHistory` 类，您只需提供 3 个参数：
 
-1. `session_id` - A unique identifier string that specifies an id for the session.
-1. `kind` - The name of the Datastore kind to write into. This is an optional value and by default, it will use `ChatHistory` as the kind.
-1. `collection` - The single `/`-delimited path to a Datastore collection.
+1. `session_id` - 一个唯一标识符字符串，用于指定会话的 ID。
+1. `kind` - 要写入的 Datastore 种类名称。这个值是可选的，默认情况下将使用 `ChatHistory` 作为种类。
+1. `collection` - 指向 Datastore 集合的单个 `/` 分隔路径。
 
 
 ```python
@@ -110,20 +107,19 @@ chat_history.add_ai_message("How can I help you?")
 chat_history.messages
 ```
 
-#### Cleaning up
-When the history of a specific session is obsolete and can be deleted from the database and memory, it can be done the following way.
+#### 清理
+当特定会话的历史记录过时并且可以从数据库和内存中删除时，可以通过以下方式进行。
 
-**Note:** Once deleted, the data is no longer stored in Datastore and is gone forever.
+**注意：** 一旦删除，数据将不再存储在 Datastore 中，并且将永久丢失。
 
 
 ```python
 chat_history.clear()
 ```
 
-### Custom Client
+### 自定义客户端
 
-The client is created by default using the available environment variables. A [custom client](https://cloud.google.com/python/docs/reference/datastore/latest/client) can be passed to the constructor.
-
+客户端默认使用可用的环境变量创建。可以将[自定义客户端](https://cloud.google.com/python/docs/reference/datastore/latest/client)传递给构造函数。
 
 ```python
 from google.auth import compute_engine

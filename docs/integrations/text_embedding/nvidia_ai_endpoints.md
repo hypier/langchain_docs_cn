@@ -1,44 +1,37 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/nvidia_ai_endpoints.ipynb
 ---
+
 # NVIDIA NIMs 
 
-The `langchain-nvidia-ai-endpoints` package contains LangChain integrations building applications with models on 
-NVIDIA NIM inference microservice. NIM supports models across domains like chat, embedding, and re-ranking models 
-from the community as well as NVIDIA. These models are optimized by NVIDIA to deliver the best performance on NVIDIA 
-accelerated infrastructure and deployed as a NIM, an easy-to-use, prebuilt containers that deploy anywhere using a single 
-command on NVIDIA accelerated infrastructure.
+`langchain-nvidia-ai-endpoints` 包含 LangChain 集成，构建与 NVIDIA NIM 推理微服务上的模型的应用程序。NIM 支持来自社区和 NVIDIA 的聊天、嵌入和重新排序模型等多个领域的模型。这些模型经过 NVIDIA 优化，以在 NVIDIA 加速基础设施上提供最佳性能，并作为 NIM 部署，NIM 是一个易于使用的预构建容器，可以通过在 NVIDIA 加速基础设施上使用单个命令随处部署。
 
-NVIDIA hosted deployments of NIMs are available to test on the [NVIDIA API catalog](https://build.nvidia.com/). After testing, 
-NIMs can be exported from NVIDIA’s API catalog using the NVIDIA AI Enterprise license and run on-premises or in the cloud, 
-giving enterprises ownership and full control of their IP and AI application.
+NVIDIA 托管的 NIM 部署可在 [NVIDIA API 目录](https://build.nvidia.com/) 上进行测试。测试后，NIM 可以使用 NVIDIA AI Enterprise 许可证从 NVIDIA 的 API 目录导出，并在本地或云中运行，使企业拥有其知识产权和 AI 应用程序的所有权和完全控制权。
 
-NIMs are packaged as container images on a per model basis and are distributed as NGC container images through the NVIDIA NGC Catalog. 
-At their core, NIMs provide easy, consistent, and familiar APIs for running inference on an AI model.
+NIM 以每个模型为基础打包为容器镜像，并通过 NVIDIA NGC 目录作为 NGC 容器镜像分发。NIM 的核心提供了简单、一致和熟悉的 API，以便在 AI 模型上运行推理。
 
-This example goes over how to use LangChain to interact with the supported [NVIDIA Retrieval QA Embedding Model](https://build.nvidia.com/nvidia/embed-qa-4) for [retrieval-augmented generation](https://developer.nvidia.com/blog/build-enterprise-retrieval-augmented-generation-apps-with-nvidia-retrieval-qa-embedding-model/) via the `NVIDIAEmbeddings` class.
+本示例介绍了如何使用 LangChain 与支持的 [NVIDIA Retrieval QA Embedding Model](https://build.nvidia.com/nvidia/embed-qa-4) 进行交互，以实现通过 `NVIDIAEmbeddings` 类进行的 [检索增强生成](https://developer.nvidia.com/blog/build-enterprise-retrieval-augmented-generation-apps-with-nvidia-retrieval-qa-embedding-model/)。
 
-For more information on accessing the chat models through this API, check out the [ChatNVIDIA](https://python.langchain.com/docs/integrations/chat/nvidia_ai_endpoints/) documentation.
+有关通过此 API 访问聊天模型的更多信息，请查看 [ChatNVIDIA](https://python.langchain.com/docs/integrations/chat/nvidia_ai_endpoints/) 文档。
 
-## Installation
+## 安装
 
 
 ```python
 %pip install --upgrade --quiet  langchain-nvidia-ai-endpoints
 ```
 
-## Setup
+## 设置
 
-**To get started:**
+**开始之前：**
 
-1. Create a free account with [NVIDIA](https://build.nvidia.com/), which hosts NVIDIA AI Foundation models.
+1. 创建一个免费的[NVIDIA](https://build.nvidia.com/)账户，该平台托管NVIDIA AI Foundation模型。
 
-2. Select the `Retrieval` tab, then select your model of choice.
+2. 选择`Retrieval`选项卡，然后选择您选择的模型。
 
-3. Under `Input` select the `Python` tab, and click `Get API Key`. Then click `Generate Key`.
+3. 在`Input`下选择`Python`选项卡，然后点击`Get API Key`。接着点击`Generate Key`。
 
-4. Copy and save the generated key as `NVIDIA_API_KEY`. From there, you should have access to the endpoints.
-
+4. 复制并保存生成的密钥为`NVIDIA_API_KEY`。从此，您应该可以访问这些端点。
 
 ```python
 import getpass
@@ -53,12 +46,11 @@ else:
     os.environ["NVIDIA_API_KEY"] = nvapi_key
 ```
 
-We should be able to see an embedding model among that list which can be used in conjunction with an LLM for effective RAG solutions. We can interface with this model as well as other embedding models supported by NIM through the `NVIDIAEmbeddings` class.
+我们应该能够在该列表中看到一个嵌入模型，可以与LLM结合使用，以实现有效的RAG解决方案。我们可以通过`NVIDIAEmbeddings`类与该模型以及NIM支持的其他嵌入模型进行接口。
 
-## Working with NIMs on the NVIDIA API Catalog
+## 在NVIDIA API目录中使用NIM
 
-When initializing an embedding model you can select a model by passing it, e.g. `NV-Embed-QA` below, or use the default by not passing any arguments.
-
+在初始化嵌入模型时，可以通过传递模型名称（例如下面的`NV-Embed-QA`）来选择模型，或者不传递任何参数以使用默认值。
 
 ```python
 from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
@@ -66,18 +58,18 @@ from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
 embedder = NVIDIAEmbeddings(model="NV-Embed-QA")
 ```
 
-This model is a fine-tuned E5-large model which supports the expected `Embeddings` methods including:
+该模型是经过微调的E5-large模型，支持预期的`Embeddings`方法，包括：
 
-- `embed_query`: Generate query embedding for a query sample.
+- `embed_query`: 为查询样本生成查询嵌入。
 
-- `embed_documents`: Generate passage embeddings for a list of documents which you would like to search over.
+- `embed_documents`: 为要搜索的文档列表生成段落嵌入。
 
-- `aembed_query`/`aembed_documents`: Asynchronous versions of the above.
+- `aembed_query`/`aembed_documents`: 上述方法的异步版本。
 
-## Working with self-hosted NVIDIA NIMs
-When ready to deploy, you can self-host models with NVIDIA NIM—which is included with the NVIDIA AI Enterprise software license—and run them anywhere, giving you ownership of your customizations and full control of your intellectual property (IP) and AI applications.
+## 使用自托管的 NVIDIA NIM
+准备好部署时，您可以使用 NVIDIA NIM 自托管模型——它包含在 NVIDIA AI Enterprise 软件许可证中——并在任何地方运行它们，从而拥有自定义的所有权和对您的知识产权 (IP) 及 AI 应用程序的完全控制。
 
-[Learn more about NIMs](https://developer.nvidia.com/blog/nvidia-nim-offers-optimized-inference-microservices-for-deploying-ai-models-at-scale/)
+[了解有关 NIM 的更多信息](https://developer.nvidia.com/blog/nvidia-nim-offers-optimized-inference-microservices-for-deploying-ai-models-at-scale/)
 
 
 
@@ -88,35 +80,35 @@ from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
 embedder = NVIDIAEmbeddings(base_url="http://localhost:8080/v1")
 ```
 
-### **Similarity**
+### **相似性**
 
-The following is a quick test of the similarity for these data points:
+以下是对这些数据点相似性的快速测试：
 
-**Queries:**
+**查询：**
 
-- What's the weather like in Komchatka?
+- 科姆恰特卡的天气怎么样？
 
-- What kinds of food is Italy known for?
+- 意大利以什么食物闻名？
 
-- What's my name? I bet you don't remember...
+- 我叫什么名字？我打赌你不记得...
 
-- What's the point of life anyways?
+- 生活的意义到底是什么？
 
-- The point of life is to have fun :D
+- 生活的意义就是享受乐趣 :D
 
-**Documents:**
+**文档：**
 
-- Komchatka's weather is cold, with long, severe winters.
+- 科姆恰特卡的天气寒冷，冬季漫长而严酷。
 
-- Italy is famous for pasta, pizza, gelato, and espresso.
+- 意大利以意大利面、比萨饼、冰淇淋和浓缩咖啡而闻名。
 
-- I can't recall personal names, only provide information.
+- 我无法记住个人名字，只提供信息。
 
-- Life's purpose varies, often seen as personal fulfillment.
+- 生活的目的因人而异，通常被视为个人的成就感。
 
-- Enjoying life's moments is indeed a wonderful approach.
+- 享受生活的每一刻确实是一种美好的方式。
 
-### Embedding Runtimes
+### 嵌入运行时
 
 
 ```python
@@ -131,7 +123,7 @@ q_embeddings = [
 print("Shape:", (len(q_embeddings), len(q_embeddings[0])))
 ```
 
-### Document Embedding
+### 文档嵌入
 
 
 ```python
@@ -148,7 +140,7 @@ d_embeddings = embedder.embed_documents(
 print("Shape:", (len(q_embeddings), len(q_embeddings[0])))
 ```
 
-Now that we've generated our embeddings, we can do a simple similarity check on the results to see which documents would have triggered as reasonable answers in a retrieval task:
+现在我们已经生成了嵌入向量，可以对结果进行简单的相似性检查，以查看哪些文档会在检索任务中触发为合理的答案：
 
 
 ```python
@@ -178,21 +170,21 @@ plt.grid(True)
 plt.show()
 ```
 
-As a reminder, the queries and documents sent to our system were:
+作为提醒，发送到我们系统的查询和文档是：
 
-**Queries:**
+**查询：**
 
-- What's the weather like in Komchatka?
+- Komchatka的天气怎么样？
 
-- What kinds of food is Italy known for?
+- 意大利以什么食物闻名？
 
-- What's my name? I bet you don't remember...
+- 我叫什么名字？我敢打赌你不记得...
 
-- What's the point of life anyways?
+- 生活的意义是什么？
 
-- The point of life is to have fun :D
+- 生活的意义就是享受乐趣 :D
 
-**Documents:**
+**文档：**
 
 - Komchatka's weather is cold, with long, severe winters.
 
@@ -204,18 +196,18 @@ As a reminder, the queries and documents sent to our system were:
 
 - Enjoying life's moments is indeed a wonderful approach.
 
-## Truncation
+## 截断
 
-Embedding models typically have a fixed context window that determines the maximum number of input tokens that can be embedded. This limit could be a hard limit, equal to the model's maximum input token length, or an effective limit, beyond which the accuracy of the embedding decreases.
+嵌入模型通常具有固定的上下文窗口，决定了可以嵌入的最大输入令牌数量。这个限制可能是一个硬性限制，等于模型的最大输入令牌长度，或是一个有效限制，超出该限制后嵌入的准确性会下降。
 
-Since models operate on tokens and applications usually work with text, it can be challenging for an application to ensure that its input stays within the model's token limits. By default, an exception is thrown if the input is too large.
+由于模型在令牌上操作，而应用程序通常处理文本，因此应用程序确保其输入保持在模型的令牌限制内可能会很具挑战性。默认情况下，如果输入过大，会抛出异常。
 
-To assist with this, NVIDIA's NIMs (API Catalog or local) provide a `truncate` parameter that truncates the input on the server side if it's too large.
+为此，NVIDIA 的 NIMs（API 目录或本地）提供了一个 `truncate` 参数，如果输入过大，可以在服务器端截断输入。
 
-The `truncate` parameter has three options:
- - "NONE": The default option. An exception is thrown if the input is too large.
- - "START": The server truncates the input from the start (left), discarding tokens as necessary.
- - "END": The server truncates the input from the end (right), discarding tokens as necessary.
+`truncate` 参数有三个选项：
+ - "NONE": 默认选项。如果输入过大，会抛出异常。
+ - "START": 服务器从开始（左侧）截断输入，必要时丢弃令牌。
+ - "END": 服务器从结束（右侧）截断输入，必要时丢弃令牌。
 
 
 ```python
@@ -237,13 +229,11 @@ truncating_embedder = NVIDIAEmbeddings(truncate="END")
 truncating_embedder.embed_query(long_text)[:5]
 ```
 
-## RAG Retrieval:
+## RAG 检索：
 
-The following is a repurposing of the initial example of the [LangChain Expression Language Retrieval Cookbook entry](
-https://python.langchain.com/docs/expression_language/cookbook/retrieval), but executed with the AI Foundation Models' [Mixtral 8x7B Instruct](https://catalog.ngc.nvidia.com/orgs/nvidia/teams/ai-foundation/models/mixtral-8x7b) and [NVIDIA Retrieval QA Embedding](https://catalog.ngc.nvidia.com/orgs/nvidia/teams/ai-foundation/models/nvolve-40k) models available in their playground environments. The subsequent examples in the cookbook also run as expected, and we encourage you to explore with these options.
+以下是对 [LangChain 表达语言检索食谱条目](https://python.langchain.com/docs/expression_language/cookbook/retrieval) 初始示例的重新利用，但使用的是 AI Foundation Models 的 [Mixtral 8x7B Instruct](https://catalog.ngc.nvidia.com/orgs/nvidia/teams/ai-foundation/models/mixtral-8x7b) 和 [NVIDIA Retrieval QA Embedding](https://catalog.ngc.nvidia.com/orgs/nvidia/teams/ai-foundation/models/nvolve-40k) 模型，这些模型在他们的游乐场环境中可用。食谱中的后续示例也按预期运行，我们鼓励您使用这些选项进行探索。
 
-**TIP:** We would recommend using Mixtral for internal reasoning (i.e. instruction following for data extraction, tool selection, etc.) and Llama-Chat for a single final "wrap-up by making a simple response that works for this user based on the history and context" response.
-
+**提示：** 我们建议将 Mixtral 用于内部推理（即数据提取、工具选择等的指令跟随），而将 Llama-Chat 用于基于历史和上下文为此用户提供单一最终“总结性简单响应”的响应。
 
 ```python
 %pip install --upgrade --quiet  langchain faiss-cpu tiktoken langchain_community
@@ -314,8 +304,7 @@ chain = (
 chain.invoke({"question": "where did harrison work", "language": "italian"})
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

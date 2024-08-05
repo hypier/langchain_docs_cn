@@ -1,22 +1,23 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/oci_generative_ai.ipynb
 ---
-## Oracle Cloud Infrastructure Generative AI
 
-Oracle Cloud Infrastructure (OCI) Generative AI is a fully managed service that provides a set of state-of-the-art, customizable large language models (LLMs) that cover a wide range of use cases, and which is available through a single API.
-Using the OCI Generative AI service you can access ready-to-use pretrained models, or create and host your own fine-tuned custom models based on your own data on dedicated AI clusters. Detailed documentation of the service and API is available __[here](https://docs.oracle.com/en-us/iaas/Content/generative-ai/home.htm)__ and __[here](https://docs.oracle.com/en-us/iaas/api/#/en/generative-ai/20231130/)__.
+## Oracle Cloud Infrastructure 生成式人工智能
 
-This notebook explains how to use OCI's Generative AI complete models with LangChain.
+Oracle Cloud Infrastructure (OCI) 生成式人工智能是一个完全托管的服务，提供一系列最先进的、可定制的大型语言模型（LLMs），涵盖广泛的用例，并通过单一的 API 提供服务。  
+使用 OCI 生成式人工智能服务，您可以访问现成的预训练模型，或根据自己的数据在专用的 AI 集群上创建和托管自己的微调定制模型。该服务和 API 的详细文档可在 __[这里](https://docs.oracle.com/en-us/iaas/Content/generative-ai/home.htm)__ 和 __[这里](https://docs.oracle.com/en-us/iaas/api/#/en/generative-ai/20231130/)__ 获取。
 
-## Setup
-Ensure that the oci sdk and the langchain-community package are installed
+本笔记本解释了如何使用 OCI 的生成式人工智能完整模型与 LangChain。
+
+## 设置
+确保已安装 oci sdk 和 langchain-community 包
 
 
 ```python
 !pip install -U oci langchain-community
 ```
 
-## Usage
+## 用法
 
 
 ```python
@@ -33,7 +34,7 @@ response = llm.invoke("Tell me one fact about earth", temperature=0.7)
 print(response)
 ```
 
-#### Chaining with prompt templates
+#### 使用提示模板进行链式调用
 
 
 ```python
@@ -53,7 +54,7 @@ response = llm_chain.invoke("what is the capital of france?")
 print(response)
 ```
 
-#### Streaming
+#### 流式处理
 
 
 ```python
@@ -68,11 +69,10 @@ for chunk in llm.stream("Write me a song about sparkling water."):
     print(chunk, end="", flush=True)
 ```
 
-## Authentication
-The authentication methods supported for LlamaIndex are equivalent to those used with other OCI services and follow the __[standard SDK authentication](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdk_authentication_methods.htm)__ methods, specifically API Key, session token, instance principal, and resource principal.
+## 身份验证
+LlamaIndex 支持的身份验证方法与其他 OCI 服务使用的相同，并遵循 __[标准 SDK 身份验证](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdk_authentication_methods.htm)__ 方法，具体包括 API 密钥、会话令牌、实例主体和资源主体。
 
-API key is the default authentication method used in the examples above. The following example demonstrates how to use a different authentication method (session token)
-
+API 密钥是上述示例中使用的默认身份验证方法。以下示例演示了如何使用不同的身份验证方法（会话令牌）
 
 ```python
 llm = OCIGenAI(
@@ -84,10 +84,10 @@ llm = OCIGenAI(
 )
 ```
 
-## Dedicated AI Cluster
-To access models hosted in a dedicated AI cluster __[create an endpoint](https://docs.oracle.com/en-us/iaas/api/#/en/generative-ai-inference/20231130/)__ whose assigned OCID (currently prefixed by ‘ocid1.generativeaiendpoint.oc1.us-chicago-1’) is used as your model ID.
+## 专用AI集群
+要访问托管在专用AI集群中的模型 __[创建一个端点](https://docs.oracle.com/en-us/iaas/api/#/en/generative-ai-inference/20231130/)__，其分配的OCID（当前以‘ocid1.generativeaiendpoint.oc1.us-chicago-1’为前缀）用作您的模型ID。
 
-When accessing models hosted in a dedicated AI cluster you will need to initialize the OCIGenAI interface with two extra required params ("provider" and "context_size").
+在访问托管在专用AI集群中的模型时，您需要使用两个额外的必需参数（“provider”和“context_size”）初始化OCIGenAI接口。
 
 
 ```python
@@ -101,8 +101,7 @@ llm = OCIGenAI(
 )
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

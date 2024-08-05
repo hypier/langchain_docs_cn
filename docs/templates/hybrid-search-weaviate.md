@@ -1,67 +1,66 @@
-# Hybrid Search in Weaviate
-This template shows you how to use the hybrid search feature in Weaviate. Hybrid search combines multiple search algorithms to improve the accuracy and relevance of search results. 
+# Weaviate中的混合搜索
+此模板展示了如何使用Weaviate中的混合搜索功能。混合搜索结合了多种搜索算法，以提高搜索结果的准确性和相关性。
 
-Weaviate uses both sparse and dense vectors to represent the meaning and context of search queries and documents. The results use a combination of `bm25` and vector search ranking to return the top results. 
+Weaviate使用稀疏和密集向量来表示搜索查询和文档的含义和上下文。结果使用`bm25`和向量搜索排名的组合来返回最佳结果。
 
-##  Configurations
-Connect to your hosted Weaviate Vectorstore by setting a few env variables in `chain.py`:
+## 配置
+通过在 `chain.py` 中设置一些环境变量连接到您的托管 Weaviate 向量存储：
 
 * `WEAVIATE_ENVIRONMENT`
 * `WEAVIATE_API_KEY`
 
-You will also need to set your `OPENAI_API_KEY` to use the OpenAI models.
+您还需要设置您的 `OPENAI_API_KEY` 以使用 OpenAI 模型。
 
-## Get Started 
-To use this package, you should first have the LangChain CLI installed:
+## 开始使用  
+要使用此包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将其作为唯一包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package hybrid-search-weaviate
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，只需运行：
 
 ```shell
 langchain app add hybrid-search-weaviate
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 ```python
 from hybrid_search_weaviate import chain as hybrid_search_weaviate_chain
 
 add_routes(app, hybrid_search_weaviate_chain, path="/hybrid-search-weaviate")
 ```
 
-(Optional) Let's now configure LangSmith. 
-LangSmith will help us trace, monitor and debug LangChain applications. 
-You can sign up for LangSmith [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
-
+（可选）现在让我们配置 LangSmith。  
+LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。  
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。  
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接通过以下方式启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server is running locally at 
+这将启动 FastAPI 应用程序，服务器在本地运行于  
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/hybrid-search-weaviate/playground](http://127.0.0.1:8000/hybrid-search-weaviate/playground)  
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板  
+我们可以在 [http://127.0.0.1:8000/hybrid-search-weaviate/playground](http://127.0.0.1:8000/hybrid-search-weaviate/playground) 访问游乐场  
 
-We can access the template from code with:
+我们可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable

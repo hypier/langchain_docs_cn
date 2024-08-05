@@ -1,31 +1,29 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/toolkits/robocorp.ipynb
 ---
+
 # Robocorp
 
-This notebook covers how to get started with [Robocorp Action Server](https://github.com/robocorp/robocorp) action toolkit and LangChain.
+本笔记本介绍如何使用 [Robocorp Action Server](https://github.com/robocorp/robocorp) 行动工具包和 LangChain 入门。
 
-Robocorp is the easiest way to extend the capabilities of AI agents, assistants and copilots with custom actions.
+Robocorp 是扩展 AI 代理、助手和副驾驶功能的最简单方法，支持自定义操作。
 
-## Installation
+## 安装
 
-First, see the [Robocorp Quickstart](https://github.com/robocorp/robocorp#quickstart) on how to setup `Action Server` and create your Actions.
+首先，请参阅 [Robocorp 快速入门](https://github.com/robocorp/robocorp#quickstart)，了解如何设置 `Action Server` 并创建您的 Actions。
 
-In your LangChain application, install the `langchain-robocorp` package: 
-
+在您的 LangChain 应用中，安装 `langchain-robocorp` 包： 
 
 ```python
 # Install package
 %pip install --upgrade --quiet langchain-robocorp
 ```
 
-When you create the new `Action Server` following the above quickstart.
+当您按照上述快速入门创建新的 `Action Server` 时，它将创建一个包含文件的目录，包括 `action.py`。
 
-It will create a directory with files, including `action.py`.
+我们可以添加 Python 函数作为 actions，如 [这里](https://github.com/robocorp/robocorp/tree/master/actions#describe-your-action) 所示。
 
-We can add python function as actions as shown [here](https://github.com/robocorp/robocorp/tree/master/actions#describe-your-action).
-
-Let's add a dummy function to `action.py`.
+让我们在 `action.py` 中添加一个示例函数。
 
 ```python
 @action
@@ -44,30 +42,30 @@ def get_weather_forecast(city: str, days: int, scale: str = "celsius") -> str:
     return "75F and sunny :)"
 ```
 
-We then start the server:
+然后我们启动服务器：
 
 ```bash
 action-server start
 ```
 
-And we can see: 
+我们可以看到： 
 
 ```
 Found new action: get_weather_forecast
 
 ```
 
-Test locally by going to the server running at `http://localhost:8080` and use the UI to run the function.
+通过访问运行在 `http://localhost:8080` 的服务器并使用 UI 来运行该函数进行本地测试。
 
-## Environment Setup
+## 环境设置
 
-Optionally you can set the following environment variables:
+可选地，您可以设置以下环境变量：
 
-- `LANGCHAIN_TRACING_V2=true`: To enable LangSmith log run tracing that can also be bind to respective Action Server action run logs. See [LangSmith documentation](https://docs.smith.langchain.com/tracing#log-runs) for more.
+- `LANGCHAIN_TRACING_V2=true`：启用 LangSmith 日志运行追踪，也可以与相应的 Action Server 操作运行日志绑定。有关更多信息，请参见 [LangSmith 文档](https://docs.smith.langchain.com/tracing#log-runs)。
 
-## Usage
+## 用法
 
-We started the local action server, above, running on `http://localhost:8080`.
+我们启动了本地操作服务器，运行在 `http://localhost:8080` 上。
 
 
 ```python
@@ -111,12 +109,11 @@ Invoking: `robocorp_action_server_get_weather_forecast` with `{'city': 'San Fran
  'output': 'The current weather today in San Francisco is 75F and sunny.'}
 ```
 
+### 单输入工具
 
-### Single input tools
+默认情况下，`toolkit.get_tools()` 将返回作为结构化工具的操作。
 
-By default `toolkit.get_tools()` will return the actions as Structured Tools. 
-
-To return single input tools, pass a Chat model to be used for processing the inputs.
+要返回单输入工具，请传递一个用于处理输入的聊天模型。
 
 
 ```python

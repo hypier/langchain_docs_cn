@@ -1,26 +1,25 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/scann.ipynb
 ---
+
 # ScaNN
 
-ScaNN (Scalable Nearest Neighbors) is a method for efficient vector similarity search at scale.
+ScaNN（可扩展最近邻）是一种用于大规模高效向量相似性搜索的方法。
 
-ScaNN includes search space pruning and quantization for Maximum Inner Product Search and also supports other distance functions such as Euclidean distance. The implementation is optimized for x86 processors with AVX2 support. See its [Google Research github](https://github.com/google-research/google-research/tree/master/scann) for more details.
+ScaNN 包括用于最大内积搜索的搜索空间剪枝和量化，并且支持其他距离函数，例如欧几里得距离。该实现经过优化，适用于支持 AVX2 的 x86 处理器。有关更多详细信息，请参阅其 [Google Research github](https://github.com/google-research/google-research/tree/master/scann)。
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
+您需要使用 `pip install -qU langchain-community` 安装 `langchain-community` 才能使用此集成。
 
-## Installation
-Install ScaNN through pip. Alternatively, you can follow instructions on the [ScaNN Website](https://github.com/google-research/google-research/tree/master/scann#building-from-source) to install from source.
-
+## 安装
+通过 pip 安装 ScaNN。或者，您可以按照 [ScaNN 网站](https://github.com/google-research/google-research/tree/master/scann#building-from-source) 上的说明从源代码安装。
 
 ```python
 %pip install --upgrade --quiet  scann
 ```
 
-## Retrieval Demo
+## 检索演示
 
-Below we show how to use ScaNN in conjunction with Huggingface Embeddings.
-
+以下是如何将 ScaNN 与 Huggingface Embeddings 结合使用的示例。
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -43,11 +42,11 @@ docs = db.similarity_search(query)
 docs[0]
 ```
 
-## RetrievalQA Demo
+## RetrievalQA 演示
 
-Next, we demonstrate using ScaNN in conjunction with Google PaLM API.
+接下来，我们演示如何将 ScaNN 与 Google PaLM API 结合使用。
 
-You can obtain an API key from https://developers.generativeai.google/tutorials/setup
+您可以从 https://developers.generativeai.google/tutorials/setup 获取 API 密钥。
 
 
 ```python
@@ -77,7 +76,8 @@ print(qa.run("What did the president say about Michael Phelps?"))
 ```output
 The president did not mention Michael Phelps in his speech.
 ```
-## Save and loading local retrieval index
+
+## 保存和加载本地检索索引
 
 
 ```python
@@ -85,8 +85,7 @@ db.save_local("/tmp/db", "state_of_union")
 restored_db = ScaNN.load_local("/tmp/db", embeddings, index_name="state_of_union")
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

@@ -1,28 +1,28 @@
 # Diffbot
 
-> [Diffbot](https://docs.diffbot.com/docs) is a suite of ML-based products that make it easy to structure and integrate web data.
+> [Diffbot](https://docs.diffbot.com/docs) 是一套基于机器学习的产品，旨在简化网络数据的结构化和集成。
 
-## Installation and Setup
+## 安装与设置
 
-[Get a free Diffbot API token](https://app.diffbot.com/get-started/) and [follow these instructions](https://docs.diffbot.com/reference/authentication) to authenticate your requests.
+[获取免费的 Diffbot API 令牌](https://app.diffbot.com/get-started/) 并 [按照这些说明](https://docs.diffbot.com/reference/authentication) 验证您的请求。
 
-## Document Loader
+## 文档加载器
 
-Diffbot's [Extract API](https://docs.diffbot.com/reference/extract-introduction) is a service that structures and normalizes data from web pages. 
+Diffbot的 [Extract API](https://docs.diffbot.com/reference/extract-introduction) 是一个将网页数据结构化和标准化的服务。
 
-Unlike traditional web scraping tools, `Diffbot Extract` doesn't require any rules to read the content on a page. It uses a computer vision model to classify a page into one of 20 possible types, and then transforms raw HTML markup into JSON. The resulting structured JSON follows a consistent [type-based ontology](https://docs.diffbot.com/docs/ontology), which makes it easy to extract data from multiple different web sources with the same schema. 
+与传统的网页抓取工具不同，`Diffbot Extract` 不需要任何规则来读取页面上的内容。它使用计算机视觉模型将页面分类为20种可能的类型之一，然后将原始HTML标记转换为JSON。生成的结构化JSON遵循一致的 [基于类型的本体](https://docs.diffbot.com/docs/ontology)，这使得从多个不同的网页源中提取具有相同模式的数据变得简单。
 
-See a [usage example](/docs/integrations/document_loaders/diffbot).
+查看 [使用示例](/docs/integrations/document_loaders/diffbot)。
 
 ```python
 from langchain_community.document_loaders import DiffbotLoader
 ```
 
-## Graphs
+## 图表
 
-Diffbot's [Natural Language Processing API](https://www.diffbot.com/products/natural-language/) allows for the extraction of entities, relationships, and semantic meaning from unstructured text data.
+Diffbot 的 [自然语言处理 API](https://www.diffbot.com/products/natural-language/) 允许从非结构化文本数据中提取实体、关系和语义信息。
 
-See a [usage example](/docs/integrations/graphs/diffbot).
+请参见 [使用示例](/docs/integrations/graphs/diffbot)。
 
 ```python
 from langchain_experimental.graph_transformers.diffbot import DiffbotGraphTransformer

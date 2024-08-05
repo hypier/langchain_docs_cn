@@ -1,48 +1,48 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/zenguard.ipynb
 ---
+
 # ZenGuard AI
 
-<a href="https://colab.research.google.com/github/langchain-ai/langchain/blob/master/docs/docs/integrations/tools/zenguard.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab" /></a>
+<a href="https://colab.research.google.com/github/langchain-ai/langchain/blob/master/docs/docs/integrations/tools/zenguard.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="在 Colab 中打开" /></a>
 
-This tool lets you quickly set up [ZenGuard AI](https://www.zenguard.ai/) in your Langchain-powered application. The ZenGuard AI provides ultrafast guardrails to protect your GenAI application from:
+此工具可以让您快速在基于 Langchain 的应用程序中设置 [ZenGuard AI](https://www.zenguard.ai/)。ZenGuard AI 提供超快速的保护措施，以保护您的 GenAI 应用程序免受以下威胁：
 
-- Prompts Attacks
-- Veering of the pre-defined topics
-- PII, sensitive info, and keywords leakage.
-- Toxicity
-- Etc.
+- 提示攻击
+- 偏离预定义主题
+- 个人身份信息、敏感信息和关键字泄露
+- 有毒内容
+- 等等
 
-Please, also check out our [open-source Python Client](https://github.com/ZenGuard-AI/fast-llm-security-guardrails?tab=readme-ov-file) for more inspiration.
+请您也查看我们的 [开源 Python 客户端](https://github.com/ZenGuard-AI/fast-llm-security-guardrails?tab=readme-ov-file) 以获取更多灵感。
 
-Here is our main website - https://www.zenguard.ai/
+这是我们的官方网站 - https://www.zenguard.ai/
 
-More [Docs](https://docs.zenguard.ai/start/intro/)
+更多 [文档](https://docs.zenguard.ai/start/intro/)
 
-## Installation
+## 安装
 
-Using pip:
-
+使用 pip：
 
 ```python
 pip install langchain-community
 ```
 
-## Prerequisites
+## 前提条件
 
-Generate an API Key:
+生成 API 密钥：
 
- 1. Navigate to the [Settings](https://console.zenguard.ai/settings)
- 2. Click on the `+ Create new secret key`.
- 3. Name the key `Quickstart Key`.
- 4. Click on the `Add` button.
- 5. Copy the key value by pressing on the copy icon.
+ 1. 导航到 [设置](https://console.zenguard.ai/settings)
+ 2. 点击 `+ 创建新的密钥`。
+ 3. 将密钥命名为 `Quickstart Key`。
+ 4. 点击 `添加` 按钮。
+ 5. 通过点击复制图标复制密钥值。
 
-## Code Usage
+## 代码使用
 
- Instantiate the pack with the API Key
+使用 API 密钥实例化包
 
-paste your api key into env ZENGUARD_API_KEY
+将您的 API 密钥粘贴到 env ZENGUARD_API_KEY
 
 
 ```python
@@ -56,7 +56,7 @@ from langchain_community.tools.zenguard import ZenGuardTool
 tool = ZenGuardTool()
 ```
 
-### Detect Prompt Injection
+### 检测提示注入
 
 
 ```python
@@ -71,28 +71,27 @@ else:
     print("No prompt injection detected: carry on with the LLM of your choice.")
 ```
 
-* `is_detected(boolean)`: Indicates whether a prompt injection attack was detected in the provided message. In this example, it is False.
- * `score(float: 0.0 - 1.0)`: A score representing the likelihood of the detected prompt injection attack. In this example, it is 0.0.
- * `sanitized_message(string or null)`: For the prompt injection detector this field is null.
- * `latency(float or null)`: Time in milliseconds during which the detection was performed
+* `is_detected(boolean)`: 指示在提供的消息中是否检测到提示注入攻击。在这个例子中，它为 False。
+* `score(float: 0.0 - 1.0)`: 一个表示检测到的提示注入攻击可能性的分数。在这个例子中，它为 0.0。
+* `sanitized_message(string or null)`: 对于提示注入检测器，此字段为 null。
+* `latency(float or null)`: 检测执行的时间（以毫秒为单位）
 
-  **Error Codes:**
+  **错误代码：**
 
- * `401 Unauthorized`: API key is missing or invalid.
- * `400 Bad Request`: The request body is malformed.
- * `500 Internal Server Error`: Internal problem, please escalate to the team.
+* `401 Unauthorized`: API 密钥丢失或无效。
+* `400 Bad Request`: 请求体格式错误。
+* `500 Internal Server Error`: 内部问题，请升级到团队。
 
-### More examples
+### 更多示例
 
- * [Detect PII](https://docs.zenguard.ai/detectors/pii/)
- * [Detect Allowed Topics](https://docs.zenguard.ai/detectors/allowed-topics/)
- * [Detect Banned Topics](https://docs.zenguard.ai/detectors/banned-topics/)
- * [Detect Keywords](https://docs.zenguard.ai/detectors/keywords/)
- * [Detect Secrets](https://docs.zenguard.ai/detectors/secrets/)
- * [Detect Toxicity](https://docs.zenguard.ai/detectors/toxicity/)
+ * [检测 PII](https://docs.zenguard.ai/detectors/pii/)
+ * [检测允许的主题](https://docs.zenguard.ai/detectors/allowed-topics/)
+ * [检测禁止的主题](https://docs.zenguard.ai/detectors/banned-topics/)
+ * [检测关键词](https://docs.zenguard.ai/detectors/keywords/)
+ * [检测秘密](https://docs.zenguard.ai/detectors/secrets/)
+ * [检测有毒性](https://docs.zenguard.ai/detectors/toxicity/)
 
+## 相关
 
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

@@ -1,9 +1,10 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/llamacpp.ipynb
 ---
+
 # Llama-cpp
 
-This notebook goes over how to use Llama-cpp embeddings within LangChain
+本笔记本介绍如何在 LangChain 中使用 Llama-cpp 嵌入
 
 
 ```python
@@ -35,8 +36,7 @@ query_result = llama.embed_query(text)
 doc_result = llama.embed_documents([text])
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

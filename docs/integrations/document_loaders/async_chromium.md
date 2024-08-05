@@ -1,24 +1,23 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/async_chromium.ipynb
 ---
+
 # Async Chromium
 
-Chromium is one of the browsers supported by Playwright, a library used to control browser automation. 
+Chromium 是 Playwright 支持的浏览器之一，Playwright 是一个用于控制浏览器自动化的库。
 
-By running `p.chromium.launch(headless=True)`, we are launching a headless instance of Chromium. 
+通过运行 `p.chromium.launch(headless=True)`，我们启动了一个无头实例的 Chromium。
 
-Headless mode means that the browser is running without a graphical user interface.
+无头模式意味着浏览器在没有图形用户界面的情况下运行。
 
-In the below example we'll use the `AsyncChromiumLoader` to loads the page, and then the [`Html2TextTransformer`](/docs/integrations/document_transformers/html2text/) to strip out the HTML tags and other semantic information.
-
+在下面的示例中，我们将使用 `AsyncChromiumLoader` 来加载页面，然后使用 [`Html2TextTransformer`](/docs/integrations/document_transformers/html2text/) 来剥离 HTML 标签和其他语义信息。
 
 ```python
 %pip install --upgrade --quiet playwright beautifulsoup4 html2text
 !playwright install
 ```
 
-**Note:** If you are using Jupyter notebooks, you might also need to install and apply `nest_asyncio` before loading the documents like this:
-
+**注意：** 如果您使用 Jupyter 笔记本，您可能还需要在加载文档之前安装并应用 `nest_asyncio`，方法如下：
 
 ```python
 !pip install nest-asyncio
@@ -26,7 +25,6 @@ import nest_asyncio
 
 nest_asyncio.apply()
 ```
-
 
 ```python
 from langchain_community.document_loaders import AsyncChromiumLoader
@@ -37,15 +35,11 @@ docs = loader.load()
 docs[0].page_content[0:100]
 ```
 
-
-
 ```output
 '<!DOCTYPE html><html lang="en" dir="ltr" class="docs-wrapper docs-doc-page docs-version-2.0 plugin-d'
 ```
 
-
-Now let's transform the documents into a more readable syntax using the transformer:
-
+现在让我们使用转换器将文档转换为更易读的语法：
 
 ```python
 from langchain_community.document_transformers import Html2TextTransformer
@@ -55,15 +49,11 @@ docs_transformed = html2text.transform_documents(docs)
 docs_transformed[0].page_content[0:500]
 ```
 
-
-
 ```output
 'Skip to main content\n\nGo to API Docs\n\nSearch`⌘``K`\n\nGo to App\n\n  * Quick start\n  * Tutorials\n\n  * How-to guides\n\n  * Concepts\n\n  * Reference\n\n  * Pricing\n  * Self-hosting\n\n  * LangGraph Cloud\n\n  *   * Quick start\n\nOn this page\n\n# Get started with LangSmith\n\n**LangSmith** is a platform for building production-grade LLM applications. It\nallows you to closely monitor and evaluate your application, so you can ship\nquickly and with confidence. Use of LangChain is not necessary - LangSmith\nworks on it'
 ```
 
+## 相关
 
-
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

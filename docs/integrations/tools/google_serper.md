@@ -1,15 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/google_serper.ipynb
 ---
+
 # Google Serper
 
-This notebook goes over how to use the `Google Serper` component to search the web. First you need to sign up for a free account at [serper.dev](https://serper.dev) and get your api key.
-
+本笔记本介绍如何使用 `Google Serper` 组件进行网络搜索。首先，您需要在 [serper.dev](https://serper.dev) 注册一个免费账户并获取您的 API 密钥。
 
 ```python
 %pip install --upgrade --quiet  langchain-community
 ```
-
 
 ```python
 import os
@@ -18,29 +17,23 @@ import pprint
 os.environ["SERPER_API_KEY"] = ""
 ```
 
-
 ```python
 from langchain_community.utilities import GoogleSerperAPIWrapper
 ```
-
 
 ```python
 search = GoogleSerperAPIWrapper()
 ```
 
-
 ```python
 search.run("Obama's first name?")
 ```
-
-
 
 ```output
 'Barack Hussein Obama II'
 ```
 
-
-## As part of a Self Ask With Search Chain
+## 作为自我提问与搜索链的一部分
 
 
 ```python
@@ -58,9 +51,9 @@ llm = OpenAI(temperature=0)
 search = GoogleSerperAPIWrapper()
 tools = [
     Tool(
-        name="Intermediate Answer",
+        name="中间答案",
         func=search.run,
-        description="useful for when you need to ask with search",
+        description="在需要搜索时询问时很有用",
     )
 ]
 
@@ -68,7 +61,7 @@ self_ask_with_search = initialize_agent(
     tools, llm, agent=AgentType.SELF_ASK_WITH_SEARCH, verbose=True
 )
 self_ask_with_search.run(
-    "What is the hometown of the reigning men's U.S. Open champion?"
+    "现任男子美国公开赛冠军的家乡是哪里？"
 )
 ```
 ```output
@@ -90,10 +83,8 @@ Intermediate answer: [36;1m[1;3mEl Palmar, Spain[0m
 'El Palmar, Spain'
 ```
 
-
-## Obtaining results with metadata
-If you would also like to obtain the results in a structured way including metadata. For this we will be using the `results` method of the wrapper.
-
+## 使用元数据获取结果
+如果您还希望以结构化的方式获取包括元数据在内的结果。为此，我们将使用包装器的 `results` 方法。
 
 ```python
 search = GoogleSerperAPIWrapper()
@@ -250,9 +241,9 @@ pprint.pp(results)
                      {'query': 'Apple Watch'},
                      {'query': 'Apple App Store'}]}
 ```
-## Searching for Google Images
-We can also query Google Images using this wrapper. For example:
 
+## 搜索 Google 图片
+我们还可以使用这个包装器查询 Google 图片。例如：
 
 ```python
 search = GoogleSerperAPIWrapper(type="images")
@@ -379,9 +370,9 @@ pprint.pp(results)
              'link': 'https://virginiazoo.org/zoos-new-male-lion-explores-habitat-for-thefirst-time/',
              'position': 10}]}
 ```
-## Searching for Google News
-We can also query Google News using this wrapper. For example:
 
+## 搜索 Google 新闻
+我们还可以使用这个包装器查询 Google 新闻。例如：
 
 ```python
 search = GoogleSerperAPIWrapper(type="news")
@@ -483,8 +474,7 @@ pprint.pp(results)
            'imageUrl': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWWIC4VpMTfRvSyqiomODOoLg0xhoBf-Tc1qweKnSuaiTk-Y1wMJZM3jct0w&s',
            'position': 9}]}
 ```
-If you want to only receive news articles published in the last hour, you can do the following:
-
+如果您只想接收过去一小时内发布的新闻文章，可以这样做：
 
 ```python
 search = GoogleSerperAPIWrapper(type="news", tbs="qdr:h")
@@ -529,27 +519,25 @@ pprint.pp(results)
            'imageUrl': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_X9qqSwVFBBdos2CK5ky5IWIE3aJPCQeRYR9O1Jz4t-MjaEYBuwK7AU3AJQ&s',
            'position': 3}]}
 ```
-Some examples of the `tbs` parameter:
+`tbs` 参数的一些示例：
 
-`qdr:h` (past hour)
-`qdr:d` (past day)
-`qdr:w` (past week)
-`qdr:m` (past month)
-`qdr:y` (past year)
+`qdr:h`（过去一小时）
+`qdr:d`（过去一天）
+`qdr:w`（过去一周）
+`qdr:m`（过去一个月）
+`qdr:y`（过去一年）
 
-You can specify intermediate time periods by adding a number:
-`qdr:h12` (past 12 hours)
-`qdr:d3` (past 3 days)
-`qdr:w2` (past 2 weeks)
-`qdr:m6` (past 6 months)
-`qdr:m2` (past 2 years)
+您可以通过添加数字来指定中间时间段：
+`qdr:h12`（过去12小时）
+`qdr:d3`（过去3天）
+`qdr:w2`（过去2周）
+`qdr:m6`（过去6个月）
+`qdr:m2`（过去2年）
 
-For all supported filters simply go to [Google Search](https://google.com), search for something, click on "Tools", add your date filter and check the URL for "tbs=".
+有关所有支持的过滤器，只需访问 [Google 搜索](https://google.com)，搜索某些内容，点击“工具”，添加您的日期过滤器并检查 URL 中的“tbs=”。
 
-
-## Searching for Google Places
-We can also query Google Places using this wrapper. For example:
-
+## 搜索 Google Places
+我们还可以使用这个包装器查询 Google Places。例如：
 
 ```python
 search = GoogleSerperAPIWrapper(type="places")
@@ -655,7 +643,7 @@ pprint.pp(results)
              'category': 'Italian'}]}
 ```
 
-## Related
+## 相关
 
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

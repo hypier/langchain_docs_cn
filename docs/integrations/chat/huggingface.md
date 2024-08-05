@@ -1,31 +1,33 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/huggingface.ipynb
 ---
+
 # ChatHuggingFace
 
-This will help you getting started with `langchain_huggingface` [chat models](/docs/concepts/#chat-models). For detailed documentation of all `ChatHuggingFace` features and configurations head to the [API reference](https://api.python.langchain.com/en/latest/chat_models/langchain_huggingface.chat_models.huggingface.ChatHuggingFace.html). For a list of models supported by Hugging Face check out [this page](https://huggingface.co/models).
+这将帮助您开始使用 `langchain_huggingface` [聊天模型](/docs/concepts/#chat-models)。有关所有 `ChatHuggingFace` 功能和配置的详细文档，请访问 [API 参考](https://api.python.langchain.com/en/latest/chat_models/langchain_huggingface.chat_models.huggingface.ChatHuggingFace.html)。要查看 Hugging Face 支持的模型列表，请查看 [此页面](https://huggingface.co/models)。
 
-## Overview
-### Integration details
+## 概述
 
-### Integration details
+### 集成细节
 
-| Class | Package | Local | Serializable | JS support | Package downloads | Package latest |
+### 集成详情
+
+| 类 | 包 | 本地 | 可序列化 | JS 支持 | 包下载量 | 包最新版本 |
 | :--- | :--- | :---: | :---: |  :---: | :---: | :---: |
 | [ChatHuggingFace](https://api.python.langchain.com/en/latest/chat_models/langchain_huggingface.chat_models.huggingface.ChatHuggingFace.html) | [langchain-huggingface](https://api.python.langchain.com/en/latest/huggingface_api_reference.html) | ✅ | beta | ❌ | ![PyPI - Downloads](https://img.shields.io/pypi/dm/langchain_huggingface?style=flat-square&label=%20) | ![PyPI - Version](https://img.shields.io/pypi/v/langchain_huggingface?style=flat-square&label=%20) |
 
-### Model features
-| [Tool calling](/docs/how_to/tool_calling) | [Structured output](/docs/how_to/structured_output/) | JSON mode | [Image input](/docs/how_to/multimodal_inputs/) | Audio input | Video input | [Token-level streaming](/docs/how_to/chat_streaming/) | Native async | [Token usage](/docs/how_to/chat_token_usage_tracking/) | [Logprobs](/docs/how_to/logprobs/) |
+### 模型特性
+| [工具调用](/docs/how_to/tool_calling) | [结构化输出](/docs/how_to/structured_output/) | JSON 模式 | [图像输入](/docs/how_to/multimodal_inputs/) | 音频输入 | 视频输入 | [令牌级流式传输](/docs/how_to/chat_streaming/) | 原生异步 | [令牌使用](/docs/how_to/chat_token_usage_tracking/) | [Logprobs](/docs/how_to/logprobs/) |
 | :---: | :---: | :---: | :---: |  :---: | :---: | :---: | :---: | :---: | :---: |
-| ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ❌ | 
+| ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ❌ |
 
-## Setup
+## 设置
 
-To access Hugging Face models you'll need to create a Hugging Face account, get an API key, and install the `langchain-huggingface` integration package.
+要访问 Hugging Face 模型，您需要创建一个 Hugging Face 账户，获取一个 API 密钥，并安装 `langchain-huggingface` 集成包。
 
-### Credentials
+### 凭证
 
-Generate a [Hugging Face Access Token](https://huggingface.co/docs/hub/security-tokens) and store it as an environment variable: `HUGGINGFACEHUB_API_TOKEN`.
+生成一个 [Hugging Face 访问令牌](https://huggingface.co/docs/hub/security-tokens) 并将其存储为环境变量： `HUGGINGFACEHUB_API_TOKEN`。
 
 
 ```python
@@ -36,24 +38,24 @@ if not os.getenv("HUGGINGFACEHUB_API_TOKEN"):
     os.environ["HUGGINGFACEHUB_API_TOKEN"] = getpass.getpass("Enter your token: ")
 ```
 
-### Installation
+### 安装
 
-| Class | Package | Local | Serializable | JS support | Package downloads | Package latest |
+| 类别 | 包 | 本地 | 可序列化 | JS 支持 | 包下载量 | 包最新版本 |
 | :--- | :--- | :---: | :---: |  :---: | :---: | :---: |
 | [ChatHuggingFace](https://api.python.langchain.com/en/latest/chat_models/langchain_huggingface.chat_models.huggingface.ChatHuggingFace.html) | [langchain_huggingface](https://api.python.langchain.com/en/latest/huggingface_api_reference.html) | ✅ | ❌ | ❌ | ![PyPI - Downloads](https://img.shields.io/pypi/dm/langchain_huggingface?style=flat-square&label=%20) | ![PyPI - Version](https://img.shields.io/pypi/v/langchain_huggingface?style=flat-square&label=%20) |
 
-### Model features
-| [Tool calling](/docs/how_to/tool_calling) | [Structured output](/docs/how_to/structured_output/) | JSON mode | [Image input](/docs/how_to/multimodal_inputs/) | Audio input | Video input | [Token-level streaming](/docs/how_to/chat_streaming/) | Native async | [Token usage](/docs/how_to/chat_token_usage_tracking/) | [Logprobs](/docs/how_to/logprobs/) |
+### 模型特性
+| [工具调用](/docs/how_to/tool_calling) | [结构化输出](/docs/how_to/structured_output/) | JSON模式 | [图像输入](/docs/how_to/multimodal_inputs/) | 音频输入 | 视频输入 | [令牌级流式传输](/docs/how_to/chat_streaming/) | 原生异步 | [令牌使用](/docs/how_to/chat_token_usage_tracking/) | [对数概率](/docs/how_to/logprobs/) |
 | :---: | :---: | :---: | :---: |  :---: | :---: | :---: | :---: | :---: | :---: |
-| ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 
+| ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
-## Setup
+## 设置
 
-To access `langchain_huggingface` models you'll need to create a/an `Hugging Face` account, get an API key, and install the `langchain_huggingface` integration package.
+要访问 `langchain_huggingface` 模型，您需要创建一个 `Hugging Face` 账户，获取一个 API 密钥，并安装 `langchain_huggingface` 集成包。
 
-### Credentials
+### 证书
 
-You'll need to have a [Hugging Face Access Token](https://huggingface.co/docs/hub/security-tokens) saved as an environment variable: `HUGGINGFACEHUB_API_TOKEN`.
+您需要将 [Hugging Face 访问令牌](https://huggingface.co/docs/hub/security-tokens) 保存为环境变量： `HUGGINGFACEHUB_API_TOKEN`。
 
 
 ```python
@@ -75,9 +77,10 @@ os.environ["HUGGINGFACEHUB_API_TOKEN"] = getpass.getpass(
 [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m To update, run: [0m[32;49mpip install --upgrade pip[0m
 Note: you may need to restart the kernel to use updated packages.
 ```
-## Instantiation
 
-You can instantiate a `ChatHuggingFace` model in two different ways, either from a `HuggingFaceEndpoint` or from a `HuggingFacePipeline`.
+## 实例化
+
+您可以通过 `HuggingFaceEndpoint` 或 `HuggingFacePipeline` 以两种不同方式实例化 `ChatHuggingFace` 模型。
 
 ### `HuggingFaceEndpoint`
 
@@ -96,13 +99,13 @@ llm = HuggingFaceEndpoint(
 chat_model = ChatHuggingFace(llm=llm)
 ```
 ```output
-The token has not been saved to the git credentials helper. Pass `add_to_git_credential=True` in this function directly or `--add-to-git-credential` if using via `huggingface-cli` if you want to set the git credential as well.
-Token is valid (permission: fineGrained).
-Your token has been saved to /Users/isaachershenson/.cache/huggingface/token
-Login successful
+该令牌尚未保存到 git 凭据助手中。如果您希望同时设置 git 凭据，请直接在此函数中传递 `add_to_git_credential=True`，或者在通过 `huggingface-cli` 使用时使用 `--add-to-git-credential`。
+令牌有效（权限：fineGrained）。
+您的令牌已保存至 /Users/isaachershenson/.cache/huggingface/token
+登录成功
 ```
-### `HuggingFacePipeline`
 
+### `HuggingFacePipeline`
 
 ```python
 from langchain_huggingface import ChatHuggingFace, HuggingFacePipeline
@@ -172,10 +175,9 @@ Loading checkpoint shards:   0%|          | 0/8 [00:00<?, ?it/s]
 generation_config.json:   0%|          | 0.00/111 [00:00<?, ?B/s]
 ```
 
-### Instatiating with Quantization
+### 使用量化进行实例化
 
-To run a quantized version of your model, you can specify a `bitsandbytes` quantization config as follows:
-
+要运行模型的量化版本，您可以按如下方式指定 `bitsandbytes` 量化配置：
 
 ```python
 from transformers import BitsAndBytesConfig
@@ -188,8 +190,7 @@ quantization_config = BitsAndBytesConfig(
 )
 ```
 
-and pass it to the `HuggingFacePipeline` as a part of its `model_kwargs`:
-
+并将其作为 `model_kwargs` 的一部分传递给 `HuggingFacePipeline`：
 
 ```python
 llm = HuggingFacePipeline.from_model_id(
@@ -206,7 +207,7 @@ llm = HuggingFacePipeline.from_model_id(
 chat_model = ChatHuggingFace(llm=llm)
 ```
 
-## Invocation
+## 调用
 
 
 ```python
@@ -234,16 +235,16 @@ According to the popular phrase and hypothetical scenario, when an unstoppable f
 
 In this scenario, it is un
 ```
-## API reference
 
-For detailed documentation of all `ChatHuggingFace` features and configurations head to the API reference: https://api.python.langchain.com/en/latest/chat_models/langchain_huggingface.chat_models.huggingface.ChatHuggingFace.html
+## API 参考
 
-## API reference
+有关所有 `ChatHuggingFace` 功能和配置的详细文档，请访问 API 参考： https://api.python.langchain.com/en/latest/chat_models/langchain_huggingface.chat_models.huggingface.ChatHuggingFace.html
 
-For detailed documentation of all ChatHuggingFace features and configurations head to the API reference: https://api.python.langchain.com/en/latest/chat_models/langchain_huggingface.chat_models.huggingface.ChatHuggingFace.html
+## API 参考
 
+有关所有 ChatHuggingFace 功能和配置的详细文档，请访问 API 参考： https://api.python.langchain.com/en/latest/chat_models/langchain_huggingface.chat_models.huggingface.ChatHuggingFace.html
 
-## Related
+## 相关
 
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

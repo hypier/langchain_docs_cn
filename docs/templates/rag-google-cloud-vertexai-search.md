@@ -1,53 +1,47 @@
 # rag-google-cloud-vertexai-search
 
-This template is an application that utilizes Google Vertex AI Search, a machine learning powered search service, and
-PaLM 2 for Chat (chat-bison). The application uses a Retrieval chain to answer questions based on your documents.
+此模板是一个应用程序，利用了 Google Vertex AI Search，这是一个基于机器学习的搜索服务，以及 PaLM 2 for Chat (chat-bison)。该应用程序使用检索链根据您的文档回答问题。
 
-For more context on building RAG applications with Vertex AI Search,
-check [here](https://cloud.google.com/generative-ai-app-builder/docs/enterprise-search-introduction).
+有关使用 Vertex AI Search 构建 RAG 应用程序的更多背景信息，请查看 [这里](https://cloud.google.com/generative-ai-app-builder/docs/enterprise-search-introduction)。
 
-## Environment Setup
+## 环境设置
 
-Before using this template, please ensure that you are authenticated with Vertex AI Search. See the authentication
-guide: [here](https://cloud.google.com/generative-ai-app-builder/docs/authentication).
+在使用此模板之前，请确保您已通过 Vertex AI Search 进行身份验证。请参阅身份验证指南：[这里](https://cloud.google.com/generative-ai-app-builder/docs/authentication)。
 
-You will also need to create:
+您还需要创建：
 
-- A search application [here](https://cloud.google.com/generative-ai-app-builder/docs/create-engine-es)
-- A data store [here](https://cloud.google.com/generative-ai-app-builder/docs/create-data-store-es)
+- 一个搜索应用程序 [这里](https://cloud.google.com/generative-ai-app-builder/docs/create-engine-es)
+- 一个数据存储 [这里](https://cloud.google.com/generative-ai-app-builder/docs/create-data-store-es)
 
-A suitable dataset to test this template with is the Alphabet Earnings Reports, which you can
-find [here](https://abc.xyz/investor/). The data is also available
-at `gs://cloud-samples-data/gen-app-builder/search/alphabet-investor-pdfs`.
+适合测试该模板的数据集是 Alphabet 财报，您可以在 [这里](https://abc.xyz/investor/) 找到。数据也可以在 `gs://cloud-samples-data/gen-app-builder/search/alphabet-investor-pdfs` 获取。
 
-Set the following environment variables:
+设置以下环境变量：
 
-* `GOOGLE_CLOUD_PROJECT_ID` - Your Google Cloud project ID.
-* `DATA_STORE_ID` - The ID of the data store in Vertex AI Search, which is a 36-character alphanumeric value found on
-  the data store details page.
-* `MODEL_TYPE` - The model type for Vertex AI Search.
+* `GOOGLE_CLOUD_PROJECT_ID` - 您的 Google Cloud 项目 ID。
+* `DATA_STORE_ID` - Vertex AI Search 中数据存储的 ID，这是一个 36 字符的字母数字值，可以在数据存储详细信息页面找到。
+* `MODEL_TYPE` - Vertex AI Search 的模型类型。
 
-## Usage
+## 使用方法
 
-To use this package, you should first have the LangChain CLI installed:
+要使用此包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将此包作为唯一的包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package rag-google-cloud-vertexai-search
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，只需运行：
 
 ```shell
 langchain app add rag-google-cloud-vertexai-search
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 
 ```python
 from rag_google_cloud_vertexai_search.chain import chain as rag_google_cloud_vertexai_search_chain
@@ -55,31 +49,31 @@ from rag_google_cloud_vertexai_search.chain import chain as rag_google_cloud_ver
 add_routes(app, rag_google_cloud_vertexai_search_chain, path="/rag-google-cloud-vertexai-search")
 ```
 
-(Optional) Let's now configure LangSmith.
-LangSmith will help us trace, monitor and debug LangChain applications.
-You can sign up for LangSmith [here](https://smith.langchain.com/).
-If you don't have access, you can skip this section
+（可选）现在让我们配置 LangSmith。
+LangSmith 将帮助我们跟踪、监视和调试 LangChain 应用程序。
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接通过以下命令启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server running locally at
+这将启动 FastAPI 应用程序，服务器在本地运行于
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground
-at [http://127.0.0.1:8000/rag-google-cloud-vertexai-search/playground](http://127.0.0.1:8000/rag-google-cloud-vertexai-search/playground)
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板。
+我们可以访问游乐场
+在 [http://127.0.0.1:8000/rag-google-cloud-vertexai-search/playground](http://127.0.0.1:8000/rag-google-cloud-vertexai-search/playground)
 
-We can access the template from code with:
+我们可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable

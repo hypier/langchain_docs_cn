@@ -1,32 +1,33 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/self_query/supabase_self_query.ipynb
 ---
+
 # Supabase (Postgres)
 
->[Supabase](https://supabase.com/docs) is an open-source `Firebase` alternative. 
-> `Supabase` is built on top of `PostgreSQL`, which offers strong `SQL` 
-> querying capabilities and enables a simple interface with already-existing tools and frameworks.
+>[Supabase](https://supabase.com/docs) 是一个开源的 `Firebase` 替代品。 
+> `Supabase` 建立在 `PostgreSQL` 之上，提供强大的 `SQL` 
+> 查询能力，并与现有工具和框架实现简单的接口。
 
->[PostgreSQL](https://en.wikipedia.org/wiki/PostgreSQL) also known as `Postgres`,
-> is a free and open-source relational database management system (RDBMS) 
-> emphasizing extensibility and `SQL` compliance.
+>[PostgreSQL](https://en.wikipedia.org/wiki/PostgreSQL)，也称为 `Postgres`，
+> 是一个免费的开源关系数据库管理系统 (RDBMS)， 
+> 强调可扩展性和 `SQL` 兼容性。
 >
->[Supabase](https://supabase.com/docs/guides/ai) provides an open-source toolkit for developing AI applications
->using Postgres and pgvector. Use the Supabase client libraries to store, index, and query your vector embeddings at scale.
+>[Supabase](https://supabase.com/docs/guides/ai) 提供一个开源工具包，用于使用 
+> Postgres 和 pgvector 开发 AI 应用程序。使用 Supabase 客户端库按规模存储、索引和查询您的向量嵌入。
 
-In the notebook, we'll demo the `SelfQueryRetriever` wrapped around a `Supabase` vector store.
+在笔记本中，我们将演示围绕 `Supabase` 向量存储的 `SelfQueryRetriever`。
 
-Specifically, we will:
-1. Create a Supabase database
-2. Enable the `pgvector` extension
-3. Create a `documents` table and `match_documents` function that will be used by `SupabaseVectorStore`
-4. Load sample documents into the vector store (database table)
-5. Build and test a self-querying retriever
+具体来说，我们将：
+1. 创建一个 Supabase 数据库
+2. 启用 `pgvector` 扩展
+3. 创建一个 `documents` 表和 `match_documents` 函数，供 `SupabaseVectorStore` 使用
+4. 将示例文档加载到向量存储（数据库表）中
+5. 构建并测试自查询检索器
 
-## Setup Supabase Database
+## 设置 Supabase 数据库
 
-1. Head over to https://database.new to provision your Supabase database.
-2. In the studio, jump to the [SQL editor](https://supabase.com/dashboard/project/_/sql/new) and run the following script to enable `pgvector` and setup your database as a vector store:
+1. 前往 https://database.new 来配置你的 Supabase 数据库。
+2. 在控制台中，跳转到 [SQL 编辑器](https://supabase.com/dashboard/project/_/sql/new)，并运行以下脚本以启用 `pgvector` 并将你的数据库设置为向量存储：
     ```sql
     -- Enable the pgvector extension to work with embedding vectors
     create extension if not exists vector;
@@ -65,38 +66,34 @@ Specifically, we will:
     $$;
     ```
 
-## Creating a Supabase vector store
-Next we'll want to create a Supabase vector store and seed it with some data. We've created a small demo set of documents that contain summaries of movies.
+## 创建 Supabase 向量存储
+接下来，我们将创建一个 Supabase 向量存储并用一些数据进行初始化。我们创建了一小组包含电影摘要的示例文档。
 
-Be sure to install the latest version of `langchain` with `openai` support:
-
+确保安装最新版本的 `langchain` 及其 `openai` 支持：
 
 ```python
 %pip install --upgrade --quiet  langchain langchain-openai tiktoken
 ```
 
-The self-query retriever requires you to have `lark` installed:
-
+自查询检索器需要您安装 `lark`：
 
 ```python
 %pip install --upgrade --quiet  lark
 ```
 
-We also need the `supabase` package:
-
+我们还需要 `supabase` 包：
 
 ```python
 %pip install --upgrade --quiet  supabase
 ```
 
-Since we are using `SupabaseVectorStore` and `OpenAIEmbeddings`, we have to load their API keys.
+由于我们使用 `SupabaseVectorStore` 和 `OpenAIEmbeddings`，我们必须加载它们的 API 密钥。
 
-- To find your `SUPABASE_URL` and `SUPABASE_SERVICE_KEY`, head to your Supabase project's [API settings](https://supabase.com/dashboard/project/_/settings/api).
-  - `SUPABASE_URL` corresponds to the Project URL
-  - `SUPABASE_SERVICE_KEY` corresponds to the `service_role` API key
+- 要找到您的 `SUPABASE_URL` 和 `SUPABASE_SERVICE_KEY`，请前往您的 Supabase 项目的 [API 设置](https://supabase.com/dashboard/project/_/settings/api)。
+  - `SUPABASE_URL` 对应于项目 URL
+  - `SUPABASE_SERVICE_KEY` 对应于 `service_role` API 密钥
 
-- To get your `OPENAI_API_KEY`, navigate to [API keys](https://platform.openai.com/account/api-keys) on your OpenAI account and create a new secret key.
-
+- 要获取您的 `OPENAI_API_KEY`，请在您的 OpenAI 账户中导航到 [API 密钥](https://platform.openai.com/account/api-keys) 并创建一个新的密钥。
 
 ```python
 import getpass
@@ -107,13 +104,11 @@ os.environ["SUPABASE_SERVICE_KEY"] = getpass.getpass("Supabase Service Key:")
 os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API Key:")
 ```
 
-_Optional:_ If you're storing your Supabase and OpenAI API keys in a `.env` file, you can load them with [`dotenv`](https://github.com/theskumar/python-dotenv).
-
+_可选：_ 如果您将 Supabase 和 OpenAI API 密钥存储在 `.env` 文件中，可以使用 [`dotenv`](https://github.com/theskumar/python-dotenv) 加载它们。
 
 ```python
 %pip install --upgrade --quiet  python-dotenv
 ```
-
 
 ```python
 from dotenv import load_dotenv
@@ -121,8 +116,7 @@ from dotenv import load_dotenv
 load_dotenv()
 ```
 
-First we'll create a Supabase client and instantiate a OpenAI embeddings class.
-
+首先，我们将创建一个 Supabase 客户端并实例化一个 OpenAI 嵌入类。
 
 ```python
 import os
@@ -139,8 +133,7 @@ supabase: Client = create_client(supabase_url, supabase_key)
 embeddings = OpenAIEmbeddings()
 ```
 
-Next let's create our documents.
-
+接下来，让我们创建我们的文档。
 
 ```python
 docs = [
@@ -184,9 +177,8 @@ vectorstore = SupabaseVectorStore.from_documents(
 )
 ```
 
-## Creating our self-querying retriever
-Now we can instantiate our retriever. To do this we'll need to provide some information upfront about the metadata fields that our documents support and a short description of the document contents.
-
+## 创建自查询检索器
+现在我们可以实例化我们的检索器。为此，我们需要提前提供一些关于我们的文档支持的元数据字段的信息以及文档内容的简短描述。
 
 ```python
 from langchain.chains.query_constructor.base import AttributeInfo
@@ -220,8 +212,8 @@ retriever = SelfQueryRetriever.from_llm(
 )
 ```
 
-## Testing it out
-And now we can try actually using our retriever!
+## 测试一下
+现在我们可以尝试实际使用我们的检索器！
 
 
 ```python
@@ -303,13 +295,11 @@ query='toys' filter=Operation(operator=<Operator.AND: 'and'>, arguments=[Compari
 [Document(page_content='Toys come alive and have a blast doing so', metadata={'year': 1995, 'genre': 'animated'})]
 ```
 
+## 过滤 k
 
-## Filter k
+我们还可以使用自查询检索器来指定 `k`：要获取的文档数量。
 
-We can also use the self query retriever to specify `k`: the number of documents to fetch.
-
-We can do this by passing `enable_limit=True` to the constructor.
-
+我们可以通过将 `enable_limit=True` 传递给构造函数来实现这一点。
 
 ```python
 retriever = SelfQueryRetriever.from_llm(
@@ -322,18 +312,15 @@ retriever = SelfQueryRetriever.from_llm(
 )
 ```
 
-
 ```python
-# This example only specifies a relevant query
+# 这个示例仅指定了一个相关查询
 retriever.invoke("what are two movies about dinosaurs")
 ```
 ```output
 query='dinosaur' filter=None limit=2
 ```
 
-
 ```output
 [Document(page_content='A bunch of scientists bring back dinosaurs and mayhem breaks loose', metadata={'year': 1993, 'genre': 'science fiction', 'rating': 7.7}),
  Document(page_content='Toys come alive and have a blast doing so', metadata={'year': 1995, 'genre': 'animated'})]
 ```
-

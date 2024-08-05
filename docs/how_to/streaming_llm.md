@@ -1,28 +1,26 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/streaming_llm.ipynb
 ---
-# How to stream responses from an LLM
 
-All `LLM`s implement the [Runnable interface](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable), which comes with **default** implementations of standard runnable methods (i.e. `ainvoke`, `batch`, `abatch`, `stream`, `astream`, `astream_events`).
+# 如何从 LLM 流式传输响应
 
-The **default** streaming implementations provide an`Iterator` (or `AsyncIterator` for asynchronous streaming) that yields a single value: the final output from the underlying chat model provider.
+所有 `LLM` 都实现了 [Runnable interface](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable)，该接口提供了标准可运行方法的 **默认** 实现（即 `ainvoke`、`batch`、`abatch`、`stream`、`astream`、`astream_events`）。
 
-The ability to stream the output token-by-token depends on whether the provider has implemented proper streaming support.
+**默认** 的流式实现提供了一个 `Iterator`（或用于异步流式传输的 `AsyncIterator`），它生成一个单一值：来自底层聊天模型提供者的最终输出。
 
-See which [integrations support token-by-token streaming here](/docs/integrations/llms/).
+逐个标记流式输出的能力取决于提供者是否实现了适当的流式支持。
 
-
+请查看哪些 [集成支持逐个标记流式传输](/docs/integrations/llms/)。
 
 :::note
 
-The **default** implementation does **not** provide support for token-by-token streaming, but it ensures that the model can be swapped in for any other model as it supports the same standard interface.
+**默认** 实现不提供逐个标记流式传输的支持，但它确保模型可以替换为任何其他模型，因为它支持相同的标准接口。
 
 :::
 
-## Sync stream
+## 同步流
 
-Below we use a `|` to help visualize the delimiter between tokens.
-
+下面我们使用 `|` 来帮助可视化标记之间的分隔符。
 
 ```python
 from langchain_openai import OpenAI
@@ -39,9 +37,10 @@ for chunk in llm.stream("Write me a 1 verse song about sparkling water."):
 |Refreshing| taste|,| a| pure| delight|
 |Spark|ling| water|,| my| thirst|'s| delight||
 ```
-## Async streaming
 
-Let's see how to stream in an async setting using `astream`.
+## 异步流
+
+让我们看看如何在异步环境中使用 `astream` 进行流式传输。
 
 
 ```python
@@ -59,16 +58,15 @@ async for chunk in llm.astream("Write me a 1 verse song about sparkling water.")
 |Refreshing| taste|,| a| pure| delight|
 |Spark|ling| water|,| my| thirst|'s| delight||
 ```
-## Async event streaming
 
+## 异步事件流
 
-LLMs also support the standard [astream events](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.astream_events) method.
+LLMs 还支持标准的 [astream events](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.astream_events) 方法。
 
 :::tip
 
-`astream_events` is most useful when implementing streaming in a larger LLM application that contains multiple steps (e.g., an application that involves an `agent`).
+`astream_events` 在实现包含多个步骤的更大 LLM 应用程序（例如，涉及 `agent` 的应用程序）时最为有用。
 :::
-
 
 ```python
 from langchain_openai import OpenAI

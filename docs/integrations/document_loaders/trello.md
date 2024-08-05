@@ -1,35 +1,36 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/trello.ipynb
 ---
+
 # Trello
 
->[Trello](https://www.atlassian.com/software/trello) is a web-based project management and collaboration tool that allows individuals and teams to organize and track their tasks and projects. It provides a visual interface known as a "board" where users can create lists and cards to represent their tasks and activities.
+>[Trello](https://www.atlassian.com/software/trello) 是一个基于网络的项目管理和协作工具，允许个人和团队组织和跟踪他们的任务和项目。它提供了一个称为“看板”的可视化界面，用户可以创建列表和卡片来表示他们的任务和活动。
 
-The TrelloLoader allows you to load cards from a Trello board and is implemented on top of [py-trello](https://pypi.org/project/py-trello/)
+TrelloLoader 允许您从 Trello 看板加载卡片，并基于 [py-trello](https://pypi.org/project/py-trello/) 实现。
 
-This currently supports `api_key/token` only.
+目前仅支持 `api_key/token`。
 
-1. Credentials generation: https://trello.com/power-ups/admin/
+1. 凭证生成： https://trello.com/power-ups/admin/
 
-2. Click in the manual token generation link to get the token.
+2. 点击手动生成令牌的链接以获取令牌。
 
-To specify the API key and token you can either set the environment variables ``TRELLO_API_KEY`` and ``TRELLO_TOKEN`` or you can pass ``api_key`` and ``token`` directly into the `from_credentials` convenience constructor method.
+要指定 API 密钥和令牌，您可以设置环境变量 ``TRELLO_API_KEY`` 和 ``TRELLO_TOKEN``，或者可以直接将 ``api_key`` 和 ``token`` 传递给 `from_credentials` 便利构造方法。
 
-This loader allows you to provide the board name to pull in the corresponding cards into Document objects.
+此加载器允许您提供看板名称，以将相应的卡片拉入 Document 对象。
 
-Notice that the board "name" is also called "title" in oficial documentation:
+请注意，看板的“名称”在官方文档中也称为“标题”：
 
 https://support.atlassian.com/trello/docs/changing-a-boards-title-and-description/
 
-You can also specify several load parameters to include / remove different fields both from the document page_content properties and metadata.
+您还可以指定多个加载参数，以包含/移除文档 page_content 属性和元数据中的不同字段。
 
-## Features
-- Load cards from a Trello board.
-- Filter cards based on their status (open or closed).
-- Include card names, comments, and checklists in the loaded documents.
-- Customize the additional metadata fields to include in the document.
+## 功能
+- 从 Trello 板加载卡片。
+- 根据卡片状态（打开或关闭）过滤卡片。
+- 在加载的文档中包含卡片名称、评论和检查清单。
+- 自定义要包含在文档中的额外元数据字段。
 
-By default all card fields are included for the full text page_content and metadata accordinly.
+默认情况下，所有卡片字段都包含在全文本 page_content 和相应的元数据中。
 
 
 
@@ -40,9 +41,8 @@ By default all card fields are included for the full text page_content and metad
 
 
 ```python
-# If you have already set the API key and token using environment variables,
-# you can skip this cell and comment out the `api_key` and `token` named arguments
-# in the initialization steps below.
+# 如果您已经使用环境变量设置了 API 密钥和令牌，
+# 可以跳过此单元并在下面的初始化步骤中注释掉 `api_key` 和 `token` 命名参数
 from getpass import getpass
 
 API_KEY = getpass()
@@ -56,7 +56,7 @@ TOKEN = getpass()
 ```python
 from langchain_community.document_loaders import TrelloLoader
 
-# Get the open cards from "Awesome Board"
+# 从“Awesome Board”获取打开的卡片
 loader = TrelloLoader.from_credentials(
     "Awesome Board",
     api_key=API_KEY,
@@ -75,8 +75,8 @@ Comments:
 ```
 
 ```python
-# Get all the cards from "Awesome Board" but only include the
-# card list(column) as extra metadata.
+# 从“Awesome Board”获取所有卡片，但只包括
+# 卡片列表（列）作为额外元数据。
 loader = TrelloLoader.from_credentials(
     "Awesome Board",
     api_key=API_KEY,
@@ -95,8 +95,8 @@ Comments:
 ```
 
 ```python
-# Get the cards from "Another Board" and exclude the card name,
-# checklist and comments from the Document page_content text.
+# 从“Another Board”获取卡片，并排除卡片名称、
+# 检查清单和评论的文档 page_content 文本。
 loader = TrelloLoader.from_credentials(
     "test",
     api_key=API_KEY,
@@ -111,8 +111,7 @@ print("Document: " + documents[0].page_content)
 print(documents[0].metadata)
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

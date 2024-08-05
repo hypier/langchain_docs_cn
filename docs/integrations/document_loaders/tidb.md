@@ -1,23 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/tidb.ipynb
 ---
+
 # TiDB
 
-> [TiDB Cloud](https://tidbcloud.com/), is a comprehensive Database-as-a-Service (DBaaS) solution, that provides dedicated and serverless options. TiDB Serverless is now integrating a built-in vector search into the MySQL landscape. With this enhancement, you can seamlessly develop AI applications using TiDB Serverless without the need for a new database or additional technical stacks. Be among the first to experience it by joining the waitlist for the private beta at https://tidb.cloud/ai.
+> [TiDB Cloud](https://tidbcloud.com/)，是一种全面的数据库即服务（DBaaS）解决方案，提供专用和无服务器选项。TiDB Serverless 现在将内置向量搜索集成到 MySQL 生态系统中。通过此增强，您可以无缝地使用 TiDB Serverless 开发 AI 应用，而无需新的数据库或额外的技术栈。通过加入 https://tidb.cloud/ai 的私人测试版候补名单，成为首批体验者之一。
 
-This notebook introduces how to use `TiDBLoader` to load data from TiDB in langchain.
+本笔记本介绍如何使用 `TiDBLoader` 在 langchain 中从 TiDB 加载数据。
 
-## Prerequisites
+## 前提条件
 
-Before using the `TiDBLoader`, we will install the following dependencies:
-
+在使用 `TiDBLoader` 之前，我们将安装以下依赖项：
 
 ```python
 %pip install --upgrade --quiet langchain
 ```
 
-Then, we will configure the connection to a TiDB. In this notebook, we will follow the standard connection method provided by TiDB Cloud to establish a secure and efficient database connection.
-
+然后，我们将配置与 TiDB 的连接。在本笔记本中，我们将遵循 TiDB Cloud 提供的标准连接方法，以建立安全高效的数据库连接。
 
 ```python
 import getpass
@@ -30,18 +29,18 @@ tidb_connection_string = tidb_connection_string_template.replace(
 )
 ```
 
-## Load Data from TiDB
+## 从 TiDB 加载数据
 
-Here's a breakdown of some key arguments you can use to customize the behavior of the `TiDBLoader`:
+以下是一些关键参数的详细说明，您可以使用这些参数自定义 `TiDBLoader` 的行为：
 
-- `query` (str): This is the SQL query to be executed against the TiDB database. The query should select the data you want to load into your `Document` objects. 
-    For instance, you might use a query like `"SELECT * FROM my_table"` to fetch all data from `my_table`.
+- `query` (str)：这是要在 TiDB 数据库上执行的 SQL 查询。查询应选择您希望加载到 `Document` 对象中的数据。 
+    例如，您可以使用类似 `"SELECT * FROM my_table"` 的查询来获取 `my_table` 中的所有数据。
 
-- `page_content_columns` (Optional[List[str]]): Specifies the list of column names whose values should be included in the `page_content` of each `Document` object. 
-    If set to `None` (the default), all columns returned by the query are included in `page_content`. This allows you to tailor the content of each document based on specific columns of your data.
+- `page_content_columns` (可选[List[str]]): 指定应包含在每个 `Document` 对象的 `page_content` 中的列名列表。 
+    如果设置为 `None`（默认值），则查询返回的所有列都将包含在 `page_content` 中。这使您能够根据数据的特定列定制每个文档的内容。
 
-- `metadata_columns` (Optional[List[str]]): Specifies the list of column names whose values should be included in the `metadata` of each `Document` object. 
-    By default, this list is empty, meaning no metadata will be included unless explicitly specified. This is useful for including additional information about each document that doesn't form part of the main content but is still valuable for processing or analysis.
+- `metadata_columns` (可选[List[str]]): 指定应包含在每个 `Document` 对象的 `metadata` 中的列名列表。 
+    默认情况下，此列表为空，这意味着除非明确指定，否则不会包含任何元数据。这对于包含有关每个文档的附加信息非常有用，这些信息虽然不构成主要内容，但对于处理或分析仍然很有价值。
 
 
 ```python
@@ -119,8 +118,7 @@ metada: {'id': 3}
 test_table.drop(bind=engine)
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

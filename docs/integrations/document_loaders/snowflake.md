@@ -1,9 +1,10 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/snowflake.ipynb
 ---
+
 # Snowflake
 
-This notebooks goes over how to load documents from Snowflake
+本笔记本介绍如何从 Snowflake 加载文档
 
 
 ```python
@@ -54,8 +55,7 @@ snowflake_documents = snowflake_loader.load()
 print(snowflake_documents)
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

@@ -1,34 +1,35 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/vllm.ipynb
-sidebar_label: vLLM Chat
+sidebar_label: vLLM 聊天
 ---
-# vLLM Chat
 
-vLLM can be deployed as a server that mimics the OpenAI API protocol. This allows vLLM to be used as a drop-in replacement for applications using OpenAI API. This server can be queried in the same format as OpenAI API.
+# vLLM 聊天
 
-## Overview
-This will help you getting started with vLLM [chat models](/docs/concepts/#chat-models), which leverage the `langchain-openai` package. For detailed documentation of all `ChatOpenAI` features and configurations head to the [API reference](https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.base.ChatOpenAI.html).
+vLLM 可以作为一个服务器部署，模拟 OpenAI API 协议。这允许 vLLM 作为使用 OpenAI API 的应用程序的替代品。该服务器可以使用与 OpenAI API 相同的格式进行查询。
 
-### Integration details
+## 概述
+这将帮助您开始使用 vLLM [聊天模型](/docs/concepts/#chat-models)，该模型利用了 `langchain-openai` 包。有关所有 `ChatOpenAI` 功能和配置的详细文档，请访问 [API 参考](https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.base.ChatOpenAI.html)。
 
-| Class | Package | Local | Serializable | JS support | Package downloads | Package latest |
+### 集成详情
+
+| 类别 | 包 | 本地 | 可序列化 | JS 支持 | 包下载量 | 包最新版本 |
 | :--- | :--- | :---: | :---: |  :---: | :---: | :---: |
 | [ChatOpenAI](https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.base.ChatOpenAI.html) | [langchain_openai](https://api.python.langchain.com/en/latest/langchain_openai.html) | ✅ | beta | ❌ | ![PyPI - Downloads](https://img.shields.io/pypi/dm/langchain_openai?style=flat-square&label=%20) | ![PyPI - Version](https://img.shields.io/pypi/v/langchain_openai?style=flat-square&label=%20) |
 
-### Model features
-Specific model features-- such as tool calling, support for multi-modal inputs, support for token-level streaming, etc.-- will depend on the hosted model.
+### 模型特性
+具体的模型特性——例如工具调用、对多模态输入的支持、对令牌级流式传输的支持等——将取决于托管模型。
 
-## Setup
+## 设置
 
-See the vLLM docs [here](https://docs.vllm.ai/en/latest/).
+请参阅 vLLM 文档 [这里](https://docs.vllm.ai/en/latest/)。
 
-To access vLLM models through LangChain, you'll need to install the `langchain-openai` integration package.
+要通过 LangChain 访问 vLLM 模型，您需要安装 `langchain-openai` 集成包。
 
-### Credentials
+### 凭证
 
-Authentication will depend on specifics of the inference server.
+身份验证将依赖于推理服务器的具体情况。
 
-If you want to get automated tracing of your model calls you can also set your [LangSmith](https://docs.smith.langchain.com/) API key by uncommenting below:
+如果您想获取模型调用的自动追踪，可以通过取消下面的注释来设置您的 [LangSmith](https://docs.smith.langchain.com/) API 密钥：
 
 
 ```python
@@ -36,18 +37,18 @@ If you want to get automated tracing of your model calls you can also set your [
 # os.environ["LANGCHAIN_API_KEY"] = getpass.getpass("Enter your LangSmith API key: ")
 ```
 
-### Installation
+### 安装
 
-The LangChain vLLM integration can be accessed via the `langchain-openai` package:
+LangChain vLLM 集成可以通过 `langchain-openai` 包访问：
 
 
 ```python
 %pip install -qU langchain-openai
 ```
 
-## Instantiation
+## 实例化
 
-Now we can instantiate our model object and generate chat completions:
+现在我们可以实例化我们的模型对象并生成聊天完成内容：
 
 
 ```python
@@ -73,7 +74,7 @@ llm = ChatOpenAI(
 )
 ```
 
-## Invocation
+## 调用
 
 
 ```python
@@ -94,11 +95,9 @@ llm.invoke(messages)
 AIMessage(content=' Io amo programmare', additional_kwargs={}, example=False)
 ```
 
+## 链接
 
-## Chaining
-
-We can [chain](/docs/how_to/sequence/) our model with a prompt template like so:
-
+我们可以使用提示模板来[链接](/docs/how_to/sequence/)我们的模型，如下所示：
 
 ```python
 from langchain_core.prompts import ChatPromptTemplate
@@ -123,14 +122,13 @@ chain.invoke(
 )
 ```
 
-## API reference
+## API 参考
 
-For detailed documentation of all features and configurations exposed via `langchain-openai`, head to the API reference: https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.base.ChatOpenAI.html
+有关通过 `langchain-openai` 提供的所有功能和配置的详细文档，请访问 API 参考： https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.base.ChatOpenAI.html
 
-Refer to the vLLM [documentation](https://docs.vllm.ai/en/latest/) as well.
+同时参考 vLLM [文档](https://docs.vllm.ai/en/latest/)。
 
+## 相关
 
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

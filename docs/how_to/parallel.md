@@ -3,21 +3,22 @@ custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs
 sidebar_position: 1
 keywords: [RunnableParallel, RunnableMap, LCEL]
 ---
-# How to invoke runnables in parallel
 
-:::info Prerequisites
+# 如何并行调用可运行对象
 
-This guide assumes familiarity with the following concepts:
-- [LangChain Expression Language (LCEL)](/docs/concepts/#langchain-expression-language)
-- [Chaining runnables](/docs/how_to/sequence)
+:::info 前提条件
+
+本指南假设您对以下概念有一定了解：
+- [LangChain 表达式语言 (LCEL)](/docs/concepts/#langchain-expression-language)
+- [链接可运行对象](/docs/how_to/sequence)
 
 :::
 
-The [`RunnableParallel`](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.RunnableParallel.html) primitive is essentially a dict whose values are runnables (or things that can be coerced to runnables, like functions). It runs all of its values in parallel, and each value is called with the overall input of the `RunnableParallel`. The final return value is a dict with the results of each value under its appropriate key.
+[`RunnableParallel`](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.RunnableParallel.html) 原语本质上是一个字典，其值是可运行对象（或可以被强制转换为可运行对象的事物，例如函数）。它并行运行所有值，并且每个值都使用 `RunnableParallel` 的总体输入进行调用。最终返回值是一个字典，包含每个值在其相应键下的结果。
 
-## Formatting with `RunnableParallels`
+## 使用 `RunnableParallels` 格式化
 
-`RunnableParallels` are useful for parallelizing operations, but can also be useful for manipulating the output of one Runnable to match the input format of the next Runnable in a sequence. You can use them to split or fork the chain so that multiple components can process the input in parallel. Later, other components can join or merge the results to synthesize a final response. This type of chain creates a computation graph that looks like the following:
+`RunnableParallels` 对于并行化操作非常有用，但也可以用于操纵一个 Runnable 的输出，以匹配下一个 Runnable 在序列中的输入格式。您可以使用它们来拆分或分叉链，以便多个组件可以并行处理输入。随后，其他组件可以加入或合并结果，以合成最终响应。这种类型的链创建了一个计算图，如下所示：
 
 ```text
      Input
@@ -29,9 +30,7 @@ The [`RunnableParallel`](https://api.python.langchain.com/en/latest/runnables/la
       Combine
 ```
 
-Below, the input to prompt is expected to be a map with keys `"context"` and `"question"`. The user input is just the question. So we need to get the context using our retriever and passthrough the user input under the `"question"` key.
-
-
+下面，提示的输入预期为一个包含键 `"context"` 和 `"question"` 的映射。用户输入仅为问题。因此，我们需要使用检索器获取上下文，并将用户输入传递到 `"question"` 键下。
 
 ```python
 from langchain_community.vectorstores import FAISS
@@ -65,15 +64,12 @@ retrieval_chain = (
 retrieval_chain.invoke("where did harrison work?")
 ```
 
-
-
 ```output
 'Harrison worked at Kensho.'
 ```
 
-
 ::: {.callout-tip}
-Note that when composing a RunnableParallel with another Runnable we don't even need to wrap our dictionary in the RunnableParallel class — the type conversion is handled for us. In the context of a chain, these are equivalent:
+请注意，当与另一个 Runnable 组合时，我们甚至不需要将字典包装在 RunnableParallel 类中 — 类型转换由我们处理。在链的上下文中，这些是等效的：
 :::
 
 ```
@@ -88,13 +84,13 @@ RunnableParallel({"context": retriever, "question": RunnablePassthrough()})
 RunnableParallel(context=retriever, question=RunnablePassthrough())
 ```
 
-See the section on [coercion for more](/docs/how_to/sequence/#coercion).
+有关更多信息，请参见 [强制转换部分](/docs/how_to/sequence/#coercion)。
 
-## Using itemgetter as shorthand
+## 使用 itemgetter 作为简写
 
-Note that you can use Python's `itemgetter` as shorthand to extract data from the map when combining with `RunnableParallel`. You can find more information about itemgetter in the [Python Documentation](https://docs.python.org/3/library/operator.html#operator.itemgetter). 
+请注意，您可以将 Python 的 `itemgetter` 作为简写来从映射中提取数据，以便与 `RunnableParallel` 结合使用。有关 itemgetter 的更多信息，请参见 [Python 文档](https://docs.python.org/3/library/operator.html#operator.itemgetter)。
 
-In the example below, we use itemgetter to extract specific keys from the map:
+在下面的示例中，我们使用 itemgetter 从映射中提取特定键：
 
 
 ```python
@@ -135,15 +131,13 @@ chain.invoke({"question": "where did harrison work", "language": "italian"})
 ```
 
 
-
 ```output
 'Harrison ha lavorato a Kensho.'
 ```
 
+## 并行化步骤
 
-## Parallelize steps
-
-RunnableParallels make it easy to execute multiple Runnables in parallel, and to return the output of these Runnables as a map.
+RunnableParallels 使得并行执行多个 Runnables 变得简单，并能将这些 Runnables 的输出作为一个映射返回。
 
 
 ```python
@@ -169,11 +163,9 @@ map_chain.invoke({"topic": "bear"})
  'poem': AIMessage(content='In the quiet of the forest, the bear roams free\nMajestic and wild, a sight to see.', response_metadata={'token_usage': {'completion_tokens': 24, 'prompt_tokens': 15, 'total_tokens': 39}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': 'fp_c2295e73ad', 'finish_reason': 'stop', 'logprobs': None}, id='run-2707913e-a743-4101-b6ec-840df4568a76-0')}
 ```
 
+## 并行性
 
-## Parallelism
-
-RunnableParallel are also useful for running independent processes in parallel, since each Runnable in the map is executed in parallel. For example, we can see our earlier `joke_chain`, `poem_chain` and `map_chain` all have about the same runtime, even though `map_chain` executes both of the other two.
-
+RunnableParallel 也适用于并行运行独立的进程，因为映射中的每个 Runnable 都是并行执行的。例如，我们可以看到之前的 `joke_chain`、`poem_chain` 和 `map_chain` 的运行时间大致相同，尽管 `map_chain` 同时执行了其他两个。
 
 ```python
 %%timeit
@@ -201,8 +193,9 @@ map_chain.invoke({"topic": "bear"})
 ```output
 643 ms ± 77.8 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 ```
-## Next steps
 
-You now know some ways to format and parallelize chain steps with `RunnableParallel`.
+## 下一步
 
-To learn more, see the other how-to guides on runnables in this section.
+您现在知道了一些使用 `RunnableParallel` 格式化和并行化链步骤的方法。
+
+要了解更多信息，请查看本节中关于可运行任务的其他操作指南。

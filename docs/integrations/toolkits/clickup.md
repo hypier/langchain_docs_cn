@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/toolkits/clickup.ipynb
 ---
+
 # ClickUp
 
->[ClickUp](https://clickup.com/) is an all-in-one productivity platform that provides small and large teams across industries with flexible and customizable work management solutions, tools, and functions. 
+>[ClickUp](https://clickup.com/) 是一个集成的生产力平台，为各行业的小型和大型团队提供灵活和可定制的工作管理解决方案、工具和功能。
 
->It is a cloud-based project management solution for businesses of all sizes featuring communication and collaboration tools to help achieve organizational goals.
+>它是一个基于云的项目管理解决方案，适用于各类企业，具有沟通和协作工具，以帮助实现组织目标。
 
 
 ```python
@@ -24,13 +25,13 @@ from langchain_community.utilities.clickup import ClickupAPIWrapper
 from langchain_openai import OpenAI
 ```
 
-## Initializing
+## 初始化
 
-### Get Authenticated
-1. Create a [ClickUp App](https://help.clickup.com/hc/en-us/articles/6303422883095-Create-your-own-app-with-the-ClickUp-API)
-2. Follow [these steps](https://clickup.com/api/developer-portal/authentication/) to get your `client_id` and `client_secret`.
-    - *Suggestion: use `https://google.com` as the redirect_uri. This is what we assume in the defaults for this toolkit.*
-3. Copy/paste them and run the next cell to get your `code`
+### 获取认证
+1. 创建一个 [ClickUp 应用](https://help.clickup.com/hc/en-us/articles/6303422883095-Create-your-own-app-with-the-ClickUp-API)
+2. 按照 [这些步骤](https://clickup.com/api/developer-portal/authentication/) 获取你的 `client_id` 和 `client_secret`。
+    - *建议：使用 `https://google.com` 作为 redirect_uri。这是我们在该工具包的默认设置中假设的。*
+3. 复制/粘贴它们并运行下一个单元以获取你的 `code`
 
 
 
@@ -47,9 +48,9 @@ print(ClickupAPIWrapper.get_access_code_url(oauth_client_id, redirect_uri))
 Click this link, select your workspace, click `Connect Workspace`
 https://app.clickup.com/api?client_id=ABC...&redirect_uri=https://google.com
 ```
-The url should change to something like this https://www.google.com/?code=THISISMYCODERIGHTHERE.
+网址应该会更改为类似 https://www.google.com/?code=THISISMYCODERIGHTHERE 的内容。
 
-Next, copy/paste the `CODE` (THISISMYCODERIGHTHERE) generated in the URL in the cell below.
+接下来，复制/粘贴在下面单元格中生成的 `CODE`（THISISMYCODERIGHTHERE）。 
 
 
 
@@ -57,10 +58,10 @@ Next, copy/paste the `CODE` (THISISMYCODERIGHTHERE) generated in the URL in the 
 code = "THISISMYCODERIGHTHERE"
 ```
 
-### Get Access Token
-Then, use the code below to get your `access_token`.
+### 获取访问令牌
+然后，使用下面的代码获取您的 `access_token`。
 
-*Important*: Each code is a one time code that will expire after use. The `access_token` can be used for a period of time. Make sure to copy paste the `access_token` once you get it!
+*重要提示*: 每个代码都是一次性代码，用完后将失效。`access_token` 可以使用一段时间。确保在获取后复制粘贴 `access_token`！
 
 
 ```python
@@ -70,25 +71,26 @@ access_token = ClickupAPIWrapper.get_access_token(
 ```
 ```output
 Error: {'err': 'Code already used', 'ECODE': 'OAUTH_014'}
-You already used this code once. Go back a step and generate a new code.
-Our best guess for the url to get a new code is:
+您已经使用过此代码。请返回一步并生成一个新代码。
+获取新代码的最佳猜测网址是：
 https://app.clickup.com/api?client_id=B5D61F8EVO04PR0JX0U73984LLS9GI6P&redirect_uri=https://google.com
 ```
 
 ```python
-# Init toolkit
+# 初始化工具包
 clickup_api_wrapper = ClickupAPIWrapper(access_token=access_token)
 toolkit = ClickupToolkit.from_clickup_api_wrapper(clickup_api_wrapper)
 print(
-    f"Found team_id: {clickup_api_wrapper.team_id}.\nMost request require the team id, so we store it for you in the toolkit, we assume the first team in your list is the one you want. \nNote: If you know this is the wrong ID, you can pass it at initialization."
+    f"找到 team_id: {clickup_api_wrapper.team_id}。\n大多数请求需要 team id，因此我们将其存储在工具包中，我们假设您列表中的第一个团队就是您想要的。 \n注意：如果您知道这是错误的 ID，您可以在初始化时传递它。"
 )
 ```
 ```output
-Found team_id: 9011010153.
-Most request require the team id, so we store it for you in the toolkit, we assume the first team in your list is the one you want. 
-Note: If you know this is the wrong ID, you can pass it at initialization.
+找到 team_id: 9011010153。
+大多数请求需要 team id，因此我们将其存储在工具包中，我们假设您列表中的第一个团队就是您想要的。 
+注意：如果您知道这是错误的 ID，您可以在初始化时传递它。
 ```
-### Create Agent
+
+### 创建代理
 
 
 ```python
@@ -99,7 +101,7 @@ agent = initialize_agent(
 )
 ```
 
-## Use an Agent
+## 使用代理
 
 
 ```python
@@ -113,8 +115,8 @@ def print_and_run(command):
     return response
 ```
 
-### Navigation
-You can get the teams, folder and spaces your user has access to
+### 导航
+您可以获取用户可以访问的团队、文件夹和空间
 
 
 ```python
@@ -124,212 +126,211 @@ print_and_run("Get all the folders for the team")
 ```
 ```output
 [94m$ COMMAND[0m
-Get all the teams that the user is authorized to access
+获取用户被授权访问的所有团队
 
 [94m$ AGENT[0m
 
 
-[1m> Entering new AgentExecutor chain...[0m
-[32;1m[1;3m I need to use the Get Teams tool
-Action: Get Teams
-Action Input: No necessary request parameters[0m
-Observation: [38;5;200m[1;3m{'teams': [{'id': '9011010153', 'name': 'Task Copilot Sandbox Workspace 1', 'members': [{'id': 61681706, 'username': 'Aiswarya ', 'email': 'asankar@clickup.com', 'initials': 'A'}, {'id': 81928627, 'username': 'Rodrigo Ceballos Lentini', 'email': 'rlentini@clickup.com', 'initials': 'RL'}]}]}[0m
-Thought:[32;1m[1;3m I now know the teams the user is authorized to access
-Final Answer: The user is authorized to access the team 'Task Copilot Sandbox Workspace 1'.[0m
+[1m> 正在进入新的 AgentExecutor 链...[0m
+[32;1m[1;3m 我需要使用获取团队工具
+操作: 获取团队
+操作输入: 无必要请求参数[0m
+观察: [38;5;200m[1;3m{'teams': [{'id': '9011010153', 'name': 'Task Copilot Sandbox Workspace 1', 'members': [{'id': 61681706, 'username': 'Aiswarya ', 'email': 'asankar@clickup.com', 'initials': 'A'}, {'id': 81928627, 'username': 'Rodrigo Ceballos Lentini', 'email': 'rlentini@clickup.com', 'initials': 'RL'}]}]}[0m
+思考:[32;1m[1;3m 我现在知道用户被授权访问的团队
+最终答案: 用户被授权访问团队 'Task Copilot Sandbox Workspace 1'。[0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 --------------------------------------------------------------------------------
 [94m$ COMMAND[0m
-Get all the spaces available to the team
+获取团队可用的所有空间
 
 [94m$ AGENT[0m
 
 
-[1m> Entering new AgentExecutor chain...[0m
-[32;1m[1;3m I need to use the API to get the spaces
-Action: Get Teams
-Action Input: No necessary request parameters[0m
-Observation: [38;5;200m[1;3m{'teams': [{'id': '9011010153', 'name': 'Task Copilot Sandbox Workspace 1', 'members': [{'id': 61681706, 'username': 'Aiswarya ', 'email': 'asankar@clickup.com', 'initials': 'A'}, {'id': 81928627, 'username': 'Rodrigo Ceballos Lentini', 'email': 'rlentini@clickup.com', 'initials': 'RL'}]}]}[0m
-Thought:[32;1m[1;3m I now have the list of teams
-Final Answer: The list of teams available to the team is [{'id': '9011010153', 'name': 'Task Copilot Sandbox Workspace 1', 'members': [{'id': 61681706, 'username': 'Aiswarya ', 'email': 'asankar@clickup.com', 'initials': 'A'}, {'id': 81928627, 'username': 'Rodrigo Ceballos Lentini', 'email': 'rlentini@clickup.com', 'initials': 'RL'}]}][0m
+[1m> 正在进入新的 AgentExecutor 链...[0m
+[32;1m[1;3m 我需要使用 API 获取空间
+操作: 获取团队
+操作输入: 无必要请求参数[0m
+观察: [38;5;200m[1;3m{'teams': [{'id': '9011010153', 'name': 'Task Copilot Sandbox Workspace 1', 'members': [{'id': 61681706, 'username': 'Aiswarya ', 'email': 'asankar@clickup.com', 'initials': 'A'}, {'id': 81928627, 'username': 'Rodrigo Ceballos Lentini', 'email': 'rlentini@clickup.com', 'initials': 'RL'}]}]}[0m
+思考:[32;1m[1;3m 我现在有了团队列表
+最终答案: 团队可用的团队列表是 [{'id': '9011010153', 'name': 'Task Copilot Sandbox Workspace 1', 'members': [{'id': 61681706, 'username': 'Aiswarya ', 'email': 'asankar@clickup.com', 'initials': 'A'}, {'id': 81928627, 'username': 'Rodrigo Ceballos Lentini', 'email': 'rlentini@clickup.com', 'initials': 'RL'}]}][0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 --------------------------------------------------------------------------------
 [94m$ COMMAND[0m
-Get all the folders for the team
+获取团队的所有文件夹
 
 [94m$ AGENT[0m
 
 
-[1m> Entering new AgentExecutor chain...[0m
-[32;1m[1;3m I need to get all the folders for the team
-Action: Get all folders in the workspace
-Action Input: {"folder_id": "90130119692"}[0m
-Observation: [33;1m[1;3m{'spaces': [{'id': '90110075934', 'name': 'Test Space', 'color': None, 'private': False, 'avatar': None, 'admin_can_manage': False, 'statuses': [{'id': 'p90110075934_lBKIEh3r', 'status': 'Open', 'type': 'open', 'orderindex': 0, 'color': '#d3d3d3'}, {'id': 'p90110075934_AvVAnVqy', 'status': 'in progress', 'type': 'custom', 'orderindex': 1, 'color': '#a875ff'}, {'id': 'p90110075934_SftYWzGt', 'status': 'Closed', 'type': 'closed', 'orderindex': 2, 'color': '#6bc950'}], 'multiple_assignees': True, 'features': {'due_dates': {'enabled': True, 'start_date': True, 'remap_due_dates': False, 'remap_closed_due_date': False}, 'sprints': {'enabled': False}, 'time_tracking': {'enabled': True, 'harvest': False, 'rollup': False}, 'points': {'enabled': False}, 'custom_items': {'enabled': False}, 'priorities': {'enabled': True, 'priorities': [{'color': '#f50000', 'id': '1', 'orderindex': '1', 'priority': 'urgent'}, {'color': '#ffcc00', 'id': '2', 'orderindex': '2', 'priority': 'high'}, {'color': '#6fddff', 'id': '3', 'orderindex': '3', 'priority': 'normal'}, {'color': '#d8d8d8', 'id': '4', 'orderindex': '4', 'priority': 'low'}]}, 'tags': {'enabled': True}, 'check_unresolved': {'enabled': True, 'subtasks': None, 'checklists': None, 'comments': None}, 'zoom': {'enabled': False}, 'milestones': {'enabled': False}, 'custom_fields': {'enabled': True}, 'dependency_warning': {'enabled': True}, 'status_pies': {'enabled': False}, 'multiple_assignees': {'enabled': True}}, 'archived': False}]}[0m
-Thought:[32;1m[1;3m I now know the folders in the team
-Final Answer: The folders in the team are listed in the observation.[0m
+[1m> 正在进入新的 AgentExecutor 链...[0m
+[32;1m[1;3m 我需要获取团队的所有文件夹
+操作: 获取工作区中的所有文件夹
+操作输入: {"folder_id": "90130119692"}[0m
+观察: [33;1m[1;3m{'spaces': [{'id': '90110075934', 'name': 'Test Space', 'color': None, 'private': False, 'avatar': None, 'admin_can_manage': False, 'statuses': [{'id': 'p90110075934_lBKIEh3r', 'status': 'Open', 'type': 'open', 'orderindex': 0, 'color': '#d3d3d3'}, {'id': 'p90110075934_AvVAnVqy', 'status': 'in progress', 'type': 'custom', 'orderindex': 1, 'color': '#a875ff'}, {'id': 'p90110075934_SftYWzGt', 'status': 'Closed', 'type': 'closed', 'orderindex': 2, 'color': '#6bc950'}], 'multiple_assignees': True, 'features': {'due_dates': {'enabled': True, 'start_date': True, 'remap_due_dates': False, 'remap_closed_due_date': False}, 'sprints': {'enabled': False}, 'time_tracking': {'enabled': True, 'harvest': False, 'rollup': False}, 'points': {'enabled': False}, 'custom_items': {'enabled': False}, 'priorities': {'enabled': True, 'priorities': [{'color': '#f50000', 'id': '1', 'orderindex': '1', 'priority': 'urgent'}, {'color': '#ffcc00', 'id': '2', 'orderindex': '2', 'priority': 'high'}, {'color': '#6fddff', 'id': '3', 'orderindex': '3', 'priority': 'normal'}, {'color': '#d8d8d8', 'id': '4', 'orderindex': '4', 'priority': 'low'}]}, 'tags': {'enabled': True}, 'check_unresolved': {'enabled': True, 'subtasks': None, 'checklists': None, 'comments': None}, 'zoom': {'enabled': False}, 'milestones': {'enabled': False}, 'custom_fields': {'enabled': True}, 'dependency_warning': {'enabled': True}, 'status_pies': {'enabled': False}, 'multiple_assignees': {'enabled': True}}, 'archived': False}]}[0m
+思考:[32;1m[1;3m 我现在知道团队中的文件夹
+最终答案: 团队中的文件夹在观察中列出。[0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 --------------------------------------------------------------------------------
 ```
 
 
 ```output
-'The folders in the team are listed in the observation.'
+'团队中的文件夹在观察中列出。'
 ```
 
-
-### Task Operations
-You can get, ask question about tasks and update them
+### 任务操作
+您可以获取、询问任务并更新它们
 
 
 ```python
 task_id = "8685mb5fn"
 ```
 
-#### Basic attirbute getting and updating
+#### 基本属性获取和更新
 
 
 ```python
-# We can get a task to inspect it's contents
-print_and_run(f"Get task with id {task_id}")
+# 我们可以获取一个任务以检查其内容
+print_and_run(f"获取任务 ID 为 {task_id} 的任务")
 
-# We can get a specific attribute from a task
+# 我们可以从任务中获取特定属性
 previous_description = print_and_run(
-    f"What is the description of task with id {task_id}"
+    f"任务 ID 为 {task_id} 的描述是什么"
 )
 
-# We can even update it!
+# 我们甚至可以更新它！
 print_and_run(
-    f"For task with id {task_id}, change the description to 'A cool task descriptiont changed by AI!'"
+    f"对于任务 ID 为 {task_id} 的任务，将描述更改为 'AI 更改的酷任务描述！'"
 )
-print_and_run(f"What is the description of task with id {task_id}")
+print_and_run(f"任务 ID 为 {task_id} 的描述是什么")
 
-# Undo what we did
+# 撤销我们所做的
 print_and_run(
-    f"For task with id {task_id}, change the description to '{previous_description}'"
+    f"对于任务 ID 为 {task_id} 的任务，将描述更改为 '{previous_description}'"
 )
 ```
 ```output
 [94m$ COMMAND[0m
-Get task with id 8685mb5fn
+获取任务 ID 为 8685mb5fn 的任务
 
 [94m$ AGENT[0m
 
 
-[1m> Entering new AgentExecutor chain...[0m
-[32;1m[1;3m I need to use the Get task tool
-Action: Get task
-Action Input: {"task_id": "8685mb5fn"}[0m
-Observation: [36;1m[1;3m{'id': '8685mb5fn', 'name': 'dummy task 1', 'text_content': 'An old, boring task description', 'description': 'An old, boring task description', 'status': 'to do', 'creator_id': 81928627, 'creator_username': 'Rodrigo Ceballos Lentini', 'creator_email': 'rlentini@clickup.com', 'assignees': [], 'watcher_username': 'Rodrigo Ceballos Lentini', 'watcher_email': 'rlentini@clickup.com', 'priority': 'high', 'due_date': '1694764800000', 'start_date': None, 'points': None, 'team_id': '9011010153', 'project_id': '90110331875'}[0m
-Thought:[32;1m[1;3m I now know the task details
-Final Answer: The task with id 8685mb5fn has the following details: {'id': '8685mb5fn', 'name': 'dummy task 1', 'text_content': 'An old, boring task description', 'description': 'An old, boring task description', 'status': 'to do', 'creator_id': 81928627, 'creator_username': 'Rodrigo Ceballos Lentini', 'creator_email': 'rlentini@clickup.com', 'assignees': [], 'watcher_username': 'Rodrigo Ceballos Lentini', 'watcher_email': 'rlentini@clickup.com', 'priority': 'high', 'due_date': '1694764800000', 'start_date': None, 'points': None, 'team_id': '9011010153', 'project_id': '90110331875'}[0m
+[1m> 进入新的 AgentExecutor 链...[0m
+[32;1m[1;3m 我需要使用获取任务工具
+操作: 获取任务
+操作输入: {"task_id": "8685mb5fn"}[0m
+观察: [36;1m[1;3m{'id': '8685mb5fn', 'name': 'dummy task 1', 'text_content': 'An old, boring task description', 'description': 'An old, boring task description', 'status': 'to do', 'creator_id': 81928627, 'creator_username': 'Rodrigo Ceballos Lentini', 'creator_email': 'rlentini@clickup.com', 'assignees': [], 'watcher_username': 'Rodrigo Ceballos Lentini', 'watcher_email': 'rlentini@clickup.com', 'priority': 'high', 'due_date': '1694764800000', 'start_date': None, 'points': None, 'team_id': '9011010153', 'project_id': '90110331875'}[0m
+思考:[32;1m[1;3m 我现在知道任务的详细信息
+最终答案: 任务 ID 为 8685mb5fn 的详细信息如下: {'id': '8685mb5fn', 'name': 'dummy task 1', 'text_content': 'An old, boring task description', 'description': 'An old, boring task description', 'status': 'to do', 'creator_id': 81928627, 'creator_username': 'Rodrigo Ceballos Lentini', 'creator_email': 'rlentini@clickup.com', 'assignees': [], 'watcher_username': 'Rodrigo Ceballos Lentini', 'watcher_email': 'rlentini@clickup.com', 'priority': 'high', 'due_date': '1694764800000', 'start_date': None, 'points': None, 'team_id': '9011010153', 'project_id': '90110331875'}[0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 --------------------------------------------------------------------------------
 [94m$ COMMAND[0m
-What is the description of task with id 8685mb5fn
+任务 ID 为 8685mb5fn 的描述是什么
 
 [94m$ AGENT[0m
 
 
-[1m> Entering new AgentExecutor chain...[0m
-[32;1m[1;3m I need to get the description of the task
-Action: Get task attribute
-Action Input: {"task_id": "8685mb5fn", "attribute_name": "description"}[0m
-Observation: [33;1m[1;3mAn old, boring task description[0m
-Thought:[32;1m[1;3m I now know the description of the task
-Final Answer: An old, boring task description[0m
+[1m> 进入新的 AgentExecutor 链...[0m
+[32;1m[1;3m 我需要获取任务的描述
+操作: 获取任务属性
+操作输入: {"task_id": "8685mb5fn", "attribute_name": "description"}[0m
+观察: [33;1m[1;3mAn old, boring task description[0m
+思考:[32;1m[1;3m 我现在知道任务的描述
+最终答案: An old, boring task description[0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 --------------------------------------------------------------------------------
 [94m$ COMMAND[0m
-For task with id 8685mb5fn, change the description to 'A cool task descriptiont changed by AI!'
+对于任务 ID 为 8685mb5fn 的任务，将描述更改为 'AI 更改的酷任务描述！'
 
 [94m$ AGENT[0m
 
 
-[1m> Entering new AgentExecutor chain...[0m
-[32;1m[1;3m I need to update the description of a task
-Action: Update task
-Action Input: {"task_id": "8685mb5fn", "attribute_name": "description", "value": "A cool task description changed by AI!"}[0m
-Observation: [36;1m[1;3m<Response [200]>[0m
-Thought:[32;1m[1;3m I have successfully updated the task description
-Final Answer: The description of task 8685mb5fn has been successfully changed to 'A cool task description changed by AI!'[0m
+[1m> 进入新的 AgentExecutor 链...[0m
+[32;1m[1;3m 我需要更新任务的描述
+操作: 更新任务
+操作输入: {"task_id": "8685mb5fn", "attribute_name": "description", "value": "AI 更改的酷任务描述！"}[0m
+观察: [36;1m[1;3m<Response [200]>[0m
+思考:[32;1m[1;3m 我已成功更新任务描述
+最终答案: 任务 ID 为 8685mb5fn 的描述已成功更改为 'AI 更改的酷任务描述！'[0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 --------------------------------------------------------------------------------
 [94m$ COMMAND[0m
-What is the description of task with id 8685mb5fn
+任务 ID 为 8685mb5fn 的描述是什么
 
 [94m$ AGENT[0m
 
 
-[1m> Entering new AgentExecutor chain...[0m
-[32;1m[1;3m I need to get the description of the task
-Action: Get task attribute
-Action Input: {"task_id": "8685mb5fn", "attribute_name": "description"}[0m
-Observation: [33;1m[1;3mA cool task description changed by AI![0m
-Thought:[32;1m[1;3m I now know the description of the task
-Final Answer: A cool task description changed by AI![0m
+[1m> 进入新的 AgentExecutor 链...[0m
+[32;1m[1;3m 我需要获取任务的描述
+操作: 获取任务属性
+操作输入: {"task_id": "8685mb5fn", "attribute_name": "description"}[0m
+观察: [33;1m[1;3mAI 更改的酷任务描述！[0m
+思考:[32;1m[1;3m 我现在知道任务的描述
+最终答案: AI 更改的酷任务描述！[0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 --------------------------------------------------------------------------------
 [94m$ COMMAND[0m
-For task with id 8685mb5fn, change the description to 'An old, boring task description'
+对于任务 ID 为 8685mb5fn 的任务，将描述更改为 'An old, boring task description'
 
 [94m$ AGENT[0m
 
 
-[1m> Entering new AgentExecutor chain...[0m
-[32;1m[1;3m I need to update the description of a task
-Action: Update task
-Action Input: {"task_id": "8685mb5fn", "attribute_name": "description", "value": "An old, boring task description"}[0m
-Observation: [36;1m[1;3m<Response [200]>[0m
-Thought:[32;1m[1;3m I now know the task description has been updated
-Final Answer: The description of task 8685mb5fn has been updated to 'An old, boring task description'.[0m
+[1m> 进入新的 AgentExecutor 链...[0m
+[32;1m[1;3m 我需要更新任务的描述
+操作: 更新任务
+操作输入: {"task_id": "8685mb5fn", "attribute_name": "description", "value": "An old, boring task description"}[0m
+观察: [36;1m[1;3m<Response [200]>[0m
+思考:[32;1m[1;3m 我现在知道任务描述已被更新
+最终答案: 任务 ID 为 8685mb5fn 的描述已更新为 'An old, boring task description'。[0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 --------------------------------------------------------------------------------
 ```
 
 
 ```output
-"The description of task 8685mb5fn has been updated to 'An old, boring task description'."
+"任务 ID 为 8685mb5fn 的描述已更新为 'An old, boring task description'。"
 ```
 
 
 
 ```python
-print_and_run("Change the descrition task 8685mj6cd to 'Look ma no hands'")
+print_and_run("将任务 8685mj6cd 的描述更改为 '看，妈妈，我没有手'")
 ```
 ```output
 [94m$ COMMAND[0m
-Change the descrition task 8685mj6cd to 'Look ma no hands'
+将任务 8685mj6cd 的描述更改为 '看，妈妈，我没有手'
 
 [94m$ AGENT[0m
 
 
-[1m> Entering new AgentExecutor chain...[0m
-[32;1m[1;3m I need to update the description of a task
-Action: Update task
-Action Input: {"task_id": "8685mj6cd", "attribute_name": "description", "value": "Look ma no hands"}[0m
-Observation: [36;1m[1;3m<Response [200]>[0m
-Thought:[32;1m[1;3m The task description has been successfully updated
-Final Answer: The description of task 8685mj6cd has been changed to 'Look ma no hands'.[0m
+[1m> 进入新的 AgentExecutor 链...[0m
+[32;1m[1;3m 我需要更新任务的描述
+操作: 更新任务
+操作输入: {"task_id": "8685mj6cd", "attribute_name": "description", "value": "看，妈妈，我没有手"}[0m
+观察: [36;1m[1;3m<Response [200]>[0m
+思考:[32;1m[1;3m 任务描述已成功更新
+最终答案: 任务 ID 为 8685mj6cd 的描述已更改为 '看，妈妈，我没有手'。[0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 --------------------------------------------------------------------------------
 ```
 
 
 ```output
-"The description of task 8685mj6cd has been changed to 'Look ma no hands'."
+"任务 ID 为 8685mj6cd 的描述已更改为 '看，妈妈，我没有手'。"
 ```
 
 
-#### Advanced Attributes (Assignees)
-You can query and update almost every thing about a task!
+#### 高级属性（指派人）
+您可以查询和更新任务的几乎所有内容！
 
 
 ```python
@@ -338,94 +339,93 @@ user_id = 81928627
 
 
 ```python
-print_and_run(f"What are the assignees of task id {task_id}?")
-print_and_run(f"Remove user {user_id} from the assignees of task id {task_id}")
-print_and_run(f"What are the assignees of task id {task_id}?")
-print_and_run(f"Add user {user_id} from the assignees of task id {task_id}")
+print_and_run(f"任务 ID 为 {task_id} 的指派人是什么？")
+print_and_run(f"从任务 ID 为 {task_id} 的指派人中移除用户 {user_id}")
+print_and_run(f"任务 ID 为 {task_id} 的指派人是什么？")
+print_and_run(f"将用户 {user_id} 添加到任务 ID 为 {task_id} 的指派人中")
 ```
 ```output
 [94m$ COMMAND[0m
-What are the assignees of task id 8685mb5fn?
+任务 ID 为 8685mb5fn 的指派人是什么？
 
 [94m$ AGENT[0m
 
 
-[1m> Entering new AgentExecutor chain...[0m
-[32;1m[1;3m I need to get the assignees of a task
-Action: Get task attribute
-Action Input: {"task_id": "8685mb5fn", "attribute_name": "assignee"}[0m
-Observation: [33;1m[1;3mError: attribute_name = assignee was not found in task keys dict_keys(['id', 'name', 'text_content', 'description', 'status', 'creator_id', 'creator_username', 'creator_email', 'assignees', 'watcher_username', 'watcher_email', 'priority', 'due_date', 'start_date', 'points', 'team_id', 'project_id']). Please call again with one of the key names.[0m
-Thought:[32;1m[1;3m I need to get the assignees of a task
-Action: Get task attribute
-Action Input: {"task_id": "8685mb5fn", "attribute_name": "assignees"}[0m
-Observation: [33;1m[1;3m[][0m
-Thought:[32;1m[1;3m I now know the final answer
-Final Answer: There are no assignees for task id 8685mb5fn.[0m
+[1m> 进入新的 AgentExecutor 链...[0m
+[32;1m[1;3m 我需要获取任务的指派人
+操作: 获取任务属性
+操作输入: {"task_id": "8685mb5fn", "attribute_name": "assignee"}[0m
+观察: [33;1m[1;3m错误: attribute_name = assignee 在任务键 dict_keys(['id', 'name', 'text_content', 'description', 'status', 'creator_id', 'creator_username', 'creator_email', 'assignees', 'watcher_username', 'watcher_email', 'priority', 'due_date', 'start_date', 'points', 'team_id', 'project_id']) 中未找到。请使用其中一个键名再次调用。[0m
+思考:[32;1m[1;3m 我需要获取任务的指派人
+操作: 获取任务属性
+操作输入: {"task_id": "8685mb5fn", "attribute_name": "assignees"}[0m
+观察: [33;1m[1;3m[][0m
+思考:[32;1m[1;3m 我现在知道最终答案
+最终答案: 任务 ID 为 8685mb5fn 没有指派人。[0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 --------------------------------------------------------------------------------
 [94m$ COMMAND[0m
-Remove user 81928627 from the assignees of task id 8685mb5fn
+从任务 ID 为 8685mb5fn 的指派人中移除用户 81928627
 
 [94m$ AGENT[0m
 
 
-[1m> Entering new AgentExecutor chain...[0m
-[32;1m[1;3m I need to update the assignees of a task
-Action: Update task assignees
-Action Input: {"task_id": "8685mb5fn", "operation": "rem", "users": [81928627]}[0m
-Observation: [33;1m[1;3m<Response [200]>[0m
-Thought:[32;1m[1;3m The user has been removed from the assignees of the task
-Final Answer: User 81928627 has been removed from the assignees of task id 8685mb5fn.[0m
+[1m> 进入新的 AgentExecutor 链...[0m
+[32;1m[1;3m 我需要更新任务的指派人
+操作: 更新任务指派人
+操作输入: {"task_id": "8685mb5fn", "operation": "rem", "users": [81928627]}[0m
+观察: [33;1m[1;3m<Response [200]>[0m
+思考:[32;1m[1;3m 用户已从任务的指派人中移除
+最终答案: 用户 81928627 已从任务 ID 为 8685mb5fn 的指派人中移除。[0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 --------------------------------------------------------------------------------
 [94m$ COMMAND[0m
-What are the assignees of task id 8685mb5fn?
+任务 ID 为 8685mb5fn 的指派人是什么？
 
 [94m$ AGENT[0m
 
 
-[1m> Entering new AgentExecutor chain...[0m
-[32;1m[1;3m I need to get the assignees of a task
-Action: Get task attribute
-Action Input: {"task_id": "8685mb5fn", "attribute_name": "assignee"}[0m
-Observation: [33;1m[1;3mError: attribute_name = assignee was not found in task keys dict_keys(['id', 'name', 'text_content', 'description', 'status', 'creator_id', 'creator_username', 'creator_email', 'assignees', 'watcher_username', 'watcher_email', 'priority', 'due_date', 'start_date', 'points', 'team_id', 'project_id']). Please call again with one of the key names.[0m
-Thought:[32;1m[1;3m I need to get the assignees of a task
-Action: Get task attribute
-Action Input: {"task_id": "8685mb5fn", "attribute_name": "assignees"}[0m
-Observation: [33;1m[1;3m[][0m
-Thought:[32;1m[1;3m I now know the final answer
-Final Answer: There are no assignees for task id 8685mb5fn.[0m
+[1m> 进入新的 AgentExecutor 链...[0m
+[32;1m[1;3m 我需要获取任务的指派人
+操作: 获取任务属性
+操作输入: {"task_id": "8685mb5fn", "attribute_name": "assignee"}[0m
+观察: [33;1m[1;3m错误: attribute_name = assignee 在任务键 dict_keys(['id', 'name', 'text_content', 'description', 'status', 'creator_id', 'creator_username', 'creator_email', 'assignees', 'watcher_username', 'watcher_email', 'priority', 'due_date', 'start_date', 'points', 'team_id', 'project_id']) 中未找到。请使用其中一个键名再次调用。[0m
+思考:[32;1m[1;3m 我需要获取任务的指派人
+操作: 获取任务属性
+操作输入: {"task_id": "8685mb5fn", "attribute_name": "assignees"}[0m
+观察: [33;1m[1;3m[][0m
+思考:[32;1m[1;3m 我现在知道最终答案
+最终答案: 任务 ID 为 8685mb5fn 没有指派人。[0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 --------------------------------------------------------------------------------
 [94m$ COMMAND[0m
-Add user 81928627 from the assignees of task id 8685mb5fn
+将用户 81928627 添加到任务 ID 为 8685mb5fn 的指派人中
 
 [94m$ AGENT[0m
 
 
-[1m> Entering new AgentExecutor chain...[0m
-[32;1m[1;3m I need to update the assignees of a task
-Action: Update task assignees
-Action Input: {"task_id": "8685mb5fn", "operation": "rem", "users": [81928627]}[0m
-Observation: [33;1m[1;3m<Response [200]>[0m
-Thought:[32;1m[1;3m The user has been removed from the assignees of the task
-Final Answer: User 81928627 has been removed from the assignees of task id 8685mb5fn.[0m
+[1m> 进入新的 AgentExecutor 链...[0m
+[32;1m[1;3m 我需要更新任务的指派人
+操作: 更新任务指派人
+操作输入: {"task_id": "8685mb5fn", "operation": "rem", "users": [81928627]}[0m
+观察: [33;1m[1;3m<Response [200]>[0m
+思考:[32;1m[1;3m 用户已从任务的指派人中移除
+最终答案: 用户 81928627 已从任务 ID 为 8685mb5fn 的指派人中移除。[0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 --------------------------------------------------------------------------------
 ```
 
 
 ```output
-'User 81928627 has been removed from the assignees of task id 8685mb5fn.'
+'用户 81928627 已从任务 ID 为 8685mb5fn 的指派人中移除。'
 ```
 
-
-### Creation
-You can create tasks, lists and folders
+### 创建
+您可以创建任务、列表和文件夹
 
 
 ```python
@@ -550,8 +550,7 @@ Final Answer: The list 'Test List - 18/09/2023-10:34:01' with content 'My test l
 "The list 'Test List - 18/09/2023-10:34:01' with content 'My test list' with high priority and status red has been successfully created."
 ```
 
-
-## Multi-Step Tasks
+## 多步骤任务
 
 
 ```python
@@ -567,11 +566,11 @@ Figure out what user ID Rodrigo is, create a task called 'Rod's task', assign it
 
 
 [1m> Entering new AgentExecutor chain...[0m
-[32;1m[1;3m I need to get the user ID of Rodrigo, create a task, and assign it to Rodrigo
+[32;1m[1;3m 我需要获取罗德里戈的用户ID，创建一个任务，并将其分配给罗德里戈
 Action: Get Teams
 Action Input: No input necessary[0m
 Observation: [38;5;200m[1;3m{'teams': [{'id': '9011010153', 'name': 'Task Copilot Sandbox Workspace 1', 'members': [{'id': 81928627, 'username': 'Rodrigo Ceballos Lentini', 'email': 'rlentini@clickup.com', 'initials': 'RL'}]}]}[0m
-Thought:[32;1m[1;3m I now have the user ID of Rodrigo
+Thought:[32;1m[1;3m 我现在有了罗德里戈的用户ID
 Action: Create Task
 Action Input: {"name": "Rod's task", "assignees": [81928627]}[0m
 ``````output
@@ -581,8 +580,8 @@ Action Input: {"name": "Rod's task", "assignees": [81928627]}[0m
 ``````output
 
 Observation: [36;1m[1;3m{'id': '8685mw6dz', 'custom_id': None, 'name': "Rod's task", 'text_content': '', 'description': '', 'status': {'id': 'p90110061901_VlN8IJtk', 'status': 'to do', 'color': '#87909e', 'orderindex': 0, 'type': 'open'}, 'orderindex': '24.00000000000000000000000000000000', 'date_created': '1695047740939', 'date_updated': '1695047740939', 'date_closed': None, 'date_done': None, 'archived': False, 'creator': {'id': 81928627, 'username': 'Rodrigo Ceballos Lentini', 'color': '#c51162', 'email': 'rlentini@clickup.com', 'profilePicture': None}, 'assignees': [{'id': 81928627, 'username': 'Rodrigo Ceballos Lentini', 'color': '#c51162', 'initials': 'RL', 'email': 'rlentini@clickup.com', 'profilePicture': None}], 'watchers': [{'id': 81928627, 'username': 'Rodrigo Ceballos Lentini', 'color': '#c51162', 'initials': 'RL', 'email': 'rlentini@clickup.com', 'profilePicture': None}], 'checklists': [], 'tags': [], 'parent': None, 'priority': None, 'due_date': None, 'start_date': None, 'points': None, 'time_estimate': None, 'time_spent': 0, 'custom_fields': [], 'dependencies': [], 'linked_tasks': [], 'team_id': '9011010153', 'url': 'https://app.clickup.com/t/8685mw6dz', 'sharing': {'public': False, 'public_share_expires_on': None, 'public_fields': ['assignees', 'priority', 'due_date', 'content', 'comments', 'attachments', 'customFields', 'subtasks', 'tags', 'checklists', 'coverimage'], 'token': None, 'seo_optimized': False}, 'permission_level': 'create', 'list': {'id': '901100754275', 'name': 'Test List', 'access': True}, 'project': {'id': '90110336890', 'name': 'Test Folder', 'hidden': False, 'access': True}, 'folder': {'id': '90110336890', 'name': 'Test Folder', 'hidden': False, 'access': True}, 'space': {'id': '90110061901'}}[0m
-Thought:[32;1m[1;3m I now have the task created and assigned to Rodrigo
-Final Answer: Rodrigo's user ID is 81928627 and a task called 'Rod's task' has been created and assigned to him.[0m
+Thought:[32;1m[1;3m 我现在已经创建了任务并将其分配给罗德里戈
+Final Answer: 罗德里戈的用户ID是81928627，一个名为'Rod's task'的任务已创建并分配给他。[0m
 
 [1m> Finished chain.[0m
 --------------------------------------------------------------------------------
@@ -590,6 +589,5 @@ Final Answer: Rodrigo's user ID is 81928627 and a task called 'Rod's task' has b
 
 
 ```output
-"Rodrigo's user ID is 81928627 and a task called 'Rod's task' has been created and assigned to him."
+"罗德里戈的用户ID是81928627，一个名为'Rod's task'的任务已创建并分配给他。"
 ```
-

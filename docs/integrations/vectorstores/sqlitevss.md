@@ -1,13 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/sqlitevss.ipynb
 ---
+
 # SQLite-VSS
 
->[SQLite-VSS](https://alexgarcia.xyz/sqlite-vss/) is an `SQLite` extension designed for vector search, emphasizing local-first operations and easy integration into applications without external servers. Leveraging the `Faiss` library, it offers efficient similarity search and clustering capabilities.
+>[SQLite-VSS](https://alexgarcia.xyz/sqlite-vss/) 是一个为向量搜索而设计的 `SQLite` 扩展，强调本地优先操作，并且可以轻松集成到没有外部服务器的应用程序中。利用 `Faiss` 库，它提供高效的相似性搜索和聚类能力。
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
+您需要使用 `pip install -qU langchain-community` 安装 `langchain-community` 才能使用此集成。
 
-This notebook shows how to use the `SQLiteVSS` vector database.
+本笔记本展示了如何使用 `SQLiteVSS` 向量数据库。
 
 
 ```python
@@ -15,7 +16,7 @@ This notebook shows how to use the `SQLiteVSS` vector database.
 %pip install --upgrade --quiet  sqlite-vss
 ```
 
-## Quickstart
+## 快速入门
 
 
 ```python
@@ -64,8 +65,7 @@ data[0].page_content
 'Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And while you’re at it, pass the Disclose Act so Americans can know who is funding our elections. \n\nTonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. \n\nOne of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. \n\nAnd I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.'
 ```
 
-
-## Using existing SQLite connection
+## 使用现有的 SQLite 连接
 
 
 ```python
@@ -112,14 +112,13 @@ data[0].page_content
 
 
 ```python
-# Cleaning up
+# 清理
 import os
 
 os.remove("/tmp/vss.db")
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

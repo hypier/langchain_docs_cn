@@ -1,16 +1,12 @@
-
 # self-query-qdrant
 
-This template performs [self-querying](https://python.langchain.com/docs/modules/data_connection/retrievers/self_query/) 
-using Qdrant and OpenAI. By default, it uses an artificial dataset of 10 documents, but you can replace it with your own dataset.
+此模板使用 Qdrant 和 OpenAI 执行 [自查询](https://python.langchain.com/docs/modules/data_connection/retrievers/self_query/)。默认情况下，它使用一个包含 10 个文档的人工数据集，但您可以用自己的数据集替换它。
 
-## Environment Setup
+## 环境设置
 
-Set the `OPENAI_API_KEY` environment variable to access the OpenAI models.
+设置 `OPENAI_API_KEY` 环境变量以访问 OpenAI 模型。
 
-Set the `QDRANT_URL` to the URL of your Qdrant instance. If you use [Qdrant Cloud](https://cloud.qdrant.io)
-you have to set the `QDRANT_API_KEY` environment variable as well. If you do not set any of them,
-the template will try to connect a local Qdrant instance at `http://localhost:6333`.
+将 `QDRANT_URL` 设置为您的 Qdrant 实例的 URL。如果您使用 [Qdrant Cloud](https://cloud.qdrant.io)，您还需要设置 `QDRANT_API_KEY` 环境变量。如果您没有设置其中任何一个，模板将尝试连接本地 Qdrant 实例，地址为 `http://localhost:6333`。
 
 ```shell
 export QDRANT_URL=
@@ -19,30 +15,29 @@ export QDRANT_API_KEY=
 export OPENAI_API_KEY=
 ```
 
-## Usage
+## 使用
 
-To use this package, install the LangChain CLI first:
+要使用此包，首先安装 LangChain CLI：
 
 ```shell
 pip install -U "langchain-cli[serve]"
 ```
 
-Create a new LangChain project and install this package as the only one:
+创建一个新的 LangChain 项目，并将此包作为唯一的包安装：
 
 ```shell
 langchain app new my-app --package self-query-qdrant
 ```
 
-To add this to an existing project, run:
+要将其添加到现有项目中，请运行：
 
 ```shell
 langchain app add self-query-qdrant
 ```
 
-### Defaults
+### 默认设置
 
-Before you launch the server, you need to create a Qdrant collection and index the documents.
-It can be done by running the following command:
+在启动服务器之前，您需要创建一个 Qdrant 集合并对文档进行索引。可以通过运行以下命令来完成：
 
 ```python
 from self_query_qdrant.chain import initialize
@@ -50,7 +45,7 @@ from self_query_qdrant.chain import initialize
 initialize()
 ```
 
-Add the following code to your `app/server.py` file:
+将以下代码添加到您的 `app/server.py` 文件中：
 
 ```python
 from self_query_qdrant.chain import chain
@@ -58,9 +53,7 @@ from self_query_qdrant.chain import chain
 add_routes(app, chain, path="/self-query-qdrant")
 ```
 
-The default dataset consists 10 documents about dishes, along with their price and restaurant information.
-You can find the documents in the `packages/self-query-qdrant/self_query_qdrant/defaults.py` file.
-Here is one of the documents:
+默认数据集包含关于菜肴的 10 个文档，以及它们的价格和餐厅信息。您可以在 `packages/self-query-qdrant/self_query_qdrant/defaults.py` 文件中找到这些文档。以下是其中一个文档：
 
 ```python
 from langchain_core.documents import Document
@@ -77,14 +70,11 @@ Document(
 )
 ```
 
-The self-querying allows performing semantic search over the documents, with some additional filtering
-based on the metadata. For example, you can search for the dishes that cost less than $15 and are served in New York.
+自查询功能允许对文档执行语义搜索，并根据元数据进行一些额外的过滤。例如，您可以搜索价格低于 $15 且在纽约提供的菜肴。
 
-### Customization
+### 自定义
 
-All the examples above assume that you want to launch the template with just the defaults.
-If you want to customize the template, you can do it by passing the parameters to the `create_chain` function
-in the `app/server.py` file:
+上述所有示例假设您希望使用默认设置启动模板。如果您想自定义模板，可以通过将参数传递给 `create_chain` 函数来实现，函数位于 `app/server.py` 文件中：
 
 ```python
 from langchain_community.llms import Cohere
@@ -105,7 +95,7 @@ chain = create_chain(
 )
 ```
 
-The same goes for the `initialize` function that creates a Qdrant collection and indexes the documents:
+对于创建 Qdrant 集合并索引文档的 `initialize` 函数也是如此：
 
 ```python
 from langchain_core.documents import Document
@@ -126,33 +116,33 @@ initialize(
 )
 ```
 
-The template is flexible and might be used for different sets of documents easily.
+该模板灵活，可以轻松用于不同文档集。
 
 ### LangSmith
 
-(Optional) If you have access to LangSmith, configure it to help trace, monitor and debug LangChain applications. If you don't have access, skip this section.
+（可选）如果您可以访问 LangSmith，请配置它以帮助追踪、监控和调试 LangChain 应用程序。如果您没有访问权限，请跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接通过以下命令启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-### Local Server
+### 本地服务器
 
-This will start the FastAPI app with a server running locally at 
+这将启动在本地运行的 FastAPI 应用，地址为 
 [http://localhost:8000](http://localhost:8000)
 
-You can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-Access the playground at [http://127.0.0.1:8000/self-query-qdrant/playground](http://127.0.0.1:8000/self-query-qdrant/playground)
+您可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板
+访问游乐场请前往 [http://127.0.0.1:8000/self-query-qdrant/playground](http://127.0.0.1:8000/self-query-qdrant/playground)
 
-Access the template from code with:
+通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable

@@ -1,24 +1,21 @@
 # KDB.AI
 
->[KDB.AI](https://kdb.ai) is a powerful knowledge-based vector database and search engine that allows you to build scalable, reliable AI applications, using real-time data, by providing advanced search, recommendation and personalization.
+>[KDB.AI](https://kdb.ai) 是一个强大的基于知识的向量数据库和搜索引擎，允许您利用实时数据构建可扩展、可靠的 AI 应用程序，提供高级搜索、推荐和个性化服务。
 
+## 安装和设置
 
-## Installation and Setup
-
-Install the Python SDK:
+安装 Python SDK：
 
 ```bash
 pip install kdbai-client
 ```
 
+## 向量存储
 
-## Vector store
-
-There exists a wrapper around KDB.AI indexes, allowing you to use it as a vectorstore,
-whether for semantic search or example selection.
+存在一个 KDB.AI 索引的封装器，使您可以将其用作向量存储，无论是用于语义搜索还是示例选择。
 
 ```python
 from langchain_community.vectorstores import KDBAI
 ```
 
-For a more detailed walkthrough of the KDB.AI vectorstore, see [this notebook](/docs/integrations/vectorstores/kdbai)
+有关 KDB.AI 向量存储的更详细指南，请参见 [此笔记本](/docs/integrations/vectorstores/kdbai)

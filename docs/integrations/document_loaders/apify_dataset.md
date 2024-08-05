@@ -1,33 +1,31 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/apify_dataset.ipynb
 ---
-# Apify Dataset
 
->[Apify Dataset](https://docs.apify.com/platform/storage/dataset) is a scalable append-only storage with sequential access built for storing structured web scraping results, such as a list of products or Google SERPs, and then export them to various formats like JSON, CSV, or Excel. Datasets are mainly used to save results of [Apify Actors](https://apify.com/store)—serverless cloud programs for various web scraping, crawling, and data extraction use cases.
+# Apify 数据集
 
-This notebook shows how to load Apify datasets to LangChain.
+>[Apify 数据集](https://docs.apify.com/platform/storage/dataset) 是一种可扩展的追加存储，具有顺序访问功能，专为存储结构化的网络抓取结果而设计，例如产品列表或 Google SERP，然后可以导出为 JSON、CSV 或 Excel 等多种格式。数据集主要用于保存 [Apify Actors](https://apify.com/store) 的结果——用于各种网络抓取、爬虫和数据提取用例的无服务器云程序。
 
+该笔记本展示了如何将 Apify 数据集加载到 LangChain。
 
-## Prerequisites
+## 前提条件
 
-You need to have an existing dataset on the Apify platform. If you don't have one, please first check out [this notebook](/docs/integrations/tools/apify) on how to use Apify to extract content from documentation, knowledge bases, help centers, or blogs. This example shows how to load a dataset produced by the [Website Content Crawler](https://apify.com/apify/website-content-crawler).
-
+您需要在 Apify 平台上有一个现有的数据集。如果您没有，请首先查看 [这个笔记本](/docs/integrations/tools/apify)，了解如何使用 Apify 从文档、知识库、帮助中心或博客中提取内容。这个示例展示了如何加载由 [网站内容爬虫](https://apify.com/apify/website-content-crawler) 生成的数据集。
 
 ```python
 %pip install --upgrade --quiet  apify-client
 ```
 
-First, import `ApifyDatasetLoader` into your source code:
-
+首先，将 `ApifyDatasetLoader` 导入到您的源代码中：
 
 ```python
 from langchain_community.document_loaders import ApifyDatasetLoader
 from langchain_core.documents import Document
 ```
 
-Then provide a function that maps Apify dataset record fields to LangChain `Document` format.
+然后提供一个函数，将 Apify 数据集记录字段映射到 LangChain `Document` 格式。
 
-For example, if your dataset items are structured like this:
+例如，如果您的数据集项结构如下：
 
 ```json
 {
@@ -36,8 +34,7 @@ For example, if your dataset items are structured like this:
 }
 ```
 
-The mapping function in the code below will convert them to LangChain `Document` format, so that you can use them further with any LLM model (e.g. for question answering).
-
+下面代码中的映射函数将把它们转换为 LangChain `Document` 格式，以便您可以进一步与任何 LLM 模型（例如，用于问答）一起使用。
 
 ```python
 loader = ApifyDatasetLoader(
@@ -48,15 +45,13 @@ loader = ApifyDatasetLoader(
 )
 ```
 
-
 ```python
 data = loader.load()
 ```
 
-## An example with question answering
+## 一个带有问答的示例
 
-In this example, we use data from a dataset to answer a question.
-
+在这个示例中，我们使用数据集中的数据来回答一个问题。
 
 ```python
 from langchain.indexes import VectorstoreIndexCreator
@@ -65,7 +60,6 @@ from langchain_core.documents import Document
 from langchain_openai import OpenAI
 from langchain_openai.embeddings import OpenAIEmbeddings
 ```
-
 
 ```python
 loader = ApifyDatasetLoader(
@@ -76,17 +70,14 @@ loader = ApifyDatasetLoader(
 )
 ```
 
-
 ```python
 index = VectorstoreIndexCreator(embedding=OpenAIEmbeddings()).from_loaders([loader])
 ```
-
 
 ```python
 query = "What is Apify?"
 result = index.query_with_sources(query, llm=OpenAI())
 ```
-
 
 ```python
 print(result["answer"])
@@ -98,7 +89,7 @@ print(result["sources"])
 https://docs.apify.com/platform/actors, https://docs.apify.com/platform/actors/running/actors-in-store, https://docs.apify.com/platform/security, https://docs.apify.com/platform/actors/examples
 ```
 
-## Related
+## 相关
 
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

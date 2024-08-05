@@ -3,27 +3,27 @@ custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs
 sidebar_label: Anthropic
 sidebar_class_name: hidden
 ---
+
 # AnthropicLLM
 
 :::caution
-You are currently on a page documenting the use of Anthropic legacy Claude 2 models as [text completion models](/docs/concepts/#llms). The latest and most popular Anthropic models are [chat completion models](/docs/concepts/#chat-models).
+您当前正在查看有关使用 Anthropic 旧版 Claude 2 模型作为 [文本补全模型](/docs/concepts/#llms) 的文档。最新和最受欢迎的 Anthropic 模型是 [聊天补全模型](/docs/concepts/#chat-models)。
 
-You are probably looking for [this page instead](/docs/integrations/chat/anthropic/).
+您可能想查看 [此页面](/docs/integrations/chat/anthropic/)。
 :::
 
-This example goes over how to use LangChain to interact with `Anthropic` models.
+本示例介绍如何使用 LangChain 与 `Anthropic` 模型进行交互。
 
-## Installation
+## 安装
 
 
 ```python
 %pip install -qU langchain-anthropic
 ```
 
-## Environment Setup
+## 环境设置
 
-We'll need to get an [Anthropic](https://console.anthropic.com/settings/keys) API key and set the `ANTHROPIC_API_KEY` environment variable:
-
+我们需要获取一个 [Anthropic](https://console.anthropic.com/settings/keys) API 密钥，并设置 `ANTHROPIC_API_KEY` 环境变量：
 
 ```python
 import os
@@ -32,7 +32,7 @@ from getpass import getpass
 os.environ["ANTHROPIC_API_KEY"] = getpass()
 ```
 
-## Usage
+## 用法
 
 
 ```python
@@ -58,9 +58,7 @@ chain.invoke({"question": "What is LangChain?"})
 '\nLangChain is a decentralized blockchain network that leverages AI and machine learning to provide language translation services.'
 ```
 
+## 相关
 
-
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

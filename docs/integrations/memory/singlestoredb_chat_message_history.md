@@ -1,9 +1,10 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/singlestoredb_chat_message_history.ipynb
 ---
+
 # SingleStoreDB
 
-This notebook goes over how to use SingleStoreDB to store chat message history.
+本笔记本介绍如何使用 SingleStoreDB 存储聊天消息历史记录。
 
 
 ```python

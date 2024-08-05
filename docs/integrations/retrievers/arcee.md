@@ -1,16 +1,16 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/arcee.ipynb
 ---
+
 # Arcee
 
->[Arcee](https://www.arcee.ai/about/about-us) helps with the development of the SLMs—small, specialized, secure, and scalable language models.
+>[Arcee](https://www.arcee.ai/about/about-us) 帮助开发 SLMs——小型、专用、安全且可扩展的语言模型。
 
-This notebook demonstrates how to use the `ArceeRetriever` class to retrieve relevant document(s) for Arcee's `Domain Adapted Language Models` (`DALMs`).
+此笔记本演示如何使用 `ArceeRetriever` 类来检索与 Arcee 的 `Domain Adapted Language Models` (`DALMs`) 相关的文档。
 
-### Setup
+### 设置
 
-Before using `ArceeRetriever`, make sure the Arcee API key is set as `ARCEE_API_KEY` environment variable. You can also pass the api key as a named parameter.
-
+在使用 `ArceeRetriever` 之前，请确保将 Arcee API 密钥设置为 `ARCEE_API_KEY` 环境变量。您也可以将 api 密钥作为命名参数传递。
 
 ```python
 from langchain_community.retrievers import ArceeRetriever
@@ -21,11 +21,9 @@ retriever = ArceeRetriever(
 )
 ```
 
-### Additional Configuration
+### 其他配置
 
-You can also configure `ArceeRetriever`'s parameters such as `arcee_api_url`, `arcee_app_url`, and `model_kwargs` as needed.
-Setting the `model_kwargs` at the object initialization uses the filters and size as default for all the subsequent retrievals.
-
+您还可以根据需要配置 `ArceeRetriever` 的参数，例如 `arcee_api_url`、`arcee_app_url` 和 `model_kwargs`。在对象初始化时设置 `model_kwargs` 会将过滤器和大小作为所有后续检索的默认值。
 
 ```python
 retriever = ArceeRetriever(
@@ -46,18 +44,17 @@ retriever = ArceeRetriever(
 )
 ```
 
-### Retrieving documents
-You can retrieve relevant documents from uploaded contexts by providing a query. Here's an example:
-
+### 检索文档
+您可以通过提供查询从上传的上下文中检索相关文档。以下是一个示例：
 
 ```python
 query = "Can AI-driven music therapy contribute to the rehabilitation of patients with disorders of consciousness?"
 documents = retriever.invoke(query)
 ```
 
-### Additional parameters
+### 附加参数
 
-Arcee allows you to apply `filters` and set the `size` (in terms of count) of retrieved document(s). Filters help narrow down the results. Here's how to use these parameters:
+Arcee 允许您应用 `filters` 并设置检索文档的 `size`（数量）。过滤器有助于缩小结果范围。以下是如何使用这些参数：
 
 
 ```python
@@ -71,8 +68,7 @@ filters = [
 documents = retriever.invoke(query, size=5, filters=filters)
 ```
 
+## 相关
 
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

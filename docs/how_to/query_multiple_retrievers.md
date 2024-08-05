@@ -2,21 +2,22 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/query_multiple_retrievers.ipynb
 sidebar_position: 5
 ---
-# How to handle multiple retrievers when doing query analysis
 
-Sometimes, a query analysis technique may allow for selection of which retriever to use. To use this, you will need to add some logic to select the retriever to do. We will show a simple example (using mock data) of how to do that.
+# 如何在查询分析中处理多个检索器
 
-## Setup
-#### Install dependencies
+有时，查询分析技术可能允许选择使用哪个检索器。要实现这一点，您需要添加一些逻辑来选择要使用的检索器。我们将展示一个简单的示例（使用模拟数据）来说明如何做到这一点。
+
+## 设置
+#### 安装依赖
 
 
 ```python
 # %pip install -qU langchain langchain-community langchain-openai langchain-chroma
 ```
 
-#### Set environment variables
+#### 设置环境变量
 
-We'll use OpenAI in this example:
+在本示例中我们将使用 OpenAI：
 
 
 ```python
@@ -25,15 +26,14 @@ import os
 
 os.environ["OPENAI_API_KEY"] = getpass.getpass()
 
-# Optional, uncomment to trace runs with LangSmith. Sign up here: https://smith.langchain.com.
+# 可选，取消注释以使用 LangSmith 跟踪运行。请在此注册： https://smith.langchain.com.
 # os.environ["LANGCHAIN_TRACING_V2"] = "true"
 # os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 ```
 
-### Create Index
+### 创建索引
 
-We will create a vectorstore over fake information.
-
+我们将基于虚假信息创建一个向量存储。
 
 ```python
 from langchain_chroma import Chroma
@@ -51,10 +51,9 @@ vectorstore = Chroma.from_texts(texts, embeddings, collection_name="ankush")
 retriever_ankush = vectorstore.as_retriever(search_kwargs={"k": 1})
 ```
 
-## Query analysis
+## 查询分析
 
-We will use function calling to structure the output. We will let it return multiple queries.
-
+我们将使用函数调用来构建输出。我们将让它返回多个查询。
 
 ```python
 from typing import List, Optional
@@ -63,18 +62,17 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 
 
 class Search(BaseModel):
-    """Search for information about a person."""
+    """搜索有关某人的信息。"""
 
     query: str = Field(
         ...,
-        description="Query to look up",
+        description="要查找的查询",
     )
     person: str = Field(
         ...,
-        description="Person to look things up for. Should be `HARRISON` or `ANKUSH`.",
+        description="要查找信息的人。应该是 `HARRISON` 或 `ANKUSH`。",
     )
 ```
-
 
 ```python
 from langchain_core.output_parsers.openai_tools import PydanticToolsParser
@@ -84,7 +82,7 @@ from langchain_openai import ChatOpenAI
 
 output_parser = PydanticToolsParser(tools=[Search])
 
-system = """You have the ability to issue search queries to get information to help answer user information."""
+system = """您可以发出搜索查询以获取信息，以帮助回答用户信息。"""
 prompt = ChatPromptTemplate.from_messages(
     [
         ("system", system),
@@ -96,35 +94,27 @@ structured_llm = llm.with_structured_output(Search)
 query_analyzer = {"question": RunnablePassthrough()} | prompt | structured_llm
 ```
 
-We can see that this allows for routing between retrievers
-
-
-```python
-query_analyzer.invoke("where did Harrison Work")
-```
-
-
-
-```output
-Search(query='workplace', person='HARRISON')
-```
-
-
+我们可以看到这允许在检索器之间路由。
 
 ```python
-query_analyzer.invoke("where did ankush Work")
+query_analyzer.invoke("Harrison在哪里工作")
 ```
-
-
 
 ```output
-Search(query='workplace', person='ANKUSH')
+Search(query='工作地点', person='HARRISON')
 ```
 
+```python
+query_analyzer.invoke("ankush在哪里工作")
+```
 
-## Retrieval with query analysis
+```output
+Search(query='工作地点', person='ANKUSH')
+```
 
-So how would we include this in a chain? We just need some simple logic to select the retriever and pass in the search query
+## 查询分析的检索
+
+那么我们如何将其包含在链中呢？我们只需要一些简单的逻辑来选择检索器并传入搜索查询
 
 
 ```python
@@ -170,4 +160,3 @@ custom_chain.invoke("where did ankush Work")
 ```output
 [Document(page_content='Ankush worked at Facebook')]
 ```
-

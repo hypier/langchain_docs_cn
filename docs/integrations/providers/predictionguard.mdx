@@ -1,37 +1,37 @@
-# Prediction Guard
+# 预测保护
 
-This page covers how to use the Prediction Guard ecosystem within LangChain.
-It is broken into two parts: installation and setup, and then references to specific Prediction Guard wrappers.
+本页面介绍如何在 LangChain 中使用预测保护生态系统。
+它分为两个部分：安装和设置，以及对特定预测保护包装器的引用。
 
-## Installation and Setup
-- Install the Python SDK with `pip install predictionguard`
-- Get a Prediction Guard access token (as described [here](https://docs.predictionguard.com/)) and set it as an environment variable (`PREDICTIONGUARD_TOKEN`)
+## 安装和设置
+- 使用 `pip install predictionguard` 安装 Python SDK
+- 获取 Prediction Guard 访问令牌（如 [这里](https://docs.predictionguard.com/) 所述）并将其设置为环境变量 (`PREDICTIONGUARD_TOKEN`)
 
 ## LLM Wrapper
 
-There exists a Prediction Guard LLM wrapper, which you can access with 
+存在一个预测保护 LLM 包装器，您可以通过以下方式访问它：
 ```python
 from langchain_community.llms import PredictionGuard
 ```
 
-You can provide the name of the Prediction Guard model as an argument when initializing the LLM:
+在初始化 LLM 时，您可以将预测保护模型的名称作为参数提供：
 ```python
 pgllm = PredictionGuard(model="MPT-7B-Instruct")
 ```
 
-You can also provide your access token directly as an argument:
+您还可以直接将访问令牌作为参数提供：
 ```python
 pgllm = PredictionGuard(model="MPT-7B-Instruct", token="<your access token>")
 ```
 
-Finally, you can provide an "output" argument that is used to structure/ control the output of the LLM:
+最后，您可以提供一个“输出”参数，用于结构化/控制 LLM 的输出：
 ```python
 pgllm = PredictionGuard(model="MPT-7B-Instruct", output={"type": "boolean"})
 ```
 
-## Example usage
+## 示例用法
 
-Basic usage of the controlled or guarded LLM wrapper:
+受控或受保护的 LLM 包装器的基本用法：
 ```python
 import os
 
@@ -40,40 +40,39 @@ from langchain_community.llms import PredictionGuard
 from langchain_core.prompts import PromptTemplate
 from langchain.chains import LLMChain
 
-# Your Prediction Guard API key. Get one at predictionguard.com
+# 您的 Prediction Guard API 密钥。请在 predictionguard.com 获取一个
 os.environ["PREDICTIONGUARD_TOKEN"] = "<your Prediction Guard access token>"
 
-# Define a prompt template
-template = """Respond to the following query based on the context.
+# 定义一个提示模板
+template = """根据上下文回应以下查询。
 
-Context: EVERY comment, DM + email suggestion has led us to this EXCITING announcement! 🎉 We have officially added TWO new candle subscription box options! 📦
-Exclusive Candle Box - $80 
-Monthly Candle Box - $45 (NEW!)
-Scent of The Month Box - $28 (NEW!)
-Head to stories to get ALL the deets on each box! 👆 BONUS: Save 50% on your first box with code 50OFF! 🎉
+上下文：每条评论、私信 + 邮件建议都引导我们发布这个令人兴奋的公告！🎉 我们正式增加了两个新的蜡烛订阅盒选项！📦
+独家蜡烛盒 - $80 
+每月蜡烛盒 - $45 (新！)
+本月香味盒 - $28 (新！)
+前往故事获取每个盒子的所有详情！👆 附加优惠：使用代码 50OFF 享受首个盒子 50% 的折扣！🎉
 
-Query: {query}
+查询：{query}
 
-Result: """
+结果："""
 prompt = PromptTemplate.from_template(template)
 
-# With "guarding" or controlling the output of the LLM. See the 
-# Prediction Guard docs (https://docs.predictionguard.com) to learn how to 
-# control the output with integer, float, boolean, JSON, and other types and
-# structures.
+# 通过“保护”或控制 LLM 的输出。请参阅 
+# Prediction Guard 文档 (https://docs.predictionguard.com) 了解如何 
+# 使用整数、浮点数、布尔值、JSON 和其他类型及结构控制输出。
 pgllm = PredictionGuard(model="MPT-7B-Instruct", 
                         output={
                                 "type": "categorical",
                                 "categories": [
-                                    "product announcement", 
-                                    "apology", 
-                                    "relational"
+                                    "产品公告", 
+                                    "道歉", 
+                                    "关系"
                                     ]
                                 })
-pgllm(prompt.format(query="What kind of post is this?"))
+pgllm(prompt.format(query="这是什么类型的帖子？"))
 ```
 
-Basic LLM Chaining with the Prediction Guard wrapper:
+使用 Prediction Guard 包装器的基本 LLM 链接：
 ```python
 import os
 
@@ -81,22 +80,22 @@ from langchain_core.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain_community.llms import PredictionGuard
 
-# Optional, add your OpenAI API Key. This is optional, as Prediction Guard allows
-# you to access all the latest open access models (see https://docs.predictionguard.com)
+# 可选，添加您的 OpenAI API 密钥。此项为可选，因为 Prediction Guard 允许
+# 您访问所有最新的开放访问模型（请参见 https://docs.predictionguard.com）
 os.environ["OPENAI_API_KEY"] = "<your OpenAI api key>"
 
-# Your Prediction Guard API key. Get one at predictionguard.com
+# 您的 Prediction Guard API 密钥。请在 predictionguard.com 获取一个
 os.environ["PREDICTIONGUARD_TOKEN"] = "<your Prediction Guard access token>"
 
 pgllm = PredictionGuard(model="OpenAI-gpt-3.5-turbo-instruct")
 
-template = """Question: {question}
+template = """问题：{question}
 
-Answer: Let's think step by step."""
+答案：让我们一步步思考。"""
 prompt = PromptTemplate.from_template(template)
 llm_chain = LLMChain(prompt=prompt, llm=pgllm, verbose=True)
 
-question = "What NFL team won the Super Bowl in the year Justin Beiber was born?"
+question = "贾斯汀·比伯出生那年，哪支 NFL 球队赢得了超级碗？"
 
 llm_chain.predict(question=question)
 ```

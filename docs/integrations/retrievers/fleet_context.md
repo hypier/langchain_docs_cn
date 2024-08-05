@@ -1,13 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/fleet_context.ipynb
 ---
-# Fleet AI Context
 
->[Fleet AI Context](https://www.fleet.so/context) is a dataset of high-quality embeddings of the top 1200 most popular & permissive Python Libraries & their documentation.
+# Fleet AI 上下文
+
+>[Fleet AI 上下文](https://www.fleet.so/context) 是一个包含前 1200 个最受欢迎和最宽松的 Python 库及其文档的高质量嵌入数据集。
 >
->The `Fleet AI` team is on a mission to embed the world's most important data. They've started by embedding the top 1200 Python libraries to enable code generation with up-to-date knowledge. They've been kind enough to share their embeddings of the [LangChain docs](/docs/introduction) and [API reference](https://api.python.langchain.com/en/latest/api_reference.html).
+>`Fleet AI` 团队的使命是嵌入世界上最重要的数据。他们首先嵌入了前 1200 个 Python 库，以便利用最新的知识进行代码生成。他们非常慷慨地分享了 [LangChain 文档](/docs/introduction) 和 [API 参考](https://api.python.langchain.com/en/latest/api_reference.html) 的嵌入。
 
-Let's take a look at how we can use these embeddings to power a docs retrieval system and ultimately a simple code-generating chain!
+让我们来看看如何使用这些嵌入来驱动文档检索系统，并最终构建一个简单的代码生成链！
 
 
 ```python
@@ -84,12 +85,11 @@ def _populate_docstore(df: pd.DataFrame, docstore: BaseStore) -> None:
     docstore.mset(((d.metadata["id"], d) for d in parent_docs))
 ```
 
-## Retriever chunks
+## 检索器块
 
-As part of their embedding process, the Fleet AI team first chunked long documents before embedding them. This means the vectors correspond to sections of pages in the LangChain docs, not entire pages. By default, when we spin up a retriever from these embeddings, we'll be retrieving these embedded chunks.
+作为嵌入过程的一部分，Fleet AI 团队首先对长文档进行了分块，然后再进行嵌入。这意味着这些向量对应于 LangChain 文档中的页面部分，而不是整个页面。默认情况下，当我们从这些嵌入中启动检索器时，我们将检索这些嵌入块。
 
-We will be using Fleet Context's `download_embeddings()` to grab Langchain's documentation embeddings. You can view all supported libraries' documentation at https://fleet.so/context.
-
+我们将使用 Fleet Context 的 `download_embeddings()` 来获取 Langchain 的文档嵌入。您可以在 https://fleet.so/context 查看所有支持的库文档。
 
 ```python
 from context import download_embeddings
@@ -98,19 +98,17 @@ df = download_embeddings("langchain")
 vecstore_retriever = load_fleet_retriever(df)
 ```
 
-
 ```python
 vecstore_retriever.invoke("How does the multi vector retriever work")
 ```
 
-## Other packages
+## 其他包
 
-You can download and use other embeddings from [this Dropbox link](https://www.dropbox.com/scl/fo/54t2e7fogtixo58pnlyub/h?rlkey=tne16wkssgf01jor0p1iqg6p9&dl=0).
+您可以从 [这个Dropbox链接](https://www.dropbox.com/scl/fo/54t2e7fogtixo58pnlyub/h?rlkey=tne16wkssgf01jor0p1iqg6p9&dl=0) 下载并使用其他嵌入。
 
-## Retrieve parent docs
+## 检索父文档
 
-The embeddings provided by Fleet AI contain metadata that indicates which embedding chunks correspond to the same original document page. If we'd like we can use this information to retrieve whole parent documents, and not just embedded chunks. Under the hood, we'll use a MultiVectorRetriever and a BaseStore object to search for relevant chunks and then map them to their parent document.
-
+Fleet AI 提供的嵌入包含元数据，指示哪些嵌入块对应于同一原始文档页面。如果我们愿意，可以使用这些信息来检索整个父文档，而不仅仅是嵌入块。在后台，我们将使用 MultiVectorRetriever 和 BaseStore 对象来搜索相关块，然后将它们映射到它们的父文档。
 
 ```python
 from langchain.storage import InMemoryStore
@@ -121,14 +119,13 @@ parent_retriever = load_fleet_retriever(
 )
 ```
 
-
 ```python
 parent_retriever.invoke("How does the multi vector retriever work")
 ```
 
-## Putting it in a chain
+## 将其放入链中
 
-Let's try using our retrieval systems in a simple chain!
+让我们尝试在一个简单的链中使用我们的检索系统！
 
 
 ```python
@@ -179,8 +176,7 @@ for chunk in chain.invoke(
     print(chunk, end="", flush=True)
 ```
 
+## 相关
 
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

@@ -1,22 +1,21 @@
-
 # self-query-supabase
 
-This templates allows natural language structured quering of Supabase. 
+此模板允许对 Supabase 进行自然语言结构化查询。
 
-[Supabase](https://supabase.com/docs) is an open-source alternative to Firebase, built on top of [PostgreSQL](https://en.wikipedia.org/wiki/PostgreSQL). 
+[Supabase](https://supabase.com/docs) 是一个开源的 Firebase 替代品，构建在 [PostgreSQL](https://en.wikipedia.org/wiki/PostgreSQL) 之上。
 
-It uses [pgvector](https://github.com/pgvector/pgvector) to store embeddings within your tables.
+它使用 [pgvector](https://github.com/pgvector/pgvector) 在您的表中存储嵌入。
 
-## Environment Setup
+## 环境设置
 
-Set the `OPENAI_API_KEY` environment variable to access the OpenAI models.
+设置 `OPENAI_API_KEY` 环境变量以访问 OpenAI 模型。
 
-To get your `OPENAI_API_KEY`, navigate to [API keys](https://platform.openai.com/account/api-keys) on your OpenAI account and create a new secret key.
+要获取您的 `OPENAI_API_KEY`，请前往您的 OpenAI 账户中的 [API 密钥](https://platform.openai.com/account/api-keys) 并创建一个新的密钥。
 
-To find your `SUPABASE_URL` and `SUPABASE_SERVICE_KEY`, head to your Supabase project's [API settings](https://supabase.com/dashboard/project/_/settings/api). 
+要找到您的 `SUPABASE_URL` 和 `SUPABASE_SERVICE_KEY`，请访问您 Supabase 项目的 [API 设置](https://supabase.com/dashboard/project/_/settings/api)。
 
-- `SUPABASE_URL` corresponds to the Project URL
-- `SUPABASE_SERVICE_KEY` corresponds to the `service_role` API key
+- `SUPABASE_URL` 对应于项目 URL
+- `SUPABASE_SERVICE_KEY` 对应于 `service_role` API 密钥
 
 
 ```shell
@@ -25,12 +24,12 @@ export SUPABASE_SERVICE_KEY=
 export OPENAI_API_KEY=
 ```
 
-## Setup Supabase Database
+## 设置 Supabase 数据库
 
-Use these steps to setup your Supabase database if you haven't already.
+如果您还没有设置 Supabase 数据库，请按照以下步骤操作。
 
-1. Head over to https://database.new to provision your Supabase database.
-2. In the studio, jump to the [SQL editor](https://supabase.com/dashboard/project/_/sql/new) and run the following script to enable `pgvector` and setup your database as a vector store:
+1. 前往 https://database.new 来配置您的 Supabase 数据库。
+2. 在控制台中，跳转到 [SQL 编辑器](https://supabase.com/dashboard/project/_/sql/new)，运行以下脚本以启用 `pgvector` 并将您的数据库设置为向量存储：
 
    ```sql
    -- Enable the pgvector extension to work with embedding vectors
@@ -70,54 +69,54 @@ Use these steps to setup your Supabase database if you haven't already.
    $$;
    ```
 
-## Usage
+## 使用方法
 
-To use this package, install the LangChain CLI first:
+要使用此软件包，请先安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-Create a new LangChain project and install this package as the only one:
+创建一个新的 LangChain 项目，并将此软件包作为唯一的软件包安装：
 
 ```shell
 langchain app new my-app --package self-query-supabase
 ```
 
-To add this to an existing project, run:
+要将其添加到现有项目中，请运行：
 
 ```shell
 langchain app add self-query-supabase
 ```
 
-Add the following code to your `server.py` file:
+将以下代码添加到您的 `server.py` 文件中：
 ```python
 from self_query_supabase.chain import chain as self_query_supabase_chain
 
 add_routes(app, self_query_supabase_chain, path="/self-query-supabase")
 ```
 
-(Optional) If you have access to LangSmith, configure it to help trace, monitor and debug LangChain applications. If you don't have access, skip this section.
+（可选）如果您可以访问 LangSmith，请配置它以帮助跟踪、监控和调试 LangChain 应用程序。如果您无法访问，请跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接启动一个 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server running locally at 
+这将启动 FastAPI 应用程序，服务器在本地运行于 
 [http://localhost:8000](http://localhost:8000)
 
-You can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-Access the playground at [http://127.0.0.1:8000/self-query-supabase/playground](http://127.0.0.1:8000/self-query-supabase/playground)
+您可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板
+访问游乐场 [http://127.0.0.1:8000/self-query-supabase/playground](http://127.0.0.1:8000/self-query-supabase/playground)
 
-Access the template from code with:
+通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable
@@ -125,4 +124,4 @@ from langserve.client import RemoteRunnable
 runnable = RemoteRunnable("http://localhost:8000/self-query-supabase")
 ```
 
-TODO: Instructions to set up the Supabase database and install the package.
+TODO: 设置 Supabase 数据库和安装软件包的说明。

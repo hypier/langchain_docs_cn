@@ -1,39 +1,38 @@
 # Wolfram Alpha
 
->[WolframAlpha](https://en.wikipedia.org/wiki/WolframAlpha) is an answer engine developed by `Wolfram Research`. 
-> It answers factual queries by computing answers from externally sourced data.
+>[WolframAlpha](https://en.wikipedia.org/wiki/WolframAlpha) 是由 `Wolfram Research` 开发的答案引擎。 
+> 它通过计算来自外部数据源的答案来回答事实查询。
 
-This page covers how to use the `Wolfram Alpha API` within LangChain.
+本页面介绍如何在 LangChain 中使用 `Wolfram Alpha API`。
 
-## Installation and Setup
-- Install requirements with 
+## 安装与设置
+- 使用以下命令安装依赖：
 ```bash
 pip install wolframalpha
 ```
-- Go to wolfram alpha and sign up for a developer account [here](https://developer.wolframalpha.com/)
-- Create an app and get your `APP ID`
-- Set your APP ID as an environment variable `WOLFRAM_ALPHA_APPID`
+- 前往 wolfram alpha 并在 [这里](https://developer.wolframalpha.com/) 注册开发者账户
+- 创建一个应用并获取你的 `APP ID`
+- 将你的 APP ID 设置为环境变量 `WOLFRAM_ALPHA_APPID`
 
+## 包装器
 
-## Wrappers
+### 实用工具
 
-### Utility
-
-There exists a WolframAlphaAPIWrapper utility which wraps this API. To import this utility:
+存在一个 WolframAlphaAPIWrapper 实用工具，它封装了这个 API。要导入这个实用工具：
 
 ```python
 from langchain_community.utilities.wolfram_alpha import WolframAlphaAPIWrapper
 ```
 
-For a more detailed walkthrough of this wrapper, see [this notebook](/docs/integrations/tools/wolfram_alpha).
+有关此封装的更详细说明，请参见 [此笔记本](/docs/integrations/tools/wolfram_alpha)。
 
-### Tool
+### 工具
 
-You can also easily load this wrapper as a Tool (to use with an Agent).
-You can do this with:
+您也可以轻松地将此包装器加载为工具（与代理一起使用）。
+您可以通过以下方式做到这一点：
 ```python
 from langchain.agents import load_tools
 tools = load_tools(["wolfram-alpha"])
 ```
 
-For more information on tools, see [this page](/docs/how_to/tools_builtin).
+有关工具的更多信息，请参见 [此页面](/docs/how_to/tools_builtin)。

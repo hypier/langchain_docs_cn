@@ -1,43 +1,43 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/tutorials/local_rag.ipynb
 ---
-# Build a Local RAG Application
 
-:::info Prerequisites
+# 构建本地 RAG 应用程序
 
-This guide assumes familiarity with the following concepts:
+:::info 先决条件
 
-- [Chat Models](/docs/concepts/#chat-models)
-- [Chaining runnables](/docs/how_to/sequence/)
-- [Embeddings](/docs/concepts/#embedding-models)
-- [Vector stores](/docs/concepts/#vector-stores)
-- [Retrieval-augmented generation](/docs/tutorials/rag/)
+本指南假设您熟悉以下概念：
+
+- [聊天模型](/docs/concepts/#chat-models)
+- [链式可运行项](/docs/how_to/sequence/)
+- [嵌入](/docs/concepts/#embedding-models)
+- [向量存储](/docs/concepts/#vector-stores)
+- [检索增强生成](/docs/tutorials/rag/)
 
 :::
 
-The popularity of projects like [llama.cpp](https://github.com/ggerganov/llama.cpp), [Ollama](https://github.com/ollama/ollama), and [llamafile](https://github.com/Mozilla-Ocho/llamafile) underscore the importance of running LLMs locally.
+像 [llama.cpp](https://github.com/ggerganov/llama.cpp)、[Ollama](https://github.com/ollama/ollama) 和 [llamafile](https://github.com/Mozilla-Ocho/llamafile) 这样的项目的流行突显了在本地运行 LLM 的重要性。
 
-LangChain has integrations with [many open-source LLM providers](/docs/how_to/local_llms) that can be run locally.
+LangChain 与 [许多开源 LLM 提供商](/docs/how_to/local_llms) 集成，可以在本地运行。
 
-This guide will show how to run `LLaMA 3.1` via one provider, [Ollama](/docs/integrations/providers/ollama/) locally (e.g., on your laptop) using local embeddings and a local LLM. However, you can set up and swap in other local providers, such as [LlamaCPP](/docs/integrations/chat/llamacpp/) if you prefer.
+本指南将展示如何通过一个提供商 [Ollama](/docs/integrations/providers/ollama/) 在本地（例如，在您的笔记本电脑上）使用本地嵌入和本地 LLM 运行 `LLaMA 3.1`。但是，如果您愿意，可以设置并切换到其他本地提供商，例如 [LlamaCPP](/docs/integrations/chat/llamacpp/)。
 
-**Note:** This guide uses a [chat model](/docs/concepts/#chat-models) wrapper that takes care of formatting your input prompt for the specific local model you're using. However, if you are prompting local models directly with a [text-in/text-out LLM](/docs/concepts/#llms) wrapper, you may need to use a prompt tailed for your specific model. This will often [require the inclusion of special tokens](https://huggingface.co/blog/llama2#how-to-prompt-llama-2). [Here's an example for LLaMA 2](https://smith.langchain.com/hub/rlm/rag-prompt-llama).
+**注意：** 本指南使用一个 [聊天模型](/docs/concepts/#chat-models) 包装器，它负责为您使用的特定本地模型格式化输入提示。然而，如果您直接使用 [文本输入/文本输出 LLM](/docs/concepts/#llms) 包装器提示本地模型，则可能需要使用针对您特定模型的提示。这通常 [需要包含特殊标记](https://huggingface.co/blog/llama2#how-to-prompt-llama-2)。 [这是 LLaMA 2 的一个示例](https://smith.langchain.com/hub/rlm/rag-prompt-llama)。
 
-## Setup
+## 设置
 
-First we'll need to set up Ollama.
+首先，我们需要设置 Ollama。
 
-The instructions [on their GitHub repo](https://github.com/ollama/ollama) provide details, which we summarize here:
+[他们的 GitHub 仓库](https://github.com/ollama/ollama) 提供了详细的说明，我们在这里总结如下：
 
-- [Download](https://ollama.com/download) and run their desktop app
-- From command line, fetch models from [this list of options](https://ollama.com/library). For this guide, you'll need:
-  - A general purpose model like `llama3.1:8b`, which you can pull with something like `ollama pull llama3.1:8b`
-  - A [text embedding model](https://ollama.com/search?c=embedding) like `nomic-embed-text`, which you can pull with something like `ollama pull nomic-embed-text`
-- When the app is running, all models are automatically served on `localhost:11434`
-- Note that your model choice will depend on your hardware capabilities
+- [下载](https://ollama.com/download) 并运行他们的桌面应用程序
+- 从命令行中，从 [这个选项列表](https://ollama.com/library) 获取模型。对于本指南，您需要：
+  - 一个通用模型，如 `llama3.1:8b`，可以通过类似 `ollama pull llama3.1:8b` 的命令获取
+  - 一个 [文本嵌入模型](https://ollama.com/search?c=embedding)，如 `nomic-embed-text`，可以通过类似 `ollama pull nomic-embed-text` 的命令获取
+- 当应用程序运行时，所有模型会自动在 `localhost:11434` 上提供
+- 请注意，您的模型选择将取决于您的硬件能力
 
-Next, install packages needed for local embeddings, vector storage, and inference.
-
+接下来，安装本地嵌入、向量存储和推理所需的包。
 
 ```python
 # Document loading, retrieval methods and text splitting
@@ -50,14 +50,13 @@ Next, install packages needed for local embeddings, vector storage, and inferenc
 %pip install -qU langchain_ollama
 ```
 
-You can also [see this page](/docs/integrations/text_embedding/) for a full list of available embeddings models
+您还可以 [查看此页面](/docs/integrations/text_embedding/) 以获取可用嵌入模型的完整列表
 
-## Document Loading
+## 文档加载
 
-Now let's load and split an example document.
+现在让我们加载并拆分一个示例文档。
 
-We'll use a [blog post](https://lilianweng.github.io/posts/2023-06-23-agent/) by Lilian Weng on agents as an example.
-
+我们将使用Lilian Weng关于代理的[博客文章](https://lilianweng.github.io/posts/2023-06-23-agent/)作为示例。
 
 ```python
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -70,8 +69,7 @@ text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0)
 all_splits = text_splitter.split_documents(data)
 ```
 
-Next, the below steps will initialize your vector store. We use [`nomic-embed-text`](https://ollama.com/library/nomic-embed-text), but you can explore other providers or options as well:
-
+接下来，以下步骤将初始化您的向量存储。我们使用[`nomic-embed-text`](https://ollama.com/library/nomic-embed-text)，但您也可以探索其他提供者或选项：
 
 ```python
 from langchain_chroma import Chroma
@@ -82,36 +80,27 @@ local_embeddings = OllamaEmbeddings(model="nomic-embed-text")
 vectorstore = Chroma.from_documents(documents=all_splits, embedding=local_embeddings)
 ```
 
-And now we have a working vector store! Test that similarity search is working:
-
+现在我们有一个可用的向量存储！测试相似性搜索是否正常工作：
 
 ```python
-question = "What are the approaches to Task Decomposition?"
+question = "任务分解的方法有哪些？"
 docs = vectorstore.similarity_search(question)
 len(docs)
 ```
-
-
 
 ```output
 4
 ```
 
-
-
 ```python
 docs[0]
 ```
 
-
-
 ```output
-Document(metadata={'description': 'Building agents with LLM (large language model) as its core controller is a cool concept. Several proof-of-concepts demos, such as AutoGPT, GPT-Engineer and BabyAGI, serve as inspiring examples. The potentiality of LLM extends beyond generating well-written copies, stories, essays and programs; it can be framed as a powerful general problem solver.\nAgent System Overview In a LLM-powered autonomous agent system, LLM functions as the agent’s brain, complemented by several key components:', 'language': 'en', 'source': 'https://lilianweng.github.io/posts/2023-06-23-agent/', 'title': "LLM Powered Autonomous Agents | Lil'Log"}, page_content='Task decomposition can be done (1) by LLM with simple prompting like "Steps for XYZ.\\n1.", "What are the subgoals for achieving XYZ?", (2) by using task-specific instructions; e.g. "Write a story outline." for writing a novel, or (3) with human inputs.')
+Document(metadata={'description': '使用LLM（大型语言模型）作为核心控制器构建代理是一个很酷的概念。一些概念验证演示，如AutoGPT、GPT-Engineer和BabyAGI，作为激励的例子。LLM的潜力不仅限于生成写得好的副本、故事、论文和程序；它可以被视为一个强大的通用问题解决者。\n代理系统概述 在一个由LLM驱动的自主代理系统中，LLM充当代理的大脑，辅以几个关键组件：', 'language': 'en', 'source': 'https://lilianweng.github.io/posts/2023-06-23-agent/', 'title': "LLM Powered Autonomous Agents | Lil'Log"}, page_content='任务分解可以通过（1）LLM简单提示如“XYZ的步骤。\\n1.”、“实现XYZ的子目标是什么？”来完成；（2）使用特定任务的指令；例如，“为写小说写一个故事大纲。”或（3）通过人类输入。')
 ```
 
-
-Next, set up a model. We use Ollama with `llama3.1:8b` here, but you can [explore other providers](/docs/how_to/local_llms/) or [model options depending on your hardware setup](https://ollama.com/library):
-
+接下来，设置一个模型。我们在这里使用Ollama的`llama3.1:8b`，但您可以[探索其他提供者](/docs/how_to/local_llms/)或根据您的硬件设置[选择模型选项](https://ollama.com/library)：
 
 ```python
 from langchain_ollama import ChatOllama
@@ -121,71 +110,70 @@ model = ChatOllama(
 )
 ```
 
-Test it to make sure you've set everything up properly:
-
+测试一下，以确保您已正确设置一切：
 
 ```python
 response_message = model.invoke(
-    "Simulate a rap battle between Stephen Colbert and John Oliver"
+    "模拟Stephen Colbert和John Oliver之间的说唱对决"
 )
 
 print(response_message.content)
 ```
 ```output
-**The scene is set: a packed arena, the crowd on their feet. In the blue corner, we have Stephen Colbert, aka "The O'Reilly Factor" himself. In the red corner, the challenger, John Oliver. The judges are announced as Tina Fey, Larry Wilmore, and Patton Oswalt. The crowd roars as the two opponents face off.**
+**场景设定：一个座无虚席的竞技场，观众热情高涨。在蓝色角落，我们有Stephen Colbert，也就是“奥赖利因素”本人。在红色角落，挑战者John Oliver。评委是Tina Fey、Larry Wilmore和Patton Oswalt。观众欢呼，双方对峙。**
 
-**Stephen Colbert (aka "The Truth with a Twist"):**
-Yo, I'm the king of satire, the one they all fear
-My show's on late, but my jokes are clear
-I skewer the politicians, with precision and might
-They tremble at my wit, day and night
+**Stephen Colbert（又名“真相与扭曲”）：**
+Yo，我是讽刺的国王，人人都怕我
+我的节目在深夜，但我的笑话很清晰
+我用精确和力量揭穿政客
+他们在我机智的面前，白天黑夜都在颤抖
 
-**John Oliver:**
-Hold up, Stevie boy, you may have had your time
-But I'm the new kid on the block, with a different prime
-Time to wake up from that 90s coma, son
-My show's got bite, and my facts are never done
+**John Oliver：**
+等等，斯蒂夫，你可能曾经风光无限
+但我是新来的小子，拥有不同的巅峰
+是时候从那90年代的昏迷中醒来了，儿子
+我的节目有锐度，我的事实永远不会结束
 
-**Stephen Colbert:**
-Oh, so you think you're the one, with the "Last Week" crown
-But your jokes are stale, like the ones I wore down
-I'm the master of absurdity, the lord of the spin
-You're just a British import, trying to fit in
+**Stephen Colbert：**
+哦，所以你认为你是那个“上周”之冠
+但你的笑话过时，像我曾经用过的那样
+我是荒谬的主人，旋转的领主
+你不过是个英国进口，试图融入
 
-**John Oliver:**
-Stevie, my friend, you may have been the first
-But I've got the skill and the wit, that's never blurred
-My show's not afraid, to take on the fray
-I'm the one who'll make you think, come what may
+**John Oliver：**
+斯蒂夫，我的朋友，你也许是第一个
+但我有技巧和机智，从未模糊
+我的节目不怕迎接挑战
+我将让你思考，无论发生什么
 
-**Stephen Colbert:**
-Well, it's time for a showdown, like two old friends
-Let's see whose satire reigns supreme, till the very end
-But I've got a secret, that might just seal your fate
-My humor's contagious, and it's already too late!
+**Stephen Colbert：**
+好吧，时候到了，就像两个老朋友
+让我们看看谁的讽刺至高无上，直到最后
+但我有一个秘密，可能会决定你的命运
+我的幽默具有传染性，已经为时已晚！
 
-**John Oliver:**
-Bring it on, Stevie! I'm ready for you
-I'll take on your jokes, and show them what to do
-My sarcasm's sharp, like a scalpel in the night
-You're just a relic of the past, without a fight
+**John Oliver：**
+来吧，斯蒂夫！我准备好迎接你
+我将应对你的笑话，向他们展示该怎么做
+我的讽刺锋利，如夜晚的手术刀
+你只是过去的遗物，没有一场战斗
 
-**The judges deliberate, weighing the rhymes and the flow. Finally, they announce their decision:**
+**评委们在考虑，权衡韵律和节奏。最后，他们宣布了他们的决定：**
 
-Tina Fey: I've got to go with John Oliver. His jokes were sharper, and his delivery was smoother.
+Tina Fey：我得选John Oliver。他的笑话更尖锐，表达更流畅。
 
-Larry Wilmore: Agreed! But Stephen Colbert's still got that old-school charm.
+Larry Wilmore：同意！但Stephen Colbert仍然保留那种老派魅力。
 
-Patton Oswalt: You know what? It's a tie. Both of them brought the heat!
+Patton Oswalt：你知道吗？这是一场平局。他们都带来了热度！
 
-**The crowd goes wild as both opponents take a bow. The rap battle may be over, but the satire war is just beginning...
+**观众疯狂欢呼，双方鞠躬。说唱对决可能结束了，但讽刺的战争才刚刚开始...**
 ```
-## Using in a chain
 
-We can create a summarization chain with either model by passing in retrieved docs and a simple prompt.
+## 在链中使用
 
-It formats the prompt template using the input key values provided and passes the formatted string to the specified model:
+我们可以通过传入检索到的文档和一个简单的提示，使用任一模型创建一个摘要链。
 
+它使用提供的输入键值格式化提示模板，并将格式化后的字符串传递给指定的模型：
 
 ```python
 from langchain_core.output_parsers import StrOutputParser
@@ -212,16 +200,13 @@ chain.invoke(docs)
 ```
 
 
-
 ```output
 'The main themes in these documents are:\n\n1. **Task Decomposition**: The process of breaking down complex tasks into smaller, manageable subgoals is crucial for efficient task handling.\n2. **Autonomous Agent System**: A system powered by Large Language Models (LLMs) that can perform planning, reflection, and refinement to improve the quality of final results.\n3. **Challenges in Planning and Decomposition**:\n\t* Long-term planning and task decomposition are challenging for LLMs.\n\t* Adjusting plans when faced with unexpected errors is difficult for LLMs.\n\t* Humans learn from trial and error, making them more robust than LLMs in certain situations.\n\nOverall, the documents highlight the importance of task decomposition and planning in autonomous agent systems powered by LLMs, as well as the challenges that still need to be addressed.'
 ```
 
+## 问答
 
-## Q&A
-
-You can also perform question-answering with your local model and vector store. Here's an example with a simple string prompt:
-
+您还可以使用本地模型和向量存储进行问答。以下是一个简单字符串提示的示例：
 
 ```python
 from langchain_core.runnables import RunnablePassthrough
@@ -254,17 +239,13 @@ docs = vectorstore.similarity_search(question)
 chain.invoke({"context": docs, "question": question})
 ```
 
-
-
 ```output
-'Task decomposition can be done through (1) simple prompting using LLM, (2) task-specific instructions, or (3) human inputs. This approach helps break down large tasks into smaller, manageable subgoals for efficient handling of complex tasks. It enables agents to plan ahead and improve the quality of final results through reflection and refinement.'
+'任务分解可以通过 (1) 使用 LLM 的简单提示，(2) 任务特定的指令，或 (3) 人工输入来完成。这种方法有助于将大型任务分解为更小、可管理的子目标，以便高效处理复杂任务。它使代理能够提前规划，并通过反思和改进提高最终结果的质量。'
 ```
 
+## Q&A 与检索
 
-## Q&A with retrieval
-
-Finally, instead of manually passing in docs, you can automatically retrieve them from our vector store based on the user question:
-
+最后，您可以根据用户问题自动从我们的向量存储中检索文档，而不是手动传入文档：
 
 ```python
 retriever = vectorstore.as_retriever()
@@ -279,7 +260,7 @@ qa_chain = (
 
 
 ```python
-question = "What are the approaches to Task Decomposition?"
+question = "Task Decomposition 的方法有哪些？"
 
 qa_chain.invoke(question)
 ```
@@ -290,13 +271,12 @@ qa_chain.invoke(question)
 'Task decomposition can be done through (1) simple prompting in Large Language Models (LLM), (2) using task-specific instructions, or (3) with human inputs. This process involves breaking down large tasks into smaller, manageable subgoals for efficient handling of complex tasks.'
 ```
 
+## 下一步
 
-## Next steps
+您现在已经了解了如何使用所有本地组件构建 RAG 应用程序。RAG 是一个非常深奥的话题，您可能会对以下指南感兴趣，这些指南讨论和演示了其他技术：
 
-You've now seen how to build a RAG application using all local components. RAG is a very deep topic, and you might be interested in the following guides that discuss and demonstrate additional techniques:
-
-- [Video: Reliable, fully local RAG agents with LLaMA 3](https://www.youtube.com/watch?v=-ROS6gfYIts) for an agentic approach to RAG with local models
-- [Video: Building Corrective RAG from scratch with open-source, local LLMs](https://www.youtube.com/watch?v=E2shqsYwxck)
-- [Conceptual guide on retrieval](/docs/concepts/#retrieval) for an overview of various retrieval techniques you can apply to improve performance
-- [How to guides on RAG](/docs/how_to/#qa-with-rag) for a deeper dive into different specifics around of RAG
-- [How to run models locally](/docs/how_to/local_llms/) for different approaches to setting up different providers
+- [视频：使用 LLaMA 3 构建可靠的完全本地 RAG 代理](https://www.youtube.com/watch?v=-ROS6gfYIts)，适用于本地模型的代理方法
+- [视频：从零开始使用开源本地 LLM 构建纠正性 RAG](https://www.youtube.com/watch?v=E2shqsYwxck)
+- [检索的概念指南](/docs/concepts/#retrieval)，概述了您可以应用以提高性能的各种检索技术
+- [RAG 的操作指南](/docs/how_to/#qa-with-rag)，深入探讨 RAG 的不同细节
+- [如何在本地运行模型](/docs/how_to/local_llms/)，提供设置不同提供者的不同方法

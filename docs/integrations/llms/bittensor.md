@@ -1,21 +1,20 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/bittensor.ipynb
 ---
+
 # Bittensor
 
->[Bittensor](https://bittensor.com/) is a mining network, similar to Bitcoin, that includes built-in incentives designed to encourage miners to contribute compute + knowledge.
+>[Bittensor](https://bittensor.com/) 是一个类似于比特币的挖矿网络，包含内置激励机制，旨在鼓励矿工贡献计算能力和知识。
 >
->`NIBittensorLLM` is developed by [Neural Internet](https://neuralinternet.ai/), powered by `Bittensor`.
+>`NIBittensorLLM` 由 [Neural Internet](https://neuralinternet.ai/) 开发，基于 `Bittensor` 提供支持。
 
->This LLM showcases true potential of decentralized AI by giving you the best response(s) from the `Bittensor protocol`, which consist of various AI models such as `OpenAI`, `LLaMA2` etc.
+>该 LLM 展示了去中心化 AI 的真正潜力，通过从 `Bittensor 协议` 中提供最佳响应，包含各种 AI 模型，如 `OpenAI`、`LLaMA2` 等。
 
-Users can view their logs, requests, and API keys on the [Validator Endpoint Frontend](https://api.neuralinternet.ai/). However, changes to the configuration are currently prohibited; otherwise, the user's queries will be blocked.
+用户可以在 [Validator Endpoint Frontend](https://api.neuralinternet.ai/) 查看他们的日志、请求和 API 密钥。然而，目前禁止更改配置；否则，用户的查询将被阻止。
 
-If you encounter any difficulties or have any questions, please feel free to reach out to our developer on [GitHub](https://github.com/Kunj-2206), [Discord](https://discordapp.com/users/683542109248159777) or join our discord server for latest update and queries [Neural Internet](https://discord.gg/neuralinternet).
+如果您遇到任何困难或有任何问题，请随时通过 [GitHub](https://github.com/Kunj-2206)、[Discord](https://discordapp.com/users/683542109248159777) 联系我们的开发者，或加入我们的 Discord 服务器以获取最新更新和咨询 [Neural Internet](https://discord.gg/neuralinternet)。
 
-
-## Different Parameter and response handling for NIBittensorLLM 
-
+## NIBittensorLLM 的不同参数和响应处理
 
 ```python
 import json
@@ -26,19 +25,19 @@ from langchain_community.llms import NIBittensorLLM
 
 set_debug(True)
 
-# System parameter in NIBittensorLLM is optional but you can set whatever you want to perform with model
+# 在 NIBittensorLLM 中，系统参数是可选的，但您可以设置任何您希望与模型进行的操作
 llm_sys = NIBittensorLLM(
-    system_prompt="Your task is to determine response based on user prompt.Explain me like I am technical lead of a project"
+    system_prompt="您的任务是根据用户提示确定响应。像我这样解释，就像我是一个项目的技术负责人"
 )
 sys_resp = llm_sys(
-    "What is bittensor and What are the potential benefits of decentralized AI?"
+    "什么是 bittensor，去中心化 AI 的潜在好处是什么？"
 )
-print(f"Response provided by LLM with system prompt set is : {sys_resp}")
+print(f"使用设置的系统提示提供的 LLM 响应是 : {sys_resp}")
 
-# The top_responses parameter can give multiple responses based on its parameter value
-# This below code retrive top 10 miner's response all the response are in format of json
+# top_responses 参数可以根据其参数值提供多个响应
+# 以下代码检索前 10 个矿工的响应，所有响应均为 json 格式
 
-# Json response structure is
+# Json 响应结构是
 """ {
     "choices":  [
                     {"index": Bittensor's Metagraph index number,
@@ -50,13 +49,12 @@ print(f"Response provided by LLM with system prompt set is : {sys_resp}")
     } """
 
 multi_response_llm = NIBittensorLLM(top_responses=10)
-multi_resp = multi_response_llm.invoke("What is Neural Network Feeding Mechanism?")
+multi_resp = multi_response_llm.invoke("什么是神经网络喂养机制？")
 json_multi_resp = json.loads(multi_resp)
 pprint(json_multi_resp)
 ```
 
-##  Using NIBittensorLLM with LLMChain and PromptTemplate
-
+## 使用 NIBittensorLLM 与 LLMChain 和 PromptTemplate
 
 ```python
 from langchain.chains import LLMChain
@@ -73,7 +71,7 @@ Answer: Let's think step by step."""
 
 prompt = PromptTemplate.from_template(template)
 
-# System parameter in NIBittensorLLM is optional but you can set whatever you want to perform with model
+# NIBittensorLLM 中的系统参数是可选的，但您可以设置任何您想要与模型一起执行的内容
 llm = NIBittensorLLM(
     system_prompt="Your task is to determine response based on user prompt."
 )
@@ -84,8 +82,7 @@ question = "What is bittensor?"
 llm_chain.run(question)
 ```
 
-##  Using NIBittensorLLM with Conversational Agent and Google Search Tool
-
+## 使用 NIBittensorLLM 与对话代理和 Google 搜索工具
 
 ```python
 from langchain_community.utilities import GoogleSearchAPIWrapper
@@ -99,7 +96,6 @@ tool = Tool(
     func=search.run,
 )
 ```
-
 
 ```python
 from langchain import hub
@@ -127,8 +123,7 @@ agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory)
 response = agent_executor.invoke({"input": prompt})
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

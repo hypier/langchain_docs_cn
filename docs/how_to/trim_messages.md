@@ -1,29 +1,29 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/trim_messages.ipynb
 ---
-# How to trim messages
 
-:::info Prerequisites
+# 如何修剪消息
 
-This guide assumes familiarity with the following concepts:
+:::info 前提条件
 
-- [Messages](/docs/concepts/#messages)
-- [Chat models](/docs/concepts/#chat-models)
-- [Chaining](/docs/how_to/sequence/)
-- [Chat history](/docs/concepts/#chat-history)
+本指南假设您熟悉以下概念：
 
-The methods in this guide also require `langchain-core>=0.2.9`.
+- [消息](/docs/concepts/#messages)
+- [聊天模型](/docs/concepts/#chat-models)
+- [链式调用](/docs/how_to/sequence/)
+- [聊天历史](/docs/concepts/#chat-history)
+
+本指南中的方法还要求 `langchain-core>=0.2.9`。
 
 :::
 
-All models have finite context windows, meaning there's a limit to how many tokens they can take as input. If you have very long messages or a chain/agent that accumulates a long message is history, you'll need to manage the length of the messages you're passing in to the model.
+所有模型都有有限的上下文窗口，这意味着它们可以作为输入的令牌数量是有限的。如果您有非常长的消息或一个累积了长消息历史的链/代理，您需要管理传递给模型的消息长度。
 
-The `trim_messages` util provides some basic strategies for trimming a list of messages to be of a certain token length.
+`trim_messages` 工具提供了一些基本策略，用于将消息列表修剪到特定的令牌长度。
 
-## Getting the last `max_tokens` tokens
+## 获取最后的 `max_tokens` 令牌
 
-To get the last `max_tokens` in the list of Messages we can set `strategy="last"`. Notice that for our `token_counter` we can pass in a function (more on that below) or a language model (since language models have a message token counting method). It makes sense to pass in a model when you're trimming your messages to fit into the context window of that specific model:
-
+要获取消息列表中的最后 `max_tokens`，我们可以设置 `strategy="last"`。请注意，对于我们的 `token_counter`，我们可以传入一个函数（更多内容见下文）或一个语言模型（因为语言模型具有消息令牌计数方法）。在修剪消息以适应特定模型的上下文窗口时，传入模型是有意义的：
 
 ```python
 # pip install -U langchain-openai
@@ -64,8 +64,7 @@ trim_messages(
 ```
 
 
-If we want to always keep the initial system message we can specify `include_system=True`:
-
+如果我们想始终保留初始的系统消息，可以指定 `include_system=True`：
 
 ```python
 trim_messages(
@@ -85,8 +84,7 @@ trim_messages(
 ```
 
 
-If we want to allow splitting up the contents of a message we can specify `allow_partial=True`:
-
+如果我们想允许分割消息的内容，可以指定 `allow_partial=True`：
 
 ```python
 trim_messages(
@@ -108,8 +106,7 @@ trim_messages(
 ```
 
 
-If we need to make sure that our first message (excluding the system message) is always of a specific type, we can specify `start_on`:
-
+如果我们需要确保我们的第一条消息（不包括系统消息）始终是特定类型，可以指定 `start_on`：
 
 ```python
 trim_messages(
@@ -129,10 +126,9 @@ trim_messages(
  HumanMessage(content='what do you call a speechless parrot')]
 ```
 
+## 获取前 `max_tokens` 个标记
 
-## Getting the first `max_tokens` tokens
-
-We can perform the flipped operation of getting the *first* `max_tokens` by specifying `strategy="first"`:
+我们可以通过指定 `strategy="first"` 来执行获取 *前* `max_tokens` 的反向操作：
 
 
 ```python
@@ -151,10 +147,9 @@ trim_messages(
  HumanMessage(content="i wonder why it's called langchain")]
 ```
 
+## 编写自定义令牌计数器
 
-## Writing a custom token counter
-
-We can write a custom token counter function that takes in a list of messages and returns an int.
+我们可以编写一个自定义令牌计数器函数，该函数接受消息列表并返回一个整数。
 
 
 ```python
@@ -171,11 +166,11 @@ def str_token_counter(text: str) -> int:
 
 
 def tiktoken_counter(messages: List[BaseMessage]) -> int:
-    """Approximately reproduce https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb
+    """大致重现 https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb
 
-    For simplicity only supports str Message.contents.
+    为了简单起见，只支持 str Message.contents。
     """
-    num_tokens = 3  # every reply is primed with <|start|>assistant<|message|>
+    num_tokens = 3  # 每个回复都以 <|start|>assistant<|message|> 开头
     tokens_per_message = 3
     tokens_per_name = 1
     for msg in messages:
@@ -188,7 +183,7 @@ def tiktoken_counter(messages: List[BaseMessage]) -> int:
         elif isinstance(msg, SystemMessage):
             role = "system"
         else:
-            raise ValueError(f"Unsupported messages type {msg.__class__}")
+            raise ValueError(f"不支持的消息类型 {msg.__class__}")
         num_tokens += (
             tokens_per_message
             + str_token_counter(role)
@@ -214,17 +209,15 @@ trim_messages(
  HumanMessage(content='what do you call a speechless parrot')]
 ```
 
+## 链接
 
-## Chaining
-
-`trim_messages` can be used in an imperatively (like above) or declaratively, making it easy to compose with other components in a chain
-
+`trim_messages` 可以以命令式（如上所示）或声明式使用，使其易于与链中的其他组件组合。
 
 ```python
 llm = ChatOpenAI(model="gpt-4o")
 
-# Notice we don't pass in messages. This creates
-# a RunnableLambda that takes messages as input
+# 注意我们没有传入消息。这会创建
+# 一个 RunnableLambda，它将消息作为输入
 trimmer = trim_messages(
     max_tokens=45,
     strategy="last",
@@ -236,34 +229,26 @@ chain = trimmer | llm
 chain.invoke(messages)
 ```
 
-
-
 ```output
 AIMessage(content='A: A "Polly-gone"!', response_metadata={'token_usage': {'completion_tokens': 9, 'prompt_tokens': 32, 'total_tokens': 41}, 'model_name': 'gpt-4o-2024-05-13', 'system_fingerprint': 'fp_66b29dffce', 'finish_reason': 'stop', 'logprobs': None}, id='run-83e96ddf-bcaa-4f63-824c-98b0f8a0d474-0', usage_metadata={'input_tokens': 32, 'output_tokens': 9, 'total_tokens': 41})
 ```
 
+查看 LangSmith 跟踪，我们可以看到在消息传递给模型之前，它们首先被修剪： https://smith.langchain.com/public/65af12c4-c24d-4824-90f0-6547566e59bb/r
 
-Looking at the LangSmith trace we can see that before the messages are passed to the model they are first trimmed: https://smith.langchain.com/public/65af12c4-c24d-4824-90f0-6547566e59bb/r
-
-Looking at just the trimmer, we can see that it's a Runnable object that can be invoked like all Runnables:
-
+单独查看修剪器，我们可以看到它是一个可以像所有 Runnable 一样被调用的 Runnable 对象：
 
 ```python
 trimmer.invoke(messages)
 ```
-
-
 
 ```output
 [SystemMessage(content="you're a good assistant, you always respond with a joke."),
  HumanMessage(content='what do you call a speechless parrot')]
 ```
 
+## 使用 ChatMessageHistory
 
-## Using with ChatMessageHistory
-
-Trimming messages is especially useful when [working with chat histories](/docs/how_to/message_history/), which can get arbitrarily long:
-
+修剪消息在[处理聊天记录](/docs/how_to/message_history/)时尤其有用，因为聊天记录可能会变得非常长：
 
 ```python
 from langchain_core.chat_history import InMemoryChatMessageHistory
@@ -295,15 +280,12 @@ chain_with_history.invoke(
 )
 ```
 
-
-
 ```output
 AIMessage(content='A "polly-no-wanna-cracker"!', response_metadata={'token_usage': {'completion_tokens': 10, 'prompt_tokens': 32, 'total_tokens': 42}, 'model_name': 'gpt-4o-2024-05-13', 'system_fingerprint': 'fp_5bf7397cd3', 'finish_reason': 'stop', 'logprobs': None}, id='run-054dd309-3497-4e7b-b22a-c1859f11d32e-0', usage_metadata={'input_tokens': 32, 'output_tokens': 10, 'total_tokens': 42})
 ```
 
+查看 LangSmith 跟踪，我们可以看到我们检索了所有消息，但在消息传递给模型之前，它们被修剪为仅包含系统消息和最后一条人类消息： https://smith.langchain.com/public/17dd700b-9994-44ca-930c-116e00997315/r
 
-Looking at the LangSmith trace we can see that we retrieve all of our messages but before the messages are passed to the model they are trimmed to be just the system message and last human message: https://smith.langchain.com/public/17dd700b-9994-44ca-930c-116e00997315/r
+## API 参考
 
-## API reference
-
-For a complete description of all arguments head to the API reference: https://api.python.langchain.com/en/latest/messages/langchain_core.messages.utils.trim_messages.html
+有关所有参数的完整描述，请访问 API 参考： https://api.python.langchain.com/en/latest/messages/langchain_core.messages.utils.trim_messages.html

@@ -1,36 +1,37 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/google_firestore.ipynb
 ---
-# Google Firestore (Native Mode)
 
-> [Google Cloud Firestore](https://cloud.google.com/firestore) is a serverless document-oriented database that scales to meet any demand. Extend your database application to build AI-powered experiences leveraging `Firestore's` Langchain integrations.
+# Google Firestore (原生模式)
 
-This notebook goes over how to use [Google Cloud Firestore](https://cloud.google.com/firestore) to store chat message history with the `FirestoreChatMessageHistory` class.
+> [Google Cloud Firestore](https://cloud.google.com/firestore) 是一个无服务器的文档导向数据库，能够根据需求进行扩展。扩展您的数据库应用程序，以利用 `Firestore` 的 Langchain 集成构建 AI 驱动的体验。
 
-Learn more about the package on [GitHub](https://github.com/googleapis/langchain-google-firestore-python/).
+本笔记本介绍了如何使用 [Google Cloud Firestore](https://cloud.google.com/firestore) 来存储聊天消息历史记录，使用 `FirestoreChatMessageHistory` 类。
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/googleapis/langchain-google-firestore-python/blob/main/docs/chat_message_history.ipynb)
+在 [GitHub](https://github.com/googleapis/langchain-google-firestore-python/) 上了解更多关于该包的信息。
 
-## Before You Begin
+[![在 Colab 中打开](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/googleapis/langchain-google-firestore-python/blob/main/docs/chat_message_history.ipynb)
 
-To run this notebook, you will need to do the following:
+## 开始之前
 
-* [Create a Google Cloud Project](https://developers.google.com/workspace/guides/create-project)
-* [Enable the Firestore API](https://console.cloud.google.com/flows/enableapi?apiid=firestore.googleapis.com)
-* [Create a Firestore database](https://cloud.google.com/firestore/docs/manage-databases)
+要运行此笔记本，您需要执行以下操作：
 
-After confirmed access to database in the runtime environment of this notebook, filling the following values and run the cell before running example scripts.
+* [创建一个 Google Cloud 项目](https://developers.google.com/workspace/guides/create-project)
+* [启用 Firestore API](https://console.cloud.google.com/flows/enableapi?apiid=firestore.googleapis.com)
+* [创建 Firestore 数据库](https://cloud.google.com/firestore/docs/manage-databases)
 
-### 🦜🔗 Library Installation
+在确认在此笔记本的运行时环境中访问数据库后，请填写以下值并在运行示例脚本之前运行该单元格。
 
-The integration lives in its own `langchain-google-firestore` package, so we need to install it.
+### 🦜🔗 库安装
+
+集成位于其自己的 `langchain-google-firestore` 包中，因此我们需要安装它。
 
 
 ```python
 %pip install -upgrade --quiet langchain-google-firestore
 ```
 
-**Colab only**: Uncomment the following cell to restart the kernel or use the button to restart the kernel. For Vertex AI Workbench you can restart the terminal using the button on top.
+**仅限 Colab**：取消注释以下单元格以重启内核，或使用按钮重启内核。对于 Vertex AI Workbench，您可以使用顶部的按钮重启终端。
 
 
 ```python
@@ -41,31 +42,30 @@ The integration lives in its own `langchain-google-firestore` package, so we nee
 # app.kernel.do_shutdown(True)
 ```
 
-### ☁ Set Your Google Cloud Project
-Set your Google Cloud project so that you can leverage Google Cloud resources within this notebook.
+### ☁ 设置您的 Google Cloud 项目
+设置您的 Google Cloud 项目，以便您可以在此笔记本中利用 Google Cloud 资源。
 
-If you don't know your project ID, try the following:
+如果您不知道您的项目 ID，请尝试以下方法：
 
-* Run `gcloud config list`.
-* Run `gcloud projects list`.
-* See the support page: [Locate the project ID](https://support.google.com/googleapi/answer/7014113).
-
+* 运行 `gcloud config list`。
+* 运行 `gcloud projects list`。
+* 查看支持页面：[查找项目 ID](https://support.google.com/googleapi/answer/7014113)。
 
 ```python
-# @markdown Please fill in the value below with your Google Cloud project ID and then run the cell.
+# @markdown 请在下面填写您的 Google Cloud 项目 ID，然后运行该单元格。
 
 PROJECT_ID = "my-project-id"  # @param {type:"string"}
 
-# Set the project id
+# 设置项目 ID
 !gcloud config set project {PROJECT_ID}
 ```
 
-### 🔐 Authentication
+### 🔐 身份验证
 
-Authenticate to Google Cloud as the IAM user logged into this notebook in order to access your Google Cloud Project.
+作为已登录此笔记本的 IAM 用户对 Google Cloud 进行身份验证，以访问您的 Google Cloud 项目。
 
-- If you are using Colab to run this notebook, use the cell below and continue.
-- If you are using Vertex AI Workbench, check out the setup instructions [here](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env).
+- 如果您正在使用 Colab 运行此笔记本，请使用下面的单元格并继续。
+- 如果您正在使用 Vertex AI Workbench，请查看 [这里](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env) 的设置说明。
 
 
 ```python
@@ -74,14 +74,14 @@ from google.colab import auth
 auth.authenticate_user()
 ```
 
-## Basic Usage
+## 基本用法
 
 ### FirestoreChatMessageHistory
 
-To initialize the `FirestoreChatMessageHistory` class you need to provide only 3 things:
+要初始化 `FirestoreChatMessageHistory` 类，您只需提供 3 个参数：
 
-1. `session_id` - A unique identifier string that specifies an id for the session.
-1. `collection` : The single `/`-delimited path to a Firestore collection.
+1. `session_id` - 一个唯一标识符字符串，用于指定会话的 ID。
+1. `collection` : 指向 Firestore 集合的单个 `/` 分隔路径。
 
 
 ```python
@@ -100,20 +100,19 @@ chat_history.add_ai_message("How can I help you?")
 chat_history.messages
 ```
 
-#### Cleaning up
-When the history of a specific session is obsolete and can be deleted from the database and memory, it can be done the following way.
+#### 清理
+当特定会话的历史记录过时并可以从数据库和内存中删除时，可以通过以下方式完成。
 
-**Note:** Once deleted, the data is no longer stored in Firestore and is gone forever.
+**注意：** 一旦删除，数据将不再存储在 Firestore 中，并永久丢失。
 
 
 ```python
 chat_history.clear()
 ```
 
-### Custom Client
+### 自定义客户端
 
-The client is created by default using the available environment variables. A [custom client](https://cloud.google.com/python/docs/reference/firestore/latest/client) can be passed to the constructor.
-
+客户端默认使用可用的环境变量创建。可以将[自定义客户端](https://cloud.google.com/python/docs/reference/firestore/latest/client)传递给构造函数。
 
 ```python
 from google.auth import compute_engine

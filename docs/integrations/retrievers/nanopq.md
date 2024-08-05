@@ -1,24 +1,23 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/nanopq.ipynb
 ---
-# NanoPQ (Product Quantization)
 
->[Product Quantization algorithm (k-NN)](https://towardsdatascience.com/similarity-search-product-quantization-b2a1a6397701) in brief is a quantization algorithm that helps in compression of database vectors which helps in semantic search when large datasets are involved. In a nutshell, the embedding is split into M subspaces which further goes through clustering. Upon clustering the vectors the centroid vector gets mapped to the vectors present in the each of the clusters of the subspace. 
+# NanoPQ (产品量化)
 
-This notebook goes over how to use a retriever that under the hood uses a Product Quantization which has been implemented by the [nanopq](https://github.com/matsui528/nanopq) package.
+>[产品量化算法 (k-NN)](https://towardsdatascience.com/similarity-search-product-quantization-b2a1a6397701) 简要来说，是一种量化算法，帮助压缩数据库向量，在涉及大数据集时有助于语义搜索。简而言之，嵌入被分割成 M 个子空间，进一步进行聚类。在聚类向量后，质心向量被映射到子空间中每个聚类的向量上。
 
+本笔记本讲解如何使用一个检索器，该检索器在底层使用了由 [nanopq](https://github.com/matsui528/nanopq) 包实现的产品量化。
 
 ```python
 %pip install -qU langchain-community langchain-openai nanopq
 ```
-
 
 ```python
 from langchain_community.embeddings.spacy_embeddings import SpacyEmbeddings
 from langchain_community.retrievers import NanoPQRetriever
 ```
 
-## Create New Retriever with Texts
+## 使用文本创建新的检索器
 
 
 ```python
@@ -30,9 +29,9 @@ retriever = NanoPQRetriever.from_texts(
 )
 ```
 
-## Use Retriever
+## 使用检索器
 
-We can now use the retriever!
+我们现在可以使用检索器了！
 
 
 ```python
@@ -55,9 +54,7 @@ Encoding the subspace: 1 / 2
  Document(page_content='planets of the world')]
 ```
 
+## 相关
 
-
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

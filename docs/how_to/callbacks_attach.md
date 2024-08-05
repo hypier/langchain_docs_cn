@@ -1,28 +1,28 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/callbacks_attach.ipynb
 ---
-# How to attach callbacks to a runnable
 
-:::info Prerequisites
+# 如何将回调附加到可运行对象
 
-This guide assumes familiarity with the following concepts:
+:::info 前提条件
 
-- [Callbacks](/docs/concepts/#callbacks)
-- [Custom callback handlers](/docs/how_to/custom_callbacks)
-- [Chaining runnables](/docs/how_to/sequence)
-- [Attach runtime arguments to a Runnable](/docs/how_to/binding)
+本指南假设您熟悉以下概念：
+
+- [回调](/docs/concepts/#callbacks)
+- [自定义回调处理程序](/docs/how_to/custom_callbacks)
+- [链接可运行对象](/docs/how_to/sequence)
+- [将运行时参数附加到可运行对象](/docs/how_to/binding)
 
 :::
 
-If you are composing a chain of runnables and want to reuse callbacks across multiple executions, you can attach callbacks with the [`.with_config()`](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.with_config) method. This saves you the need to pass callbacks in each time you invoke the chain.
+如果您正在组合一系列可运行对象并希望在多次执行中重用回调，可以使用 [`.with_config()`](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.with_config) 方法附加回调。这可以节省您在每次调用链时传递回调的需要。
 
 :::important
 
-`with_config()` binds a configuration which will be interpreted as **runtime** configuration. So these callbacks will propagate to all child components.
+`with_config()` 绑定的配置将被解释为 **运行时** 配置。因此，这些回调将传播到所有子组件。
 :::
 
-Here's an example:
-
+以下是一个示例：
 
 ```python
 from typing import Any, Dict, List
@@ -77,10 +77,10 @@ AIMessage(content='1 + 2 = 3', response_metadata={'id': 'msg_01NTYMsH9YxkoWsiPYs
 ```
 
 
-The bound callbacks will run for all nested module runs.
+绑定的回调将在所有嵌套模块运行时执行。
 
-## Next steps
+## 下一步
 
-You've now learned how to attach callbacks to a chain.
+您现在已经学习了如何将回调附加到链中。
 
-Next, check out the other how-to guides in this section, such as how to [pass callbacks in at runtime](/docs/how_to/callbacks_runtime).
+接下来，查看本节中的其他操作指南，例如如何在运行时[传递回调](/docs/how_to/callbacks_runtime)。

@@ -1,13 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/amazon_kendra_retriever.ipynb
 ---
+
 # Amazon Kendra
 
-> [Amazon Kendra](https://docs.aws.amazon.com/kendra/latest/dg/what-is-kendra.html) is an intelligent search service provided by `Amazon Web Services` (`AWS`). It utilizes advanced natural language processing (NLP) and machine learning algorithms to enable powerful search capabilities across various data sources within an organization. `Kendra` is designed to help users find the information they need quickly and accurately, improving productivity and decision-making.
+> [Amazon Kendra](https://docs.aws.amazon.com/kendra/latest/dg/what-is-kendra.html) 是由 `Amazon Web Services` (`AWS`) 提供的智能搜索服务。它利用先进的自然语言处理 (NLP) 和机器学习算法，能够在组织内的各种数据源中实现强大的搜索能力。`Kendra` 旨在帮助用户快速准确地找到所需信息，从而提高生产力和决策能力。
 
-> With `Kendra`, users can search across a wide range of content types, including documents, FAQs, knowledge bases, manuals, and websites. It supports multiple languages and can understand complex queries, synonyms, and contextual meanings to provide highly relevant search results.
+> 使用 `Kendra`，用户可以搜索各种内容类型，包括文档、常见问题解答、知识库、手册和网站。它支持多种语言，能够理解复杂查询、同义词和上下文含义，以提供高度相关的搜索结果。
 
-## Using the Amazon Kendra Index Retriever
+## 使用 Amazon Kendra 索引检索器
 
 
 ```python
@@ -19,22 +20,21 @@ custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs
 from langchain_community.retrievers import AmazonKendraRetriever
 ```
 
-Create New Retriever
+创建新检索器
 
 
 ```python
 retriever = AmazonKendraRetriever(index_id="c0806df7-e76b-4bce-9b5c-d5582f6b1a03")
 ```
 
-Now you can use retrieved documents from Kendra index
+现在您可以使用从 Kendra 索引中检索到的文档
 
 
 ```python
 retriever.invoke("what is langchain")
 ```
 
+## 相关
 
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

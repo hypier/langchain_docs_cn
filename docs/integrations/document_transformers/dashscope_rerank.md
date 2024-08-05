@@ -1,12 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_transformers/dashscope_rerank.ipynb
 ---
+
 # DashScope Reranker
 
-This notebook shows how to use DashScope Reranker for document compression and retrieval. [DashScope](https://dashscope.aliyun.com/) is the generative AI service from Alibaba Cloud (Aliyun).
+本笔记本展示了如何使用 DashScope Reranker 进行文档压缩和检索。[DashScope](https://dashscope.aliyun.com/) 是阿里云的生成式 AI 服务。
 
-DashScope's [Text ReRank Model](https://help.aliyun.com/document_detail/2780058.html?spm=a2c4g.2780059.0.0.6d995024FlrJ12) supports reranking documents with a maximum of 4000 tokens. Moreover, it supports Chinese, English, Japanese, Korean, Thai, Spanish, French, Portuguese, Indonesian, Arabic, and over 50 other languages. For more details, please visit [here](https://help.aliyun.com/document_detail/2780059.html?spm=a2c4g.2780058.0.0.3a9e5b1dWeOQjI).
-
+DashScope 的 [文本重排序模型](https://help.aliyun.com/document_detail/2780058.html?spm=a2c4g.2780059.0.0.6d995024FlrJ12) 支持对最多 4000 个标记的文档进行重排序。此外，它支持中文、英文、日文、韩文、泰文、西班牙文、法文、葡萄牙文、印尼文、阿拉伯文以及其他超过 50 种语言。有关更多详细信息，请访问 [这里](https://help.aliyun.com/document_detail/2780059.html?spm=a2c4g.2780058.0.0.3a9e5b1dWeOQjI)。
 
 ```python
 %pip install --upgrade --quiet  dashscope
@@ -42,9 +42,8 @@ def pretty_print_docs(docs):
     )
 ```
 
-## Set up the base vector store retriever
-Let's start by initializing a simple vector store retriever and storing the 2023 State of the Union speech (in chunks). We can set up the retriever to retrieve a high number (20) of docs.
-
+## 设置基础向量存储检索器
+让我们开始初始化一个简单的向量存储检索器，并存储2023年国情咨文（以块的形式）。我们可以设置检索器以检索大量（20）文档。
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -260,9 +259,9 @@ With a duty to one another to the American people to the Constitution.
 
 And with an unwavering resolve that freedom will always triumph over tyranny.
 ```
-## Reranking with DashScopeRerank
-Now let's wrap our base retriever with a `ContextualCompressionRetriever`. We'll use the `DashScopeRerank` to rerank the returned results.
 
+## 使用 DashScopeRerank 进行重新排序
+现在让我们用 `ContextualCompressionRetriever` 包装我们的基础检索器。我们将使用 `DashScopeRerank` 对返回的结果进行重新排序。
 
 ```python
 from langchain.retrievers import ContextualCompressionRetriever

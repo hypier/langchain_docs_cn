@@ -1,18 +1,19 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/gpt4all.ipynb
 ---
+
 # GPT4All
 
-[GitHub:nomic-ai/gpt4all](https://github.com/nomic-ai/gpt4all) an ecosystem of open-source chatbots trained on a massive collections of clean assistant data including code, stories and dialogue.
+[GitHub:nomic-ai/gpt4all](https://github.com/nomic-ai/gpt4all) 是一个开源聊天机器人生态系统，基于大量干净的助手数据进行训练，包括代码、故事和对话。
 
-This example goes over how to use LangChain to interact with `GPT4All` models.
+本示例介绍如何使用 LangChain 与 `GPT4All` 模型进行交互。
 
 
 ```python
 %pip install --upgrade --quiet langchain-community gpt4all
 ```
 
-### Import GPT4All
+### 导入 GPT4All
 
 
 ```python
@@ -20,7 +21,7 @@ from langchain_community.llms import GPT4All
 from langchain_core.prompts import PromptTemplate
 ```
 
-### Set Up Question to pass to LLM
+### 设置要传递给 LLM 的问题
 
 
 ```python
@@ -31,28 +32,26 @@ Answer: Let's think step by step."""
 prompt = PromptTemplate.from_template(template)
 ```
 
-### Specify Model
+### 指定模型
 
-To run locally, download a compatible ggml-formatted model. 
- 
-The [gpt4all page](https://gpt4all.io/index.html) has a useful `Model Explorer` section:
+要在本地运行，请下载兼容的 ggml 格式模型。
 
-* Select a model of interest
-* Download using the UI and move the `.bin` to the `local_path` (noted below)
+[gpt4all 页面](https://gpt4all.io/index.html) 有一个有用的 `Model Explorer` 部分：
 
-For more info, visit https://github.com/nomic-ai/gpt4all.
+* 选择一个感兴趣的模型
+* 使用 UI 下载并将 `.bin` 文件移动到 `local_path`（如下所示）
+
+有关更多信息，请访问 https://github.com/nomic-ai/gpt4all。
 
 ---
 
-This integration does not yet support streaming in chunks via the [`.stream()`](https://python.langchain.com/v0.2/docs/how_to/streaming/) method. The below example uses a callback handler with `streaming=True`:
-
+此集成尚不支持通过 [`.stream()`](https://python.langchain.com/v0.2/docs/how_to/streaming/) 方法进行分块流式传输。以下示例使用了带有 `streaming=True` 的回调处理程序：
 
 ```python
 local_path = (
     "./models/Meta-Llama-3-8B-Instruct.Q4_0.gguf"  # replace with your local file path
 )
 ```
-
 
 ```python
 from langchain_core.callbacks import BaseCallbackHandler
@@ -95,7 +94,7 @@ Token: ,
 Token:
 ```
 
-## Related
+## 相关
 
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

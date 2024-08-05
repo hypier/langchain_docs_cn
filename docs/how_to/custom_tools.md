@@ -1,38 +1,38 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/custom_tools.ipynb
 ---
-# How to create tools
 
-When constructing an agent, you will need to provide it with a list of `Tool`s that it can use. Besides the actual function that is called, the Tool consists of several components:
+# 如何创建工具
 
-| Attribute       | Type                      | Description                                                                                                      |
-|-----------------|---------------------------|------------------------------------------------------------------------------------------------------------------|
-| name          | str                     | Must be unique within a set of tools provided to an LLM or agent.                                           |
-| description   | str                     | Describes what the tool does. Used as context by the LLM or agent.                                       |
-| args_schema   | Pydantic BaseModel      | Optional but recommended, can be used to provide more information (e.g., few-shot examples) or validation for expected parameters |
-| return_direct   | boolean      | Only relevant for agents. When True, after invoking the given tool, the agent will stop and return the result direcly to the user.  |
+在构建代理时，您需要为其提供一个可以使用的 `Tool` 列表。除了被调用的实际函数，Tool 由几个组件组成：
 
-LangChain supports the creation of tools from:
+| 属性            | 类型                      | 描述                                                                                                         |
+|-----------------|---------------------------|--------------------------------------------------------------------------------------------------------------|
+| name          | str                     | 在提供给 LLM 或代理的一组工具中必须是唯一的。                                                               |
+| description   | str                     | 描述工具的功能。被 LLM 或代理用作上下文。                                                                   |
+| args_schema   | Pydantic BaseModel      | 可选但推荐，可以用于提供更多信息（例如，少量示例）或对预期参数进行验证。                                    |
+| return_direct   | boolean      | 仅对代理相关。当为 True 时，在调用给定工具后，代理将停止并直接将结果返回给用户。                          |
 
-1. Functions;
-2. LangChain [Runnables](/docs/concepts#runnable-interface);
-3. By sub-classing from [BaseTool](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.BaseTool.html) -- This is the most flexible method, it provides the largest degree of control, at the expense of more effort and code.
+LangChain 支持从以下方式创建工具：
 
-Creating tools from functions may be sufficient for most use cases, and can be done via a simple [@tool decorator](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.tool.html#langchain_core.tools.tool). If more configuration is needed-- e.g., specification of both sync and async implementations-- one can also use the [StructuredTool.from_function](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.StructuredTool.html#langchain_core.tools.StructuredTool.from_function) class method.
+1. 函数；
+2. LangChain [Runnables](/docs/concepts#runnable-interface)；
+3. 通过从 [BaseTool](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.BaseTool.html) 子类化 -- 这是最灵活的方法，提供了最大的控制权，但需要更多的努力和代码。
 
-In this guide we provide an overview of these methods.
+从函数创建工具可能对大多数用例来说足够，并且可以通过简单的 [@tool 装饰器](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.tool.html#langchain_core.tools.tool) 来完成。如果需要更多配置，例如同时指定同步和异步实现，也可以使用 [StructuredTool.from_function](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.StructuredTool.html#langchain_core.tools.StructuredTool.from_function) 类方法。
+
+在本指南中，我们提供了这些方法的概述。
 
 :::tip
 
-Models will perform better if the tools have well chosen names, descriptions and JSON schemas.
+如果工具具有精心选择的名称、描述和 JSON 模式，模型的表现将更好。
 :::
 
-## Creating tools from functions
+## 从函数创建工具
 
-### @tool decorator
+### @tool 装饰器
 
-This `@tool` decorator is the simplest way to define a custom tool. The decorator uses the function name as the tool name by default, but this can be overridden by passing a string as the first argument. Additionally, the decorator will use the function's docstring as the tool's description - so a docstring MUST be provided. 
-
+这个 `@tool` 装饰器是定义自定义工具的最简单方法。默认情况下，装饰器使用函数名称作为工具名称，但可以通过将字符串作为第一个参数传递来覆盖此设置。此外，装饰器将使用函数的文档字符串作为工具的描述，因此必须提供文档字符串。
 
 ```python
 from langchain_core.tools import tool
@@ -44,7 +44,7 @@ def multiply(a: int, b: int) -> int:
     return a * b
 
 
-# Let's inspect some of the attributes associated with the tool.
+# 让我们检查与该工具相关的一些属性。
 print(multiply.name)
 print(multiply.description)
 print(multiply.args)
@@ -54,8 +54,7 @@ multiply
 Multiply two numbers.
 {'a': {'title': 'A', 'type': 'integer'}, 'b': {'title': 'B', 'type': 'integer'}}
 ```
-Or create an **async** implementation, like this:
-
+或者创建一个 **async** 实现，如下所示：
 
 ```python
 from langchain_core.tools import tool
@@ -67,8 +66,7 @@ async def amultiply(a: int, b: int) -> int:
     return a * b
 ```
 
-Note that `@tool` supports parsing of annotations, nested schemas, and other features:
-
+注意，`@tool` 支持解析注解、嵌套模式和其他特性：
 
 ```python
 from typing import Annotated, List
@@ -86,8 +84,6 @@ def multiply_by_max(
 multiply_by_max.args_schema.schema()
 ```
 
-
-
 ```output
 {'title': 'multiply_by_maxSchema',
  'description': 'Multiply a by the maximum of b.',
@@ -102,9 +98,7 @@ multiply_by_max.args_schema.schema()
  'required': ['a', 'b']}
 ```
 
-
-You can also customize the tool name and JSON args by passing them into the tool decorator.
-
+您还可以通过将工具名称和 JSON 参数传递给工具装饰器来进行自定义。
 
 ```python
 from langchain.pydantic_v1 import BaseModel, Field
@@ -121,7 +115,7 @@ def multiply(a: int, b: int) -> int:
     return a * b
 
 
-# Let's inspect some of the attributes associated with the tool.
+# 让我们检查与该工具相关的一些属性。
 print(multiply.name)
 print(multiply.description)
 print(multiply.args)
@@ -133,10 +127,9 @@ Multiply two numbers.
 {'a': {'title': 'A', 'description': 'first number', 'type': 'integer'}, 'b': {'title': 'B', 'description': 'second number', 'type': 'integer'}}
 True
 ```
-#### Docstring parsing
+#### 文档字符串解析
 
-`@tool` can optionally parse [Google Style docstrings](https://google.github.io/styleguide/pyguide.html#383-functions-and-methods) and associate the docstring components (such as arg descriptions) to the relevant parts of the tool schema. To toggle this behavior, specify `parse_docstring`:
-
+`@tool` 可以选择解析 [Google 风格的文档字符串](https://google.github.io/styleguide/pyguide.html#383-functions-and-methods)，并将文档字符串组件（如参数描述）与工具模式的相关部分关联。要切换此行为，请指定 `parse_docstring`：
 
 ```python
 @tool(parse_docstring=True)
@@ -153,8 +146,6 @@ def foo(bar: str, baz: int) -> str:
 foo.args_schema.schema()
 ```
 
-
-
 ```output
 {'title': 'fooSchema',
  'description': 'The foo.',
@@ -166,15 +157,13 @@ foo.args_schema.schema()
  'required': ['bar', 'baz']}
 ```
 
-
 :::caution
-By default, `@tool(parse_docstring=True)` will raise `ValueError` if the docstring does not parse correctly. See [API Reference](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.tool.html) for detail and examples.
+默认情况下，如果文档字符串无法正确解析，`@tool(parse_docstring=True)` 将引发 `ValueError`。有关详细信息和示例，请参见 [API 参考](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.tool.html)。
 :::
 
 ### StructuredTool
 
-The `StructuredTool.from_function` class method provides a bit more configurability than the `@tool` decorator, without requiring much additional code.
-
+`StructuredTool.from_function` 类方法提供了比 `@tool` 装饰器更多的配置选项，而不需要太多额外的代码。
 
 ```python
 from langchain_core.tools import StructuredTool
@@ -199,8 +188,7 @@ print(await calculator.ainvoke({"a": 2, "b": 5}))
 6
 10
 ```
-To configure it:
-
+要进行配置：
 
 ```python
 class CalculatorInput(BaseModel):
@@ -233,12 +221,12 @@ Calculator
 multiply numbers
 {'a': {'title': 'A', 'description': 'first number', 'type': 'integer'}, 'b': {'title': 'B', 'description': 'second number', 'type': 'integer'}}
 ```
-## Creating tools from Runnables
 
-LangChain [Runnables](/docs/concepts#runnable-interface) that accept string or `dict` input can be converted to tools using the [as_tool](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.as_tool) method, which allows for the specification of names, descriptions, and additional schema information for arguments.
+## 从 Runnables 创建工具
 
-Example usage:
+LangChain [Runnables](/docs/concepts#runnable-interface) 接受字符串或 `dict` 输入，可以使用 [as_tool](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.as_tool) 方法转换为工具，该方法允许指定名称、描述和参数的附加模式信息。
 
+示例用法：
 
 ```python
 from langchain_core.language_models import GenericFakeChatModel
@@ -260,19 +248,15 @@ as_tool = chain.as_tool(
 as_tool.args
 ```
 
-
-
 ```output
 {'answer_style': {'title': 'Answer Style', 'type': 'string'}}
 ```
 
+有关更多详细信息，请参见 [此指南](/docs/how_to/convert_runnable_to_tool)。
 
-See [this guide](/docs/how_to/convert_runnable_to_tool) for more detail.
+## 子类 BaseTool
 
-## Subclass BaseTool
-
-You can define a custom tool by sub-classing from `BaseTool`. This provides maximal control over the tool definition, but requires writing more code.
-
+您可以通过从 `BaseTool` 子类化来定义自定义工具。这提供了对工具定义的最大控制，但需要编写更多代码。
 
 ```python
 from typing import Optional, Type
@@ -286,20 +270,20 @@ from langchain_core.tools import BaseTool
 
 
 class CalculatorInput(BaseModel):
-    a: int = Field(description="first number")
-    b: int = Field(description="second number")
+    a: int = Field(description="第一个数字")
+    b: int = Field(description="第二个数字")
 
 
 class CustomCalculatorTool(BaseTool):
     name = "Calculator"
-    description = "useful for when you need to answer questions about math"
+    description = "用于回答数学问题时非常有用"
     args_schema: Type[BaseModel] = CalculatorInput
     return_direct: bool = True
 
     def _run(
         self, a: int, b: int, run_manager: Optional[CallbackManagerForToolRun] = None
     ) -> str:
-        """Use the tool."""
+        """使用工具。"""
         return a * b
 
     async def _arun(
@@ -308,15 +292,12 @@ class CustomCalculatorTool(BaseTool):
         b: int,
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
-        """Use the tool asynchronously."""
-        # If the calculation is cheap, you can just delegate to the sync implementation
-        # as shown below.
-        # If the sync calculation is expensive, you should delete the entire _arun method.
-        # LangChain will automatically provide a better implementation that will
-        # kick off the task in a thread to make sure it doesn't block other async code.
+        """异步使用工具。"""
+        # 如果计算很简单，您可以像下面这样委托给同步实现。
+        # 如果同步计算很复杂，您应该删除整个 _arun 方法。
+        # LangChain 将自动提供更好的实现，确保不会阻塞其他异步代码。
         return self._run(a, b, run_manager=run_manager.get_sync())
 ```
-
 
 ```python
 multiply = CustomCalculatorTool()
@@ -330,27 +311,26 @@ print(await multiply.ainvoke({"a": 2, "b": 3}))
 ```
 ```output
 Calculator
-useful for when you need to answer questions about math
-{'a': {'title': 'A', 'description': 'first number', 'type': 'integer'}, 'b': {'title': 'B', 'description': 'second number', 'type': 'integer'}}
+用于回答数学问题时非常有用
+{'a': {'title': 'A', 'description': '第一个数字', 'type': 'integer'}, 'b': {'title': 'B', 'description': '第二个数字', 'type': 'integer'}}
 True
 6
 6
 ```
-## How to create async tools
 
-LangChain Tools implement the [Runnable interface 🏃](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html).
+## 如何创建异步工具
 
-All Runnables expose the `invoke` and `ainvoke` methods (as well as other methods like `batch`, `abatch`, `astream` etc).
+LangChain Tools 实现了 [Runnable 接口 🏃](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html)。
 
-So even if you only provide an `sync` implementation of a tool, you could still use the `ainvoke` interface, but there
-are some important things to know:
+所有 Runnables 都暴露了 `invoke` 和 `ainvoke` 方法（以及其他方法如 `batch`、`abatch`、`astream` 等）。
 
-* LangChain's by default provides an async implementation that assumes that the function is expensive to compute, so it'll delegate execution to another thread.
-* If you're working in an async codebase, you should create async tools rather than sync tools, to avoid incuring a small overhead due to that thread.
-* If you need both sync and async implementations, use `StructuredTool.from_function` or sub-class from `BaseTool`.
-* If implementing both sync and async, and the sync code is fast to run, override the default LangChain async implementation and simply call the sync code.
-* You CANNOT and SHOULD NOT use the sync `invoke` with an `async` tool.
+因此，即使您只提供工具的 `sync` 实现，您仍然可以使用 `ainvoke` 接口，但有一些重要事项需要了解：
 
+* LangChain 默认提供异步实现，假设函数的计算开销较大，因此它将把执行委托给另一个线程。
+* 如果您在异步代码库中工作，应该创建异步工具而不是同步工具，以避免由于线程带来的小开销。
+* 如果您需要同步和异步实现，请使用 `StructuredTool.from_function` 或从 `BaseTool` 子类化。
+* 如果同时实现同步和异步，并且同步代码运行速度较快，请覆盖默认的 LangChain 异步实现并直接调用同步代码。
+* 您不能也不应该在异步工具上使用同步 `invoke`。
 
 ```python
 from langchain_core.tools import StructuredTool
@@ -366,7 +346,7 @@ calculator = StructuredTool.from_function(func=multiply)
 print(calculator.invoke({"a": 2, "b": 3}))
 print(
     await calculator.ainvoke({"a": 2, "b": 5})
-)  # Uses default LangChain async implementation incurs small overhead
+)  # 使用默认的 LangChain 异步实现会产生小开销
 ```
 ```output
 6
@@ -392,14 +372,13 @@ calculator = StructuredTool.from_function(func=multiply, coroutine=amultiply)
 print(calculator.invoke({"a": 2, "b": 3}))
 print(
     await calculator.ainvoke({"a": 2, "b": 5})
-)  # Uses use provided amultiply without additional overhead
+)  # 使用提供的 amultiply，没有额外开销
 ```
 ```output
 6
 10
 ```
-You should not and cannot use `.invoke` when providing only an async definition.
-
+在仅提供异步定义时，您不应该也不能使用 `.invoke`。
 
 ```python
 @tool
@@ -411,22 +390,23 @@ async def multiply(a: int, b: int) -> int:
 try:
     multiply.invoke({"a": 2, "b": 3})
 except NotImplementedError:
-    print("Raised not implemented error. You should not be doing this.")
+    print("引发未实现错误。您不应该这样做。")
 ```
 ```output
-Raised not implemented error. You should not be doing this.
+引发未实现错误。您不应该这样做。
 ```
-## Handling Tool Errors 
 
-If you're using tools with agents, you will likely need an error handling strategy, so the agent can recover from the error and continue execution.
+## 处理工具错误
 
-A simple strategy is to throw a `ToolException` from inside the tool and specify an error handler using `handle_tool_error`. 
+如果您正在使用带有代理的工具，您可能需要一个错误处理策略，以便代理能够从错误中恢复并继续执行。
 
-When the error handler is specified, the exception will be caught and the error handler will decide which output to return from the tool.
+一个简单的策略是在工具内部抛出 `ToolException`，并使用 `handle_tool_error` 指定一个错误处理程序。
 
-You can set `handle_tool_error` to `True`, a string value, or a function. If it's a function, the function should take a `ToolException` as a parameter and return a value.
+当指定错误处理程序时，异常将被捕获，错误处理程序将决定从工具返回哪个输出。
 
-Please note that only raising a `ToolException` won't be effective. You need to first set the `handle_tool_error` of the tool because its default value is `False`.
+您可以将 `handle_tool_error` 设置为 `True`、字符串值或函数。如果是函数，该函数应接受一个 `ToolException` 作为参数并返回一个值。
+
+请注意，仅仅抛出 `ToolException` 是无效的。您需要首先设置工具的 `handle_tool_error`，因为其默认值为 `False`。
 
 
 ```python
@@ -434,11 +414,11 @@ from langchain_core.tools import ToolException
 
 
 def get_weather(city: str) -> int:
-    """Get weather for the given city."""
-    raise ToolException(f"Error: There is no city by the name of {city}.")
+    """获取指定城市的天气。"""
+    raise ToolException(f"错误：没有名为 {city} 的城市。")
 ```
 
-Here's an example with the default `handle_tool_error=True` behavior.
+这是一个使用默认 `handle_tool_error=True` 行为的示例。
 
 
 ```python
@@ -453,17 +433,17 @@ get_weather_tool.invoke({"city": "foobar"})
 
 
 ```output
-'Error: There is no city by the name of foobar.'
+'错误：没有名为 foobar 的城市。'
 ```
 
 
-We can set `handle_tool_error` to a string that will always be returned.
+我们可以将 `handle_tool_error` 设置为一个字符串，该字符串将始终被返回。
 
 
 ```python
 get_weather_tool = StructuredTool.from_function(
     func=get_weather,
-    handle_tool_error="There is no such city, but it's probably above 0K there!",
+    handle_tool_error="没有这样的城市，但那里可能在 0K 以上！",
 )
 
 get_weather_tool.invoke({"city": "foobar"})
@@ -472,16 +452,16 @@ get_weather_tool.invoke({"city": "foobar"})
 
 
 ```output
-"There is no such city, but it's probably above 0K there!"
+"没有这样的城市，但那里可能在 0K 以上！"
 ```
 
 
-Handling the error using a function:
+使用函数处理错误：
 
 
 ```python
 def _handle_error(error: ToolException) -> str:
-    return f"The following errors occurred during tool execution: `{error.args[0]}`"
+    return f"工具执行期间发生了以下错误：`{error.args[0]}`"
 
 
 get_weather_tool = StructuredTool.from_function(
@@ -495,24 +475,22 @@ get_weather_tool.invoke({"city": "foobar"})
 
 
 ```output
-'The following errors occurred during tool execution: `Error: There is no city by the name of foobar.`'
+'工具执行期间发生了以下错误：`错误：没有名为 foobar 的城市。`'
 ```
 
+## 返回工具执行的工件
 
-## Returning artifacts of Tool execution
+有时我们希望将工具执行的工件提供给链或代理中的下游组件，但又不希望将其暴露给模型本身。例如，如果一个工具返回自定义对象，如文档，我们可能希望将一些视图或元数据传递给模型，而不将原始输出传递给模型。同时，我们可能希望能够在其他地方访问这个完整的输出，例如在下游工具中。
 
-Sometimes there are artifacts of a tool's execution that we want to make accessible to downstream components in our chain or agent, but that we don't want to expose to the model itself. For example if a tool returns custom objects like Documents, we may want to pass some view or metadata about this output to the model without passing the raw output to the model. At the same time, we may want to be able to access this full output elsewhere, for example in downstream tools.
+Tool 和 [ToolMessage](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.tool.ToolMessage.html) 接口使得能够区分工具输出中用于模型的部分（这是 ToolMessage.content）和用于模型外部使用的部分（ToolMessage.artifact）。
 
-The Tool and [ToolMessage](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.tool.ToolMessage.html) interfaces make it possible to distinguish between the parts of the tool output meant for the model (this is the ToolMessage.content) and those parts which are meant for use outside the model (ToolMessage.artifact).
+:::info 需要 ``langchain-core >= 0.2.19``
 
-:::info Requires ``langchain-core >= 0.2.19``
-
-This functionality was added in ``langchain-core == 0.2.19``. Please make sure your package is up to date.
+此功能是在 ``langchain-core == 0.2.19`` 中添加的。请确保您的包是最新的。
 
 :::
 
-If we want our tool to distinguish between message content and other artifacts, we need to specify `response_format="content_and_artifact"` when defining our tool and make sure that we return a tuple of (content, artifact):
-
+如果我们希望工具区分消息内容和其他工件，我们需要在定义工具时指定 `response_format="content_and_artifact"`，并确保返回一个元组 (content, artifact)：
 
 ```python
 import random
@@ -523,49 +501,40 @@ from langchain_core.tools import tool
 
 @tool(response_format="content_and_artifact")
 def generate_random_ints(min: int, max: int, size: int) -> Tuple[str, List[int]]:
-    """Generate size random ints in the range [min, max]."""
+    """生成在 [min, max] 范围内的 size 个随机整数。"""
     array = [random.randint(min, max) for _ in range(size)]
-    content = f"Successfully generated array of {size} random ints in [{min}, {max}]."
+    content = f"成功生成了 {size} 个随机整数的数组，范围在 [{min}, {max}] 之间。"
     return content, array
 ```
 
-If we invoke our tool directly with the tool arguments, we'll get back just the content part of the output:
-
+如果我们直接使用工具参数调用工具，我们将仅返回输出的内容部分：
 
 ```python
 generate_random_ints.invoke({"min": 0, "max": 9, "size": 10})
 ```
 
-
-
 ```output
-'Successfully generated array of 10 random ints in [0, 9].'
+'成功生成了 10 个随机整数的数组，范围在 [0, 9] 之间。'
 ```
 
-
-If we invoke our tool with a ToolCall (like the ones generated by tool-calling models), we'll get back a ToolMessage that contains both the content and artifact generated by the Tool:
-
+如果我们使用 ToolCall 调用工具（例如由工具调用模型生成的工具），我们将收到一个包含工具生成的内容和工件的 ToolMessage：
 
 ```python
 generate_random_ints.invoke(
     {
         "name": "generate_random_ints",
         "args": {"min": 0, "max": 9, "size": 10},
-        "id": "123",  # required
-        "type": "tool_call",  # required
+        "id": "123",  # 必需
+        "type": "tool_call",  # 必需
     }
 )
 ```
 
-
-
 ```output
-ToolMessage(content='Successfully generated array of 10 random ints in [0, 9].', name='generate_random_ints', tool_call_id='123', artifact=[1, 4, 2, 5, 3, 9, 0, 4, 7, 7])
+ToolMessage(content='成功生成了 10 个随机整数的数组，范围在 [0, 9] 之间。', name='generate_random_ints', tool_call_id='123', artifact=[1, 4, 2, 5, 3, 9, 0, 4, 7, 7])
 ```
 
-
-We can do the same when subclassing BaseTool:
-
+当我们从 BaseTool 子类化时也可以这样做：
 
 ```python
 from langchain_core.tools import BaseTool
@@ -573,7 +542,7 @@ from langchain_core.tools import BaseTool
 
 class GenerateRandomFloats(BaseTool):
     name: str = "generate_random_floats"
-    description: str = "Generate size random floats in the range [min, max]."
+    description: str = "生成在 [min, max] 范围内的 size 个随机浮点数。"
     response_format: str = "content_and_artifact"
 
     ndigits: int = 2
@@ -584,15 +553,14 @@ class GenerateRandomFloats(BaseTool):
             round(min + (range_ * random.random()), ndigits=self.ndigits)
             for _ in range(size)
         ]
-        content = f"Generated {size} floats in [{min}, {max}], rounded to {self.ndigits} decimals."
+        content = f"生成了 {size} 个浮点数，范围在 [{min}, {max}] 之间，四舍五入到 {self.ndigits} 位小数。"
         return content, array
 
-    # Optionally define an equivalent async method
+    # 可选定义等效的异步方法
 
     # async def _arun(self, min: float, max: float, size: int) -> Tuple[str, List[float]]:
     #     ...
 ```
-
 
 ```python
 rand_gen = GenerateRandomFloats(ndigits=4)
@@ -607,9 +575,6 @@ rand_gen.invoke(
 )
 ```
 
-
-
 ```output
-ToolMessage(content='Generated 3 floats in [0.1, 3.3333], rounded to 4 decimals.', name='generate_random_floats', tool_call_id='123', artifact=[1.4277, 0.7578, 2.4871])
+ToolMessage(content='生成了 3 个浮点数，范围在 [0.1, 3.3333] 之间，四舍五入到 4 位小数。', name='generate_random_floats', tool_call_id='123', artifact=[1.4277, 0.7578, 2.4871])
 ```
-

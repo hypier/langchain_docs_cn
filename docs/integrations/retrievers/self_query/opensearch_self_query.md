@@ -1,23 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/self_query/opensearch_self_query.ipynb
 ---
+
 # OpenSearch
 
-> [OpenSearch](https://opensearch.org/) is a scalable, flexible, and extensible open-source software suite for search, analytics, and observability applications licensed under Apache 2.0. `OpenSearch` is a distributed search and analytics engine based on `Apache Lucene`.
+> [OpenSearch](https://opensearch.org/) 是一款可扩展、灵活且可扩展的开源软件套件，适用于搜索、分析和可观察性应用，许可证为 Apache 2.0。`OpenSearch` 是一个基于 `Apache Lucene` 的分布式搜索和分析引擎。
 
-In this notebook, we'll demo the `SelfQueryRetriever` with an `OpenSearch` vector store.
+在本笔记本中，我们将演示使用 `OpenSearch` 向量存储的 `SelfQueryRetriever`。
 
-## Creating an OpenSearch vector store
+## 创建 OpenSearch 向量存储
 
-First, we'll want to create an `OpenSearch` vector store and seed it with some data. We've created a small demo set of documents that contain summaries of movies.
+首先，我们需要创建一个 `OpenSearch` 向量存储，并用一些数据进行初始化。我们创建了一小组包含电影摘要的演示文档。
 
-**Note:** The self-query retriever requires you to have `lark` installed (`pip install lark`). We also need the `opensearch-py` package.
-
+**注意：** 自查询检索器需要您安装 `lark`（`pip install lark`）。我们还需要 `opensearch-py` 包。
 
 ```python
 %pip install --upgrade --quiet  lark opensearch-py
 ```
-
 
 ```python
 import getpass
@@ -38,32 +37,32 @@ OpenAI API Key: ········
 ```python
 docs = [
     Document(
-        page_content="A bunch of scientists bring back dinosaurs and mayhem breaks loose",
-        metadata={"year": 1993, "rating": 7.7, "genre": "science fiction"},
+        page_content="一群科学家带回恐龙，混乱随之而来",
+        metadata={"year": 1993, "rating": 7.7, "genre": "科幻"},
     ),
     Document(
-        page_content="Leo DiCaprio gets lost in a dream within a dream within a dream within a ...",
-        metadata={"year": 2010, "director": "Christopher Nolan", "rating": 8.2},
+        page_content="莱昂纳多·迪卡普里奥迷失在梦中，梦中又有梦 ...",
+        metadata={"year": 2010, "director": "克里斯托弗·诺兰", "rating": 8.2},
     ),
     Document(
-        page_content="A psychologist / detective gets lost in a series of dreams within dreams within dreams and Inception reused the idea",
-        metadata={"year": 2006, "director": "Satoshi Kon", "rating": 8.6},
+        page_content="一位心理学家/侦探迷失在一系列梦中，梦中又有梦，《盗梦空间》重用了这个想法",
+        metadata={"year": 2006, "director": "今敏", "rating": 8.6},
     ),
     Document(
-        page_content="A bunch of normal-sized women are supremely wholesome and some men pine after them",
-        metadata={"year": 2019, "director": "Greta Gerwig", "rating": 8.3},
+        page_content="一群普通身材的女性极其健康，某些男性对她们心生向往",
+        metadata={"year": 2019, "director": "格蕾塔·葛韦格", "rating": 8.3},
     ),
     Document(
-        page_content="Toys come alive and have a blast doing so",
-        metadata={"year": 1995, "genre": "animated"},
+        page_content="玩具复活并乐在其中",
+        metadata={"year": 1995, "genre": "动画"},
     ),
     Document(
-        page_content="Three men walk into the Zone, three men walk out of the Zone",
+        page_content="三名男子走进区域，三名男子走出区域",
         metadata={
             "year": 1979,
             "rating": 9.9,
-            "director": "Andrei Tarkovsky",
-            "genre": "science fiction",
+            "director": "安德烈·塔尔科夫斯基",
+            "genre": "科幻",
         },
     ),
 ]
@@ -75,9 +74,8 @@ vectorstore = OpenSearchVectorSearch.from_documents(
 )
 ```
 
-## Creating our self-querying retriever
-Now we can instantiate our retriever. To do this we'll need to provide some information upfront about the metadata fields that our documents support and a short description of the document contents.
-
+## 创建自查询检索器
+现在我们可以实例化我们的检索器。为此，我们需要提前提供一些关于我们的文档支持的元数据字段的信息，以及文档内容的简短描述。
 
 ```python
 from langchain.chains.query_constructor.base import AttributeInfo
@@ -111,8 +109,8 @@ retriever = SelfQueryRetriever.from_llm(
 )
 ```
 
-## Testing it out
-And now we can try actually using our retriever!
+## 测试一下
+现在我们可以尝试实际使用我们的检索器！
 
 
 ```python
@@ -125,10 +123,10 @@ query='dinosaur' filter=None limit=None
 
 
 ```output
-[Document(page_content='A bunch of scientists bring back dinosaurs and mayhem breaks loose', metadata={'year': 1993, 'rating': 7.7, 'genre': 'science fiction'}),
- Document(page_content='Toys come alive and have a blast doing so', metadata={'year': 1995, 'genre': 'animated'}),
- Document(page_content='Leo DiCaprio gets lost in a dream within a dream within a dream within a ...', metadata={'year': 2010, 'director': 'Christopher Nolan', 'rating': 8.2}),
- Document(page_content='Three men walk into the Zone, three men walk out of the Zone', metadata={'year': 1979, 'rating': 9.9, 'director': 'Andrei Tarkovsky', 'genre': 'science fiction'})]
+[Document(page_content='一群科学家复活了恐龙，随后混乱随之而来', metadata={'year': 1993, 'rating': 7.7, 'genre': 'science fiction'}),
+ Document(page_content='玩具复活并乐在其中', metadata={'year': 1995, 'genre': 'animated'}),
+ Document(page_content='莱昂纳多·迪卡普里奥在梦中迷失，梦中又有梦，梦中又有梦……', metadata={'year': 2010, 'director': 'Christopher Nolan', 'rating': 8.2}),
+ Document(page_content='三个男人走进区域，三个男人走出区域', metadata={'year': 1979, 'rating': 9.9, 'director': 'Andrei Tarkovsky', 'genre': 'science fiction'})]
 ```
 
 
@@ -143,8 +141,8 @@ query=' ' filter=Comparison(comparator=<Comparator.GT: 'gt'>, attribute='rating'
 
 
 ```output
-[Document(page_content='Three men walk into the Zone, three men walk out of the Zone', metadata={'year': 1979, 'rating': 9.9, 'director': 'Andrei Tarkovsky', 'genre': 'science fiction'}),
- Document(page_content='A psychologist / detective gets lost in a series of dreams within dreams within dreams and Inception reused the idea', metadata={'year': 2006, 'director': 'Satoshi Kon', 'rating': 8.6})]
+[Document(page_content='三个男人走进区域，三个男人走出区域', metadata={'year': 1979, 'rating': 9.9, 'director': 'Andrei Tarkovsky', 'genre': 'science fiction'}),
+ Document(page_content='一位心理学家/侦探在一系列梦中迷失，梦中又有梦，且《盗梦空间》重用了这个概念', metadata={'year': 2006, 'director': 'Satoshi Kon', 'rating': 8.6})]
 ```
 
 
@@ -159,7 +157,7 @@ query='women' filter=Comparison(comparator=<Comparator.EQ: 'eq'>, attribute='dir
 
 
 ```output
-[Document(page_content='A bunch of normal-sized women are supremely wholesome and some men pine after them', metadata={'year': 2019, 'director': 'Greta Gerwig', 'rating': 8.3})]
+[Document(page_content='一群正常身材的女性非常纯真，一些男性对她们心怀爱慕', metadata={'year': 2019, 'director': 'Greta Gerwig', 'rating': 8.3})]
 ```
 
 
@@ -174,16 +172,14 @@ query=' ' filter=Operation(operator=<Operator.AND: 'and'>, arguments=[Comparison
 
 
 ```output
-[Document(page_content='Three men walk into the Zone, three men walk out of the Zone', metadata={'year': 1979, 'rating': 9.9, 'director': 'Andrei Tarkovsky', 'genre': 'science fiction'})]
+[Document(page_content='三个男人走进区域，三个男人走出区域', metadata={'year': 1979, 'rating': 9.9, 'director': 'Andrei Tarkovsky', 'genre': 'science fiction'})]
 ```
 
+## 过滤 k
 
-## Filter k
+我们还可以使用自查询检索器来指定 `k`：要获取的文档数量。
 
-We can also use the self query retriever to specify `k`: the number of documents to fetch.
-
-We can do this by passing `enable_limit=True` to the constructor.
-
+我们可以通过将 `enable_limit=True` 传递给构造函数来实现这一点。
 
 ```python
 retriever = SelfQueryRetriever.from_llm(
@@ -196,25 +192,21 @@ retriever = SelfQueryRetriever.from_llm(
 )
 ```
 
-
 ```python
-# This example only specifies a relevant query
+# 这个例子只指定了一个相关的查询
 retriever.invoke("what are two movies about dinosaurs")
 ```
 ```output
 query='dinosaur' filter=None limit=2
 ```
 
-
 ```output
 [Document(page_content='A bunch of scientists bring back dinosaurs and mayhem breaks loose', metadata={'year': 1993, 'rating': 7.7, 'genre': 'science fiction'}),
  Document(page_content='Toys come alive and have a blast doing so', metadata={'year': 1995, 'genre': 'animated'})]
 ```
 
-
-## Complex queries in Action!
-We've tried out some simple queries, but what about more complex ones? Let's try out a few more complex queries that utilize the full power of OpenSearch.
-
+## 复杂查询的实践！
+我们尝试了一些简单的查询，但更复杂的查询呢？让我们尝试一些利用 OpenSearch 全力的复杂查询。
 
 ```python
 retriever.invoke(
@@ -225,20 +217,14 @@ retriever.invoke(
 query='animated toys' filter=Operation(operator=<Operator.AND: 'and'>, arguments=[Operation(operator=<Operator.OR: 'or'>, arguments=[Comparison(comparator=<Comparator.EQ: 'eq'>, attribute='genre', value='animated'), Comparison(comparator=<Comparator.EQ: 'eq'>, attribute='genre', value='comedy')]), Comparison(comparator=<Comparator.GTE: 'gte'>, attribute='year', value=1990)]) limit=None
 ```
 
-
 ```output
 [Document(page_content='Toys come alive and have a blast doing so', metadata={'year': 1995, 'genre': 'animated'})]
 ```
-
-
 
 ```python
 vectorstore.client.indices.delete(index="opensearch-self-query-demo")
 ```
 
-
-
 ```output
 {'acknowledged': True}
 ```
-

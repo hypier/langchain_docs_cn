@@ -1,13 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/source_code.ipynb
 ---
-# Source Code
 
-This notebook covers how to load source code files using a special approach with language parsing: each top-level function and class in the code is loaded into separate documents. Any remaining code top-level code outside the already loaded functions and classes will be loaded into a separate document.
+# 源代码
 
-This approach can potentially improve the accuracy of QA models over source code.
+本笔记本涵盖了如何使用特殊方法加载源代码文件，结合语言解析：代码中的每个顶级函数和类将加载到单独的文档中。任何剩余的顶级代码（不在已加载的函数和类中）将被加载到单独的文档中。
 
-The supported languages for code parsing are:
+这种方法有可能提高源代码的 QA 模型的准确性。
+
+支持的代码解析语言有：
 
 - C (*)
 - C++ (*)
@@ -16,7 +17,7 @@ The supported languages for code parsing are:
 - Elixir
 - Go (*)
 - Java (*)
-- JavaScript (requires package `esprima`)
+- JavaScript（需要包 `esprima`）
 - Kotlin (*)
 - Lua (*)
 - Perl (*)
@@ -26,21 +27,16 @@ The supported languages for code parsing are:
 - Scala (*)
 - TypeScript (*)
 
-Items marked with (*) require the packages `tree_sitter` and `tree_sitter_languages`.
-It is straightforward to add support for additional languages using `tree_sitter`,
-although this currently requires modifying LangChain.
+标记为 (*) 的项目需要 `tree_sitter` 和 `tree_sitter_languages` 包。
+使用 `tree_sitter` 添加对其他语言的支持非常简单，尽管这目前需要修改 LangChain。
 
-The language used for parsing can be configured, along with the minimum number of
-lines required to activate the splitting based on syntax.
+可以配置用于解析的语言，以及激活基于语法的分割所需的最小行数。
 
-If a language is not explicitly specified, `LanguageParser` will infer one from
-filename extensions, if present.
-
+如果没有明确指定语言，`LanguageParser` 将根据文件名扩展推断出一种语言（如果存在）。
 
 ```python
 %pip install -qU esprima esprima tree_sitter tree_sitter_languages
 ```
-
 
 ```python
 import warnings
@@ -53,7 +49,6 @@ from langchain_community.document_loaders.parsers import LanguageParser
 from langchain_text_splitters import Language
 ```
 
-
 ```python
 loader = GenericLoader.from_filesystem(
     "./example_data/source_code",
@@ -64,18 +59,13 @@ loader = GenericLoader.from_filesystem(
 docs = loader.load()
 ```
 
-
 ```python
 len(docs)
 ```
 
-
-
 ```output
 6
 ```
-
-
 
 ```python
 for document in docs:
@@ -159,10 +149,9 @@ function main() {
 
 main();
 ```
-The parser can be disabled for small files. 
+解析器可以在小文件中禁用。
 
-The parameter `parser_threshold` indicates the minimum number of lines that the source code file must have to be segmented using the parser.
-
+参数 `parser_threshold` 表示源代码文件必须具有的最小行数，以便使用解析器进行分割。
 
 ```python
 loader = GenericLoader.from_filesystem(
@@ -174,18 +163,13 @@ loader = GenericLoader.from_filesystem(
 docs = loader.load()
 ```
 
-
 ```python
 len(docs)
 ```
 
-
-
 ```output
 1
 ```
-
-
 
 ```python
 print(docs[0].page_content)
@@ -208,10 +192,10 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-## Splitting
 
-Additional splitting could be needed for those functions, classes, or scripts that are too big.
+## 拆分
 
+对于那些过于庞大的函数、类或脚本，可能需要进行额外的拆分。
 
 ```python
 loader = GenericLoader.from_filesystem(
@@ -223,7 +207,6 @@ loader = GenericLoader.from_filesystem(
 docs = loader.load()
 ```
 
-
 ```python
 from langchain_text_splitters import (
     Language,
@@ -231,30 +214,23 @@ from langchain_text_splitters import (
 )
 ```
 
-
 ```python
 js_splitter = RecursiveCharacterTextSplitter.from_language(
     language=Language.JS, chunk_size=60, chunk_overlap=0
 )
 ```
 
-
 ```python
 result = js_splitter.split_documents(docs)
 ```
-
 
 ```python
 len(result)
 ```
 
-
-
 ```output
 7
 ```
-
-
 
 ```python
 print("\n\n--8<--\n\n".join([document.page_content for document in result]))
@@ -296,30 +272,30 @@ const obj = new MyClass(name);
 
 main();
 ```
-## Adding Languages using Tree-sitter Template
 
-Expanding language support using the Tree-Sitter template involves a few essential steps:
+## 使用 Tree-sitter 模板添加语言
 
-1. **Creating a New Language File**:
-    - Begin by creating a new file in the designated directory (langchain/libs/community/langchain_community/document_loaders/parsers/language).
-    - Model this file based on the structure and parsing logic of existing language files like **`cpp.py`**.
-    - You will also need to create a file in the langchain directory (langchain/libs/langchain/langchain/document_loaders/parsers/language).
-2. **Parsing Language Specifics**:
-    - Mimic the structure used in the **`cpp.py`** file, adapting it to suit the language you are incorporating.
-    - The primary alteration involves adjusting the chunk query array to suit the syntax and structure of the language you are parsing.
-3. **Testing the Language Parser**:
-    - For thorough validation, generate a test file specific to the new language. Create **`test_language.py`** in the designated directory(langchain/libs/community/tests/unit_tests/document_loaders/parsers/language).
-    - Follow the example set by **`test_cpp.py`** to establish fundamental tests for the parsed elements in the new language.
-4. **Integration into the Parser and Text Splitter**:
-    - Incorporate your new language within the **`language_parser.py`** file. Ensure to update LANGUAGE_EXTENSIONS and LANGUAGE_SEGMENTERS along with the docstring for LanguageParser to recognize and handle the added language.
-    - Also, confirm that your language is included in **`text_splitter.py`** in class Language for proper parsing.
+使用 Tree-Sitter 模板扩展语言支持涉及几个基本步骤：
 
-By following these steps and ensuring comprehensive testing and integration, you'll successfully extend language support using the Tree-Sitter template.
+1. **创建新的语言文件**：
+    - 首先在指定目录中创建一个新文件 (langchain/libs/community/langchain_community/document_loaders/parsers/language)。
+    - 根据现有语言文件的结构和解析逻辑（如 **`cpp.py`**）来建模该文件。
+    - 您还需要在 langchain 目录中创建一个文件 (langchain/libs/langchain/langchain/document_loaders/parsers/language)。
+2. **解析语言细节**：
+    - 模仿 **`cpp.py`** 文件中使用的结构，并根据您要引入的语言进行调整。
+    - 主要的修改涉及调整块查询数组，以适应您正在解析的语言的语法和结构。
+3. **测试语言解析器**：
+    - 为了进行全面验证，生成一个特定于新语言的测试文件。在指定目录中创建 **`test_language.py`** (langchain/libs/community/tests/unit_tests/document_loaders/parsers/language)。
+    - 遵循 **`test_cpp.py`** 设置的示例，为新语言中解析的元素建立基本测试。
+4. **集成到解析器和文本分割器中**：
+    - 在 **`language_parser.py`** 文件中集成您的新语言。确保更新 LANGUAGE_EXTENSIONS 和 LANGUAGE_SEGMENTERS，并更新 LanguageParser 的文档字符串，以便识别和处理新增的语言。
+    - 同时，确认您的语言已包含在 **`text_splitter.py`** 中的 Language 类中，以便进行正确解析。
 
-Best of luck!
+通过遵循这些步骤并确保全面的测试和集成，您将成功使用 Tree-Sitter 模板扩展语言支持。
 
+祝您好运！
 
-## Related
+## 相关
 
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

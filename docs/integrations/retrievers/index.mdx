@@ -3,39 +3,34 @@ sidebar_position: 0
 sidebar_class_name: hidden
 ---
 
-# Retrievers
+# 检索器
 
-A [retriever](/docs/concepts/#retrievers) is an interface that returns documents given an unstructured query.
-It is more general than a vector store.
-A retriever does not need to be able to store documents, only to return (or retrieve) them.
-Retrievers can be created from vector stores, but are also broad enough to include [Wikipedia search](/docs/integrations/retrievers/wikipedia/) and [Amazon Kendra](/docs/integrations/retrievers/amazon_kendra_retriever/).
+一个 [检索器](/docs/concepts/#retrievers) 是一个接口，能够根据非结构化查询返回文档。它比向量存储更为通用。检索器不需要能够存储文档，只需要返回（或检索）它们。检索器可以从向量存储中创建，但也足够广泛，包含 [维基百科搜索](/docs/integrations/retrievers/wikipedia/) 和 [亚马逊 Kendra](/docs/integrations/retrievers/amazon_kendra_retriever/)。
 
-Retrievers accept a string query as input and return a list of [Documents](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html) as output.
+检索器接受字符串查询作为输入，并返回一个 [文档](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html) 列表作为输出。
 
-For specifics on how to use retrievers, see the [relevant how-to guides here](/docs/how_to/#retrievers).
+有关如何使用检索器的具体信息，请参见 [相关的操作指南](/docs/how_to/#retrievers)。
 
-Note that all [vector stores](/docs/concepts/#vector-stores) can be [cast to retrievers](/docs/how_to/vectorstore_retriever/).
-Refer to the vector store [integration docs](/docs/integrations/vectorstores/) for available vector stores.
-This page lists custom retrievers, implemented via subclassing [BaseRetriever](/docs/how_to/custom_retriever/).
+请注意，所有 [向量存储](/docs/concepts/#vector-stores) 都可以 [转换为检索器](/docs/how_to/vectorstore_retriever/)。有关可用向量存储的信息，请参阅向量存储 [集成文档](/docs/integrations/vectorstores/)。此页面列出了通过子类化 [BaseRetriever](/docs/how_to/custom_retriever/) 实现的自定义检索器。
 
-## Bring-your-own documents
+## 自带文档
 
-The below retrievers allow you to index and search a custom corpus of documents.
+以下检索器允许您索引和搜索自定义文档库。
 
-| Retriever | Self-host | Cloud offering | Package |
-|-----------|-----------|----------------|---------|
+| 检索器 | 自托管 | 云服务 | 包 |
+|--------|--------|--------|----|
 | [AmazonKnowledgeBasesRetriever](/docs/integrations/retrievers/bedrock) | ❌ | ✅ | [langchain_aws](https://api.python.langchain.com/en/latest/retrievers/langchain_aws.retrievers.bedrock.AmazonKnowledgeBasesRetriever.html) |
 | [AzureAISearchRetriever](/docs/integrations/retrievers/azure_ai_search) | ❌ | ✅ | [langchain_community](https://api.python.langchain.com/en/latest/retrievers/langchain_community.retrievers.azure_ai_search.AzureAISearchRetriever.html) |
 | [ElasticsearchRetriever](/docs/integrations/retrievers/elasticsearch_retriever) | ✅ | ✅ | [langchain_elasticsearch](https://api.python.langchain.com/en/latest/retrievers/langchain_elasticsearch.retrievers.ElasticsearchRetriever.html) |
 | [MilvusCollectionHybridSearchRetriever](/docs/integrations/retrievers/milvus_hybrid_search) | ✅ | ❌ | [langchain_milvus](https://api.python.langchain.com/en/latest/retrievers/langchain_milvus.retrievers.milvus_hybrid_search.MilvusCollectionHybridSearchRetriever.html) |
 | [VertexAISearchRetriever](/docs/integrations/retrievers/google_vertex_ai_search) | ❌ | ✅ | [langchain_google_community](https://api.python.langchain.com/en/latest/vertex_ai_search/langchain_google_community.vertex_ai_search.VertexAISearchRetriever.html) |
 
-## External index
+## 外部索引
 
-The below retrievers will search over an external index (e.g., constructed from Internet data or similar).
+下面的检索器将搜索外部索引（例如，从互联网数据或类似数据构建的索引）。
 
-| Retriever | Source | Package |
+| 检索器 | 来源 | 包 |
 |-----------|--------|---------|
-| [ArxivRetriever](/docs/integrations/retrievers/arxiv) | Scholarly articles on [arxiv.org](https://arxiv.org/) | [langchain_community](https://api.python.langchain.com/en/latest/retrievers/langchain_community.retrievers.arxiv.ArxivRetriever.html) |
-| [TavilySearchAPIRetriever](/docs/integrations/retrievers/tavily) | Internet search | [langchain_community](https://api.python.langchain.com/en/latest/retrievers/langchain_community.retrievers.tavily_search_api.TavilySearchAPIRetriever.html) |
-| [WikipediaRetriever](/docs/integrations/retrievers/wikipedia) | [Wikipedia](https://www.wikipedia.org/) articles | [langchain_community](https://api.python.langchain.com/en/latest/retrievers/langchain_community.retrievers.wikipedia.WikipediaRetriever.html) |
+| [ArxivRetriever](/docs/integrations/retrievers/arxiv) | [arxiv.org](https://arxiv.org/) 上的学术文章 | [langchain_community](https://api.python.langchain.com/en/latest/retrievers/langchain_community.retrievers.arxiv.ArxivRetriever.html) |
+| [TavilySearchAPIRetriever](/docs/integrations/retrievers/tavily) | 互联网搜索 | [langchain_community](https://api.python.langchain.com/en/latest/retrievers/langchain_community.retrievers.tavily_search_api.TavilySearchAPIRetriever.html) |
+| [WikipediaRetriever](/docs/integrations/retrievers/wikipedia) | [Wikipedia](https://www.wikipedia.org/) 文章 | [langchain_community](https://api.python.langchain.com/en/latest/retrievers/langchain_community.retrievers.wikipedia.WikipediaRetriever.html) |

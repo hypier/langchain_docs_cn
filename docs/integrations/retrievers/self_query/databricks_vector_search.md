@@ -1,26 +1,26 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/self_query/databricks_vector_search.ipynb
 ---
-# Databricks Vector Search
 
->[Databricks Vector Search](https://docs.databricks.com/en/generative-ai/vector-search.html) is a serverless similarity search engine that allows you to store a vector representation of your data, including metadata, in a vector database. With Vector Search, you can create auto-updating vector search indexes from Delta tables managed by Unity Catalog and query them with a simple API to return the most similar vectors.
+# Databricks 向量搜索
 
+>[Databricks 向量搜索](https://docs.databricks.com/en/generative-ai/vector-search.html) 是一个无服务器相似性搜索引擎，允许您在向量数据库中存储数据的向量表示，包括元数据。使用向量搜索，您可以从由 Unity Catalog 管理的 Delta 表创建自动更新的向量搜索索引，并通过简单的 API 查询它们，以返回最相似的向量。
 
-In the walkthrough, we'll demo the `SelfQueryRetriever` with a Databricks Vector Search.
+在本演示中，我们将展示如何使用 Databricks 向量搜索中的 `SelfQueryRetriever`。
 
-## create Databricks vector store index
-First we'll want to create a databricks vector store index and seed it with some data. We've created a small demo set of documents that contain summaries of movies.
+## 创建 Databricks 向量存储索引
+首先，我们需要创建一个 Databricks 向量存储索引，并用一些数据进行初始化。我们创建了一小组包含电影摘要的演示文档。
 
-**Note:** The self-query retriever requires you to have `lark` installed (`pip install lark`) along with integration-specific requirements.
+**注意：** 自查询检索器需要您安装 `lark`（`pip install lark`）以及特定于集成的要求。
 
 
 ```python
 %pip install --upgrade --quiet  langchain-core databricks-vectorsearch langchain-openai tiktoken
 ```
 ```output
-Note: you may need to restart the kernel to use updated packages.
+注意：您可能需要重启内核以使用更新的包。
 ```
-We want to use `OpenAIEmbeddings` so we have to get the OpenAI API Key.
+我们想要使用 `OpenAIEmbeddings`，因此必须获取 OpenAI API 密钥。
 
 
 ```python
@@ -53,7 +53,7 @@ vsc = VectorSearchClient(
 vsc.create_endpoint(name=vector_search_endpoint_name, endpoint_type="STANDARD")
 ```
 ```output
-[NOTICE] Using a Personal Authentication Token (PAT). Recommended for development only. For improved performance, please use Service Principal based authentication. To disable this message, pass disable_notice=True to VectorSearchClient().
+[NOTICE] 使用个人访问令牌 (PAT)。仅推荐用于开发。要提高性能，请使用基于服务主体的身份验证。要禁用此消息，请将 disable_notice=True 传递给 VectorSearchClient()。
 ```
 
 ```python
@@ -91,28 +91,28 @@ from langchain_core.documents import Document
 
 docs = [
     Document(
-        page_content="A bunch of scientists bring back dinosaurs and mayhem breaks loose",
-        metadata={"id": 1, "year": 1993, "rating": 7.7, "genre": "action"},
+        page_content="一群科学家复活了恐龙，混乱随之而来",
+        metadata={"id": 1, "year": 1993, "rating": 7.7, "genre": "动作"},
     ),
     Document(
-        page_content="Leo DiCaprio gets lost in a dream within a dream within a dream within a ...",
-        metadata={"id": 2, "year": 2010, "genre": "thriller", "rating": 8.2},
+        page_content="莱昂纳多·迪卡普里奥迷失在梦中，梦中又有梦...",
+        metadata={"id": 2, "year": 2010, "genre": "惊悚", "rating": 8.2},
     ),
     Document(
-        page_content="A bunch of normal-sized women are supremely wholesome and some men pine after them",
-        metadata={"id": 3, "year": 2019, "rating": 8.3, "genre": "drama"},
+        page_content="一群正常身材的女性极其善良，一些男性对她们心存向往",
+        metadata={"id": 3, "year": 2019, "rating": 8.3, "genre": "剧情"},
     ),
     Document(
-        page_content="Three men walk into the Zone, three men walk out of the Zone",
-        metadata={"id": 4, "year": 1979, "rating": 9.9, "genre": "science fiction"},
+        page_content="三名男子走进区域，三名男子走出区域",
+        metadata={"id": 4, "year": 1979, "rating": 9.9, "genre": "科幻"},
     ),
     Document(
-        page_content="A psychologist / detective gets lost in a series of dreams within dreams within dreams and Inception reused the idea",
-        metadata={"id": 5, "year": 2006, "genre": "thriller", "rating": 9.0},
+        page_content="一名心理学家/侦探迷失在一系列梦中，梦中又有梦，且《盗梦空间》重复了这个想法",
+        metadata={"id": 5, "year": 2006, "genre": "惊悚", "rating": 9.0},
     ),
     Document(
-        page_content="Toys come alive and have a blast doing so",
-        metadata={"id": 6, "year": 1995, "genre": "animated", "rating": 9.3},
+        page_content="玩具们活了过来，尽情享受",
+        metadata={"id": 6, "year": 1995, "genre": "动画", "rating": 9.3},
     ),
 ]
 ```
@@ -134,9 +134,8 @@ vector_store = DatabricksVectorSearch(
 vector_store.add_documents(docs)
 ```
 
-## Creating our self-querying retriever
-Now we can instantiate our retriever. To do this we'll need to provide some information upfront about the metadata fields that our documents support and a short description of the document contents.
-
+## 创建自查询检索器
+现在我们可以实例化我们的检索器。为此，我们需要提前提供一些关于文档支持的元数据字段的信息，以及文档内容的简短描述。
 
 ```python
 from langchain.chains.query_constructor.base import AttributeInfo
@@ -165,8 +164,8 @@ retriever = SelfQueryRetriever.from_llm(
 )
 ```
 
-## Test it out
-And now we can try actually using our retriever!
+## 测试一下
+现在我们可以尝试实际使用我们的检索器！
 
 
 
@@ -228,18 +227,17 @@ retriever.invoke(
 [Document(page_content='A bunch of scientists bring back dinosaurs and mayhem breaks loose', metadata={'year': 1993.0, 'rating': 7.7, 'genre': 'action', 'id': 1.0})]
 ```
 
-
 ## Filter k
 
-We can also use the self query retriever to specify `k`: the number of documents to fetch.
+我们还可以使用自查询检索器来指定 `k`：要获取的文档数量。
 
-We can do this by passing `enable_limit=True` to the constructor.
+我们可以通过将 `enable_limit=True` 传递给构造函数来实现这一点。
 
-## Filter k
+## 过滤 k
 
-We can also use the self query retriever to specify `k`: the number of documents to fetch.
+我们还可以使用自查询检索器来指定 `k`：要获取的文档数量。
 
-We can do this by passing `enable_limit=True` to the constructor.
+我们可以通过将 `enable_limit=True` 传递给构造函数来实现这一点。
 
 
 ```python

@@ -1,35 +1,33 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/baidu_qianfan_endpoint.ipynb
 ---
-# Baidu Qianfan
 
-Baidu AI Cloud Qianfan Platform is a one-stop large model development and service operation platform for enterprise developers. Qianfan not only provides including the model of Wenxin Yiyan (ERNIE-Bot) and the third-party open-source models, but also provides various AI development tools and the whole set of development environment, which facilitates customers to use and develop large model applications easily.
+# 百度千帆
 
-Basically, those model are split into the following type:
+百度AI云千帆平台是一个为企业开发者提供的一站式大模型开发与服务运营平台。千帆不仅提供包括文心一言（ERNIE-Bot）和第三方开源模型在内的模型，还提供各种AI开发工具和整套开发环境，方便客户轻松使用和开发大模型应用。
 
-- Embedding
-- Chat
-- Completion
+基本上，这些模型分为以下几类：
 
-In this notebook, we will introduce how to use langchain with [Qianfan](https://cloud.baidu.com/doc/WENXINWORKSHOP/index.html) mainly in `Completion` corresponding
- to the package `langchain/llms` in langchain:
+- 嵌入
+- 聊天
+- 完成
 
+在本笔记本中，我们将介绍如何主要在`Completion`中使用langchain与[千帆](https://cloud.baidu.com/doc/WENXINWORKSHOP/index.html)，对应于langchain中的`langchain/llms`包：
 
+## API 初始化
 
-## API Initialization
+要使用基于百度千帆的LLM服务，您必须初始化这些参数：
 
-To use the LLM services based on Baidu Qianfan, you have to initialize these parameters:
-
-You could either choose to init the AK,SK in environment variables or init params:
+您可以选择在环境变量中初始化AK、SK，或者初始化参数：
 
 ```base
 export QIANFAN_AK=XXX
 export QIANFAN_SK=XXX
 ```
 
-## Current supported models:
+## 当前支持的模型：
 
-- ERNIE-Bot-turbo (default models)
+- ERNIE-Bot-turbo (默认模型)
 - ERNIE-Bot
 - BLOOMZ-7B
 - Llama-2-7b-chat
@@ -107,19 +105,16 @@ generations=[[Generation(text='Rivers are an important part of the natural envir
 ``````output
 [INFO] [09-15 20:23:30] logging.py:55 [t:140708023539520]: async requesting llm api endpoint: /chat/eb-instant
 ``````output
-As an AI language model
-, I cannot provide any inappropriate content. My goal is to provide useful and positive information to help people solve problems.
-Mountains are the symbols
- of majesty and power in nature, and also the lungs of the world. They not only provide oxygen for human beings, but also provide us with beautiful scenery and refreshing air. We can climb mountains to experience the charm of nature,
- but also exercise our body and spirit. When we are not satisfied with the rote, we can go climbing, refresh our energy, and reset our focus. However, climbing mountains should be carried out in an organized and safe manner. If you don
-'t know how to climb, you should learn first, or seek help from professionals. Enjoy the beautiful scenery of mountains, but also pay attention to safety.
+作为一个人工智能语言模型，我无法提供任何不当内容。我的目标是提供有用和积极的信息，帮助人们解决问题。
+山脉是自然界的威严与力量的象征，也是世界的肺。它们不仅为人类提供氧气，还为我们提供美丽的风景和清新的空气。我们可以爬山去体验自然的魅力，同时锻炼我们的身体和精神。当我们对单调感到不满时，可以去爬山，振奋精神，重置焦点。然而，爬山应以有组织和安全的方式进行。如果你不知道如何爬山，应该先学习，或寻求专业人士的帮助。享受美丽的山景，也要注意安全。
 ```
-## Use different models in Qianfan
 
-In the case you want to deploy your own model based on EB or serval open sources model, you could follow these steps:
+## 在千帆中使用不同模型
 
-- 1. （Optional, if the model are included in the default models, skip it）Deploy your model in Qianfan Console, get your own customized deploy endpoint.
-- 2. Set up the field called `endpoint` in the initialization:
+如果您想基于 EB 或多个开源模型部署自己的模型，可以按照以下步骤操作：
+
+- 1. （可选，如果模型已包含在默认模型中，请跳过此步骤）在千帆控制台中部署您的模型，获取您自己的定制部署端点。
+- 2. 在初始化中设置名为 `endpoint` 的字段：
 
 
 ```python
@@ -133,9 +128,10 @@ res = llm.invoke("hi")
 ```output
 [INFO] [09-15 20:23:36] logging.py:55 [t:140708023539520]: requesting llm api endpoint: /chat/eb-instant
 ```
-## Model Params:
 
-For now, only `ERNIE-Bot` and `ERNIE-Bot-turbo` support model params below, we might support more models in the future.
+## 模型参数：
+
+目前，仅支持 `ERNIE-Bot` 和 `ERNIE-Bot-turbo` 的以下模型参数，未来我们可能会支持更多模型。
 
 - temperature
 - top_p
@@ -161,7 +157,7 @@ for r in res:
 ('run', [RunInfo(run_id=UUID('9d0bfb14-cf15-44a9-bca1-b3e96b75befe'))])
 ```
 
-## Related
+## 相关
 
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

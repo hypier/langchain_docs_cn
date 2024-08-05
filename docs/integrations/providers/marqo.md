@@ -1,31 +1,31 @@
 # Marqo
 
-This page covers how to use the Marqo ecosystem within LangChain.
+本页面介绍如何在 LangChain 中使用 Marqo 生态系统。
 
-### **What is Marqo?**
+### **什么是 Marqo？**
 
-Marqo is a tensor search engine that uses embeddings stored in in-memory HNSW indexes to achieve cutting edge search speeds. Marqo can scale to hundred-million document indexes with horizontal index sharding and allows for async and non-blocking data upload and search. Marqo uses the latest machine learning models from PyTorch, Huggingface, OpenAI and more. You can start with a pre-configured model or bring your own. The built in ONNX support and conversion allows for faster inference and higher throughput on both CPU and GPU.
+Marqo 是一个张量搜索引擎，使用存储在内存 HNSW 索引中的嵌入来实现尖端搜索速度。Marqo 可以通过水平索引分片扩展到数亿文档索引，并允许异步和非阻塞的数据上传和搜索。Marqo 使用来自 PyTorch、Huggingface、OpenAI 等的最新机器学习模型。您可以使用预配置的模型或自定义模型。内置的 ONNX 支持和转换允许在 CPU 和 GPU 上实现更快的推理和更高的吞吐量。
 
-Because Marqo include its own inference your documents can have a mix of text and images, you can bring Marqo indexes with data from your other systems into the langchain ecosystem without having to worry about your embeddings being compatible. 
+由于 Marqo 包含自己的推理，您的文档可以混合文本和图像，您可以将 Marqo 索引与其他系统中的数据一起引入 langchain 生态系统，而不必担心您的嵌入是否兼容。
 
-Deployment of Marqo is flexible, you can get started yourself with our docker image or [contact us about our managed cloud offering!](https://www.marqo.ai/pricing)
+Marqo 的部署灵活，您可以使用我们的 docker 镜像自行开始，或[联系我们了解我们的托管云服务！](https://www.marqo.ai/pricing)
 
-To run Marqo locally with our docker image, [see our getting started.](https://docs.marqo.ai/latest/)
+要使用我们的 docker 镜像在本地运行 Marqo，[请参阅我们的入门指南。](https://docs.marqo.ai/latest/)
 
-## Installation and Setup
-- Install the Python SDK with `pip install marqo`
+## 安装与设置
+- 使用 `pip install marqo` 安装 Python SDK
 
-## Wrappers
+## 包装器
 
 ### VectorStore
 
-There exists a wrapper around Marqo indexes, allowing you to use them within the vectorstore framework. Marqo lets you select from a range of models for generating embeddings and exposes some preprocessing configurations.
+存在一个围绕 Marqo 索引的封装，允许您在 vectorstore 框架内使用它们。Marqo 让您可以从多种模型中选择以生成嵌入，并暴露一些预处理配置。
 
-The Marqo vectorstore can also work with existing multimodel indexes where your documents have a mix of images and text, for more information refer to [our documentation](https://docs.marqo.ai/latest/#multi-modal-and-cross-modal-search). Note that instaniating the Marqo vectorstore with an existing multimodal index will disable the ability to add any new documents to it via the langchain vectorstore `add_texts` method.
+Marqo vectorstore 还可以与现有的多模型索引一起工作，您的文档可以混合图像和文本，更多信息请参见 [我们的文档](https://docs.marqo.ai/latest/#multi-modal-and-cross-modal-search)。请注意，使用现有的多模态索引实例化 Marqo vectorstore 将禁用通过 langchain vectorstore `add_texts` 方法添加任何新文档的能力。
 
-To import this vectorstore:
+要导入此 vectorstore：
 ```python
 from langchain_community.vectorstores import Marqo
 ```
 
-For a more detailed walkthrough of the Marqo wrapper and some of its unique features, see [this notebook](/docs/integrations/vectorstores/marqo)
+有关 Marqo 封装及其一些独特功能的更详细操作，请参见 [此笔记本](/docs/integrations/vectorstores/marqo)

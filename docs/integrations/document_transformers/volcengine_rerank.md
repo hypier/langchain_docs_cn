@@ -1,17 +1,16 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_transformers/volcengine_rerank.ipynb
 ---
+
 # Volcengine Reranker
 
-This notebook shows how to use Volcengine Reranker for document compression and retrieval. [Volcengine](https://www.volcengine.com/) is a cloud service platform developed by ByteDance, the parent company of TikTok.
+本笔记本展示了如何使用 Volcengine Reranker 进行文档压缩和检索。[Volcengine](https://www.volcengine.com/) 是字节跳动（TikTok 的母公司）开发的云服务平台。
 
-Volcengine's Rerank Service supports reranking up to 50 documents with a maximum of 4000 tokens. For more, please visit [here](https://www.volcengine.com/docs/84313/1254474) and [here](https://www.volcengine.com/docs/84313/1254605).
-
+Volcengine 的 Rerank 服务支持对最多 50 个文档进行重新排名，最大支持 4000 个 token。有关更多信息，请访问 [这里](https://www.volcengine.com/docs/84313/1254474) 和 [这里](https://www.volcengine.com/docs/84313/1254605)。
 
 ```python
 %pip install --upgrade --quiet  volcengine
 ```
-
 
 ```python
 %pip install --upgrade --quiet  faiss
@@ -20,7 +19,6 @@ Volcengine's Rerank Service supports reranking up to 50 documents with a maximum
 
 %pip install --upgrade --quiet  faiss-cpu
 ```
-
 
 ```python
 # To obtain ak/sk: https://www.volcengine.com/docs/84313/1254488
@@ -32,7 +30,6 @@ os.environ["VOLC_API_AK"] = getpass.getpass("Volcengine API AK:")
 os.environ["VOLC_API_SK"] = getpass.getpass("Volcengine API SK:")
 ```
 
-
 ```python
 # Helper function for printing docs
 def pretty_print_docs(docs):
@@ -43,9 +40,8 @@ def pretty_print_docs(docs):
     )
 ```
 
-## Set up the base vector store retriever
-Let's start by initializing a simple vector store retriever and storing the 2023 State of the Union speech (in chunks). We can set up the retriever to retrieve a high number (20) of docs.
-
+## 设置基础向量存储检索器
+让我们开始初始化一个简单的向量存储检索器，并存储2023年国情咨文（以块的形式）。我们可以设置检索器以检索大量（20）文档。
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -60,14 +56,14 @@ retriever = FAISS.from_documents(
     texts, HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 ).as_retriever(search_kwargs={"k": 20})
 
-query = "What did the president say about Ketanji Brown Jackson"
+query = "总统关于凯坦吉·布朗·杰克逊说了什么"
 docs = retriever.invoke(query)
 pretty_print_docs(docs)
 ```
 ```output
-/Users/terminator/Developer/langchain/.venv/lib/python3.11/site-packages/sentence_transformers/cross_encoder/CrossEncoder.py:11: TqdmExperimentalWarning: Using `tqdm.autonotebook.tqdm` in notebook mode. Use `tqdm.tqdm` instead to force console mode (e.g. in jupyter console)
+/Users/terminator/Developer/langchain/.venv/lib/python3.11/site-packages/sentence_transformers/cross_encoder/CrossEncoder.py:11: TqdmExperimentalWarning: 在笔记本模式下使用 `tqdm.autonotebook.tqdm`。请使用 `tqdm.tqdm` 强制控制台模式（例如，在jupyter控制台中）
   from tqdm.autonotebook import tqdm, trange
-/Users/terminator/Developer/langchain/.venv/lib/python3.11/site-packages/huggingface_hub/file_download.py:1132: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+/Users/terminator/Developer/langchain/.venv/lib/python3.11/site-packages/huggingface_hub/file_download.py:1132: FutureWarning: `resume_download` 已被弃用，将在版本 1.0.0 中移除。下载在可能的情况下总是会恢复。如果您想强制重新下载，请使用 `force_download=True`。
   warnings.warn(
 ``````output
 Document 1:
@@ -289,9 +285,9 @@ To disable this warning, you can either:
 	- Avoid using `tokenizers` before the fork if possible
 	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
 ```
-## Reranking with VolcengineRerank
-Now let's wrap our base retriever with a `ContextualCompressionRetriever`. We'll use the `VolcengineRerank` to rerank the returned results.
 
+## 使用 VolcengineRerank 进行重新排序
+现在让我们用 `ContextualCompressionRetriever` 包装我们的基础检索器。我们将使用 `VolcengineRerank` 对返回的结果进行重新排序。
 
 ```python
 from langchain.retrievers import ContextualCompressionRetriever

@@ -1,18 +1,16 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/momento_chat_message_history.ipynb
 ---
+
 # Momento Cache
 
->[Momento Cache](https://docs.momentohq.com/) is the world's first truly serverless caching service. It provides instant elasticity, scale-to-zero 
-> capability, and blazing-fast performance.  
+>[Momento Cache](https://docs.momentohq.com/) 是全球首个真正无服务器的缓存服务。它提供即时弹性、零扩展能力和超快性能。
 
+本笔记本介绍如何使用 [Momento Cache](https://www.gomomento.com/services/cache) 来存储聊天消息历史，使用 `MomentoChatMessageHistory` 类。有关如何设置 Momento 的更多详细信息，请参阅 Momento [文档](https://docs.momentohq.com/getting-started)。
 
-This notebook goes over how to use [Momento Cache](https://www.gomomento.com/services/cache) to store chat message history using the `MomentoChatMessageHistory` class. See the Momento [docs](https://docs.momentohq.com/getting-started) for more detail on how to get set up with Momento.
+请注意，默认情况下，如果给定名称的缓存尚不存在，我们将创建一个缓存。
 
-Note that, by default we will create a cache if one with the given name doesn't already exist.
-
-You'll need to get a Momento API key to use this class. This can either be passed in to a momento.CacheClient if you'd like to instantiate that directly, as a named parameter `api_key` to `MomentoChatMessageHistory.from_client_params`, or can just be set as an environment variable `MOMENTO_API_KEY`.
-
+您需要获取一个 Momento API 密钥才能使用此类。您可以将其作为命名参数 `api_key` 传递给 `MomentoChatMessageHistory.from_client_params`，或者直接传递给 momento.CacheClient，或者将其设置为环境变量 `MOMENTO_API_KEY`。
 
 ```python
 from datetime import timedelta
@@ -33,15 +31,11 @@ history.add_user_message("hi!")
 history.add_ai_message("whats up?")
 ```
 
-
 ```python
 history.messages
 ```
-
-
 
 ```output
 [HumanMessage(content='hi!', additional_kwargs={}, example=False),
  AIMessage(content='whats up?', additional_kwargs={}, example=False)]
 ```
-

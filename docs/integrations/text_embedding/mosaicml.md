@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/mosaicml.ipynb
 ---
+
 # MosaicML
 
->[MosaicML](https://docs.mosaicml.com/en/latest/inference.html) offers a managed inference service. You can either use a variety of open-source models, or deploy your own.
+>[MosaicML](https://docs.mosaicml.com/en/latest/inference.html) 提供托管推理服务。您可以使用各种开源模型，或部署您自己的模型。
 
-This example goes over how to use LangChain to interact with `MosaicML` Inference for text embedding.
+本示例介绍如何使用 LangChain 与 `MosaicML` 推理进行文本嵌入的交互。
 
 
 ```python
@@ -59,8 +60,7 @@ similarity = np.dot(query_numpy, document_numpy) / (
 print(f"Cosine similarity between document and query: {similarity}")
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

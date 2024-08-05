@@ -1,72 +1,71 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/google_bigtable.ipynb
 ---
+
 # Google Bigtable
 
-> [Google Cloud Bigtable](https://cloud.google.com/bigtable) is a key-value and wide-column store, ideal for fast access to structured, semi-structured, or unstructured data. Extend your database application to build AI-powered experiences leveraging Bigtable's Langchain integrations.
+> [Google Cloud Bigtable](https://cloud.google.com/bigtable) 是一个键值和宽列存储，适合快速访问结构化、半结构化或非结构化数据。扩展您的数据库应用程序，构建利用 Bigtable 的 Langchain 集成的 AI 驱动体验。
 
-This notebook goes over how to use [Google Cloud Bigtable](https://cloud.google.com/bigtable) to store chat message history with the `BigtableChatMessageHistory` class.
+本笔记本介绍了如何使用 [Google Cloud Bigtable](https://cloud.google.com/bigtable) 存储聊天消息历史记录，使用 `BigtableChatMessageHistory` 类。
 
-Learn more about the package on [GitHub](https://github.com/googleapis/langchain-google-bigtable-python/).
+在 [GitHub](https://github.com/googleapis/langchain-google-bigtable-python/) 上了解更多关于该包的信息。
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/googleapis/langchain-google-bigtable-python/blob/main/docs/chat_message_history.ipynb)
 
+## 开始之前
 
-## Before You Begin
+要运行此笔记本，您需要执行以下操作：
 
-To run this notebook, you will need to do the following:
+* [创建一个 Google Cloud 项目](https://developers.google.com/workspace/guides/create-project)
+* [启用 Bigtable API](https://console.cloud.google.com/flows/enableapi?apiid=bigtable.googleapis.com)
+* [创建一个 Bigtable 实例](https://cloud.google.com/bigtable/docs/creating-instance)
+* [创建一个 Bigtable 表](https://cloud.google.com/bigtable/docs/managing-tables)
+* [创建 Bigtable 访问凭据](https://developers.google.com/workspace/guides/create-credentials)
 
-* [Create a Google Cloud Project](https://developers.google.com/workspace/guides/create-project)
-* [Enable the Bigtable API](https://console.cloud.google.com/flows/enableapi?apiid=bigtable.googleapis.com)
-* [Create a Bigtable instance](https://cloud.google.com/bigtable/docs/creating-instance)
-* [Create a Bigtable table](https://cloud.google.com/bigtable/docs/managing-tables)
-* [Create Bigtable access credentials](https://developers.google.com/workspace/guides/create-credentials)
+### 🦜🔗 库安装
 
-### 🦜🔗 Library Installation
-
-The integration lives in its own `langchain-google-bigtable` package, so we need to install it.
+集成位于其自己的 `langchain-google-bigtable` 包中，因此我们需要安装它。
 
 
 ```python
 %pip install -upgrade --quiet langchain-google-bigtable
 ```
 
-**Colab only**: Uncomment the following cell to restart the kernel or use the button to restart the kernel. For Vertex AI Workbench you can restart the terminal using the button on top.
+**仅限 Colab**：取消注释以下单元以重新启动内核，或使用按钮重新启动内核。对于 Vertex AI Workbench，您可以使用顶部的按钮重新启动终端。
 
 
 ```python
-# # Automatically restart kernel after installs so that your environment can access the new packages
+# # 自动在安装后重新启动内核，以便您的环境可以访问新包
 # import IPython
 
 # app = IPython.Application.instance()
 # app.kernel.do_shutdown(True)
 ```
 
-### ☁ Set Your Google Cloud Project
-Set your Google Cloud project so that you can leverage Google Cloud resources within this notebook.
+### ☁ 设置您的 Google Cloud 项目
+设置您的 Google Cloud 项目，以便您可以在此笔记本中利用 Google Cloud 资源。
 
-If you don't know your project ID, try the following:
+如果您不知道您的项目 ID，可以尝试以下方法：
 
-* Run `gcloud config list`.
-* Run `gcloud projects list`.
-* See the support page: [Locate the project ID](https://support.google.com/googleapi/answer/7014113).
-
+* 运行 `gcloud config list`。
+* 运行 `gcloud projects list`。
+* 查看支持页面：[查找项目 ID](https://support.google.com/googleapi/answer/7014113)。
 
 ```python
-# @markdown Please fill in the value below with your Google Cloud project ID and then run the cell.
+# @markdown 请在下面填写您的 Google Cloud 项目 ID，然后运行该单元格。
 
 PROJECT_ID = "my-project-id"  # @param {type:"string"}
 
-# Set the project id
+# 设置项目 ID
 !gcloud config set project {PROJECT_ID}
 ```
 
-### 🔐 Authentication
+### 🔐 身份验证
 
-Authenticate to Google Cloud as the IAM user logged into this notebook in order to access your Google Cloud Project.
+作为已登录此笔记本的 IAM 用户对 Google Cloud 进行身份验证，以访问您的 Google Cloud 项目。
 
-- If you are using Colab to run this notebook, use the cell below and continue.
-- If you are using Vertex AI Workbench, check out the setup instructions [here](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env).
+- 如果您使用 Colab 运行此笔记本，请使用下面的单元格并继续。
+- 如果您使用 Vertex AI Workbench，请查看 [这里](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env) 的设置说明。
 
 
 ```python
@@ -75,20 +74,20 @@ from google.colab import auth
 auth.authenticate_user()
 ```
 
-## Basic Usage
+## 基本用法
 
-### Initialize Bigtable schema
+### 初始化 Bigtable 架构
 
-The schema for BigtableChatMessageHistory requires the instance and table to exist, and have a column family called `langchain`.
+BigtableChatMessageHistory 的架构要求实例和表必须存在，并且有一个名为 `langchain` 的列族。
 
 
 ```python
-# @markdown Please specify an instance and a table for demo purpose.
+# @markdown 请为演示目的指定一个实例和一个表。
 INSTANCE_ID = "my_instance"  # @param {type:"string"}
 TABLE_ID = "my_table"  # @param {type:"string"}
 ```
 
-If the table or the column family do not exist, you can use the following function to create them:
+如果表或列族不存在，您可以使用以下函数来创建它们：
 
 
 ```python
@@ -103,12 +102,11 @@ create_chat_history_table(
 
 ### BigtableChatMessageHistory
 
-To initialize the `BigtableChatMessageHistory` class you need to provide only 3 things:
+要初始化 `BigtableChatMessageHistory` 类，您只需要提供 3 个参数：
 
-1. `instance_id` - The Bigtable instance to use for chat message history.
-1. `table_id` : The Bigtable table to store the chat message history.
-1. `session_id` - A unique identifier string that specifies an id for the session.
-
+1. `instance_id` - 用于聊天消息历史记录的 Bigtable 实例。
+1. `table_id` : 用于存储聊天消息历史记录的 Bigtable 表。
+1. `session_id` - 指定会话的唯一标识符字符串。
 
 ```python
 from langchain_google_bigtable import BigtableChatMessageHistory
@@ -123,27 +121,24 @@ message_history.add_user_message("hi!")
 message_history.add_ai_message("whats up?")
 ```
 
-
 ```python
 message_history.messages
 ```
 
-#### Cleaning up
+#### 清理
 
-When the history of a specific session is obsolete and can be deleted, it can be done the following way.
+当特定会话的历史记录过时且可以删除时，可以通过以下方式进行。
 
-**Note:** Once deleted, the data is no longer stored in Bigtable and is gone forever.
-
+**注意：** 一旦删除，数据将不再存储在 Bigtable 中，且永久丢失。
 
 ```python
 message_history.clear()
 ```
 
-## Advanced Usage
+## 高级用法
 
-### Custom client
-The client created by default is the default client, using only admin=True option. To use a non-default, a [custom client](https://cloud.google.com/python/docs/reference/bigtable/latest/client#class-googlecloudbigtableclientclientprojectnone-credentialsnone-readonlyfalse-adminfalse-clientinfonone-clientoptionsnone-adminclientoptionsnone-channelnone) can be passed to the constructor.
-
+### 自定义客户端
+默认创建的客户端是默认客户端，仅使用 admin=True 选项。要使用非默认客户端，可以将 [自定义客户端](https://cloud.google.com/python/docs/reference/bigtable/latest/client#class-googlecloudbigtableclientclientprojectnone-credentialsnone-readonlyfalse-adminfalse-clientinfonone-clientoptionsnone-adminclientoptionsnone-channelnone) 传递给构造函数。
 
 ```python
 from google.cloud import bigtable

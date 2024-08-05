@@ -1,30 +1,21 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/parent_document_retriever.ipynb
 ---
-# How to use the Parent Document Retriever
 
-When splitting documents for retrieval, there are often conflicting desires:
+# 如何使用父文档检索器
 
-1. You may want to have small documents, so that their embeddings can most
-    accurately reflect their meaning. If too long, then the embeddings can
-    lose meaning.
-2. You want to have long enough documents that the context of each chunk is
-    retained.
+在进行文档拆分以便检索时，常常会有相互冲突的需求：
 
-The `ParentDocumentRetriever` strikes that balance by splitting and storing
-small chunks of data. During retrieval, it first fetches the small chunks
-but then looks up the parent ids for those chunks and returns those larger
-documents.
+1. 你可能希望文档较小，以便其嵌入能够更准确地反映其含义。如果文档过长，则嵌入可能会失去意义。
+2. 你希望文档足够长，以保留每个块的上下文。
 
-Note that "parent document" refers to the document that a small chunk
-originated from. This can either be the whole raw document OR a larger
-chunk.
+`ParentDocumentRetriever`通过拆分和存储小块数据来实现这种平衡。在检索时，它首先获取小块，然后查找这些块的父ID并返回那些更大的文档。
 
+请注意，“父文档”是指小块来源的文档。这可以是整个原始文档或更大的块。
 
 ```python
 from langchain.retrievers import ParentDocumentRetriever
 ```
-
 
 ```python
 from langchain.storage import InMemoryStore
@@ -33,7 +24,6 @@ from langchain_community.document_loaders import TextLoader
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 ```
-
 
 ```python
 loaders = [
@@ -45,9 +35,9 @@ for loader in loaders:
     docs.extend(loader.load())
 ```
 
-## Retrieving full documents
+## 检索完整文档
 
-In this mode, we want to retrieve the full documents. Therefore, we only specify a child splitter.
+在此模式下，我们希望检索完整文档。因此，我们只指定一个子分割器。
 
 
 ```python
@@ -71,7 +61,7 @@ retriever = ParentDocumentRetriever(
 retriever.add_documents(docs, ids=None)
 ```
 
-This should yield two keys, because we added two documents.
+这应该返回两个键，因为我们添加了两个文档。
 
 
 ```python
@@ -86,7 +76,7 @@ list(store.yield_keys())
 ```
 
 
-Let's now call the vector store search functionality - we should see that it returns small chunks (since we're storing the small chunks).
+现在让我们调用向量存储搜索功能 - 我们应该看到它返回小块（因为我们存储的是小块）。
 
 
 ```python
@@ -102,7 +92,7 @@ Tonight, I’d like to honor someone who has dedicated his life to serve this co
 
 One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court.
 ```
-Let's now retrieve from the overall retriever. This should return large documents - since it returns the documents where the smaller chunks are located.
+现在让我们从整体检索器中检索。这应该返回大文档 - 因为它返回小块所在的文档。
 
 
 ```python
@@ -120,26 +110,23 @@ len(retrieved_docs[0].page_content)
 38540
 ```
 
+## 检索更大的块
 
-## Retrieving larger chunks
-
-Sometimes, the full documents can be too big to want to retrieve them as is. In that case, what we really want to do is to first split the raw documents into larger chunks, and then split it into smaller chunks. We then index the smaller chunks, but on retrieval we retrieve the larger chunks (but still not the full documents).
-
+有时候，完整的文档可能太大，不适合按原样检索。在这种情况下，我们真正想做的是先将原始文档拆分成更大的块，然后再拆分成更小的块。我们随后对更小的块进行索引，但在检索时我们检索更大的块（但仍然不是完整的文档）。
 
 ```python
-# This text splitter is used to create the parent documents
+# 这个文本分割器用于创建父文档
 parent_splitter = RecursiveCharacterTextSplitter(chunk_size=2000)
-# This text splitter is used to create the child documents
-# It should create documents smaller than the parent
+# 这个文本分割器用于创建子文档
+# 它应该创建比父文档更小的文档
 child_splitter = RecursiveCharacterTextSplitter(chunk_size=400)
-# The vectorstore to use to index the child chunks
+# 用于索引子块的向量存储
 vectorstore = Chroma(
     collection_name="split_parents", embedding_function=OpenAIEmbeddings()
 )
-# The storage layer for the parent documents
+# 父文档的存储层
 store = InMemoryStore()
 ```
-
 
 ```python
 retriever = ParentDocumentRetriever(
@@ -150,84 +137,72 @@ retriever = ParentDocumentRetriever(
 )
 ```
 
-
 ```python
 retriever.add_documents(docs)
 ```
 
-We can see that there are much more than two documents now - these are the larger chunks.
-
+我们可以看到现在有比两个文档更多的文档——这些是更大的块。
 
 ```python
 len(list(store.yield_keys()))
 ```
 
-
-
 ```output
 66
 ```
 
-
-Let's make sure the underlying vector store still retrieves the small chunks.
-
+让我们确保底层的向量存储仍然可以检索小块。
 
 ```python
 sub_docs = vectorstore.similarity_search("justice breyer")
 ```
 
-
 ```python
 print(sub_docs[0].page_content)
 ```
 ```output
-Tonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. 
+今晚，我想表彰一位为这个国家奉献一生的人：史蒂芬·布雷耶法官——一位退伍军人、宪法学者，以及即将退休的美国最高法院法官。布雷耶法官，感谢您的服务。
 
-One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court.
+总统最严肃的宪法责任之一是提名某人担任美国最高法院的法官。
 ```
 
 ```python
 retrieved_docs = retriever.invoke("justice breyer")
 ```
 
-
 ```python
 len(retrieved_docs[0].page_content)
 ```
-
-
 
 ```output
 1849
 ```
 
-
-
 ```python
 print(retrieved_docs[0].page_content)
 ```
 ```output
-In state after state, new laws have been passed, not only to suppress the vote, but to subvert entire elections. 
+在一个又一个州，新法律相继通过，不仅压制投票，还颠覆整个选举。
 
-We cannot let this happen. 
+我们不能让这种情况发生。
 
-Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And while you’re at it, pass the Disclose Act so Americans can know who is funding our elections. 
+今晚，我呼吁参议院：通过《投票自由法案》。通过《约翰·刘易斯投票权法案》。同时通过《披露法案》，让美国人知道谁在资助我们的选举。
 
-Tonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. 
+今晚，我想表彰一位为这个国家奉献一生的人：史蒂芬·布雷耶法官——一位退伍军人、宪法学者，以及即将退休的美国最高法院法官。布雷耶法官，感谢您的服务。
 
-One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. 
+总统最严肃的宪法责任之一是提名某人担任美国最高法院的法官。
 
-And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence. 
+我在四天前做了这一点，当时我提名了上诉法院法官凯坦吉·布朗·杰克逊。她是我们国家顶尖的法律人才之一，将继续布雷耶法官卓越的遗产。
 
-A former top litigator in private practice. A former federal public defender. And from a family of public school educators and police officers. A consensus builder. Since she’s been nominated, she’s received a broad range of support—from the Fraternal Order of Police to former judges appointed by Democrats and Republicans. 
+她曾是一名顶尖的私人执业律师。曾是一名联邦公设辩护人。并来自一家庭成员都是公立学校教育工作者和警察的家庭。她是一个共识的建立者。自从她被提名以来，她得到了广泛的支持——从兄弟警察组织到民主党和共和党任命的前法官。
 
-And if we are to advance liberty and justice, we need to secure the Border and fix the immigration system. 
+如果我们要推进自由与正义，我们需要确保边界安全并修复移民系统。
 
-We can do both. At our border, we’ve installed new technology like cutting-edge scanners to better detect drug smuggling.  
+我们可以同时做到这两点。在我们的边界，我们安装了新技术，比如尖端扫描仪，以更好地检测毒品走私。
 
-We’ve set up joint patrols with Mexico and Guatemala to catch more human traffickers.  
+我们与墨西哥和危地马拉建立了联合巡逻，以抓捕更多的人贩子。
 
-We’re putting in place dedicated immigration judges so families fleeing persecution and violence can have their cases heard faster. 
+我们正在安排专门的移民法官，以便逃离迫害和暴力的家庭能够更快地听取他们的案件。
 
-We’re securing commitments and supporting partners in South and Central America to host more refugees and secure their own borders.
+我们正在确保承诺，并支持南美和中美洲的合作伙伴接纳更多难民并确保他们自己的边界安全。
 ```

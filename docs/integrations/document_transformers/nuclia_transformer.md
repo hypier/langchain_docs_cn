@@ -1,13 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_transformers/nuclia_transformer.ipynb
 ---
+
 # Nuclia
 
->[Nuclia](https://nuclia.com) automatically indexes your unstructured data from any internal and external source, providing optimized search results and generative answers. It can handle video and audio transcription, image content extraction, and document parsing.
+>[Nuclia](https://nuclia.com) 自动索引来自任何内部和外部来源的非结构化数据，提供优化的搜索结果和生成的答案。它可以处理视频和音频转录、图像内容提取和文档解析。
 
-`Nuclia Understanding API` document transformer splits text into paragraphs and sentences, identifies entities, provides a summary of the text and generates embeddings for all the sentences.
+`Nuclia Understanding API` 文档转换器将文本拆分为段落和句子，识别实体，提供文本摘要，并为所有句子生成嵌入。
 
-To use the Nuclia Understanding API, you need to have a Nuclia account. You can create one for free at [https://nuclia.cloud](https://nuclia.cloud), and then [create a NUA key](https://docs.nuclia.dev/docs/docs/using/understanding/intro).
+要使用 Nuclia Understanding API，您需要拥有一个 Nuclia 账户。您可以在 [https://nuclia.cloud](https://nuclia.cloud) 免费创建一个，然后 [创建一个 NUA 密钥](https://docs.nuclia.dev/docs/docs/using/understanding/intro)。
 
 from langchain_community.document_transformers.nuclia_text_transform import NucliaTextTransformer
 
@@ -21,11 +22,11 @@ from langchain_community.document_transformers.nuclia_text_transform import Nucl
 ```python
 import os
 
-os.environ["NUCLIA_ZONE"] = "<YOUR_ZONE>"  # e.g. europe-1
+os.environ["NUCLIA_ZONE"] = "<YOUR_ZONE>"  # 例如：europe-1
 os.environ["NUCLIA_NUA_KEY"] = "<YOUR_API_KEY>"
 ```
 
-To use the Nuclia document transformer, you need to instantiate a `NucliaUnderstandingAPI` tool with `enable_ml` set to `True`:
+要使用 Nuclia 文档转换器，您需要实例化一个 `NucliaUnderstandingAPI` 工具，并将 `enable_ml` 设置为 `True`：
 
 
 ```python
@@ -34,7 +35,7 @@ from langchain_community.tools.nuclia import NucliaUnderstandingAPI
 nua = NucliaUnderstandingAPI(enable_ml=True)
 ```
 
-The Nuclia document transformer must be called in async mode, so you need to use the `atransform_documents` method:
+Nuclia 文档转换器必须在异步模式下调用，因此您需要使用 `atransform_documents` 方法：
 
 
 ```python

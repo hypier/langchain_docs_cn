@@ -1,50 +1,48 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/chat_model_rate_limiting.ipynb
 ---
-# How to handle rate limits
 
-:::info Prerequisites
+# 如何处理速率限制
 
-This guide assumes familiarity with the following concepts:
-- [Chat models](/docs/concepts/#chat-models)
-- [LLMs](/docs/concepts/#llms)
+:::info 前提条件
+
+本指南假设您熟悉以下概念：
+- [聊天模型](/docs/concepts/#chat-models)
+- [大型语言模型 (LLMs)](/docs/concepts/#llms)
 :::
 
 
-You may find yourself in a situation where you are getting rate limited by the model provider API because you're making too many requests.
+您可能会遇到由于请求过多而被模型提供者 API 限制速率的情况。
 
-For example, this might happen if you are running many parallel queries to benchmark the chat model on a test dataset.
+例如，如果您在测试数据集上运行多个并行查询以基准测试聊天模型，就可能会发生这种情况。
 
-If you are facing such a situation, you can use a rate limiter to help match the rate at which you're making request to the rate allowed
-by the API.
+如果您面临这样的情况，可以使用速率限制器来帮助将您的请求速率与 API 允许的速率相匹配。
 
-:::info Requires ``langchain-core >= 0.2.24``
+:::info 需要 ``langchain-core >= 0.2.24``
 
-This functionality was added in ``langchain-core == 0.2.24``. Please make sure your package is up to date.
+此功能是在 ``langchain-core == 0.2.24`` 中添加的。请确保您的软件包是最新的。
 :::
 
-## Initialize a rate limiter
+## 初始化速率限制器
 
-Langchain comes with a built-in in memory rate limiter. This rate limiter is thread safe and can be shared by multiple threads in the same process.
+Langchain 提供了内置的内存速率限制器。该速率限制器是线程安全的，可以被同一进程中的多个线程共享。
 
-The provided rate limiter can only limit the number of requests per unit time. It will not help if you need to also limited based on the size
-of the requests.
+提供的速率限制器只能限制单位时间内的请求数量。如果您还需要根据请求的大小进行限制，它将无能为力。
 
 
 ```python
 from langchain_core.rate_limiters import InMemoryRateLimiter
 
 rate_limiter = InMemoryRateLimiter(
-    requests_per_second=0.1,  # <-- Super slow! We can only make a request once every 10 seconds!!
-    check_every_n_seconds=0.1,  # Wake up every 100 ms to check whether allowed to make a request,
-    max_bucket_size=10,  # Controls the maximum burst size.
+    requests_per_second=0.1,  # <-- 超级慢！我们每 10 秒只能发出一次请求！！
+    check_every_n_seconds=0.1,  # 每 100 毫秒醒来一次，检查是否允许发出请求，
+    max_bucket_size=10,  # 控制最大突发大小。
 )
 ```
 
-## Choose a model
+## 选择模型
 
-Choose any model and pass to it the rate_limiter via the `rate_limiter` attribute.
-
+选择任意模型，并通过 `rate_limiter` 属性传递速率限制器。
 
 ```python
 import os
@@ -60,8 +58,7 @@ from langchain_anthropic import ChatAnthropic
 model = ChatAnthropic(model_name="claude-3-opus-20240229", rate_limiter=rate_limiter)
 ```
 
-Let's confirm that the rate limiter works. We should only be able to invoke the model once per 10 seconds.
-
+让我们确认速率限制器的工作情况。我们应该只能每 10 秒调用一次模型。
 
 ```python
 for _ in range(5):

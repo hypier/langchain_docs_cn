@@ -1,30 +1,30 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/ipex_llm.ipynb
 ---
+
 # IPEX-LLM
 
-> [IPEX-LLM](https://github.com/intel-analytics/ipex-llm/) is a PyTorch library for running LLM on Intel CPU and GPU (e.g., local PC with iGPU, discrete GPU such as Arc, Flex and Max) with very low latency. 
+> [IPEX-LLM](https://github.com/intel-analytics/ipex-llm/) 是一个用于在 Intel CPU 和 GPU（例如，带有 iGPU 的本地 PC、离散 GPU，如 Arc、Flex 和 Max）上以非常低的延迟运行 LLM 的 PyTorch 库。
 
-This example goes over how to use LangChain to interact with `ipex-llm` for text generation. 
+本示例介绍如何使用 LangChain 与 `ipex-llm` 进行文本生成的交互。
 
-
-## Setup
+## 设置
 
 
 ```python
-# Update Langchain
+# 更新 Langchain
 
 %pip install -qU langchain langchain-community
 ```
 
-Install IEPX-LLM for running LLMs locally on Intel CPU.
+安装 IEPX-LLM 以在 Intel CPU 上本地运行 LLM。
 
 
 ```python
 %pip install --pre --upgrade ipex-llm[all]
 ```
 
-## Basic Usage
+## 基本用法
 
 
 ```python
@@ -37,7 +37,7 @@ from langchain_core.prompts import PromptTemplate
 warnings.filterwarnings("ignore", category=UserWarning, message=".*padding_mask.*")
 ```
 
-Specify the prompt template for your model. In this example, we use the [vicuna-1.5](https://huggingface.co/lmsys/vicuna-7b-v1.5) model. If you're working with a different model, choose a proper template accordingly.
+为您的模型指定提示模板。在此示例中，我们使用 [vicuna-1.5](https://huggingface.co/lmsys/vicuna-7b-v1.5) 模型。如果您使用的是不同的模型，请相应选择合适的模板。
 
 
 ```python
@@ -45,7 +45,7 @@ template = "USER: {question}\nASSISTANT:"
 prompt = PromptTemplate(template=template, input_variables=["question"])
 ```
 
-Load the model locally using IpexLLM using `IpexLLM.from_model_id`. It will load the model directly in its Huggingface format and convert it automatically to low-bit format for inference.
+使用 `IpexLLM.from_model_id` 在本地加载模型。它将直接以 Huggingface 格式加载模型，并自动转换为低位格式以进行推理。
 
 
 ```python
@@ -55,7 +55,7 @@ llm = IpexLLM.from_model_id(
 )
 ```
 
-Use it in Chains:
+在链中使用它：
 
 
 ```python
@@ -65,44 +65,39 @@ question = "What is AI?"
 output = llm_chain.invoke(question)
 ```
 
-## Save/Load Low-bit Model
-Alternatively, you might save the low-bit model to disk once and use `from_model_id_low_bit` instead of `from_model_id` to reload it for later use - even across different machines. It is space-efficient, as the low-bit model demands significantly less disk space than the original model. And `from_model_id_low_bit` is also more efficient than `from_model_id` in terms of speed and memory usage, as it skips the model conversion step.
+## 保存/加载低位模型
+另外，您可以将低位模型保存到磁盘一次，然后使用 `from_model_id_low_bit` 代替 `from_model_id` 来重新加载它以供后续使用——即使在不同的机器之间。这是节省空间的，因为低位模型所需的磁盘空间显著少于原始模型。而且 `from_model_id_low_bit` 在速度和内存使用方面也比 `from_model_id` 更高效，因为它跳过了模型转换步骤。
 
-To save the low-bit model, use `save_low_bit` as follows.
-
+要保存低位模型，请使用 `save_low_bit`，如下所示。
 
 ```python
-saved_lowbit_model_path = "./vicuna-7b-1.5-low-bit"  # path to save low-bit model
+saved_lowbit_model_path = "./vicuna-7b-1.5-low-bit"  # 保存低位模型的路径
 llm.model.save_low_bit(saved_lowbit_model_path)
 del llm
 ```
 
-Load the model from saved lowbit model path as follows. 
-> Note that the saved path for the low-bit model only includes the model itself but not the tokenizers. If you wish to have everything in one place, you will need to manually download or copy the tokenizer files from the original model's directory to the location where the low-bit model is saved.
-
+从保存的低位模型路径加载模型，如下所示。
+> 请注意，低位模型的保存路径仅包括模型本身，而不包括分词器。如果您希望将所有内容放在一个地方，您需要手动从原始模型的目录下载或复制分词器文件到低位模型保存的位置。
 
 ```python
 llm_lowbit = IpexLLM.from_model_id_low_bit(
     model_id=saved_lowbit_model_path,
     tokenizer_id="lmsys/vicuna-7b-v1.5",
-    # tokenizer_name=saved_lowbit_model_path,  # copy the tokenizers to saved path if you want to use it this way
+    # tokenizer_name=saved_lowbit_model_path,  # 如果您希望以这种方式使用它，请将分词器复制到保存路径
     model_kwargs={"temperature": 0, "max_length": 64, "trust_remote_code": True},
 )
 ```
 
-Use the loaded model in Chains:
-
+在链中使用加载的模型：
 
 ```python
 llm_chain = prompt | llm_lowbit
-
 
 question = "What is AI?"
 output = llm_chain.invoke(question)
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

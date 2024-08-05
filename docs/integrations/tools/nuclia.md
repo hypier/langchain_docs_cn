@@ -1,28 +1,26 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/nuclia.ipynb
 ---
-# Nuclia Understanding
 
->[Nuclia](https://nuclia.com) automatically indexes your unstructured data from any internal and external source, providing optimized search results and generative answers. It can handle video and audio transcription, image content extraction, and document parsing.
+# Nuclia 理解
 
-The `Nuclia Understanding API` supports the processing of unstructured data, including text, web pages, documents, and audio/video contents. It extracts all texts wherever it is (using speech-to-text or OCR when needed), it identifies entities, it also extracts metadata, embedded files (like images in a PDF), and web links. It also provides a summary of the content.
+>[Nuclia](https://nuclia.com) 自动索引来自任何内部和外部来源的非结构化数据，提供优化的搜索结果和生成的答案。它可以处理视频和音频转录、图像内容提取和文档解析。
 
-To use the `Nuclia Understanding API`, you need to have a `Nuclia` account. You can create one for free at [https://nuclia.cloud](https://nuclia.cloud), and then [create a NUA key](https://docs.nuclia.dev/docs/docs/using/understanding/intro).
+`Nuclia Understanding API` 支持非结构化数据的处理，包括文本、网页、文档和音频/视频内容。它提取所有文本，无论其位置（在需要时使用语音转文本或 OCR），识别实体，提取元数据、嵌入文件（如 PDF 中的图像）和网页链接。它还提供内容摘要。
 
+要使用 `Nuclia Understanding API`，您需要拥有一个 `Nuclia` 账户。您可以在 [https://nuclia.cloud](https://nuclia.cloud) 免费创建一个账户，然后 [创建 NUA 密钥](https://docs.nuclia.dev/docs/docs/using/understanding/intro)。
 
 ```python
 %pip install --upgrade --quiet  protobuf
 %pip install --upgrade --quiet  nucliadb-protos
 ```
 
-
 ```python
 import os
 
-os.environ["NUCLIA_ZONE"] = "<YOUR_ZONE>"  # e.g. europe-1
+os.environ["NUCLIA_ZONE"] = "<YOUR_ZONE>"  # 例如：europe-1
 os.environ["NUCLIA_NUA_KEY"] = "<YOUR_API_KEY>"
 ```
-
 
 ```python
 from langchain_community.tools.nuclia import NucliaUnderstandingAPI
@@ -30,16 +28,14 @@ from langchain_community.tools.nuclia import NucliaUnderstandingAPI
 nua = NucliaUnderstandingAPI(enable_ml=False)
 ```
 
-You can push files to the Nuclia Understanding API using the `push` action. As the processing is done asynchronously, the results might be returned in a different order than the files were pushed. That is why you need to provide an `id` to match the results with the corresponding file.
-
+您可以使用 `push` 操作将文件推送到 Nuclia Understanding API。由于处理是异步进行的，结果可能会以与文件推送顺序不同的顺序返回。这就是为什么您需要提供一个 `id` 来将结果与相应文件匹配。
 
 ```python
 nua.run({"action": "push", "id": "1", "path": "./report.docx"})
 nua.run({"action": "push", "id": "2", "path": "./interview.mp4"})
 ```
 
-You can now call the `pull` action in a loop until you get the JSON-formatted result.
-
+您现在可以在循环中调用 `pull` 操作，直到获得 JSON 格式的结果。
 
 ```python
 import time
@@ -56,8 +52,7 @@ while pending:
         print("waiting...")
 ```
 
-You can also do it in one step in `async` mode, you only need to do a push, and it will wait until the results are pulled:
-
+您也可以在 `async` 模式下一步完成，只需进行一次推送，它将等待结果被拉取：
 
 ```python
 import asyncio
@@ -73,30 +68,28 @@ async def process():
 asyncio.run(process())
 ```
 
-## Retrieved information
+## 检索的信息
 
-Nuclia returns the following information:
+Nuclia 返回以下信息：
 
-- file metadata
-- extracted text
-- nested text (like text in an embedded image)
-- a summary (only when `enable_ml` is set to `True`)
-- paragraphs and sentences splitting (defined by the position of their first and last characters, plus start time and end time for a video or audio file)
-- named entities: people, dates, places, organizations, etc. (only when `enable_ml` is set to `True`)
-- links
-- a thumbnail
-- embedded files
-- the vector representations of the text (only when `enable_ml` is set to `True`)
+- 文件元数据
+- 提取的文本
+- 嵌套文本（如嵌入图像中的文本）
+- 摘要（仅在 `enable_ml` 设置为 `True` 时）
+- 段落和句子的拆分（由其第一个和最后一个字符的位置定义，以及视频或音频文件的开始时间和结束时间）
+- 命名实体：人、日期、地点、组织等（仅在 `enable_ml` 设置为 `True` 时）
+- 链接
+- 缩略图
+- 嵌入文件
+- 文本的向量表示（仅在 `enable_ml` 设置为 `True` 时）
 
-Note:
+注意：
 
-  Generated files (thumbnail, extracted embedded files, etc.) are provided as a token. You can download them with the [`/processing/download` endpoint](https://docs.nuclia.dev/docs/api#operation/Download_binary_file_processing_download_get).
+  生成的文件（缩略图、提取的嵌入文件等）作为一个令牌提供。您可以通过 [`/processing/download` 端点](https://docs.nuclia.dev/docs/api#operation/Download_binary_file_processing_download_get) 下载它们。
 
-  Also at any level, if an attribute exceeds a certain size, it will be put in a downloadable file and will be replaced in the document by a file pointer. This will consist of `{"file": {"uri": "JWT_TOKEN"}}`. The rule is that if the size of the message is greater than 1000000 characters, the biggest parts will be moved to downloadable files. First, the compression process will target vectors. If that is not enough, it will target large field metadata, and finally it will target extracted text.
+  在任何级别，如果某个属性超过特定大小，它将被放入可下载文件中，并在文档中用文件指针替代。其格式为 `{"file": {"uri": "JWT_TOKEN"}}`。规则是如果消息的大小超过 1000000 个字符，最大的部分将被移至可下载文件。首先，压缩过程将针对向量。如果这还不够，将针对大型字段元数据，最后将针对提取的文本。
 
+## 相关
 
-
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

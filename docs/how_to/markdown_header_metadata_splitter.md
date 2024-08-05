@@ -1,39 +1,40 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/markdown_header_metadata_splitter.ipynb
 ---
-# How to split Markdown by Headers
 
-### Motivation
+# 如何按标题拆分Markdown
 
-Many chat or Q+A applications involve chunking input documents prior to embedding and vector storage.
+### 动机
 
-[These notes](https://www.pinecone.io/learn/chunking-strategies/) from Pinecone provide some useful tips:
+许多聊天或问答应用程序在嵌入和向量存储之前涉及对输入文档进行分块。
+
+[Pinecone的这些笔记](https://www.pinecone.io/learn/chunking-strategies/)提供了一些有用的提示：
 
 ```
 When a full paragraph or document is embedded, the embedding process considers both the overall context and the relationships between the sentences and phrases within the text. This can result in a more comprehensive vector representation that captures the broader meaning and themes of the text.
 ```
- 
-As mentioned, chunking often aims to keep text with common context together. With this in mind, we might want to specifically honor the structure of the document itself. For example, a markdown file is organized by headers. Creating chunks within specific header groups is an intuitive idea. To address this challenge, we can use [MarkdownHeaderTextSplitter](https://api.python.langchain.com/en/latest/markdown/langchain_text_splitters.markdown.MarkdownHeaderTextSplitter.html). This will split a markdown file by a specified set of headers. 
 
-For example, if we want to split this markdown:
+如前所述，分块通常旨在将具有共同上下文的文本保持在一起。考虑到这一点，我们可能希望特别尊重文档本身的结构。例如，markdown文件是通过标题组织的。在特定的标题组内创建块是一个直观的想法。为了解决这个挑战，我们可以使用[MarkdownHeaderTextSplitter](https://api.python.langchain.com/en/latest/markdown/langchain_text_splitters.markdown.MarkdownHeaderTextSplitter.html)。这将按照指定的标题集拆分markdown文件。
+
+例如，如果我们想要拆分这个markdown：
 ```
 md = '# Foo\n\n ## Bar\n\nHi this is Jim  \nHi this is Joe\n\n ## Baz\n\n Hi this is Molly' 
 ```
- 
-We can specify the headers to split on:
+
+我们可以指定要拆分的标题：
 ```
 [("#", "Header 1"),("##", "Header 2")]
 ```
 
-And content is grouped or split by common headers:
+并且内容根据共同的标题进行分组或拆分：
 ```
 {'content': 'Hi this is Jim  \nHi this is Joe', 'metadata': {'Header 1': 'Foo', 'Header 2': 'Bar'}}
 {'content': 'Hi this is Molly', 'metadata': {'Header 1': 'Foo', 'Header 2': 'Baz'}}
 ```
 
-Let's have a look at some examples below.
+让我们来看一些下面的例子。
 
-### Basic usage:
+### 基本用法:
 
 
 ```python
@@ -81,7 +82,7 @@ langchain_core.documents.base.Document
 ```
 
 
-By default, `MarkdownHeaderTextSplitter` strips headers being split on from the output chunk's content. This can be disabled by setting `strip_headers = False`.
+默认情况下，`MarkdownHeaderTextSplitter` 会从输出块的内容中去除被拆分的标题。可以通过设置 `strip_headers = False` 来禁用此功能。
 
 
 ```python
@@ -98,11 +99,9 @@ md_header_splits
  Document(page_content='## Baz  \nHi this is Molly', metadata={'Header 1': 'Foo', 'Header 2': 'Baz'})]
 ```
 
+### 如何将Markdown行作为单独文档返回
 
-### How to return Markdown lines as separate documents
-
-By default, `MarkdownHeaderTextSplitter` aggregates lines based on the headers specified in `headers_to_split_on`. We can disable this by specifying `return_each_line`:
-
+默认情况下，`MarkdownHeaderTextSplitter` 根据在 `headers_to_split_on` 中指定的标题聚合行。我们可以通过指定 `return_each_line` 来禁用此功能：
 
 ```python
 markdown_splitter = MarkdownHeaderTextSplitter(
@@ -123,12 +122,11 @@ md_header_splits
 ```
 
 
-Note that here header information is retained in the `metadata` for each document.
+请注意，这里每个文档的 `metadata` 中保留了标题信息。
 
-### How to constrain chunk size:
+### 如何限制块大小：
 
-Within each markdown group we can then apply any text splitter we want, such as `RecursiveCharacterTextSplitter`, which allows for further control of the chunk size.
-
+在每个 markdown 组内，我们可以应用任何我们想要的文本拆分器，例如 `RecursiveCharacterTextSplitter`，它允许我们进一步控制块的大小。
 
 ```python
 markdown_document = "# Intro \n\n    ## History \n\n Markdown[9] is a lightweight markup language for creating formatted text using a plain-text editor. John Gruber created Markdown in 2004 as a markup language that is appealing to human readers in its source code form.[9] \n\n Markdown is widely used in blogging, instant messaging, online forums, collaborative software, documentation pages, and readme files. \n\n ## Rise and divergence \n\n As Markdown popularity grew rapidly, many Markdown implementations appeared, driven mostly by the need for \n\n additional features such as tables, footnotes, definition lists,[note 1] and Markdown inside HTML blocks. \n\n #### Standardization \n\n From 2012, a group of people, including Jeff Atwood and John MacFarlane, launched what Atwood characterised as a standardisation effort. \n\n ## Implementations \n\n Implementations of Markdown are available for over a dozen programming languages."
@@ -158,8 +156,6 @@ splits = text_splitter.split_documents(md_header_splits)
 splits
 ```
 
-
-
 ```output
 [Document(page_content='# Intro  \n## History  \nMarkdown[9] is a lightweight markup language for creating formatted text using a plain-text editor. John Gruber created Markdown in 2004 as a markup language that is appealing to human readers in its source code form.[9]', metadata={'Header 1': 'Intro', 'Header 2': 'History'}),
  Document(page_content='Markdown is widely used in blogging, instant messaging, online forums, collaborative software, documentation pages, and readme files.', metadata={'Header 1': 'Intro', 'Header 2': 'History'}),
@@ -167,4 +163,3 @@ splits
  Document(page_content='#### Standardization  \nFrom 2012, a group of people, including Jeff Atwood and John MacFarlane, launched what Atwood characterised as a standardisation effort.', metadata={'Header 1': 'Intro', 'Header 2': 'Rise and divergence'}),
  Document(page_content='## Implementations  \nImplementations of Markdown are available for over a dozen programming languages.', metadata={'Header 1': 'Intro', 'Header 2': 'Implementations'})]
 ```
-

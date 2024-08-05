@@ -1,24 +1,23 @@
 # DashVector
 
-> [DashVector](https://help.aliyun.com/document_detail/2510225.html) is a fully-managed vectorDB service that supports high-dimension dense and sparse vectors, real-time insertion and filtered search. It is built to scale automatically and can adapt to different application requirements.  
+> [DashVector](https://help.aliyun.com/document_detail/2510225.html) 是一个完全托管的 vectorDB 服务，支持高维稠密和稀疏向量、实时插入和过滤搜索。它能够自动扩展，并能适应不同的应用需求。
 
-This document demonstrates to leverage DashVector within the LangChain ecosystem. In particular, it shows how to install DashVector, and how to use it as a VectorStore plugin in LangChain.
-It is broken into two parts: installation and setup, and then references to specific DashVector wrappers.
+本文档演示了如何在 LangChain 生态系统中利用 DashVector。具体而言，它展示了如何安装 DashVector，以及如何将其作为 VectorStore 插件在 LangChain 中使用。
+文档分为两个部分：安装和设置，以及对特定 DashVector 封装的参考。
 
-## Installation and Setup
-Install the Python SDK:
+## 安装与设置
+安装 Python SDK：
 ```bash
 pip install dashvector
 ```
 
 ## VectorStore
 
-A DashVector Collection is wrapped as a familiar VectorStore for native usage within LangChain, 
-which allows it to be readily used for various scenarios, such as semantic search or example selection.
+DashVector集合被封装为一个熟悉的VectorStore，以便在LangChain中本地使用，这使得它可以很方便地用于各种场景，例如语义搜索或示例选择。
 
-You may import the vectorstore by:
+您可以通过以下方式导入vectorstore：
 ```python
 from langchain_community.vectorstores import DashVector
 ```
 
-For a detailed walkthrough of the DashVector wrapper, please refer to [this notebook](/docs/integrations/vectorstores/dashvector)
+有关DashVector包装器的详细说明，请参见[这个笔记本](/docs/integrations/vectorstores/dashvector)

@@ -5,33 +5,30 @@ sidebar_label: GMail
 
 # GmailToolkit
 
-This will help you getting started with the GMail [toolkit](/docs/concepts/#toolkits). This toolkit interacts with the GMail API to read messages, draft and send messages, and more. For detailed documentation of all GmailToolkit features and configurations head to the [API reference](https://api.python.langchain.com/en/latest/gmail/langchain_google_community.gmail.toolkit.GmailToolkit.html).
+这将帮助您开始使用 GMail [工具包](/docs/concepts/#toolkits)。该工具包与 GMail API 交互，以读取消息、草拟和发送消息等。有关 GmailToolkit 所有功能和配置的详细文档，请访问 [API 参考](https://api.python.langchain.com/en/latest/gmail/langchain_google_community.gmail.toolkit.GmailToolkit.html)。
 
-## Setup
+## 设置
 
-To use this toolkit, you will need to set up your credentials explained in the [Gmail API docs](https://developers.google.com/gmail/api/quickstart/python#authorize_credentials_for_a_desktop_application). Once you've downloaded the `credentials.json` file, you can start using the Gmail API.
+要使用此工具包，您需要设置您的凭据，具体说明见 [Gmail API 文档](https://developers.google.com/gmail/api/quickstart/python#authorize_credentials_for_a_desktop_application)。下载 `credentials.json` 文件后，您可以开始使用 Gmail API。
 
-### Installation
+### 安装
 
-This toolkit lives in the `langchain-google-community` package. We'll need the `gmail` extra:
-
+此工具包位于 `langchain-google-community` 包中。我们需要 `gmail` 附加选项：
 
 ```python
 %pip install -qU langchain-google-community\[gmail\]
 ```
 
-If you want to get automated tracing from runs of individual tools, you can also set your [LangSmith](https://docs.smith.langchain.com/) API key by uncommenting below:
-
+如果您希望从各个工具的运行中获得自动跟踪，您还可以通过取消注释以下内容来设置您的 [LangSmith](https://docs.smith.langchain.com/) API 密钥：
 
 ```python
 # os.environ["LANGCHAIN_TRACING_V2"] = "true"
 # os.environ["LANGCHAIN_API_KEY"] = getpass.getpass("Enter your LangSmith API key: ")
 ```
 
-## Instantiation
+## 实例化
 
-By default the toolkit reads the local `credentials.json` file. You can also manually provide a `Credentials` object.
-
+默认情况下，工具包会读取本地的 `credentials.json` 文件。您也可以手动提供一个 `Credentials` 对象。
 
 ```python
 from langchain_google_community import GmailToolkit
@@ -39,11 +36,9 @@ from langchain_google_community import GmailToolkit
 toolkit = GmailToolkit()
 ```
 
-### Customizing Authentication
+### 自定义身份验证
 
-Behind the scenes, a `googleapi` resource is created using the following methods. 
-you can manually build a `googleapi` resource for more auth control. 
-
+在后台，使用以下方法创建一个 `googleapi` 资源。您可以手动构建一个 `googleapi` 资源以获得更多的身份验证控制。
 
 ```python
 from langchain_google_community.gmail.utils import (
@@ -62,9 +57,9 @@ api_resource = build_resource_service(credentials=credentials)
 toolkit = GmailToolkit(api_resource=api_resource)
 ```
 
-## Tools
+## 工具
 
-View available tools:
+查看可用工具：
 
 
 ```python
@@ -89,11 +84,11 @@ tools
 - [GmailGetMessage](https://api.python.langchain.com/en/latest/gmail/langchain_google_community.gmail.get_message.GmailGetMessage.html)
 - [GmailGetThread](https://api.python.langchain.com/en/latest/gmail/langchain_google_community.gmail.get_thread.GmailGetThread.html)
 
-## Use within an agent
+## 在代理中使用
 
-Below we show how to incorporate the toolkit into an [agent](/docs/tutorials/agents).
+下面我们展示如何将工具包整合到一个 [代理](/docs/tutorials/agents) 中。
 
-We will need a LLM or chat model:
+我们需要一个 LLM 或聊天模型：
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
@@ -118,30 +113,31 @@ for event in events:
     event["messages"][-1].pretty_print()
 ```
 ```output
-================================[1m Human Message [0m=================================
+================================[1m 人类消息 [0m=================================
 
 Draft an email to fake@fake.com thanking them for coffee.
-==================================[1m Ai Message [0m==================================
-Tool Calls:
+==================================[1m AI 消息 [0m==================================
+工具调用:
   create_gmail_draft (call_slGkYKZKA6h3Mf1CraUBzs6M)
- Call ID: call_slGkYKZKA6h3Mf1CraUBzs6M
-  Args:
-    message: Dear Fake,
+ 调用 ID: call_slGkYKZKA6h3Mf1CraUBzs6M
+  参数:
+    message: 亲爱的 Fake,
 
-I wanted to take a moment to thank you for the coffee yesterday. It was a pleasure catching up with you. Let's do it again soon!
+我想花一点时间感谢你昨天的咖啡。和你聊得很愉快。我们很快再聚一次吧！
 
-Best regards,
-[Your Name]
+最好的祝福，
+[你的名字]
     to: ['fake@fake.com']
-    subject: Thank You for the Coffee
-=================================[1m Tool Message [0m=================================
-Name: create_gmail_draft
+    subject: 感谢你的咖啡
+=================================[1m 工具消息 [0m=================================
+名称: create_gmail_draft
 
-Draft created. Draft Id: r-7233782721440261513
-==================================[1m Ai Message [0m==================================
+草稿已创建。草稿 ID: r-7233782721440261513
+==================================[1m AI 消息 [0m==================================
 
-I have drafted an email to fake@fake.com thanking them for the coffee. You can review and send it from your email draft with the subject "Thank You for the Coffee".
+我已经起草了一封邮件给 fake@fake.com，感谢他们的咖啡。你可以从你的邮件草稿中查看并发送，主题为“感谢你的咖啡”。
 ```
-## API reference
 
-For detailed documentation of all `GmailToolkit` features and configurations head to the [API reference](https://api.python.langchain.com/en/latest/agent_toolkits/langchain_community.agent_toolkits.slack.toolkit.SlackToolkit.html).
+## API 参考
+
+有关所有 `GmailToolkit` 功能和配置的详细文档，请访问 [API 参考](https://api.python.langchain.com/en/latest/agent_toolkits/langchain_community.agent_toolkits.slack.toolkit.SlackToolkit.html)。

@@ -1,43 +1,44 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/textembed.ipynb
 ---
-# TextEmbed - Embedding Inference Server
 
-TextEmbed is a high-throughput, low-latency REST API designed for serving vector embeddings. It supports a wide range of sentence-transformer models and frameworks, making it suitable for various applications in natural language processing.
+# TextEmbed - 嵌入推理服务器
 
-## Features
+TextEmbed 是一个高吞吐量、低延迟的 REST API，旨在提供向量嵌入服务。它支持多种句子转换器模型和框架，适用于自然语言处理中的各种应用。
 
-- **High Throughput & Low Latency:** Designed to handle a large number of requests efficiently.
-- **Flexible Model Support:** Works with various sentence-transformer models.
-- **Scalable:** Easily integrates into larger systems and scales with demand.
-- **Batch Processing:** Supports batch processing for better and faster inference.
-- **OpenAI Compatible REST API Endpoint:** Provides an OpenAI compatible REST API endpoint.
-- **Single Line Command Deployment:** Deploy multiple models via a single command for efficient deployment.
-- **Support for Embedding Formats:** Supports binary, float16, and float32 embeddings formats for faster retrieval.
+## 特性
 
-## Getting Started
+- **高吞吐量与低延迟：** 旨在高效处理大量请求。
+- **灵活的模型支持：** 支持多种句子转换模型。
+- **可扩展：** 轻松集成到更大的系统中，并随需求扩展。
+- **批处理：** 支持批处理以实现更好和更快的推理。
+- **兼容OpenAI的REST API端点：** 提供兼容OpenAI的REST API端点。
+- **单行命令部署：** 通过单个命令部署多个模型，以实现高效部署。
+- **支持嵌入格式：** 支持二进制、float16和float32嵌入格式，以加快检索速度。
 
-### Prerequisites
+## 开始使用
 
-Ensure you have Python 3.10 or higher installed. You will also need to install the required dependencies.
+### 先决条件
 
-## Installation via PyPI
+确保您已安装 Python 3.10 或更高版本。您还需要安装所需的依赖项。
 
-1. **Install the required dependencies:**
+## 通过 PyPI 安装
+
+1. **安装所需的依赖项：**
 
     ```bash
     pip install -U textembed
     ```
 
-2. **Start the TextEmbed server with your desired models:**
+2. **使用您所需的模型启动 TextEmbed 服务器：**
 
     ```bash
     python -m textembed.server --models sentence-transformers/all-MiniLM-L12-v2 --workers 4 --api-key TextEmbed 
     ```
 
-For more information, please read the [documentation](https://github.com/kevaldekivadiya2415/textembed/blob/main/docs/setup.md).
+有关更多信息，请阅读 [文档](https://github.com/kevaldekivadiya2415/textembed/blob/main/docs/setup.md)。
 
-### Import
+### 导入
 
 
 ```python
@@ -53,7 +54,7 @@ embeddings = TextEmbedEmbeddings(
 )
 ```
 
-### Embed your documents
+### 嵌入您的文档
 
 
 ```python
@@ -98,9 +99,7 @@ dict(zip(documents, scores))
  'India has a diverse cultural heritage.': 0.7408992963028144}
 ```
 
+## 相关
 
-
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

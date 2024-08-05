@@ -2,11 +2,12 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/query_constructing_filters.ipynb
 sidebar_position: 6
 ---
-# How to construct filters for query analysis
 
-We may want to do query analysis to extract filters to pass into retrievers. One way we ask the LLM to represent these filters is as a Pydantic model. There is then the issue of converting that Pydantic model into a filter that can be passed into a retriever. 
+# 如何构建查询分析的过滤器
 
-This can be done manually, but LangChain also provides some "Translators" that are able to translate from a common syntax into filters specific to each retriever. Here, we will cover how to use those translators.
+我们可能希望进行查询分析，以提取过滤器以传递给检索器。我们要求LLM将这些过滤器表示为Pydantic模型。然后就有了将该Pydantic模型转换为可以传递给检索器的过滤器的问题。
+
+这可以手动完成，但LangChain还提供了一些能够将通用语法转换为特定于每个检索器的过滤器的“翻译器”。在这里，我们将介绍如何使用这些翻译器。
 
 
 ```python
@@ -24,7 +25,7 @@ from langchain.retrievers.self_query.elasticsearch import ElasticsearchTranslato
 from langchain_core.pydantic_v1 import BaseModel
 ```
 
-In this example, `year` and `author` are both attributes to filter on.
+在这个例子中，`year`和`author`都是需要过滤的属性。
 
 
 ```python
@@ -95,4 +96,3 @@ ChromaTranslator().visit_operation(_filter)
 ```output
 {'$and': [{'start_year': {'$gt': 2022}}, {'author': {'$eq': 'LangChain'}}]}
 ```
-

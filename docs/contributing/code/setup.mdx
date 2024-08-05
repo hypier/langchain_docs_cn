@@ -1,81 +1,74 @@
-# Setup
+# 设置
 
-This guide walks through how to run the repository locally and check in your first code.
-For a [development container](https://containers.dev/), see the [.devcontainer folder](https://github.com/langchain-ai/langchain/tree/master/.devcontainer).
+本指南介绍如何在本地运行该代码库并提交您的第一段代码。有关 [开发容器](https://containers.dev/)，请参见 [.devcontainer 文件夹](https://github.com/langchain-ai/langchain/tree/master/.devcontainer)。
 
-## Dependency Management: Poetry and other env/dependency managers
+## 依赖管理：Poetry 和其他环境/依赖管理工具
 
-This project utilizes [Poetry](https://python-poetry.org/) v1.7.1+ as a dependency manager.
+本项目使用 [Poetry](https://python-poetry.org/) v1.7.1+ 作为依赖管理工具。
 
-❗Note: *Before installing Poetry*, if you use `Conda`, create and activate a new Conda env (e.g. `conda create -n langchain python=3.9`)
+❗注意：*在安装 Poetry 之前*，如果您使用 `Conda`，请创建并激活一个新的 Conda 环境（例如 `conda create -n langchain python=3.9`）
 
-Install Poetry: **[documentation on how to install it](https://python-poetry.org/docs/#installation)**.
+安装 Poetry：**[有关如何安装的文档](https://python-poetry.org/docs/#installation)**。
 
-❗Note: If you use `Conda` or `Pyenv` as your environment/package manager, after installing Poetry,
-tell Poetry to use the virtualenv python environment (`poetry config virtualenvs.prefer-active-python true`)
+❗注意：如果您使用 `Conda` 或 `Pyenv` 作为环境/包管理工具，在安装 Poetry 后，请告诉 Poetry 使用虚拟环境的 Python 环境（`poetry config virtualenvs.prefer-active-python true`）
 
-## Different packages
+## 不同的包
 
-This repository contains multiple packages:
-- `langchain-core`: Base interfaces for key abstractions as well as logic for combining them in chains (LangChain Expression Language).
-- `langchain-community`: Third-party integrations of various components.
-- `langchain`: Chains, agents, and retrieval logic that makes up the cognitive architecture of your applications.
-- `langchain-experimental`: Components and chains that are experimental, either in the sense that the techniques are novel and still being tested, or they require giving the LLM more access than would be possible in most production systems.
-- Partner integrations: Partner packages in `libs/partners` that are independently version controlled.
+此存储库包含多个包：
+- `langchain-core`: 关键抽象的基础接口以及将它们组合成链的逻辑（LangChain 表达式语言）。
+- `langchain-community`: 各种组件的第三方集成。
+- `langchain`: 构成您应用程序的认知架构的链、代理和检索逻辑。
+- `langchain-experimental`: 处于实验阶段的组件和链，或这些技术是新颖的，仍在测试中，或者它们需要给予 LLM 更多的访问权限，而这在大多数生产系统中是不可行的。
+- 合作伙伴集成：在 `libs/partners` 中的合作伙伴包，独立版本控制。
 
-Each of these has its own development environment. Docs are run from the top-level makefile, but development
-is split across separate test & release flows.
+每个包都有自己的开发环境。文档从顶层的 makefile 运行，但开发分为单独的测试和发布流程。
 
-For this quickstart, start with langchain-community:
+对于这个快速入门，请从 langchain-community 开始：
 
 ```bash
 cd libs/community
 ```
 
-## Local Development Dependencies
+## 本地开发依赖
 
-Install langchain-community development requirements (for running langchain, running examples, linting, formatting, tests, and coverage):
+安装 langchain-community 开发要求（用于运行 langchain、运行示例、代码检查、格式化、测试和覆盖）：
 
 ```bash
 poetry install --with lint,typing,test,test_integration
 ```
 
-Then verify dependency installation:
+然后验证依赖安装：
 
 ```bash
 make test
 ```
 
-If during installation you receive a `WheelFileValidationError` for `debugpy`, please make sure you are running
-Poetry v1.6.1+. This bug was present in older versions of Poetry (e.g. 1.4.1) and has been resolved in newer releases.
-If you are still seeing this bug on v1.6.1+, you may also try disabling "modern installation"
-(`poetry config installer.modern-installation false`) and re-installing requirements.
-See [this `debugpy` issue](https://github.com/microsoft/debugpy/issues/1246) for more details.
+如果在安装过程中收到 `WheelFileValidationError` 针对 `debugpy`，请确保您正在运行 Poetry v1.6.1+。此错误在旧版本的 Poetry（例如 1.4.1）中存在，并已在较新版本中解决。如果您在 v1.6.1+ 上仍然看到此错误，您也可以尝试禁用“现代安装”（`poetry config installer.modern-installation false`）并重新安装依赖项。有关更多详细信息，请参见 [此 `debugpy` 问题](https://github.com/microsoft/debugpy/issues/1246)。
 
-## Testing
+## 测试
 
-**Note:** In `langchain`, `langchain-community`, and `langchain-experimental`, some test dependencies are optional. See the following section about optional dependencies.
+**注意：** 在 `langchain`、`langchain-community` 和 `langchain-experimental` 中，一些测试依赖是可选的。有关可选依赖的详细信息，请参见以下部分。
 
-Unit tests cover modular logic that does not require calls to outside APIs.
-If you add new logic, please add a unit test.
+单元测试涵盖不需要调用外部 API 的模块逻辑。
+如果您添加了新逻辑，请添加单元测试。
 
-To run unit tests:
+运行单元测试：
 
 ```bash
 make test
 ```
 
-To run unit tests in Docker:
+在 Docker 中运行单元测试：
 
 ```bash
 make docker_tests
 ```
 
-There are also [integration tests and code-coverage](/docs/contributing/testing/) available.
+还有 [集成测试和代码覆盖率](/docs/contributing/testing/) 可用。
 
-### Only develop langchain_core or langchain_experimental
+### 仅开发 langchain_core 或 langchain_experimental
 
-If you are only developing `langchain_core` or `langchain_experimental`, you can simply install the dependencies for the respective projects and run tests:
+如果您只开发 `langchain_core` 或 `langchain_experimental`，您可以简单地安装各自项目的依赖项并运行测试：
 
 ```bash
 cd libs/core
@@ -83,7 +76,7 @@ poetry install --with test
 make test
 ```
 
-Or:
+或者：
 
 ```bash
 cd libs/experimental
@@ -91,123 +84,120 @@ poetry install --with test
 make test
 ```
 
-## Formatting and Linting
+## 格式化和代码检查
 
-Run these locally before submitting a PR; the CI system will check also.
+在提交 PR 之前请在本地运行这些；CI 系统也会进行检查。
 
-### Code Formatting
+### 代码格式化
 
-Formatting for this project is done via [ruff](https://docs.astral.sh/ruff/rules/).
+本项目的格式化通过 [ruff](https://docs.astral.sh/ruff/rules/) 完成。
 
-To run formatting for docs, cookbook and templates:
+要对文档、食谱和模板进行格式化：
 
 ```bash
 make format
 ```
 
-To run formatting for a library, run the same command from the relevant library directory:
+要对库进行格式化，请从相关库目录运行相同的命令：
 
 ```bash
 cd libs/{LIBRARY}
 make format
 ```
 
-Additionally, you can run the formatter only on the files that have been modified in your current branch as compared to the master branch using the format_diff command:
+此外，您可以使用 format_diff 命令，仅对当前分支中与主分支相比已修改的文件运行格式化：
 
 ```bash
 make format_diff
 ```
 
-This is especially useful when you have made changes to a subset of the project and want to ensure your changes are properly formatted without affecting the rest of the codebase.
+当您对项目的某个子集进行了更改，并希望确保您的更改格式正确而不影响其余代码库时，这尤其有用。
 
-#### Linting
+#### 代码检查
 
-Linting for this project is done via a combination of [ruff](https://docs.astral.sh/ruff/rules/) and [mypy](http://mypy-lang.org/).
+本项目的代码检查通过 [ruff](https://docs.astral.sh/ruff/rules/) 和 [mypy](http://mypy-lang.org/) 的组合进行。
 
-To run linting for docs, cookbook and templates:
+要对文档、食谱和模板进行代码检查：
 
 ```bash
 make lint
 ```
 
-To run linting for a library, run the same command from the relevant library directory:
+要对库进行代码检查，请从相关库目录运行相同的命令：
 
 ```bash
 cd libs/{LIBRARY}
 make lint
 ```
 
-In addition, you can run the linter only on the files that have been modified in your current branch as compared to the master branch using the lint_diff command:
+此外，您可以使用 lint_diff 命令，仅对当前分支中与主分支相比已修改的文件运行代码检查：
 
 ```bash
 make lint_diff
 ```
 
-This can be very helpful when you've made changes to only certain parts of the project and want to ensure your changes meet the linting standards without having to check the entire codebase.
+当您仅对项目的某些部分进行了更改，并希望确保您的更改符合代码检查标准，而不必检查整个代码库时，这非常有帮助。
 
-We recognize linting can be annoying - if you do not want to do it, please contact a project maintainer, and they can help you with it. We do not want this to be a blocker for good code getting contributed.
+我们认识到代码检查可能会令人烦恼 - 如果您不想进行此操作，请联系项目维护者，他们可以帮助您。我们不希望这成为良好代码贡献的障碍。
 
-### Spellcheck
+### 拼写检查
 
-Spellchecking for this project is done via [codespell](https://github.com/codespell-project/codespell).
-Note that `codespell` finds common typos, so it could have false-positive (correctly spelled but rarely used) and false-negatives (not finding misspelled) words.
+本项目的拼写检查通过 [codespell](https://github.com/codespell-project/codespell) 完成。
+请注意，`codespell` 查找常见的拼写错误，因此可能会出现假阳性（拼写正确但很少使用）和假阴性（未发现拼写错误）单词。
 
-To check spelling for this project:
+要检查本项目的拼写：
 
 ```bash
 make spell_check
 ```
 
-To fix spelling in place:
+要在原地修复拼写错误：
 
 ```bash
 make spell_fix
 ```
 
-If codespell is incorrectly flagging a word, you can skip spellcheck for that word by adding it to the codespell config in the `pyproject.toml` file.
+如果 `codespell` 错误地标记了一个单词，您可以通过将其添加到 `pyproject.toml` 文件中的 `codespell` 配置来跳过该单词的拼写检查。
 
 ```python
 [tool.codespell]
 ...
-# Add here:
+# 在此添加：
 ignore-words-list = 'momento,collison,ned,foor,reworkd,parth,whats,aapply,mysogyny,unsecure'
 ```
 
-## Working with Optional Dependencies
+## 使用可选依赖
 
-`langchain`, `langchain-community`, and `langchain-experimental` rely on optional dependencies to keep these packages lightweight.
+`langchain`、`langchain-community` 和 `langchain-experimental` 依赖可选依赖来保持这些包的轻量性。
 
-`langchain-core` and partner packages **do not use** optional dependencies in this way.
+`langchain-core` 和合作包 **不使用** 这种方式的可选依赖。
 
-You'll notice that `pyproject.toml` and `poetry.lock` are **not** touched when you add optional dependencies below.
+您会注意到，当您在下面添加可选依赖时，`pyproject.toml` 和 `poetry.lock` **不会** 被修改。
 
-If you're adding a new dependency to Langchain, assume that it will be an optional dependency, and
-that most users won't have it installed.
+如果您要向 Langchain 添加一个新依赖，请假设它将是一个可选依赖，并且大多数用户不会安装它。
 
-Users who do not have the dependency installed should be able to **import** your code without
-any side effects (no warnings, no errors, no exceptions).
+未安装该依赖的用户应该能够 **导入** 您的代码，而不会产生任何副作用（没有警告，没有错误，没有异常）。
 
-To introduce the dependency to a library, please do the following:
+要将依赖引入库，请执行以下操作：
 
-1. Open extended_testing_deps.txt and add the dependency
-2. Add a unit test that the very least attempts to import the new code. Ideally, the unit
-test makes use of lightweight fixtures to test the logic of the code.
-3. Please use the `@pytest.mark.requires(package_name)` decorator for any unit tests that require the dependency.
+1. 打开 extended_testing_deps.txt 并添加依赖
+2. 添加一个单元测试，至少尝试导入新代码。理想情况下，单元测试使用轻量级的测试夹具来测试代码逻辑。
+3. 对于任何需要该依赖的单元测试，请使用 `@pytest.mark.requires(package_name)` 装饰器。
 
-## Adding a Jupyter Notebook
+## 添加 Jupyter Notebook
 
-If you are adding a Jupyter Notebook example, you'll want to install the optional `dev` dependencies.
+如果您要添加 Jupyter Notebook 示例，您需要安装可选的 `dev` 依赖项。
 
-To install dev dependencies:
+安装 dev 依赖项：
 
 ```bash
 poetry install --with dev
 ```
 
-Launch a notebook:
+启动一个 notebook：
 
 ```bash
 poetry run jupyter notebook
 ```
 
-When you run `poetry install`, the `langchain` package is installed as editable in the virtualenv, so your new logic can be imported into the notebook.
+当您运行 `poetry install` 时，`langchain` 包会作为可编辑包安装在虚拟环境中，因此您的新逻辑可以导入到 notebook 中。

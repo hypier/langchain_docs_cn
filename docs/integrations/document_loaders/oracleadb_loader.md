@@ -1,19 +1,20 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/oracleadb_loader.ipynb
 ---
+
 # Oracle Autonomous Database
 
-Oracle autonomous database is a cloud database that uses machine learning to automate database tuning, security, backups, updates, and other routine management tasks traditionally performed by DBAs.
+Oracle 自主数据库是一个云数据库，利用机器学习自动化数据库调优、安全性、备份、更新以及其他传统上由数据库管理员执行的日常管理任务。
 
-This notebook covers how to load documents from oracle autonomous database, the loader supports connection with connection string or tns configuration.
+本笔记本介绍了如何从 Oracle 自主数据库加载文档，加载器支持使用连接字符串或 TNS 配置进行连接。
 
-## Prerequisites
-1. Database runs in a 'Thin' mode:
+## 前提条件
+1. 数据库以“Thin”模式运行：
    https://python-oracledb.readthedocs.io/en/latest/user_guide/appendix_b.html
-2. `pip install oracledb`:
+2. `pip install oracledb`：
    https://python-oracledb.readthedocs.io/en/latest/user_guide/installation.html
 
-## Instructions
+## 指令
 
 
 ```python
@@ -26,7 +27,7 @@ from langchain_community.document_loaders import OracleAutonomousDatabaseLoader
 from settings import s
 ```
 
-With mutual TLS authentication (mTLS), wallet_location and wallet_password are required to create the connection, user can create connection by providing either connection string or tns configuration details.
+在双向TLS认证（mTLS）中，创建连接需要 wallet_location 和 wallet_password，用户可以通过提供连接字符串或 TNS 配置详细信息来创建连接。
 
 
 ```python
@@ -56,7 +57,7 @@ doc_loader_2 = OracleAutonomousDatabaseLoader(
 doc_2 = doc_loader_2.load()
 ```
 
-With TLS authentication, wallet_location and wallet_password are not required.
+在TLS认证中，不需要 wallet_location 和 wallet_password。
 
 
 ```python
@@ -80,8 +81,7 @@ doc_loader_4 = OracleAutonomousDatabaseLoader(
 doc_4 = doc_loader_4.load()
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

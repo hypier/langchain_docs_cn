@@ -1,53 +1,52 @@
 # Eden AI
 
->[Eden AI](https://docs.edenai.co/docs/getting-started-with-eden-ai) user interface (UI) 
-> is designed for handling the AI projects. With `Eden AI Portal`, 
-> you can perform no-code AI using the best engines for the market.
+>[Eden AI](https://docs.edenai.co/docs/getting-started-with-eden-ai) 用户界面 (UI) 
+> 旨在处理 AI 项目。使用 `Eden AI Portal`， 
+> 您可以使用市场上最好的引擎进行无代码 AI。
 
+## 安装与设置
 
-## Installation and Setup
-
-Accessing the Eden AI API requires an API key, which you can get by 
-[creating an account](https://app.edenai.run/user/register) and 
-heading [here](https://app.edenai.run/admin/account/settings). 
+访问 Eden AI API 需要一个 API 密钥，您可以通过 
+[创建一个账户](https://app.edenai.run/user/register) 
+并前往 [这里](https://app.edenai.run/admin/account/settings) 获取。
 
 ## LLMs
 
-See a [usage example](/docs/integrations/llms/edenai).
+请参见[使用示例](/docs/integrations/llms/edenai)。
 
 ```python
 from langchain_community.llms import EdenAI
 
 ```
 
-## Chat models
+## 聊天模型
 
-See a [usage example](/docs/integrations/chat/edenai).
+查看 [使用示例](/docs/integrations/chat/edenai).
 
 ```python
 from langchain_community.chat_models.edenai import ChatEdenAI
 ```
 
-## Embedding models
+## 嵌入模型
 
-See a [usage example](/docs/integrations/text_embedding/edenai).
+查看 [用法示例](/docs/integrations/text_embedding/edenai).
 
 ```python
 from langchain_community.embeddings.edenai import EdenAiEmbeddings
 ```
 
-## Tools
+## 工具
 
-Eden AI provides a list of tools that grants your Agent the ability to do multiple tasks, such as:
-* speech to text
-* text to speech
-* text explicit content detection
-* image explicit content detection
-* object detection
-* OCR invoice parsing
-* OCR ID parsing
+Eden AI 提供了一系列工具，使您的代理能够执行多项任务，例如：
+* 语音转文本
+* 文本转语音
+* 文本显式内容检测
+* 图像显式内容检测
+* 物体检测
+* OCR 发票解析
+* OCR 身份证解析
 
-See a [usage example](/docs/integrations/tools/edenai_tools).
+请参见 [使用示例](/docs/integrations/tools/edenai_tools)。
 
 ```python
 from langchain_community.tools.edenai import (

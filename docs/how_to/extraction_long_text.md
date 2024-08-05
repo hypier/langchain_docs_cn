@@ -1,22 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/extraction_long_text.ipynb
 ---
-# How to handle long text when doing extraction
 
-When working with files, like PDFs, you're likely to encounter text that exceeds your language model's context window. To process this text, consider these strategies:
+# 如何处理提取时的长文本
 
-1. **Change LLM** Choose a different LLM that supports a larger context window.
-2. **Brute Force** Chunk the document, and extract content from each chunk.
-3. **RAG** Chunk the document, index the chunks, and only extract content from a subset of chunks that look "relevant".
+在处理文件时，例如PDF，您可能会遇到超出语言模型上下文窗口的文本。要处理这些文本，请考虑以下策略：
 
-Keep in mind that these strategies have different trade off and the best strategy likely depends on the application that you're designing!
+1. **更改LLM** 选择支持更大上下文窗口的不同LLM。
+2. **暴力法** 将文档分块，并从每个块中提取内容。
+3. **RAG** 将文档分块，索引这些块，仅从看起来“相关”的子集块中提取内容。
 
-This guide demonstrates how to implement strategies 2 and 3.
+请记住，这些策略有不同的权衡，最佳策略可能取决于您正在设计的应用程序！
 
-## Set up
+本指南演示了如何实现策略2和3。
 
-We need some example data! Let's download an article about [cars from wikipedia](https://en.wikipedia.org/wiki/Car) and load it as a LangChain [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html).
+## 设置
 
+我们需要一些示例数据！让我们下载一篇关于[汽车的维基百科文章](https://en.wikipedia.org/wiki/Car)并将其作为LangChain [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html)加载。
 
 ```python
 import re
@@ -37,19 +37,18 @@ document = loader.load()[0]
 document.page_content = re.sub("\n\n+", "\n", document.page_content)
 ```
 
-
 ```python
 print(len(document.page_content))
 ```
 ```output
 79174
 ```
-## Define the schema
 
-Following the [extraction tutorial](/docs/tutorials/extraction), we will use Pydantic to define the schema of information we wish to extract. In this case, we will extract a list of "key developments" (e.g., important historical events) that include a year and description.
+## 定义模式
 
-Note that we also include an `evidence` key and instruct the model to provide in verbatim the relevant sentences of text from the article. This allows us to compare the extraction results to (the model's reconstruction of) text from the original document.
+根据 [提取教程](/docs/tutorials/extraction)，我们将使用 Pydantic 来定义我们希望提取的信息的模式。在这种情况下，我们将提取一个“关键发展”列表（例如，重要的历史事件），其中包括年份和描述。
 
+请注意，我们还包括一个 `evidence` 键，并指示模型逐字提供与文章相关的句子。这使我们能够将提取结果与（模型重构的）原始文档中的文本进行比较。
 
 ```python
 from typing import List, Optional
@@ -95,9 +94,9 @@ prompt = ChatPromptTemplate.from_messages(
 )
 ```
 
-## Create an extractor
+## 创建提取器
 
-Let's select an LLM. Because we are using tool-calling, we will need a model that supports a tool-calling feature. See [this table](/docs/integrations/chat) for available LLMs.
+让我们选择一个 LLM。因为我们使用的是工具调用，所以我们需要一个支持工具调用特性的模型。请参见[此表](/docs/integrations/chat)以获取可用的 LLM。
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
@@ -114,10 +113,9 @@ extractor = prompt | llm.with_structured_output(
 )
 ```
 
-## Brute force approach
+## 暴力破解方法
 
-Split the documents into chunks such that each chunk fits into the context window of the LLMs.
-
+将文档拆分为多个块，以便每个块适合 LLM 的上下文窗口。
 
 ```python
 from langchain_text_splitters import TokenTextSplitter
@@ -132,12 +130,12 @@ text_splitter = TokenTextSplitter(
 texts = text_splitter.split_text(document.page_content)
 ```
 
-Use [batch](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html) functionality to run the extraction in **parallel** across each chunk! 
+使用 [batch](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html) 功能在每个块中 **并行** 运行提取！
 
 :::tip
-You can often use .batch() to parallelize the extractions! `.batch` uses a threadpool under the hood to help you parallelize workloads.
+您通常可以使用 .batch() 来并行化提取！`.batch` 在底层使用线程池来帮助您并行化工作负载。
 
-If your model is exposed via an API, this will likely speed up your extraction flow!
+如果您的模型通过 API 暴露，这可能会加快您的提取流程！
 :::
 
 
@@ -152,10 +150,9 @@ extractions = extractor.batch(
 )
 ```
 
-### Merge results
+### 合并结果
 
-After extracting data from across the chunks, we'll want to merge the extractions together.
-
+在从各个数据块中提取数据后，我们需要将提取结果合并在一起。
 
 ```python
 key_developments = []
@@ -166,42 +163,37 @@ for extraction in extractions:
 key_developments[:10]
 ```
 
-
-
 ```output
-[KeyDevelopment(year=1966, description='The Toyota Corolla began production, becoming the best-selling series of automobile in history.', evidence='The Toyota Corolla, which has been in production since 1966, is the best-selling series of automobile in history.'),
- KeyDevelopment(year=1769, description='Nicolas-Joseph Cugnot built the first steam-powered road vehicle.', evidence='The French inventor Nicolas-Joseph Cugnot built the first steam-powered road vehicle in 1769.'),
- KeyDevelopment(year=1808, description='François Isaac de Rivaz designed and constructed the first internal combustion-powered automobile.', evidence='the Swiss inventor François Isaac de Rivaz designed and constructed the first internal combustion-powered automobile in 1808.'),
- KeyDevelopment(year=1886, description='Carl Benz patented his Benz Patent-Motorwagen, inventing the modern car.', evidence='The modern car—a practical, marketable automobile for everyday use—was invented in 1886, when the German inventor Carl Benz patented his Benz Patent-Motorwagen.'),
- KeyDevelopment(year=1908, description='Ford Model T, one of the first cars affordable by the masses, began production.', evidence='One of the first cars affordable by the masses was the Ford Model T, begun in 1908, an American car manufactured by the Ford Motor Company.'),
- KeyDevelopment(year=1888, description="Bertha Benz undertook the first road trip by car to prove the road-worthiness of her husband's invention.", evidence="In August 1888, Bertha Benz, the wife of Carl Benz, undertook the first road trip by car, to prove the road-worthiness of her husband's invention."),
- KeyDevelopment(year=1896, description='Benz designed and patented the first internal-combustion flat engine, called boxermotor.', evidence='In 1896, Benz designed and patented the first internal-combustion flat engine, called boxermotor.'),
- KeyDevelopment(year=1897, description='Nesselsdorfer Wagenbau produced the Präsident automobil, one of the first factory-made cars in the world.', evidence='The first motor car in central Europe and one of the first factory-made cars in the world, was produced by Czech company Nesselsdorfer Wagenbau (later renamed to Tatra) in 1897, the Präsident automobil.'),
- KeyDevelopment(year=1890, description='Daimler Motoren Gesellschaft (DMG) was founded by Daimler and Maybach in Cannstatt.', evidence='Daimler and Maybach founded Daimler Motoren Gesellschaft (DMG) in Cannstatt in 1890.'),
- KeyDevelopment(year=1891, description='Auguste Doriot and Louis Rigoulot completed the longest trip by a petrol-driven vehicle with a Daimler powered Peugeot Type 3.', evidence='In 1891, Auguste Doriot and his Peugeot colleague Louis Rigoulot completed the longest trip by a petrol-driven vehicle when their self-designed and built Daimler powered Peugeot Type 3 completed 2,100 kilometres (1,300 mi) from Valentigney to Paris and Brest and back again.')]
+[KeyDevelopment(year=1966, description='丰田卡罗拉开始生产，成为历史上最畅销的汽车系列。', evidence='自1966年开始生产的丰田卡罗拉，是历史上最畅销的汽车系列。'),
+ KeyDevelopment(year=1769, description='尼古拉-约瑟夫·居诺建造了第一辆蒸汽动力道路车辆。', evidence='法国发明家尼古拉-约瑟夫·居诺在1769年建造了第一辆蒸汽动力道路车辆。'),
+ KeyDevelopment(year=1808, description='弗朗索瓦·艾萨克·德·里瓦兹设计并建造了第一辆内燃机汽车。', evidence='瑞士发明家弗朗索瓦·艾萨克·德·里瓦兹在1808年设计并建造了第一辆内燃机汽车。'),
+ KeyDevelopment(year=1886, description='卡尔·本茨为他的本茨专利汽车申请了专利，发明了现代汽车。', evidence='现代汽车——一种实用的、可市场化的日常使用汽车——是在1886年由德国发明家卡尔·本茨申请专利的本茨专利汽车发明的。'),
+ KeyDevelopment(year=1908, description='福特T型车，最早由大众负担得起的汽车之一，开始生产。', evidence='最早由大众负担得起的汽车之一是福特T型车，始于1908年，由福特汽车公司制造。'),
+ KeyDevelopment(year=1888, description="贝尔塔·本茨进行了第一次汽车公路旅行，以证明她丈夫发明的道路适用性。", evidence="1888年8月，卡尔·本茨的妻子贝尔塔·本茨进行了第一次汽车公路旅行，以证明她丈夫发明的道路适用性。"),
+ KeyDevelopment(year=1896, description='本茨设计并申请了第一款内燃机平面发动机的专利，称为boxermotor。', evidence='在1896年，本茨设计并申请了第一款内燃机平面发动机的专利，称为boxermotor。'),
+ KeyDevelopment(year=1897, description='内塞尔斯多夫车辆制造公司生产了总统汽车，这是世界上第一批工厂制造的汽车之一。', evidence='中欧第一辆汽车以及世界上第一批工厂制造的汽车之一，是由捷克公司内塞尔斯多夫车辆制造公司（后更名为塔特拉）在1897年生产的总统汽车。'),
+ KeyDevelopment(year=1890, description='戴姆勒和迈巴赫在坎斯塔特成立了戴姆勒发动机公司（DMG）。', evidence='戴姆勒和迈巴赫于1890年在坎斯塔特成立了戴姆勒发动机公司（DMG）。'),
+ KeyDevelopment(year=1891, description='奥古斯特·多里奥和路易·里古洛完成了由戴姆勒动力的标致Type 3驱动的汽油车最长旅行。', evidence='在1891年，奥古斯特·多里奥和他的标致同事路易·里古洛完成了由戴姆勒动力的标致Type 3驱动的汽油车最长旅行，他们自制的标致Type 3完成了从瓦朗蒂尼到巴黎和布雷斯特的2100公里（1300英里）往返。')]
 ```
 
+## 基于RAG的方法
 
-## RAG based approach
-
-Another simple idea is to chunk up the text, but instead of extracting information from every chunk, just focus on the the most relevant chunks.
+另一个简单的想法是将文本分块，但不是从每个块中提取信息，而是专注于最相关的块。
 
 :::caution
-It can be difficult to identify which chunks are relevant.
+确定哪些块是相关的可能很困难。
 
-For example, in the `car` article we're using here, most of the article contains key development information. So by using
-**RAG**, we'll likely be throwing out a lot of relevant information.
+例如，在我们这里使用的`car`文章中，大部分文章包含关键的开发信息。因此，通过使用**RAG**，我们可能会丢弃很多相关信息。
 
-We suggest experimenting with your use case and determining whether this approach works or not.
+我们建议您根据自己的用例进行实验，确定这种方法是否有效。
 :::
 
-To implement the RAG based approach: 
+要实现基于RAG的方法：
 
-1. Chunk up your document(s) and index them (e.g., in a vectorstore);
-2. Prepend the `extractor` chain with a retrieval step using the vectorstore.
+1. 将您的文档分块并进行索引（例如，在向量存储中）；
+2. 在`extractor`链前添加一个使用向量存储的检索步骤。
 
-Here's a simple example that relies on the `FAISS` vectorstore.
-
+以下是一个依赖于`FAISS`向量存储的简单示例。
 
 ```python
 from langchain_community.vectorstores import FAISS
@@ -215,39 +207,37 @@ vectorstore = FAISS.from_texts(texts, embedding=OpenAIEmbeddings())
 
 retriever = vectorstore.as_retriever(
     search_kwargs={"k": 1}
-)  # Only extract from first document
+)  # 仅从第一篇文档中提取
 ```
 
-In this case the RAG extractor is only looking at the top document.
-
+在这种情况下，RAG提取器只关注顶部文档。
 
 ```python
 rag_extractor = {
-    "text": retriever | (lambda docs: docs[0].page_content)  # fetch content of top doc
+    "text": retriever | (lambda docs: docs[0].page_content)  # 获取顶部文档的内容
 } | extractor
 ```
 
-
 ```python
-results = rag_extractor.invoke("Key developments associated with cars")
+results = rag_extractor.invoke("与汽车相关的关键发展")
 ```
-
 
 ```python
 for key_development in results.key_developments:
     print(key_development)
 ```
 ```output
-year=1869 description='Mary Ward became one of the first documented car fatalities in Parsonstown, Ireland.' evidence='Mary Ward became one of the first documented car fatalities in 1869 in Parsonstown, Ireland,'
-year=1899 description="Henry Bliss one of the US's first pedestrian car casualties in New York City." evidence="Henry Bliss one of the US's first pedestrian car casualties in 1899 in New York City."
-year=2030 description='All fossil fuel vehicles will be banned in Amsterdam.' evidence='all fossil fuel vehicles will be banned in Amsterdam from 2030.'
+year=1869 description='Mary Ward成为爱尔兰Parsonstown记录在案的第一起汽车事故的受害者之一。' evidence='Mary Ward在1869年成为爱尔兰Parsonstown记录在案的第一起汽车事故的受害者之一。'
+year=1899 description="Henry Bliss成为美国纽约市首批行人汽车事故的受害者之一。" evidence="Henry Bliss在1899年成为美国纽约市首批行人汽车事故的受害者之一。"
+year=2030 description='阿姆斯特丹将禁止所有化石燃料车辆。' evidence='从2030年起，阿姆斯特丹将禁止所有化石燃料车辆。'
 ```
-## Common issues
 
-Different methods have their own pros and cons related to cost, speed, and accuracy.
+## 常见问题
 
-Watch out for these issues:
+不同的方法在成本、速度和准确性方面各有优缺点。
 
-* Chunking content means that the LLM can fail to extract information if the information is spread across multiple chunks.
-* Large chunk overlap may cause the same information to be extracted twice, so be prepared to de-duplicate!
-* LLMs can make up data. If looking for a single fact across a large text and using a brute force approach, you may end up getting more made up data.
+注意这些问题：
+
+* 内容分块意味着如果信息分散在多个块中，LLM 可能无法提取信息。
+* 大块重叠可能导致相同的信息被提取两次，因此要做好去重的准备！
+* LLM 可能会编造数据。如果在大量文本中寻找单一事实并使用暴力破解的方法，您可能会得到更多编造的数据。

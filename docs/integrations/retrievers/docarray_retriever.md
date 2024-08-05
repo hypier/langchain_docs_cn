@@ -1,15 +1,15 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/docarray_retriever.ipynb
 ---
+
 # DocArray
 
->[DocArray](https://github.com/docarray/docarray) is a versatile, open-source tool for managing your multi-modal data. It lets you shape your data however you want, and offers the flexibility to store and search it using various document index backends. Plus, it gets even better - you can utilize your `DocArray` document index to create a `DocArrayRetriever`, and build awesome Langchain apps!
+>[DocArray](https://github.com/docarray/docarray) 是一个多功能的开源工具，用于管理您的多模态数据。它允许您根据自己的需求来组织数据，并提供灵活性以使用各种文档索引后端进行存储和搜索。此外，它还更进一步 - 您可以利用您的 `DocArray` 文档索引创建一个 `DocArrayRetriever`，并构建出色的 Langchain 应用程序！
 
-This notebook is split into two sections. The [first section](#document-index-backends) offers an introduction to all five supported document index backends. It provides guidance on setting up and indexing each backend and also instructs you on how to build a `DocArrayRetriever` for finding relevant documents. 
-In the [second section](#movie-retrieval-using-hnswdocumentindex), we'll select one of these backends and illustrate how to use it through a basic example.
+本笔记本分为两个部分。[第一部分](#document-index-backends) 介绍所有五种支持的文档索引后端。它提供了关于如何设置和索引每个后端的指导，并指导您如何构建一个 `DocArrayRetriever` 来查找相关文档。
+在 [第二部分](#movie-retrieval-using-hnswdocumentindex) 中，我们将选择其中一个后端，并通过一个基本示例说明如何使用它。
 
-
-## Document Index Backends
+## 文档索引后端
 
 
 ```python
@@ -23,9 +23,9 @@ from langchain_community.retrievers import DocArrayRetriever
 embeddings = FakeEmbeddings(size=32)
 ```
 
-Before you start building the index, it's important to define your document schema. This determines what fields your documents will have and what type of data each field will hold.
+在开始构建索引之前，定义文档架构是很重要的。这决定了您的文档将包含哪些字段以及每个字段将保存什么类型的数据。
 
-For this demonstration, we'll create a somewhat random schema containing 'title' (str), 'title_embedding' (numpy array), 'year' (int), and 'color' (str)
+在本演示中，我们将创建一个包含 'title' (str)、'title_embedding' (numpy array)、'year' (int) 和 'color' (str) 的随机架构。
 
 
 ```python
@@ -38,9 +38,9 @@ class MyDoc(BaseDoc):
 
 ### InMemoryExactNNIndex
 
-`InMemoryExactNNIndex` stores all Documents in memory. It is a great starting point for small datasets, where you may not want to launch a database server.
+`InMemoryExactNNIndex` 将所有文档存储在内存中。对于小型数据集，这是一个很好的起点，因为您可能不想启动数据库服务器。
 
-Learn more here: https://docs.docarray.org/user_guide/storing/index_in_memory/
+在这里了解更多信息： https://docs.docarray.org/user_guide/storing/index_in_memory/
 
 
 ```python
@@ -82,11 +82,12 @@ print(doc)
 ```output
 [Document(page_content='My document 56', metadata={'id': '1f33e58b6468ab722f3786b96b20afe6', 'year': 56, 'color': 'red'})]
 ```
+
 ### HnswDocumentIndex
 
-`HnswDocumentIndex` is a lightweight Document Index implementation that runs fully locally and is best suited for small- to medium-sized datasets. It stores vectors on disk in [hnswlib](https://github.com/nmslib/hnswlib), and stores all other data in [SQLite](https://www.sqlite.org/index.html).
+`HnswDocumentIndex` 是一个轻量级的文档索引实现，完全在本地运行，最适合小到中等规模的数据集。它在 [hnswlib](https://github.com/nmslib/hnswlib) 上将向量存储在磁盘上，并在 [SQLite](https://www.sqlite.org/index.html) 中存储所有其他数据。
 
-Learn more here: https://docs.docarray.org/user_guide/storing/index_hnswlib/
+在这里了解更多信息： https://docs.docarray.org/user_guide/storing/index_hnswlib/
 
 
 ```python
@@ -129,11 +130,12 @@ print(doc)
 ```output
 [Document(page_content='My document 28', metadata={'id': 'ca9f3f4268eec7c97a7d6e77f541cb82', 'year': 28, 'color': 'red'})]
 ```
+
 ### WeaviateDocumentIndex
 
-`WeaviateDocumentIndex` is a document index that is built upon [Weaviate](https://weaviate.io/) vector database.
+`WeaviateDocumentIndex` 是一个基于 [Weaviate](https://weaviate.io/) 向量数据库构建的文档索引。
 
-Learn more here: https://docs.docarray.org/user_guide/storing/index_weaviate/
+在这里了解更多信息: https://docs.docarray.org/user_guide/storing/index_weaviate/
 
 
 ```python
@@ -193,12 +195,12 @@ print(doc)
 ```output
 [Document(page_content='My document 17', metadata={'id': '3a5b76e85f0d0a01785dc8f9d965ce40', 'year': 17, 'color': 'red'})]
 ```
+
 ### ElasticDocIndex
 
-`ElasticDocIndex` is a document index that is built upon [ElasticSearch](https://github.com/elastic/elasticsearch)
+`ElasticDocIndex` 是一个基于 [ElasticSearch](https://github.com/elastic/elasticsearch) 构建的文档索引
 
-Learn more [here](https://docs.docarray.org/user_guide/storing/index_elastic/)
-
+了解更多信息 [这里](https://docs.docarray.org/user_guide/storing/index_elastic/)
 
 ```python
 from docarray.index import ElasticDocIndex
@@ -224,7 +226,6 @@ db.index(
 filter_query = {"range": {"year": {"lte": 90}}}
 ```
 
-
 ```python
 # create a retriever
 retriever = DocArrayRetriever(
@@ -242,12 +243,12 @@ print(doc)
 ```output
 [Document(page_content='My document 46', metadata={'id': 'edbc721bac1c2ad323414ad1301528a4', 'year': 46, 'color': 'green'})]
 ```
+
 ### QdrantDocumentIndex
 
-`QdrantDocumentIndex` is a document index that is built upon [Qdrant](https://qdrant.tech/) vector database
+`QdrantDocumentIndex` 是一个基于 [Qdrant](https://qdrant.tech/) 向量数据库构建的文档索引。
 
-Learn more [here](https://docs.docarray.org/user_guide/storing/index_qdrant/)
-
+了解更多信息 [这里](https://docs.docarray.org/user_guide/storing/index_qdrant/)
 
 ```python
 from docarray.index import QdrantDocumentIndex
@@ -303,7 +304,8 @@ print(doc)
 ```output
 [Document(page_content='My document 80', metadata={'id': '97465f98d0810f1f330e4ecc29b13d20', 'year': 80, 'color': 'blue'})]
 ```
-## Movie Retrieval using HnswDocumentIndex
+
+## 使用 HnswDocumentIndex 进行电影检索
 
 
 ```python
@@ -364,7 +366,7 @@ from docarray.typing import NdArray
 from langchain_openai import OpenAIEmbeddings
 
 
-# define schema for your movie documents
+# 定义电影文档的模式
 class MyDoc(BaseDoc):
     title: str
     description: str
@@ -376,7 +378,7 @@ class MyDoc(BaseDoc):
 embeddings = OpenAIEmbeddings()
 
 
-# get "description" embeddings, and create documents
+# 获取“描述”嵌入，并创建文档
 docs = DocList[MyDoc](
     [
         MyDoc(
@@ -391,14 +393,14 @@ docs = DocList[MyDoc](
 ```python
 from docarray.index import HnswDocumentIndex
 
-# initialize the index
+# 初始化索引
 db = HnswDocumentIndex[MyDoc](work_dir="movie_search")
 
-# add data
+# 添加数据
 db.index(docs)
 ```
 
-### Normal Retriever
+### 普通检索器
 
 
 ```python
@@ -419,7 +421,8 @@ print(doc)
 ```output
 [Document(page_content='A thief who steals corporate secrets through the use of dream-sharing technology is given the task of planting an idea into the mind of a CEO.', metadata={'id': 'f1649d5b6776db04fec9a116bbb6bbe5', 'title': 'Inception', 'rating': 8.8, 'director': 'Christopher Nolan'})]
 ```
-### Retriever with Filters
+
+### 带过滤器的检索器
 
 
 ```python
@@ -442,13 +445,14 @@ print(docs)
 ```output
 [Document(page_content='Interstellar explores the boundaries of human exploration as a group of astronauts venture through a wormhole in space. In their quest to ensure the survival of humanity, they confront the vastness of space-time and grapple with love and sacrifice.', metadata={'id': 'ab704cc7ae8573dc617f9a5e25df022a', 'title': 'Interstellar', 'rating': 8.6, 'director': 'Christopher Nolan'}), Document(page_content='A thief who steals corporate secrets through the use of dream-sharing technology is given the task of planting an idea into the mind of a CEO.', metadata={'id': 'f1649d5b6776db04fec9a116bbb6bbe5', 'title': 'Inception', 'rating': 8.8, 'director': 'Christopher Nolan'})]
 ```
-### Retriever with MMR search
+
+### 使用MMR搜索的检索器
 
 
 ```python
 from langchain_community.retrievers import DocArrayRetriever
 
-# create a retriever
+# 创建检索器
 retriever = DocArrayRetriever(
     index=db,
     embeddings=embeddings,
@@ -459,15 +463,15 @@ retriever = DocArrayRetriever(
     top_k=3,
 )
 
-# find relevant documents
-docs = retriever.invoke("action movies")
+# 查找相关文档
+docs = retriever.invoke("动作电影")
 print(docs)
 ```
 ```output
 [Document(page_content="The lives of two mob hitmen, a boxer, a gangster's wife, and a pair of diner bandits intertwine in four tales of violence and redemption.", metadata={'id': 'e6aa313bbde514e23fbc80ab34511afd', 'title': 'Pulp Fiction', 'rating': 8.9, 'director': 'Quentin Tarantino'}), Document(page_content='A thief who steals corporate secrets through the use of dream-sharing technology is given the task of planting an idea into the mind of a CEO.', metadata={'id': 'f1649d5b6776db04fec9a116bbb6bbe5', 'title': 'Inception', 'rating': 8.8, 'director': 'Christopher Nolan'}), Document(page_content='When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.', metadata={'id': '91dec17d4272041b669fd113333a65f7', 'title': 'The Dark Knight', 'rating': 9.0, 'director': 'Christopher Nolan'})]
 ```
 
-## Related
+## 相关
 
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

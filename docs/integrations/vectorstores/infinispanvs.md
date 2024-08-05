@@ -1,13 +1,13 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/infinispanvs.ipynb
 ---
+
 # Infinispan
 
-Infinispan is an open-source key-value data grid, it can work as single node as well as distributed.
+Infinispan 是一个开源的键值数据网格，它可以作为单节点运行，也可以作为分布式系统运行。
 
-Vector search is supported since release 15.x
-For more: [Infinispan Home](https://infinispan.org)
-
+自 15.x 版本以来支持向量搜索  
+更多信息请访问: [Infinispan Home](https://infinispan.org)
 
 ```python
 # Ensure that all we need is installed
@@ -18,13 +18,13 @@ For more: [Infinispan Home](https://infinispan.org)
 %pip install langchain_community
 ```
 
-# Setup
+# 设置
 
-To run this demo we need a running Infinispan instance without authentication and a data file.
-In the next three cells we're going to:
-- download the data file
-- create the configuration
-- run Infinispan in docker
+要运行此演示，我们需要一个没有身份验证的 Infinispan 实例和一个数据文件。
+在接下来的三个单元中，我们将：
+- 下载数据文件
+- 创建配置
+- 在 docker 中运行 Infinispan
 
 
 ```bash
@@ -68,12 +68,12 @@ echo 'infinispan:
 !docker run -d --name infinispanvs-demo -v $(pwd):/user-config  -p 11222:11222 infinispan/server:15.0 -c /user-config/infinispan-noauth.yaml
 ```
 
-# The Code
+# 代码
 
-## Pick up an embedding model
+## 选择一个嵌入模型
 
-In this demo we're using
-a HuggingFace embedding mode.
+在这个演示中，我们使用的是
+HuggingFace 嵌入模型。
 
 
 ```python
@@ -84,16 +84,13 @@ model_name = "sentence-transformers/all-MiniLM-L12-v2"
 hf = HuggingFaceEmbeddings(model_name=model_name)
 ```
 
-## Setup Infinispan cache
+## 设置 Infinispan 缓存
 
-Infinispan is a very flexible key-value store, it can store raw bits as well as complex data type.
-User has complete freedom in the datagrid configuration, but for simple data type everything is automatically
-configured by the python layer. We take advantage of this feature so we can focus on our application.
+Infinispan 是一个非常灵活的键值存储，可以存储原始位以及复杂数据类型。用户在数据网格配置中拥有完全的自由，但对于简单数据类型，所有内容都由 Python 层自动配置。我们利用这一特性，以便能够专注于我们的应用程序。
 
-## Prepare the data
+## 准备数据
 
-In this demo we rely on the default configuration, thus texts, metadatas and vectors in the same cache, but other options are possible: i.e. content can be store somewhere else and vector store could contain only a reference to the actual content.
-
+在这个演示中，我们依赖于默认配置，因此文本、元数据和向量存储在同一个缓存中，但其他选项也是可能的：即内容可以存储在其他地方，向量存储可以仅包含对实际内容的引用。
 
 ```python
 import csv
@@ -121,7 +118,7 @@ with gzip.open("bbc_news.csv.gz", "rt", newline="") as csvfile:
             break
 ```
 
-# Populate the vector store
+# 填充向量存储
 
 
 ```python
@@ -132,12 +129,9 @@ from langchain_community.vectorstores import InfinispanVS
 ispnvs = InfinispanVS.from_texts(texts, hf, metas)
 ```
 
-# An helper func that prints the result documents
+# 一个帮助函数，用于打印结果文档
 
-By default InfinispanVS returns the protobuf `ŧext` field in the `Document.page_content`
-and all the remaining protobuf fields (except the vector) in the `metadata`. This behaviour is
-configurable via lambda functions at setup.
-
+默认情况下，InfinispanVS 在 `Document.page_content` 中返回 protobuf 的 `ŧext` 字段，并在 `metadata` 中返回所有其他 protobuf 字段（除了向量）。这种行为可以通过设置时的 lambda 函数进行配置。
 
 ```python
 def print_docs(docs):
@@ -147,9 +141,9 @@ def print_docs(docs):
         print(res.page_content)
 ```
 
-# Try it!!!
+# 尝试一下！！！
 
-Below some sample queries
+以下是一些示例查询
 
 
 ```python
@@ -182,8 +176,7 @@ print_docs(ispnvs.similarity_search("How to stay young", 5))
 !docker rm --force infinispanvs-demo
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

@@ -1,17 +1,16 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/wikidata.ipynb
 ---
+
 # Wikidata
 
->[Wikidata](https://wikidata.org/) is a free and open knowledge base that can be read and edited by both humans and machines. Wikidata is one of the world's largest open knowledge bases.
+>[Wikidata](https://wikidata.org/) 是一个免费的开放知识库，可以被人类和机器读取和编辑。Wikidata 是世界上最大的开放知识库之一。
 
-First, you need to install `wikibase-rest-api-client` and `mediawikiapi` python packages.
-
+首先，您需要安装 `wikibase-rest-api-client` 和 `mediawikiapi` Python 包。
 
 ```python
 %pip install --upgrade --quiet "wikibase-rest-api-client<0.2" mediawikiapi
 ```
-
 
 ```python
 from langchain_community.tools.wikidata.tool import WikidataAPIWrapper, WikidataQueryRun
@@ -53,7 +52,7 @@ instance of: fictional human
 sex or gender: male
 ```
 
-## Related
+## 相关
 
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

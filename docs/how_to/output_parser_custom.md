@@ -1,25 +1,25 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/output_parser_custom.ipynb
 ---
-# How to create a custom Output Parser
 
-In some situations you may want to implement a custom parser to structure the model output into a custom format.
+# 如何创建自定义输出解析器
 
-There are two ways to implement a custom parser:
+在某些情况下，您可能希望实现一个自定义解析器，将模型输出结构化为自定义格式。
 
-1. Using `RunnableLambda` or `RunnableGenerator` in LCEL -- we strongly recommend this for most use cases
-2. By inherting from one of the base classes for out parsing -- this is the hard way of doing things
+实现自定义解析器有两种方法：
 
-The difference between the two approaches are mostly superficial and are mainly in terms of which callbacks are triggered (e.g., `on_chain_start` vs. `on_parser_start`), and how a runnable lambda vs. a parser might be visualized in a tracing platform like LangSmith.
+1. 使用 LCEL 中的 `RunnableLambda` 或 `RunnableGenerator` -- 我们强烈推荐这种方法用于大多数用例
+2. 通过从基础类之一继承来进行输出解析 -- 这是比较困难的实现方式
 
-## Runnable Lambdas and Generators
+这两种方法之间的区别主要是表面的，主要体现在触发的回调（例如，`on_chain_start` 与 `on_parser_start`）以及在像 LangSmith 这样的追踪平台中可视化 `RunnableLambda` 与解析器的方式。
 
-The recommended way to parse is using **runnable lambdas** and **runnable generators**!
+## 可运行的 Lambda 和生成器
 
-Here, we will make a simple parse that inverts the case of the output from the model.
+推荐的解析方式是使用 **可运行的 Lambda** 和 **可运行的生成器**！
 
-For example, if the model outputs: "Meow", the parser will produce "mEOW".
+在这里，我们将进行一个简单的解析，它会反转模型输出的大小写。
 
+例如，如果模型输出：“Meow”，解析器将生成“mEOW”。
 
 ```python
 from typing import Iterable
@@ -39,22 +39,18 @@ chain = model | parse
 chain.invoke("hello")
 ```
 
-
-
 ```output
 'hELLO!'
 ```
 
-
 :::tip
 
-LCEL automatically upgrades the function `parse` to `RunnableLambda(parse)` when composed using a `|`  syntax.
+LCEL 在使用 `|` 语法组合时，会自动将函数 `parse` 升级为 `RunnableLambda(parse)`。
 
-If you don't like that you can manually import `RunnableLambda` and then run`parse = RunnableLambda(parse)`.
+如果你不喜欢这样，你可以手动导入 `RunnableLambda`，然后运行 `parse = RunnableLambda(parse)`。
 :::
 
-Does streaming work?
-
+流式传输有效吗？
 
 ```python
 for chunk in chain.stream("tell me about yourself in one sentence"):
@@ -63,11 +59,9 @@ for chunk in chain.stream("tell me about yourself in one sentence"):
 ```output
 i'M cLAUDE, AN ai ASSISTANT CREATED BY aNTHROPIC TO BE HELPFUL, HARMLESS, AND HONEST.|
 ```
-No, it doesn't because the parser aggregates the input before parsing the output.
+不，它无效，因为解析器在解析输出之前会聚合输入。
 
-If we want to implement a streaming parser, we can have the parser accept an iterable over the input instead and yield
-the results as they're available.
-
+如果我们想实现一个流式解析器，可以让解析器接受输入的可迭代对象，并在结果可用时生成结果。
 
 ```python
 from langchain_core.runnables import RunnableGenerator
@@ -83,24 +77,19 @@ streaming_parse = RunnableGenerator(streaming_parse)
 
 :::important
 
-Please wrap the streaming parser in `RunnableGenerator` as we may stop automatically upgrading it with the `|` syntax.
+请将流式解析器包装在 `RunnableGenerator` 中，因为我们可能会停止使用 `|` 语法自动升级它。
 :::
-
 
 ```python
 chain = model | streaming_parse
 chain.invoke("hello")
 ```
 
-
-
 ```output
 'hELLO!'
 ```
 
-
-Let's confirm that streaming works!
-
+让我们确认流式传输有效！
 
 ```python
 for chunk in chain.stream("tell me about yourself in one sentence"):
@@ -109,40 +98,39 @@ for chunk in chain.stream("tell me about yourself in one sentence"):
 ```output
 i|'M| cLAUDE|,| AN| ai| ASSISTANT| CREATED| BY| aN|THROP|IC| TO| BE| HELPFUL|,| HARMLESS|,| AND| HONEST|.|
 ```
-## Inherting from Parsing Base Classes
 
-Another approach to implement a parser is by inherting from `BaseOutputParser`, `BaseGenerationOutputParser` or another one of the base parsers depending on what you need to do.
+## 从解析基类继承
 
-In general, we **do not** recommend this approach for most use cases as it results in more code to write without significant benefits.
+实现解析器的另一种方法是从 `BaseOutputParser`、`BaseGenerationOutputParser` 或其他基解析器继承，具体取决于您的需求。
 
-The simplest kind of output parser extends the `BaseOutputParser` class and must implement the following methods:
+一般来说，我们 **不** 推荐这种方法用于大多数用例，因为这会导致需要编写更多代码而没有显著的好处。
 
-* `parse`: takes the string output from the model and parses it
-* (optional) `_type`: identifies the name of the parser.
+最简单的输出解析器类型扩展了 `BaseOutputParser` 类，并必须实现以下方法：
 
-When the output from the chat model or LLM is malformed, the can throw an `OutputParserException` to indicate that parsing fails because of bad input. Using this exception allows code that utilizes the parser to handle the exceptions in a consistent manner.
+* `parse`：接受模型的字符串输出并进行解析
+* （可选）`_type`：识别解析器的名称。
 
-:::tip Parsers are Runnables! 🏃
+当聊天模型或 LLM 的输出格式不正确时，可以抛出 `OutputParserException` 来表示解析因输入错误而失败。使用此异常可以让使用解析器的代码以一致的方式处理异常。
 
-Because `BaseOutputParser` implements the `Runnable` interface, any custom parser you will create this way will become valid LangChain Runnables and will benefit from automatic async support, batch interface, logging support etc.
+:::tip 解析器是可运行的！ 🏃
+
+因为 `BaseOutputParser` 实现了 `Runnable` 接口，所以您以这种方式创建的任何自定义解析器都将成为有效的 LangChain 可运行对象，并将受益于自动异步支持、批量接口、日志支持等。
 :::
 
+### 简单解析器
 
-### Simple Parser
-
-Here's a simple parser that can parse a **string** representation of a booealn (e.g., `YES` or `NO`) and convert it into the corresponding `boolean` type.
-
+这是一个简单的解析器，可以解析**字符串**表示的布尔值（例如，`YES`或`NO`），并将其转换为相应的`boolean`类型。
 
 ```python
 from langchain_core.exceptions import OutputParserException
 from langchain_core.output_parsers import BaseOutputParser
 
 
-# The [bool] desribes a parameterization of a generic.
-# It's basically indicating what the return type of parse is
-# in this case the return type is either True or False
+# [bool]描述了一个通用的参数化。
+# 它基本上指示解析的返回类型
+# 在这种情况下，返回类型是True或False
 class BooleanOutputParser(BaseOutputParser[bool]):
-    """Custom boolean parser."""
+    """自定义布尔解析器。"""
 
     true_val: str = "YES"
     false_val: str = "NO"
@@ -162,19 +150,14 @@ class BooleanOutputParser(BaseOutputParser[bool]):
         return "boolean_output_parser"
 ```
 
-
 ```python
 parser = BooleanOutputParser()
 parser.invoke("YES")
 ```
 
-
-
 ```output
 True
 ```
-
-
 
 ```python
 try:
@@ -185,47 +168,34 @@ except Exception as e:
 ```output
 Triggered an exception of type: <class 'langchain_core.exceptions.OutputParserException'>
 ```
-Let's test changing the parameterization
-
+让我们测试更改参数化
 
 ```python
 parser = BooleanOutputParser(true_val="OKAY")
 parser.invoke("OKAY")
 ```
 
-
-
 ```output
 True
 ```
 
-
-Let's confirm that other LCEL methods are present
-
+让我们确认其他LCEL方法是否存在
 
 ```python
 parser.batch(["OKAY", "NO"])
 ```
 
-
-
 ```output
 [True, False]
 ```
-
-
 
 ```python
 await parser.abatch(["OKAY", "NO"])
 ```
 
-
-
 ```output
 [True, False]
 ```
-
-
 
 ```python
 from langchain_anthropic.chat_models import ChatAnthropic
@@ -234,40 +204,32 @@ anthropic = ChatAnthropic(model_name="claude-2.1")
 anthropic.invoke("say OKAY or NO")
 ```
 
-
-
 ```output
 AIMessage(content='OKAY')
 ```
 
-
-Let's test that our parser works!
-
+让我们测试一下我们的解析器是否有效！
 
 ```python
 chain = anthropic | parser
 chain.invoke("say OKAY or NO")
 ```
 
-
-
 ```output
 True
 ```
 
-
 :::note
-The parser will work with either the output from an LLM (a string) or the output from a chat model (an `AIMessage`)!
+该解析器可以处理来自LLM的输出（字符串）或来自聊天模型的输出（`AIMessage`）!
 :::
 
-### Parsing Raw Model Outputs
+### 解析原始模型输出
 
-Sometimes there is additional metadata on the model output that is important besides the raw text. One example of this is tool calling, where arguments intended to be passed to called functions are returned in a separate property. If you need this finer-grained control, you can instead subclass the `BaseGenerationOutputParser` class. 
+有时，模型输出中除了原始文本之外还有额外的重要元数据。一个例子是工具调用，其中打算传递给被调用函数的参数以单独的属性返回。如果您需要这种更细粒度的控制，您可以改为子类化 `BaseGenerationOutputParser` 类。
 
-This class requires a single method `parse_result`. This method takes raw model output (e.g., list of `Generation` or `ChatGeneration`) and returns the parsed output.
+此类需要一个单一的方法 `parse_result`。该方法接受原始模型输出（例如，`Generation` 或 `ChatGeneration` 的列表）并返回解析后的输出。
 
-Supporting both `Generation` and `ChatGeneration` allows the parser to work with both regular LLMs as well as with Chat Models.
-
+支持 `Generation` 和 `ChatGeneration` 使解析器能够与常规 LLM 以及聊天模型一起工作。
 
 ```python
 from typing import List
@@ -279,32 +241,29 @@ from langchain_core.outputs import ChatGeneration, Generation
 
 
 class StrInvertCase(BaseGenerationOutputParser[str]):
-    """An example parser that inverts the case of the characters in the message.
+    """一个示例解析器，它反转消息中字符的大小写。
 
-    This is an example parse shown just for demonstration purposes and to keep
-    the example as simple as possible.
+    这是一个仅用于演示目的的示例解析，旨在使示例尽可能简单。
     """
 
     def parse_result(self, result: List[Generation], *, partial: bool = False) -> str:
-        """Parse a list of model Generations into a specific format.
+        """将模型生成的列表解析为特定格式。
 
-        Args:
-            result: A list of Generations to be parsed. The Generations are assumed
-                to be different candidate outputs for a single model input.
-                Many parsers assume that only a single generation is passed it in.
-                We will assert for that
-            partial: Whether to allow partial results. This is used for parsers
-                     that support streaming
+        参数：
+            result: 要解析的生成列表。假设这些生成是单个模型输入的不同候选输出。
+                许多解析器假设只传入了一个生成。
+                我们将对此进行断言。
+            partial: 是否允许部分结果。这用于支持流式处理的解析器。
         """
         if len(result) != 1:
             raise NotImplementedError(
-                "This output parser can only be used with a single generation."
+                "此输出解析器只能与单个生成一起使用。"
             )
         generation = result[0]
         if not isinstance(generation, ChatGeneration):
-            # Say that this one only works with chat generations
+            # 说明这个仅适用于聊天生成
             raise OutputParserException(
-                "This output parser can only be used with a chat generation."
+                "此输出解析器只能与聊天生成一起使用。"
             )
         return generation.message.content.swapcase()
 
@@ -312,16 +271,12 @@ class StrInvertCase(BaseGenerationOutputParser[str]):
 chain = anthropic | StrInvertCase()
 ```
 
-Let's the new parser! It should be inverting the output from the model.
-
+让我们来看看新的解析器！它应该反转模型的输出。
 
 ```python
 chain.invoke("Tell me a short sentence about yourself")
 ```
 
-
-
 ```output
 'hELLO! mY NAME IS cLAUDE.'
 ```
-

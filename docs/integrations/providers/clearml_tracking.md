@@ -1,25 +1,26 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/providers/clearml_tracking.ipynb
 ---
+
 # ClearML
 
-> [ClearML](https://github.com/allegroai/clearml) is a ML/DL development and production suite, it contains 5 main modules:
-> - `Experiment Manager` - Automagical experiment tracking, environments and results
-> - `MLOps` - Orchestration, Automation & Pipelines solution for ML/DL jobs (K8s / Cloud / bare-metal)
-> - `Data-Management` - Fully differentiable data management & version control solution on top of object-storage (S3 / GS / Azure / NAS)
-> - `Model-Serving` - cloud-ready Scalable model serving solution!
-    Deploy new model endpoints in under 5 minutes
-    Includes optimized GPU serving support backed by Nvidia-Triton
-    with out-of-the-box Model Monitoring
-> - `Fire Reports` - Create and share rich MarkDown documents supporting embeddable online content
+> [ClearML](https://github.com/allegroai/clearml) 是一个 ML/DL 开发和生产套件，包含 5 个主要模块：
+> - `Experiment Manager` - 自动实验跟踪、环境和结果
+> - `MLOps` - 用于 ML/DL 任务的编排、自动化和管道解决方案（K8s / Cloud / bare-metal）
+> - `Data-Management` - 基于对象存储（S3 / GS / Azure / NAS）的完全可微分数据管理和版本控制解决方案
+> - `Model-Serving` - 云就绪的可扩展模型服务解决方案！
+    在 5 分钟内部署新的模型端点
+    包括由 Nvidia-Triton 支持的优化 GPU 服务支持
+    具有开箱即用的模型监控
+> - `Fire Reports` - 创建和分享支持可嵌入在线内容的丰富 MarkDown 文档
 
-In order to properly keep track of your langchain experiments and their results, you can enable the `ClearML` integration. We use the `ClearML Experiment Manager` that neatly tracks and organizes all your experiment runs.
+为了正确跟踪您的 langchain 实验及其结果，您可以启用 `ClearML` 集成。我们使用 `ClearML Experiment Manager` 来整齐地跟踪和组织您所有的实验运行。
 
 <a target="_blank" href="https://colab.research.google.com/github/langchain-ai/langchain/blob/master/docs/docs/integrations/providers/clearml_tracking.ipynb">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 </a>
 
-## Installation and Setup
+## 安装与设置
 
 
 ```python
@@ -30,13 +31,13 @@ In order to properly keep track of your langchain experiments and their results,
 !python -m spacy download en_core_web_sm
 ```
 
-### Getting API Credentials
+### 获取 API 凭证
 
-We'll be using quite some APIs in this notebook, here is a list and where to get them:
+我们将在这个笔记本中使用一些 API，以下是列表及获取方式：
 
 - ClearML: https://app.clear.ml/settings/workspace-configuration
 - OpenAI: https://platform.openai.com/account/api-keys
-- SerpAPI (google search): https://serpapi.com/dashboard
+- SerpAPI (谷歌搜索): https://serpapi.com/dashboard
 
 
 ```python
@@ -49,7 +50,7 @@ os.environ["OPENAI_API_KEY"] = ""
 os.environ["SERPAPI_API_KEY"] = ""
 ```
 
-## Callbacks
+## 回调
 
 
 ```python
@@ -61,34 +62,35 @@ from langchain_community.callbacks import ClearMLCallbackHandler
 from langchain_core.callbacks import StdOutCallbackHandler
 from langchain_openai import OpenAI
 
-# Setup and use the ClearML Callback
+# 设置并使用 ClearML 回调
 clearml_callback = ClearMLCallbackHandler(
     task_type="inference",
     project_name="langchain_callback_demo",
     task_name="llm",
     tags=["test"],
-    # Change the following parameters based on the amount of detail you want tracked
+    # 根据您想要跟踪的详细程度更改以下参数
     visualize=True,
     complexity_metrics=True,
     stream_logs=True,
 )
 callbacks = [StdOutCallbackHandler(), clearml_callback]
-# Get the OpenAI model ready to go
+# 准备好 OpenAI 模型
 llm = OpenAI(temperature=0, callbacks=callbacks)
 ```
 ```output
 The clearml callback is currently in beta and is subject to change based on updates to `langchain`. Please report any issues to https://github.com/allegroai/clearml/issues with the tag `langchain`.
 ```
-### Scenario 1: Just an LLM
 
-First, let's just run a single LLM a few times and capture the resulting prompt-answer conversation in ClearML
+### 场景 1：仅一个 LLM
+
+首先，我们只需运行一个 LLM 几次，并在 ClearML 中捕获结果的提示-回答对话
 
 
 ```python
 # SCENARIO 1 - LLM
 llm_result = llm.generate(["Tell me a joke", "Tell me a poem"] * 3)
-# After every generation run, use flush to make sure all the metrics
-# prompts and other output are properly saved separately
+# 在每次生成运行后，使用 flush 确保所有指标
+# 提示和其他输出被正确单独保存
 clearml_callback.flush_tracker(langchain_asset=llm, name="simple_sequential")
 ```
 ```output
@@ -124,11 +126,11 @@ clearml_callback.flush_tracker(langchain_asset=llm, name="simple_sequential")
 16  on_llm_start  OpenAI     3       2     1       0         0             0   
 17  on_llm_start  OpenAI     3       2     1       0         0             0   
 18    on_llm_end     NaN     4       2     2       0         0             0   
-19    on_llm_end     NaN     4       2     2       0         0             0   
-20    on_llm_end     NaN     4       2     2       0         0             0   
-21    on_llm_end     NaN     4       2     2       0         0             0   
-22    on_llm_end     NaN     4       2     2       0         0             0   
-23    on_llm_end     NaN     4       2     2       0         0             0   
+19    on_llm_end     NaN     4       2       2       0         0             0   
+20    on_llm_end     NaN     4       2       2       0         0             0   
+21    on_llm_end     NaN     4       2       2       0         0             0   
+22    on_llm_end     NaN     4       2       2       0         0             0   
+23    on_llm_end     NaN     4       2       2       0         0   
 
     chain_ends  llm_starts  ...  difficult_words  linsear_write_formula  \
 0            0           1  ...              NaN                    NaN   
@@ -309,23 +311,22 @@ clearml_callback.flush_tracker(langchain_asset=llm, name="simple_sequential")
 [12 rows x 24 columns]}
 2023-03-29 14:00:25,948 - clearml.Task - INFO - Completed model upload to https://files.clear.ml/langchain_callback_demo/llm.988bd727b0e94a29a3ac0ee526813545/models/simple_sequential
 ```
-At this point you can already go to https://app.clear.ml and take a look at the resulting ClearML Task that was created.
+此时，您可以访问 https://app.clear.ml 查看生成的 ClearML 任务。
 
-Among others, you should see that this notebook is saved along with any git information. The model JSON that contains the used parameters is saved as an artifact, there are also console logs and under the plots section, you'll find tables that represent the flow of the chain.
+您应该看到该笔记本与任何 git 信息一起保存。包含所用参数的模型 JSON 被保存为一个工件，还有控制台日志，在图表部分，您会找到表示链流的表格。
 
-Finally, if you enabled visualizations, these are stored as HTML files under debug samples.
+最后，如果您启用了可视化，这些将作为 HTML 文件存储在调试样本下。
 
-### Scenario 2: Creating an agent with tools
+### 场景 2：创建一个具有工具的代理
 
-To show a more advanced workflow, let's create an agent with access to tools. The way ClearML tracks the results is not different though, only the table will look slightly different as there are other types of actions taken when compared to the earlier, simpler example.
+为了展示更高级的工作流程，让我们创建一个可以访问工具的代理。虽然 ClearML 跟踪结果的方式没有变化，但表格的外观会稍有不同，因为与之前的简单示例相比，采取了其他类型的操作。
 
-You can now also see the use of the `finish=True` keyword, which will fully close the ClearML Task, instead of just resetting the parameters and prompts for a new conversation.
-
+您现在还可以看到使用 `finish=True` 关键字，它将完全关闭 ClearML 任务，而不仅仅是重置参数和提示以进行新的对话。
 
 ```python
 from langchain.agents import AgentType, initialize_agent, load_tools
 
-# SCENARIO 2 - Agent with Tools
+# 场景 2 - 具有工具的代理
 tools = load_tools(["serpapi", "llm-math"], llm=llm, callbacks=callbacks)
 agent = initialize_agent(
     tools,
@@ -471,13 +472,13 @@ Final Answer: Bryan Adams has never been married.[0m
 
 [3 rows x 24 columns]}
 ``````output
-Could not update last created model in Task 988bd727b0e94a29a3ac0ee526813545, Task status 'completed' cannot be updated
+无法更新任务 988bd727b0e94a29a3ac0ee526813545 中最后创建的模型，任务状态“已完成”无法更新
 ```
-### Tips and Next Steps
 
-- Make sure you always use a unique `name` argument for the `clearml_callback.flush_tracker` function. If not, the model parameters used for a run will override the previous run!
+### 提示与后续步骤
 
-- If you close the ClearML Callback using `clearml_callback.flush_tracker(..., finish=True)` the Callback cannot be used anymore. Make a new one if you want to keep logging.
+- 确保始终为 `clearml_callback.flush_tracker` 函数使用唯一的 `name` 参数。如果不这样做，运行中使用的模型参数将会覆盖之前的运行！
 
-- Check out the rest of the open-source ClearML ecosystem, there is a data version manager, a remote execution agent, automated pipelines and much more!
+- 如果使用 `clearml_callback.flush_tracker(..., finish=True)` 关闭 ClearML Callback，则该 Callback 将无法再使用。如果想继续记录，请创建一个新的 Callback。
 
+- 查看开源的 ClearML 生态系统的其余部分，那里有数据版本管理器、远程执行代理、自动化管道等更多功能！

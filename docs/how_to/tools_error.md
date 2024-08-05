@@ -1,31 +1,32 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/tools_error.ipynb
 ---
-# How to handle tool errors
 
-:::info Prerequisites
+# 如何处理工具错误
 
-This guide assumes familiarity with the following concepts:
-- [Chat models](/docs/concepts/#chat-models)
-- [LangChain Tools](/docs/concepts/#tools)
-- [How to use a model to call tools](/docs/how_to/tool_calling)
+:::info 前提条件
+
+本指南假设您熟悉以下概念：
+- [聊天模型](/docs/concepts/#chat-models)
+- [LangChain 工具](/docs/concepts/#tools)
+- [如何使用模型调用工具](/docs/how_to/tool_calling)
 
 :::
 
-Calling tools with an LLM is generally more reliable than pure prompting, but it isn't perfect. The model may try to call a tool that doesn't exist or fail to return arguments that match the requested schema. Strategies like keeping schemas simple, reducing the number of tools you pass at once, and having good names and descriptions can help mitigate this risk, but aren't foolproof.
+使用 LLM 调用工具通常比单纯的提示更可靠，但并不完美。模型可能会尝试调用不存在的工具，或者未能返回与请求的模式匹配的参数。保持模式简单、减少一次传递的工具数量，以及使用良好的名称和描述等策略可以帮助降低这种风险，但并非万无一失。
 
-This guide covers some ways to build error handling into your chains to mitigate these failure modes.
+本指南涵盖了一些将错误处理构建到您的链中的方法，以减轻这些失败模式。
 
-## Setup
+## 设置
 
-We'll need to install the following packages:
+我们需要安装以下软件包：
 
 
 ```python
 %pip install --upgrade --quiet langchain-core langchain-openai
 ```
 
-If you'd like to trace your runs in [LangSmith](https://docs.smith.langchain.com/) uncomment and set the following environment variables:
+如果您想在 [LangSmith](https://docs.smith.langchain.com/) 中跟踪您的运行，请取消注释并设置以下环境变量：
 
 
 ```python
@@ -36,9 +37,9 @@ import os
 # os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 ```
 
-## Chain
+## 链
 
-Suppose we have the following (dummy) tool and tool-calling chain. We'll make our tool intentionally convoluted to try and trip up the model.
+假设我们有以下（虚拟）工具和工具调用链。我们将故意使我们的工具复杂化，以试图让模型出错。
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
@@ -64,8 +65,7 @@ llm_with_tools = llm.bind_tools(
 chain = llm_with_tools | (lambda msg: msg.tool_calls[0]["args"]) | complex_tool
 ```
 
-We can see that when we try to invoke this chain with even a fairly explicit input, the model fails to correctly call the tool (it forgets the `dict_arg` argument).
-
+我们可以看到，当我们尝试用相当明确的输入来调用这个链时，模型未能正确调用工具（它忘记了 `dict_arg` 参数）。
 
 ```python
 chain.invoke(
@@ -148,10 +148,9 @@ dict_arg
   field required (type=value_error.missing)
 ```
 
-## Try/except tool call
+## 尝试/异常工具调用
 
-The simplest way to more gracefully handle errors is to try/except the tool-calling step and return a helpful message on errors:
-
+处理错误最简单的方法是对工具调用步骤进行尝试/异常处理，并在出现错误时返回有用的信息：
 
 ```python
 from typing import Any
@@ -185,10 +184,10 @@ raised the following error:
 dict_arg
   field required (type=value_error.missing)
 ```
-## Fallbacks
 
-We can also try to fallback to a better model in the event of a tool invocation error. In this case we'll fall back to an identical chain that uses `gpt-4-1106-preview` instead of `gpt-3.5-turbo`.
+## 回退
 
+在工具调用错误的情况下，我们也可以尝试回退到更好的模型。在这种情况下，我们将回退到一个相同的链，使用 `gpt-4-1106-preview` 代替 `gpt-3.5-turbo`。
 
 ```python
 chain = llm_with_tools | (lambda msg: msg.tool_calls[0]["args"]) | complex_tool
@@ -206,19 +205,15 @@ chain_with_fallback.invoke(
 )
 ```
 
-
-
 ```output
 10.5
 ```
 
+查看这个链条运行的 [LangSmith 跟踪](https://smith.langchain.com/public/00e91fc2-e1a4-4b0f-a82e-e6b3119d196c/r)，我们可以看到第一个链条调用按预期失败，而回退则成功。
 
-Looking at the [LangSmith trace](https://smith.langchain.com/public/00e91fc2-e1a4-4b0f-a82e-e6b3119d196c/r) for this chain run, we can see that the first chain call fails as expected and it's the fallback that succeeds.
+## 重试与异常
 
-## Retry with exception
-
-To take things one step further, we can try to automatically re-run the chain with the exception passed in, so that the model may be able to correct its behavior:
-
+为了更进一步，我们可以尝试自动重新运行链，并传入异常，这样模型可能能够纠正其行为：
 
 ```python
 from langchain_core.messages import AIMessage, HumanMessage, ToolCall, ToolMessage
@@ -226,7 +221,7 @@ from langchain_core.prompts import ChatPromptTemplate
 
 
 class CustomToolException(Exception):
-    """Custom LangChain tool exception."""
+    """自定义 LangChain 工具异常。"""
 
     def __init__(self, tool_call: ToolCall, exception: Exception) -> None:
         super().__init__()
@@ -244,29 +239,29 @@ def tool_custom_exception(msg: AIMessage, config: RunnableConfig) -> Runnable:
 def exception_to_messages(inputs: dict) -> dict:
     exception = inputs.pop("exception")
 
-    # Add historical messages to the original input, so the model knows that it made a mistake with the last tool call.
+    # 将历史消息添加到原始输入中，以便模型知道它在上一个工具调用中犯了错误。
     messages = [
         AIMessage(content="", tool_calls=[exception.tool_call]),
         ToolMessage(
             tool_call_id=exception.tool_call["id"], content=str(exception.exception)
         ),
         HumanMessage(
-            content="The last tool call raised an exception. Try calling the tool again with corrected arguments. Do not repeat mistakes."
+            content="上一个工具调用引发了异常。尝试用更正的参数再次调用工具。不要重复错误。"
         ),
     ]
     inputs["last_output"] = messages
     return inputs
 
 
-# We add a last_output MessagesPlaceholder to our prompt which if not passed in doesn't
-# affect the prompt at all, but gives us the option to insert an arbitrary list of Messages
-# into the prompt if needed. We'll use this on retries to insert the error message.
+# 我们在提示中添加了一个 last_output MessagesPlaceholder，如果没有传入，
+# 则不会影响提示，但如果需要，可以插入任意消息列表。
+# 我们将在重试时使用它来插入错误消息。
 prompt = ChatPromptTemplate.from_messages(
     [("human", "{input}"), ("placeholder", "{last_output}")]
 )
 chain = prompt | llm_with_tools | tool_custom_exception
 
-# If the initial chain call fails, we rerun it withe the exception passed in as a message.
+# 如果初始链调用失败，我们将其重新运行，并将异常作为消息传入。
 self_correcting_chain = chain.with_fallbacks(
     [exception_to_messages | chain], exception_key="exception"
 )
@@ -288,16 +283,16 @@ self_correcting_chain.invoke(
 ```
 
 
-And our chain succeeds! Looking at the [LangSmith trace](https://smith.langchain.com/public/c11e804c-e14f-4059-bd09-64766f999c14/r), we can see that indeed our initial chain still fails, and it's only on retrying that the chain succeeds.
+我们的链成功了！查看 [LangSmith 跟踪](https://smith.langchain.com/public/c11e804c-e14f-4059-bd09-64766f999c14/r)，我们可以看到，确实我们的初始链仍然失败，只有在重试时链才成功。
 
-## Next steps
+## 下一步
 
-Now you've seen some strategies how to handle tool calling errors. Next, you can learn more about how to use tools:
+现在您已经了解了一些处理工具调用错误的策略。接下来，您可以学习更多关于如何使用工具的信息：
 
-- Few shot prompting [with tools](/docs/how_to/tools_few_shot/)
-- Stream [tool calls](/docs/how_to/tool_streaming/)
-- Pass [runtime values to tools](/docs/how_to/tool_runtime)
+- 少量示例提示 [与工具](/docs/how_to/tools_few_shot/)
+- 流式 [工具调用](/docs/how_to/tool_streaming/)
+- 将 [运行时值传递给工具](/docs/how_to/tool_runtime)
 
-You can also check out some more specific uses of tool calling:
+您还可以查看一些工具调用的更具体用法：
 
-- Getting [structured outputs](/docs/how_to/structured_output/) from models
+- 从模型获取 [结构化输出](/docs/how_to/structured_output/)

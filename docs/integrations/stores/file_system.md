@@ -1,33 +1,33 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/stores/file_system.ipynb
-sidebar_label: Local Filesystem
+sidebar_label: 本地文件系统
 ---
+
 # LocalFileStore
 
-This will help you get started with local filesystem [key-value stores](/docs/concepts/#key-value-stores). For detailed documentation of all LocalFileStore features and configurations head to the [API reference](https://api.python.langchain.com/en/latest/storage/langchain.storage.file_system.LocalFileStore.html).
+这将帮助您开始使用本地文件系统 [键值存储](/docs/concepts/#key-value-stores)。有关所有 LocalFileStore 功能和配置的详细文档，请访问 [API 参考](https://api.python.langchain.com/en/latest/storage/langchain.storage.file_system.LocalFileStore.html)。
 
-## Overview
+## 概述
 
-The `LocalFileStore` is a persistent implementation of `ByteStore` that stores everything in a folder of your choosing. It's useful if you're using a single machine and are tolerant of files being added or deleted.
+`LocalFileStore` 是 `ByteStore` 的一种持久化实现，它将所有内容存储在您选择的文件夹中。如果您使用的是单台机器并且能够容忍文件的添加或删除，这将非常有用。
 
-### Integration details
+### 集成详情
 
-| Class | Package | Local | [JS support](https://js.langchain.com/v0.2/docs/integrations/stores/file_system) | Package downloads | Package latest |
+| 类别 | 包 | 本地 | [JS支持](https://js.langchain.com/v0.2/docs/integrations/stores/file_system) | 包下载量 | 包最新版本 |
 | :--- | :--- | :---: | :---: |  :---: | :---: |
 | [LocalFileStore](https://api.python.langchain.com/en/latest/storage/langchain.storage.file_system.LocalFileStore.html) | [langchain](https://api.python.langchain.com/en/latest/langchain_api_reference.html) | ✅ | ✅ | ![PyPI - Downloads](https://img.shields.io/pypi/dm/langchain?style=flat-square&label=%20) | ![PyPI - Version](https://img.shields.io/pypi/v/langchain?style=flat-square&label=%20) |
 
-### Installation
+### 安装
 
-The LangChain `LocalFileStore` integration lives in the `langchain` package:
-
+LangChain `LocalFileStore` 集成位于 `langchain` 包中：
 
 ```python
 %pip install -qU langchain
 ```
 
-## Instantiation
+## 实例化
 
-Now we can instantiate our byte store:
+现在我们可以实例化我们的字节存储：
 
 
 ```python
@@ -40,9 +40,9 @@ root_path = Path.cwd() / "data"  # can also be a path set by a string
 kv_store = LocalFileStore(root_path)
 ```
 
-## Usage
+## 用法
 
-You can set data under keys like this using the `mset` method:
+您可以使用 `mset` 方法在键下设置数据，如下所示：
 
 
 ```python
@@ -68,7 +68,7 @@ kv_store.mget(
 ```
 
 
-You can see the created files in your `data` folder:
+您可以在您的 `data` 文件夹中查看创建的文件：
 
 
 ```python
@@ -77,7 +77,7 @@ You can see the created files in your `data` folder:
 ```output
 key1 key2
 ```
-And you can delete data using the `mdelete` method:
+您可以使用 `mdelete` 方法删除数据：
 
 
 ```python
@@ -102,12 +102,10 @@ kv_store.mget(
 [None, None]
 ```
 
+## API 参考
 
-## API reference
+有关所有 `LocalFileStore` 功能和配置的详细文档，请访问 API 参考： https://api.python.langchain.com/en/latest/storage/langchain.storage.file_system.LocalFileStore.html
 
-For detailed documentation of all `LocalFileStore` features and configurations, head to the API reference: https://api.python.langchain.com/en/latest/storage/langchain.storage.file_system.LocalFileStore.html
+## 相关
 
-
-## Related
-
-- [Key-value store conceptual guide](/docs/concepts/#key-value-stores)
+- [键值存储概念指南](/docs/concepts/#key-value-stores)

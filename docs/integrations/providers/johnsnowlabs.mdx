@@ -1,37 +1,33 @@
 # Johnsnowlabs
 
-Gain access to the [johnsnowlabs](https://www.johnsnowlabs.com/) ecosystem of enterprise NLP libraries
-with over 21.000 enterprise NLP models in over 200 languages with the open source `johnsnowlabs` library.
-For all 24.000+ models, see the [John Snow Labs Model Models Hub](https://nlp.johnsnowlabs.com/models)
+访问 [johnsnowlabs](https://www.johnsnowlabs.com/) 企业 NLP 库生态系统，拥有超过 21,000 个企业 NLP 模型，涵盖 200 多种语言，使用开源的 `johnsnowlabs` 库。有关 24,000+ 模型的详细信息，请参见 [John Snow Labs Model Models Hub](https://nlp.johnsnowlabs.com/models)
 
-## Installation and Setup
+## 安装与设置
 
 
 ```bash
 pip install johnsnowlabs
 ```
 
-To [install enterprise features](https://nlp.johnsnowlabs.com/docs/en/jsl/install_licensed_quick, run:
+要 [安装企业功能](https://nlp.johnsnowlabs.com/docs/en/jsl/install_licensed_quick)，请运行：
 ```python
 # for more details see https://nlp.johnsnowlabs.com/docs/en/jsl/install_licensed_quick
 nlp.install()
 ```
 
 
-You can embed your queries and documents with either `gpu`,`cpu`,`apple_silicon`,`aarch` based optimized binaries.
-By default cpu binaries are used.
-Once a session is started, you must restart your notebook to switch between GPU or CPU, or changes will not take effect.
+您可以使用基于 `gpu`、`cpu`、`apple_silicon`、`aarch` 优化的二进制文件嵌入您的查询和文档。
+默认情况下使用的是 CPU 二进制文件。
+一旦会话启动，您必须重新启动笔记本才能在 GPU 或 CPU 之间切换，否则更改将无效。
 
-## Embed Query with CPU:
+## 使用 CPU 嵌入查询：
 ```python
 document = "foo bar"
 embedding = JohnSnowLabsEmbeddings('embed_sentence.bert')
 output = embedding.embed_query(document)
 ```
 
-
-## Embed Query with GPU:
-
+## 使用 GPU 嵌入查询：
 
 ```python
 document = "foo bar"
@@ -39,10 +35,7 @@ embedding = JohnSnowLabsEmbeddings('embed_sentence.bert','gpu')
 output = embedding.embed_query(document)
 ```
 
-
-
-
-## Embed Query with Apple Silicon (M1,M2,etc..):
+## 使用 Apple Silicon (M1, M2 等) 嵌入查询：
 
 ```python
 documents = ["foo bar", 'bar foo']
@@ -50,9 +43,7 @@ embedding = JohnSnowLabsEmbeddings('embed_sentence.bert','apple_silicon')
 output = embedding.embed_query(document)
 ```
 
-
-
-## Embed Query with AARCH:
+## 使用 AARCH 嵌入查询：
 
 ```python
 documents = ["foo bar", 'bar foo']
@@ -60,21 +51,14 @@ embedding = JohnSnowLabsEmbeddings('embed_sentence.bert','aarch')
 output = embedding.embed_query(document)
 ```
 
-
-
-
-
-
-## Embed Document with CPU:
+## 使用CPU嵌入文档：
 ```python
 documents = ["foo bar", 'bar foo']
 embedding = JohnSnowLabsEmbeddings('embed_sentence.bert','gpu')
 output = embedding.embed_documents(documents)
 ```
 
-
-
-## Embed Document with GPU:
+## 使用 GPU 嵌入文档：
 
 ```python
 documents = ["foo bar", 'bar foo']
@@ -82,11 +66,7 @@ embedding = JohnSnowLabsEmbeddings('embed_sentence.bert','gpu')
 output = embedding.embed_documents(documents)
 ```
 
-
-
-
-
-## Embed Document with Apple Silicon (M1,M2,etc..):
+## 使用苹果硅（M1、M2等）嵌入文档：
 
 ```python
 
@@ -98,7 +78,7 @@ output = embedding.embed_documents(documents)
 
 
 
-## Embed Document with AARCH:
+## 使用AARCH嵌入文档：
 
 ```python
 
@@ -111,7 +91,4 @@ output = embedding.embed_documents(documents)
 
 
 
-Models are loaded with [nlp.load](https://nlp.johnsnowlabs.com/docs/en/jsl/load_api) and spark session is started with [nlp.start()](https://nlp.johnsnowlabs.com/docs/en/jsl/start-a-sparksession) under the hood.
-
-
-
+模型通过[nlp.load](https://nlp.johnsnowlabs.com/docs/en/jsl/load_api)加载，Spark会话通过[nlp.start()](https://nlp.johnsnowlabs.com/docs/en/jsl/start-a-sparksession)在后台启动。

@@ -1,21 +1,20 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/relyt.ipynb
 ---
+
 # Relyt
 
->[Relyt](https://docs.relyt.cn/docs/vector-engine/use/) is a cloud native data warehousing service that is designed to analyze large volumes of data online.
+>[Relyt](https://docs.relyt.cn/docs/vector-engine/use/) 是一项云原生数据仓库服务，旨在在线分析大量数据。
 
->`Relyt` is compatible with the ANSI SQL 2003 syntax and the PostgreSQL and Oracle database ecosystems. Relyt also supports row store and column store. Relyt processes petabytes of data offline at a high performance level and supports highly concurrent online queries.
+>`Relyt` 兼容 ANSI SQL 2003 语法以及 PostgreSQL 和 Oracle 数据库生态系统。Relyt 还支持行存储和列存储。Relyt 以高性能水平离线处理 PB 级数据，并支持高度并发的在线查询。
 
-This notebook shows how to use functionality related to the `Relyt` vector database.
-To run, you should have an [Relyt](https://docs.relyt.cn/) instance up and running:
-- Using [Relyt Vector Database](https://docs.relyt.cn/docs/vector-engine/use/). Click here to fast deploy it.
-
+本笔记本展示了如何使用与 `Relyt` 向量数据库相关的功能。
+要运行，您需要有一个正在运行的 [Relyt](https://docs.relyt.cn/) 实例：
+- 使用 [Relyt 向量数据库](https://docs.relyt.cn/docs/vector-engine/use/)。点击这里快速部署。
 
 ```python
 %pip install "pgvecto_rs[sdk]" langchain-community
 ```
-
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -24,8 +23,7 @@ from langchain_community.vectorstores import Relyt
 from langchain_text_splitters import CharacterTextSplitter
 ```
 
-Split documents and get embeddings by call community API
-
+通过调用社区 API 拆分文档并获取嵌入
 
 ```python
 loader = TextLoader("../../how_to/state_of_the_union.txt")
@@ -36,17 +34,16 @@ docs = text_splitter.split_documents(documents)
 embeddings = FakeEmbeddings(size=1536)
 ```
 
-Connect to Relyt by setting related ENVIRONMENTS.
+通过设置相关环境变量连接到 Relyt。
 ```
 export PG_HOST={your_relyt_hostname}
-export PG_PORT={your_relyt_port} # Optional, default is 5432
-export PG_DATABASE={your_database} # Optional, default is postgres
+export PG_PORT={your_relyt_port} # 可选，默认是 5432
+export PG_DATABASE={your_database} # 可选，默认是 postgres
 export PG_USER={database_username}
 export PG_PASSWORD={database_password}
 ```
 
-Then store your embeddings and documents into Relyt
-
+然后将您的嵌入和文档存储到 Relyt
 
 ```python
 import os
@@ -67,14 +64,12 @@ vector_db = Relyt.from_documents(
 )
 ```
 
-Query and retrieve data
-
+查询并检索数据
 
 ```python
 query = "What did the president say about Ketanji Brown Jackson"
 docs = vector_db.similarity_search(query)
 ```
-
 
 ```python
 print(docs[0].page_content)
@@ -89,7 +84,7 @@ One of the most serious constitutional responsibilities a President has is nomin
 And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
 ```
 
-## Related
+## 相关
 
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

@@ -1,27 +1,26 @@
 # Astra DB
 
-> [DataStax Astra DB](https://docs.datastax.com/en/astra/home/astra.html) is a serverless 
-> vector-capable database built on `Apache Cassandra®`and made conveniently available
-> through an easy-to-use JSON API.
+> [DataStax Astra DB](https://docs.datastax.com/en/astra/home/astra.html) 是一个无服务器的 
+> 支持向量的数据库，建立在 `Apache Cassandra®` 之上，并通过易于使用的 JSON API 方便地提供。
 
-See a [tutorial provided by DataStax](https://docs.datastax.com/en/astra/astra-db-vector/tutorials/chatbot.html).
+请参阅 [DataStax 提供的教程](https://docs.datastax.com/en/astra/astra-db-vector/tutorials/chatbot.html)。
 
-## Installation and Setup
+## 安装与设置
 
-Install the following Python package:
+安装以下 Python 包：
 ```bash
 pip install "langchain-astradb>=0.1.0"
 ```
 
-Get the [connection secrets](https://docs.datastax.com/en/astra/astra-db-vector/get-started/quickstart.html).
-Set up the following environment variables:
+获取 [连接密钥](https://docs.datastax.com/en/astra/astra-db-vector/get-started/quickstart.html)。
+设置以下环境变量：
 
 ```python
 ASTRA_DB_APPLICATION_TOKEN="TOKEN"
 ASTRA_DB_API_ENDPOINT="API_ENDPOINT"
 ```
 
-## Vector Store
+## 向量存储
 
 ```python
 from langchain_astradb import AstraDBVectorStore
@@ -34,11 +33,11 @@ vector_store = AstraDBVectorStore(
 )
 ```
 
-Learn more in the [example notebook](/docs/integrations/vectorstores/astradb).
+在[示例笔记本](/docs/integrations/vectorstores/astradb)中了解更多信息。
 
-See the [example provided by DataStax](https://docs.datastax.com/en/astra/astra-db-vector/integrations/langchain.html).
+查看[DataStax提供的示例](https://docs.datastax.com/en/astra/astra-db-vector/integrations/langchain.html)。
 
-## Chat message history
+## 聊天消息历史
 
 ```python
 from langchain_astradb import AstraDBChatMessageHistory
@@ -50,9 +49,9 @@ message_history = AstraDBChatMessageHistory(
 )
 ```
 
-See the [usage example](/docs/integrations/memory/astradb_chat_message_history#example).
+请参见[使用示例](/docs/integrations/memory/astradb_chat_message_history#example)。
 
-## LLM Cache
+## LLM 缓存
 
 ```python
 from langchain.globals import set_llm_cache
@@ -64,10 +63,9 @@ set_llm_cache(AstraDBCache(
 ))
 ```
 
-Learn more in the [example notebook](/docs/integrations/llm_caching#astra-db-caches) (scroll to the Astra DB section).
+在 [示例笔记本](/docs/integrations/llm_caching#astra-db-caches) 中了解更多信息（滚动到 Astra DB 部分）。
 
-
-## Semantic LLM Cache
+## 语义 LLM 缓存
 
 ```python
 from langchain.globals import set_llm_cache
@@ -80,11 +78,11 @@ set_llm_cache(AstraDBSemanticCache(
 ))
 ```
 
-Learn more in the [example notebook](/docs/integrations/llm_caching#astra-db-caches) (scroll to the appropriate section).
+在[示例笔记本](/docs/integrations/llm_caching#astra-db-caches)中了解更多信息（滚动到相应部分）。
 
-Learn more in the [example notebook](/docs/integrations/memory/astradb_chat_message_history).
+在[示例笔记本](/docs/integrations/memory/astradb_chat_message_history)中了解更多信息。
 
-## Document loader
+## 文档加载器
 
 ```python
 from langchain_astradb import AstraDBLoader
@@ -96,9 +94,9 @@ loader = AstraDBLoader(
 )
 ```
 
-Learn more in the [example notebook](/docs/integrations/document_loaders/astradb).
+在[示例笔记本](/docs/integrations/document_loaders/astradb)中了解更多信息。
 
-## Self-querying retriever
+## 自查询检索器
 
 ```python
 from langchain_astradb import AstraDBVectorStore
@@ -119,9 +117,9 @@ retriever = SelfQueryRetriever.from_llm(
 )
 ```
 
-Learn more in the [example notebook](/docs/integrations/retrievers/self_query/astradb).
+在[示例笔记本](/docs/integrations/retrievers/self_query/astradb)中了解更多信息。
 
-## Store
+## 存储
 
 ```python
 from langchain_astradb import AstraDBStore
@@ -133,7 +131,7 @@ store = AstraDBStore(
 )
 ```
 
-Learn more in the [example notebook](/docs/integrations/stores/astradb#astradbstore).
+在[示例笔记本](/docs/integrations/stores/astradb#astradbstore)中了解更多信息。
 
 ## Byte Store
 
@@ -147,4 +145,4 @@ store = AstraDBByteStore(
 )
 ```
 
-Learn more in the [example notebook](/docs/integrations/stores/astradb#astradbbytestore).
+在[示例笔记本](/docs/integrations/stores/astradb#astradbbytestore)中了解更多信息。

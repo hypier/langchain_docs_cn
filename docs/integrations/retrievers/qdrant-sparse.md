@@ -1,21 +1,18 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/qdrant-sparse.ipynb
 ---
-# Qdrant Sparse Vector
 
->[Qdrant](https://qdrant.tech/) is an open-source, high-performance vector search engine/database.
+# Qdrant 稀疏向量
 
+>[Qdrant](https://qdrant.tech/) 是一个开源的高性能向量搜索引擎/数据库。
 
->`QdrantSparseVectorRetriever` uses [sparse vectors](https://qdrant.tech/articles/sparse-vectors/) introduced in `Qdrant` [v1.7.0](https://qdrant.tech/articles/qdrant-1.7.x/) for document retrieval.
+>`QdrantSparseVectorRetriever` 使用在 `Qdrant` [v1.7.0](https://qdrant.tech/articles/qdrant-1.7.x/) 中引入的 [稀疏向量](https://qdrant.tech/articles/sparse-vectors/) 进行文档检索。
 
-
-Install the 'qdrant_client' package:
-
+安装 'qdrant_client' 包：
 
 ```python
 %pip install --upgrade --quiet  qdrant_client
 ```
-
 
 ```python
 from qdrant_client import QdrantClient, models
@@ -37,13 +34,9 @@ client.create_collection(
 )
 ```
 
-
-
 ```output
 True
 ```
-
-
 
 ```python
 from langchain_community.retrievers import (
@@ -52,8 +45,7 @@ from langchain_community.retrievers import (
 from langchain_core.documents import Document
 ```
 
-Create a demo encoder function:
-
+创建一个演示编码器函数：
 
 ```python
 import random
@@ -66,7 +58,7 @@ def demo_encoder(_: str) -> tuple[list[int], list[float]]:
     )
 
 
-# Create a retriever with a demo encoder
+# 使用演示编码器创建检索器
 retriever = QdrantSparseVectorRetriever(
     client=client,
     collection_name=collection_name,
@@ -75,57 +67,53 @@ retriever = QdrantSparseVectorRetriever(
 )
 ```
 
-Add some documents:
-
+添加一些文档：
 
 ```python
 docs = [
     Document(
         metadata={
-            "title": "Beyond Horizons: AI Chronicles",
-            "author": "Dr. Cassandra Mitchell",
+            "title": "超越视野：人工智能编年史",
+            "author": "卡桑德拉·米切尔博士",
         },
-        page_content="An in-depth exploration of the fascinating journey of artificial intelligence, narrated by Dr. Mitchell. This captivating account spans the historical roots, current advancements, and speculative futures of AI, offering a gripping narrative that intertwines technology, ethics, and societal implications.",
+        page_content="对人工智能迷人旅程的深入探索，由米切尔博士叙述。这一引人入胜的叙述跨越了历史根源、当前进展和对人工智能的推测未来，提供了一个紧凑的叙事，交织了技术、伦理和社会影响。",
     ),
     Document(
         metadata={
-            "title": "Synergy Nexus: Merging Minds with Machines",
-            "author": "Prof. Benjamin S. Anderson",
+            "title": "协同枢纽：人与机器的融合",
+            "author": "本杰明·S·安德森教授",
         },
-        page_content="Professor Anderson delves into the synergistic possibilities of human-machine collaboration in 'Synergy Nexus.' The book articulates a vision where humans and AI seamlessly coalesce, creating new dimensions of productivity, creativity, and shared intelligence.",
+        page_content="安德森教授在《协同枢纽》中深入探讨了人机协作的协同可能性。该书阐述了一个愿景，即人类与人工智能无缝融合，创造出新的生产力、创造力和共享智能的维度。",
     ),
     Document(
         metadata={
-            "title": "AI Dilemmas: Navigating the Unknown",
-            "author": "Dr. Elena Rodriguez",
+            "title": "人工智能困境：导航未知",
+            "author": "埃琳娜·罗德里格斯博士",
         },
-        page_content="Dr. Rodriguez pens an intriguing narrative in 'AI Dilemmas,' probing the uncharted territories of ethical quandaries arising from AI advancements. The book serves as a compass, guiding readers through the complex terrain of moral decisions confronting developers, policymakers, and society as AI evolves.",
+        page_content="罗德里格斯博士在《人工智能困境》中撰写了一部引人入胜的叙述，探讨了人工智能进步带来的伦理困境的未知领域。这本书充当了一种指南，引导读者穿越开发者、政策制定者和社会在人工智能发展过程中面临的复杂道德决策的复杂地形。",
     ),
     Document(
         metadata={
-            "title": "Sentient Threads: Weaving AI Consciousness",
-            "author": "Prof. Alexander J. Bennett",
+            "title": "有意识的线索：编织人工智能意识",
+            "author": "亚历山大·J·本内特教授",
         },
-        page_content="In 'Sentient Threads,' Professor Bennett unravels the enigma of AI consciousness, presenting a tapestry of arguments that scrutinize the very essence of machine sentience. The book ignites contemplation on the ethical and philosophical dimensions surrounding the quest for true AI awareness.",
+        page_content="在《有意识的线索》中，本内特教授揭示了人工智能意识之谜，呈现出一幅论证的挂毯，审视机器意识的本质。这本书引发了对追求真正人工智能意识的伦理和哲学维度的思考。",
     ),
     Document(
         metadata={
-            "title": "Silent Alchemy: Unseen AI Alleviations",
-            "author": "Dr. Emily Foster",
+            "title": "无声的炼金术：看不见的人工智能缓解措施",
+            "author": "艾米莉·福斯特博士",
         },
-        page_content="Building upon her previous work, Dr. Foster unveils 'Silent Alchemy,' a profound examination of the covert presence of AI in our daily lives. This illuminating piece reveals the subtle yet impactful ways in which AI invisibly shapes our routines, emphasizing the need for heightened awareness in our technology-driven world.",
+        page_content="在她之前工作的基础上，福斯特博士揭示了《无声的炼金术》，对人工智能在我们日常生活中隐秘存在的深刻考察。这部启发性的作品揭示了人工智能以微妙而深远的方式无形地塑造我们的日常，强调了在技术驱动的世界中提高意识的必要性。",
     ),
 ]
 ```
 
-Perform a retrieval:
-
+执行检索：
 
 ```python
 retriever.add_documents(docs)
 ```
-
-
 
 ```output
 ['1a3e0d292e6444d39451d0588ce746dc',
@@ -135,26 +123,20 @@ retriever.add_documents(docs)
  'c1a6249d005d4abd9192b1d0b829cebe']
 ```
 
-
-
 ```python
 retriever.invoke(
-    "Life and ethical dilemmas of AI",
+    "人工智能的生活与伦理困境",
 )
 ```
 
-
-
 ```output
-[Document(page_content="In 'Sentient Threads,' Professor Bennett unravels the enigma of AI consciousness, presenting a tapestry of arguments that scrutinize the very essence of machine sentience. The book ignites contemplation on the ethical and philosophical dimensions surrounding the quest for true AI awareness.", metadata={'title': 'Sentient Threads: Weaving AI Consciousness', 'author': 'Prof. Alexander J. Bennett'}),
- Document(page_content="Dr. Rodriguez pens an intriguing narrative in 'AI Dilemmas,' probing the uncharted territories of ethical quandaries arising from AI advancements. The book serves as a compass, guiding readers through the complex terrain of moral decisions confronting developers, policymakers, and society as AI evolves.", metadata={'title': 'AI Dilemmas: Navigating the Unknown', 'author': 'Dr. Elena Rodriguez'}),
- Document(page_content="Professor Anderson delves into the synergistic possibilities of human-machine collaboration in 'Synergy Nexus.' The book articulates a vision where humans and AI seamlessly coalesce, creating new dimensions of productivity, creativity, and shared intelligence.", metadata={'title': 'Synergy Nexus: Merging Minds with Machines', 'author': 'Prof. Benjamin S. Anderson'}),
- Document(page_content='An in-depth exploration of the fascinating journey of artificial intelligence, narrated by Dr. Mitchell. This captivating account spans the historical roots, current advancements, and speculative futures of AI, offering a gripping narrative that intertwines technology, ethics, and societal implications.', metadata={'title': 'Beyond Horizons: AI Chronicles', 'author': 'Dr. Cassandra Mitchell'})]
+[Document(page_content="在《有意识的线索》中，本内特教授揭示了人工智能意识之谜，呈现出一幅论证的挂毯，审视机器意识的本质。这本书引发了对追求真正人工智能意识的伦理和哲学维度的思考。", metadata={'title': '有意识的线索：编织人工智能意识', 'author': '亚历山大·J·本内特教授'}),
+ Document(page_content="罗德里格斯博士在《人工智能困境》中撰写了一部引人入胜的叙述，探讨了人工智能进步带来的伦理困境的未知领域。这本书充当了一种指南，引导读者穿越开发者、政策制定者和社会在人工智能发展过程中面临的复杂道德决策的复杂地形。", metadata={'title': '人工智能困境：导航未知', 'author': '埃琳娜·罗德里格斯博士'}),
+ Document(page_content="安德森教授在《协同枢纽》中深入探讨了人机协作的协同可能性。该书阐述了一个愿景，即人类与人工智能无缝融合，创造出新的生产力、创造力和共享智能的维度。", metadata={'title': '协同枢纽：人与机器的融合', 'author': '本杰明·S·安德森教授'}),
+ Document(page_content='对人工智能迷人旅程的深入探索，由米切尔博士叙述。这一引人入胜的叙述跨越了历史根源、当前进展和对人工智能的推测未来，提供了一个紧凑的叙事，交织了技术、伦理和社会影响。', metadata={'title': '超越视野：人工智能编年史', 'author': '卡桑德拉·米切尔博士'})]
 ```
 
+## 相关
 
-
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

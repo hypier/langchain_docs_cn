@@ -1,54 +1,55 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/streaming.ipynb
-keywords: [stream]
+keywords: [流]
 ---
-# How to stream runnables
 
-:::info Prerequisites
+# 如何流式运行可执行对象
 
-This guide assumes familiarity with the following concepts:
-- [Chat models](/docs/concepts/#chat-models)
-- [LangChain Expression Language](/docs/concepts/#langchain-expression-language)
-- [Output parsers](/docs/concepts/#output-parsers)
+:::info 前提条件
+
+本指南假设您熟悉以下概念：
+- [聊天模型](/docs/concepts/#chat-models)
+- [LangChain 表达语言](/docs/concepts/#langchain-expression-language)
+- [输出解析器](/docs/concepts/#output-parsers)
 
 :::
 
-Streaming is critical in making applications based on LLMs feel responsive to end-users.
+流式处理对于基于 LLM 的应用程序让终端用户感觉响应迅速至关重要。
 
-Important LangChain primitives like [chat models](/docs/concepts/#chat-models), [output parsers](/docs/concepts/#output-parsers), [prompts](/docs/concepts/#prompt-templates), [retrievers](/docs/concepts/#retrievers), and [agents](/docs/concepts/#agents) implement the LangChain [Runnable Interface](/docs/concepts#interface).
+重要的 LangChain 原语，如 [聊天模型](/docs/concepts/#chat-models)、[输出解析器](/docs/concepts/#output-parsers)、[提示](/docs/concepts/#prompt-templates)、[检索器](/docs/concepts/#retrievers) 和 [代理](/docs/concepts/#agents) 实现了 LangChain [可执行接口](/docs/concepts#interface)。
 
-This interface provides two general approaches to stream content:
+该接口提供了两种流式内容的通用方法：
 
-1. sync `stream` and async `astream`: a **default implementation** of streaming that streams the **final output** from the chain.
-2. async `astream_events` and async `astream_log`: these provide a way to stream both **intermediate steps** and **final output** from the chain.
+1. 同步 `stream` 和异步 `astream`：一种 **默认实现** 的流式处理，从链中流式传输 **最终输出**。
+2. 异步 `astream_events` 和异步 `astream_log`：这些提供了一种从链中流式传输 **中间步骤** 和 **最终输出** 的方法。
 
-Let's take a look at both approaches, and try to understand how to use them.
+让我们看看这两种方法，并尝试理解如何使用它们。
 
 :::info
-For a higher-level overview of streaming techniques in LangChain, see [this section of the conceptual guide](/docs/concepts/#streaming).
+有关 LangChain 中流式技术的更高层次概述，请参见 [概念指南的这一部分](/docs/concepts/#streaming)。
 :::
 
-## Using Stream
+## 使用流
 
-All `Runnable` objects implement a sync method called `stream` and an async variant called `astream`. 
+所有 `Runnable` 对象都实现了一个名为 `stream` 的同步方法和一个名为 `astream` 的异步变体。
 
-These methods are designed to stream the final output in chunks, yielding each chunk as soon as it is available.
+这些方法旨在以块的形式流式传输最终输出，尽快返回每个块。
 
-Streaming is only possible if all steps in the program know how to process an **input stream**; i.e., process an input chunk one at a time, and yield a corresponding output chunk.
+只有当程序中的所有步骤都知道如何处理 **输入流** 时，才能进行流式传输；即，一次处理一个输入块，并产生相应的输出块。
 
-The complexity of this processing can vary, from straightforward tasks like emitting tokens produced by an LLM, to more challenging ones like streaming parts of JSON results before the entire JSON is complete.
+这种处理的复杂性可以有所不同，从简单的任务，如发出 LLM 生成的标记，到更具挑战性的任务，如在整个 JSON 完成之前流式传输 JSON 结果的部分。
 
-The best place to start exploring streaming is with the single most important components in LLMs apps-- the LLMs themselves!
+探索流式传输的最佳起点是 LLM 应用程序中最重要的组件——LLM 本身！
 
-### LLMs and Chat Models
+### LLMs 和聊天模型
 
-Large language models and their chat variants are the primary bottleneck in LLM based apps.
+大型语言模型及其聊天变体是基于 LLM 应用的主要瓶颈。
 
-Large language models can take **several seconds** to generate a complete response to a query. This is far slower than the **~200-300 ms** threshold at which an application feels responsive to an end user.
+大型语言模型生成完整响应查询可能需要 **几秒钟**。这远慢于应用程序对最终用户感觉响应的 **~200-300 毫秒** 阈值。
 
-The key strategy to make the application feel more responsive is to show intermediate progress; viz., to stream the output from the model **token by token**.
+使应用程序感觉更具响应性的关键策略是展示中间进展；即，逐个 **token** 流式输出模型的结果。
 
-We will show examples of streaming using a chat model. Choose one from the options below:
+我们将展示使用聊天模型的流式示例。请从以下选项中选择一个：
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
@@ -56,7 +57,7 @@ import ChatModelTabs from "@theme/ChatModelTabs";
   customVarName="model"
 />
 
-Let's start with the sync `stream` API:
+让我们从同步的 `stream` API 开始：
 
 
 ```python
@@ -68,7 +69,7 @@ for chunk in model.stream("what color is the sky?"):
 ```output
 The| sky| appears| blue| during| the| day|.|
 ```
-Alternatively, if you're working in an async environment, you may consider using the async `astream` API:
+或者，如果您在异步环境中工作，您可以考虑使用异步的 `astream` API：
 
 
 ```python
@@ -80,7 +81,7 @@ async for chunk in model.astream("what color is the sky?"):
 ```output
 The| sky| appears| blue| during| the| day|.|
 ```
-Let's inspect one of the chunks
+让我们检查其中一个块
 
 
 ```python
@@ -94,9 +95,9 @@ AIMessageChunk(content='The', id='run-b36bea64-5511-4d7a-b6a3-a07b3db0c8e7')
 ```
 
 
-We got back something called an `AIMessageChunk`. This chunk represents a part of an `AIMessage`.
+我们得到了一个叫做 `AIMessageChunk` 的东西。这个块代表了一个 `AIMessage` 的一部分。
 
-Message chunks are additive by design -- one can simply add them up to get the state of the response so far!
+消息块的设计是可叠加的——可以简单地将它们相加以获取到目前为止的响应状态！
 
 
 ```python
@@ -109,17 +110,16 @@ chunks[0] + chunks[1] + chunks[2] + chunks[3] + chunks[4]
 AIMessageChunk(content='The sky appears blue during', id='run-b36bea64-5511-4d7a-b6a3-a07b3db0c8e7')
 ```
 
+### 链
 
-### Chains
+几乎所有的 LLM 应用都涉及比仅仅调用语言模型更多的步骤。
 
-Virtually all LLM applications involve more steps than just a call to a language model.
+让我们使用 `LangChain 表达式语言` (`LCEL`) 构建一个简单的链，该链结合了提示、模型和解析器，并验证流式输出是否有效。
 
-Let's build a simple chain using `LangChain Expression Language` (`LCEL`) that combines a prompt, model and a parser and verify that streaming works.
-
-We will use [`StrOutputParser`](https://api.python.langchain.com/en/latest/output_parsers/langchain_core.output_parsers.string.StrOutputParser.html) to parse the output from the model. This is a simple parser that extracts the `content` field from an `AIMessageChunk`, giving us the `token` returned by the model.
+我们将使用 [`StrOutputParser`](https://api.python.langchain.com/en/latest/output_parsers/langchain_core.output_parsers.string.StrOutputParser.html) 来解析模型的输出。这是一个简单的解析器，它从 `AIMessageChunk` 中提取 `content` 字段，从而获取模型返回的 `token`。
 
 :::tip
-LCEL is a *declarative* way to specify a "program" by chainining together different LangChain primitives. Chains created using LCEL benefit from an automatic implementation of `stream` and `astream` allowing streaming of the final output. In fact, chains created with LCEL implement the entire standard Runnable interface.
+LCEL 是一种 *声明性* 的方式，通过将不同的 LangChain 原语串联在一起指定一个“程序”。使用 LCEL 创建的链受益于 `stream` 和 `astream` 的自动实现，允许最终输出的流式传输。实际上，使用 LCEL 创建的链实现了整个标准的 Runnable 接口。
 :::
 
 
@@ -147,29 +147,27 @@ He| pays| an|d leaves| with| the| par|rot|.| As| he|'s| walking| down| the| stre
 
 The| man| is| stun|ne|d an|d looks| at| the| par|rot| in| dis|bel|ief|.| The| par|rot| continues|,| "|Yes|,| you| got| r|ippe|d off| big| time|!| I| can| talk| just| as| well| as| that| other| par|rot|,| an|d you| only| pai|d $|20| |for| me|!"|
 ```
-Note that we're getting streaming output even though we're using `parser` at the end of the chain above. The `parser` operates on each streaming chunk individidually. Many of the [LCEL primitives](/docs/how_to#langchain-expression-language-lcel) also support this kind of transform-style passthrough streaming, which can be very convenient when constructing apps. 
+注意，即使在上面的链中使用了 `parser`，我们仍然得到了流式输出。`parser` 针对每个流式块单独操作。许多 [LCEL 原语](/docs/how_to#langchain-expression-language-lcel) 也支持这种变换风格的直通流式传输，这在构建应用时非常方便。
 
-Custom functions can be [designed to return generators](/docs/how_to/functions#streaming), which are able to operate on streams.
+自定义函数可以被 [设计为返回生成器](/docs/how_to/functions#streaming)，这些生成器能够在流上操作。
 
-Certain runnables, like [prompt templates](/docs/how_to#prompt-templates) and [chat models](/docs/how_to#chat-models), cannot process individual chunks and instead aggregate all previous steps. Such runnables can interrupt the streaming process.
+某些可运行对象，如 [提示模板](/docs/how_to#prompt-templates) 和 [聊天模型](/docs/how_to#chat-models)，无法处理单个块，而是聚合所有先前的步骤。这类可运行对象可能会中断流式处理。
 
 :::note
-The LangChain Expression language allows you to separate the construction of a chain from the mode in which it is used (e.g., sync/async, batch/streaming etc.). If this is not relevant to what you're building, you can also rely on a standard **imperative** programming approach by
-caling `invoke`, `batch` or `stream` on each component individually, assigning the results to variables and then using them downstream as you see fit.
-
+LangChain 表达式语言允许您将链的构建与其使用模式（例如，同步/异步、批处理/流式等）分开。如果这与您构建的内容无关，您还可以依赖标准的 **命令式** 编程方法，通过分别调用 `invoke`、`batch` 或 `stream` 在每个组件上，分配结果给变量，然后根据需要在下游使用它们。
 :::
 
-### Working with Input Streams
+### 处理输入流
 
-What if you wanted to stream JSON from the output as it was being generated?
+如果您想要在生成输出时流式传输 JSON，会怎么样呢？
 
-If you were to rely on `json.loads` to parse the partial json, the parsing would fail as the partial json wouldn't be valid json.
+如果您依赖于 `json.loads` 来解析部分 JSON，解析将失败，因为部分 JSON 不是有效的 JSON。
 
-You'd likely be at a complete loss of what to do and claim that it wasn't possible to stream JSON.
+您可能会完全不知道该怎么办，并声称无法流式传输 JSON。
 
-Well, turns out there is a way to do it -- the parser needs to operate on the **input stream**, and attempt to "auto-complete" the partial json into a valid state.
+实际上，有一种方法可以做到这一点——解析器需要在 **输入流** 上操作，并尝试将部分 JSON “自动完成” 到有效状态。
 
-Let's see such a parser in action to understand what this means.
+让我们看看这样的解析器是如何工作的，以理解这意味着什么。
 
 
 ```python
@@ -177,7 +175,7 @@ from langchain_core.output_parsers import JsonOutputParser
 
 chain = (
     model | JsonOutputParser()
-)  # Due to a bug in older versions of Langchain, JsonOutputParser did not stream results from some models
+)  # 由于 Langchain 较旧版本中的一个错误，JsonOutputParser 并未从某些模型中流式传输结果
 async for text in chain.astream(
     "output a list of the countries france, spain and japan and their populations in JSON format. "
     'Use a dict with an outer key of "countries" which contains a list of countries. '
@@ -207,14 +205,14 @@ async for text in chain.astream(
 {'countries': [{'name': 'France', 'population': 67413000}, {'name': 'Spain', 'population': 47351567}, {'name': 'Japan', 'population': 125584}]}
 {'countries': [{'name': 'France', 'population': 67413000}, {'name': 'Spain', 'population': 47351567}, {'name': 'Japan', 'population': 125584000}]}
 ```
-Now, let's **break** streaming. We'll use the previous example and append an extraction function at the end that extracts the country names from the finalized JSON.
+现在，让我们**破坏**流式传输。我们将使用前面的示例，并在末尾附加一个提取函数，该函数从最终 JSON 中提取国家名称。
 
 :::warning
-Any steps in the chain that operate on **finalized inputs** rather than on **input streams** can break streaming functionality via `stream` or `astream`.
+链中任何处理 **最终输入** 而不是 **输入流** 的步骤都可能通过 `stream` 或 `astream` 破坏流式传输功能。
 :::
 
 :::tip
-Later, we will discuss the `astream_events` API which streams results from intermediate steps. This API will stream results from intermediate steps even if the chain contains steps that only operate on **finalized inputs**.
+稍后，我们将讨论 `astream_events` API，该 API 从中间步骤流式传输结果。即使链中包含仅对 **最终输入** 操作的步骤，该 API 也会从中间步骤流式传输结果。
 :::
 
 
@@ -224,10 +222,9 @@ from langchain_core.output_parsers import (
 )
 
 
-# A function that operates on finalized inputs
-# rather than on an input_stream
+# 一个处理最终输入而不是输入流的函数
 def _extract_country_names(inputs):
-    """A function that does not operates on input streams and breaks streaming."""
+    """一个不处理输入流并破坏流式传输的函数。"""
     if not isinstance(inputs, dict):
         return ""
 
@@ -257,12 +254,12 @@ async for text in chain.astream(
 ```output
 ['France', 'Spain', 'Japan']|
 ```
-#### Generator Functions
+#### 生成器函数
 
-Let's fix the streaming using a generator function that can operate on the **input stream**.
+让我们使用一个可以在 **输入流** 上操作的生成器函数来修复流式传输。
 
 :::tip
-A generator function (a function that uses `yield`) allows writing code that operates on **input streams**
+生成器函数（使用 `yield` 的函数）允许编写在 **输入流** 上操作的代码。
 :::
 
 
@@ -271,7 +268,7 @@ from langchain_core.output_parsers import JsonOutputParser
 
 
 async def _extract_country_names_streaming(input_stream):
-    """A function that operates on input streams."""
+    """一个在输入流上操作的函数。"""
     country_names_so_far = set()
 
     async for input in input_stream:
@@ -308,14 +305,14 @@ async for text in chain.astream(
 France|Spain|Japan|
 ```
 :::note
-Because the code above is relying on JSON auto-completion, you may see partial names of countries (e.g., `Sp` and `Spain`), which is not what one would want for an extraction result!
+由于上面的代码依赖于 JSON 自动完成，您可能会看到国家的部分名称（例如，`Sp` 和 `Spain`），这不是提取结果所希望的！
 
-We're focusing on streaming concepts, not necessarily the results of the chains.
+我们关注的是流式传输的概念，而不一定是链的结果。
 :::
 
-### Non-streaming components
+### 非流式组件
 
-Some built-in components like Retrievers do not offer any `streaming`. What happens if we try to `stream` them? 🤨
+一些内置组件如检索器不提供任何 `streaming`。如果我们尝试对它们进行 `stream` 会发生什么呢？🤨
 
 
 ```python
@@ -350,12 +347,12 @@ chunks
 ```
 
 
-Stream just yielded the final result from that component.
+Stream 仅返回该组件的最终结果。
 
-This is OK 🥹! Not all components have to implement streaming -- in some cases streaming is either unnecessary, difficult or just doesn't make sense.
+这没问题 🥹！并不是所有组件都必须实现流式处理——在某些情况下，流式处理要么不必要，要么困难，或者根本没有意义。
 
 :::tip
-An LCEL chain constructed using non-streaming components, will still be able to stream in a lot of cases, with streaming of partial output starting after the last non-streaming step in the chain.
+使用非流式组件构建的 LCEL 链，在很多情况下仍然能够进行流式处理，流式输出的部分将在链中最后一个非流式步骤之后开始。
 :::
 
 
@@ -389,15 +386,15 @@ Here| are| |3| |made| up| sentences| about| this| place|:|
 
 3|.| With| its| prime| location| in| the| heart| of| the| city|,| K|ens|ho| attracte|d top| talent| from| aroun|d the| worl|d,| creating| a| diverse| an|d dynamic| work| environment|.|
 ```
-Now that we've seen how `stream` and `astream` work, let's venture into the world of streaming events. 🏞️
+现在我们已经了解了 `stream` 和 `astream` 的工作原理，让我们进入流式事件的世界。🏞️
 
-## Using Stream Events
+## 使用流事件
 
-Event Streaming is a **beta** API. This API may change a bit based on feedback.
+事件流是一个**beta** API。根据反馈，此API可能会有所更改。
 
 :::note
 
-This guide demonstrates the `V2` API and requires langchain-core >= 0.2. For the `V1` API compatible with older versions of LangChain, see [here](https://python.langchain.com/v0.1/docs/expression_language/streaming/#using-stream-events).
+本指南演示了`V2` API，并要求 langchain-core >= 0.2。有关与旧版本 LangChain 兼容的 `V1` API，请参见 [这里](https://python.langchain.com/v0.1/docs/expression_language/streaming/#using-stream-events)。
 :::
 
 
@@ -407,23 +404,22 @@ import langchain_core
 langchain_core.__version__
 ```
 
-For the `astream_events` API to work properly:
+为了使 `astream_events` API 正常工作：
 
-* Use `async` throughout the code to the extent possible (e.g., async tools etc)
-* Propagate callbacks if defining custom functions / runnables
-* Whenever using runnables without LCEL, make sure to call `.astream()` on LLMs rather than `.ainvoke` to force the LLM to stream tokens.
-* Let us know if anything doesn't work as expected! :)
+* 尽可能在代码中使用 `async`（例如，异步工具等）
+* 如果定义自定义函数/可运行对象，请传播回调
+* 每当使用没有 LCEL 的可运行对象时，请确保在 LLM 上调用 `.astream()` 而不是 `.ainvoke` 以强制 LLM 流式传输令牌。
+* 如果有任何问题，请告诉我们！ :)
 
-### Event Reference
+### 事件参考
 
-Below is a reference table that shows some events that might be emitted by the various Runnable objects.
-
+以下是一个参考表，显示了各种可运行对象可能发出的事件。
 
 :::note
-When streaming is implemented properly, the inputs to a runnable will not be known until after the input stream has been entirely consumed. This means that `inputs` will often be included only for `end` events and rather than for `start` events.
+当流处理正确实现时，Runnable 的输入在输入流完全消耗之前是未知的。这意味着 `inputs` 通常只会在 `end` 事件中包含，而不是在 `start` 事件中。
 :::
 
-| event                | name             | chunk                           | input                                         | output                                          |
+| 事件                  | 名称              | 块                               | 输入                                         | 输出                                          |
 |----------------------|------------------|---------------------------------|-----------------------------------------------|-------------------------------------------------|
 | on_chat_model_start  | [model name]     |                                 | {"messages": [[SystemMessage, HumanMessage]]} |                                                 |
 | on_chat_model_stream | [model name]     | AIMessageChunk(content="hello") |                                               |                                                 |
@@ -441,9 +437,9 @@ When streaming is implemented properly, the inputs to a runnable will not be kno
 | on_prompt_start      | [template_name]  |                                 | {"question": "hello"}                         |                                                 |
 | on_prompt_end        | [template_name]  |                                 | {"question": "hello"}                         | ChatPromptValue(messages: [SystemMessage, ...]) |
 
-### Chat Model
+### 聊天模型
 
-Let's start off by looking at the events produced by a chat model.
+让我们先来看看聊天模型生成的事件。
 
 
 ```python
@@ -457,19 +453,19 @@ async for event in model.astream_events("hello", version="v2"):
 ```
 :::note
 
-Hey what's that funny version="v2" parameter in the API?! 😾
+嘿，API 中那个有趣的参数 version="v2" 是什么？！ 😾
 
-This is a **beta API**, and we're almost certainly going to make some changes to it (in fact, we already have!)
+这是一个 **beta API**，我们几乎肯定会对其进行一些更改（实际上，我们已经做过了！）
 
-This version parameter will allow us to minimize such breaking changes to your code. 
+这个版本参数将使我们能够将此类破坏性更改对您的代码的影响降到最低。
 
-In short, we are annoying you now, so we don't have to annoy you later.
+简而言之，我们现在让您烦恼，以便以后不再让您烦恼。
 
-`v2` is only available for langchain-core>=0.2.0.
+`v2` 仅适用于 langchain-core>=0.2.0。
 
 :::
 
-Let's take a look at the few of the start event and a few of the end events.
+让我们来看一下几个开始事件和几个结束事件。
 
 
 ```python
@@ -522,16 +518,14 @@ events[-2:]
   'metadata': {}}]
 ```
 
-
 ### Chain
 
-Let's revisit the example chain that parsed streaming JSON to explore the streaming events API.
-
+让我们回顾一下解析流式 JSON 的示例链，以探索流式事件 API。
 
 ```python
 chain = (
     model | JsonOutputParser()
-)  # Due to a bug in older versions of Langchain, JsonOutputParser did not stream results from some models
+)  # 由于 Langchain 的早期版本中的一个错误，JsonOutputParser 没有从某些模型流式输出结果
 
 events = [
     event
@@ -544,20 +538,17 @@ events = [
 ]
 ```
 
-If you examine at the first few events, you'll notice that there are **3** different start events rather than **2** start events.
+如果你检查前几个事件，你会注意到有 **3** 个不同的开始事件，而不是 **2** 个开始事件。
 
-The three start events correspond to:
+这三个开始事件对应于：
 
-1. The chain (model + parser)
-2. The model
-3. The parser
-
+1. 链（模型 + 解析器）
+2. 模型
+3. 解析器
 
 ```python
 events[:3]
 ```
-
-
 
 ```output
 [{'event': 'on_chain_start',
@@ -580,11 +571,9 @@ events[:3]
   'metadata': {}}]
 ```
 
+如果你查看最后 3 个事件，你认为会看到什么？中间的呢？
 
-What do you think you'd see if you looked at the last 3 events? what about the middle?
-
-Let's use this API to take output the stream events from the model and the parser. We're ignoring start events, end events and events from the chain.
-
+让我们使用这个 API 输出模型和解析器的流式事件。我们忽略开始事件、结束事件和链中的事件。
 
 ```python
 num_events = 0
@@ -605,7 +594,7 @@ async for event in chain.astream_events(
         print(f"Parser chunk: {event['data']['chunk']}", flush=True)
     num_events += 1
     if num_events > 30:
-        # Truncate the output
+        # 截断输出
         print("...")
         break
 ```
@@ -635,15 +624,15 @@ Chat model chunk: '"'
 Chat model chunk: 'population'
 ...
 ```
-Because both the model and the parser support streaming, we see streaming events from both components in real time! Kind of cool isn't it? 🦜
+因为模型和解析器都支持流式输出，所以我们实时看到来自两个组件的流式事件！这不是很酷吗？🦜
 
-### Filtering Events
+### 过滤事件
 
-Because this API produces so many events, it is useful to be able to filter on events.
+由于这个 API 生成了很多事件，因此能够对事件进行过滤是非常有用的。
 
-You can filter by either component `name`, component `tags` or component `type`.
+您可以通过组件的 `name`、组件的 `tags` 或组件的 `type` 进行过滤。
 
-#### By Name
+#### 按名称过滤
 
 
 ```python
@@ -680,7 +669,7 @@ async for event in chain.astream_events(
 {'event': 'on_parser_stream', 'data': {'chunk': {'countries': [{'name': 'France', 'population': 67413000}, {'name': ''}]}}, 'run_id': 'e058d750-f2c2-40f6-aa61-10f84cd671a9', 'name': 'my_parser', 'tags': ['seq:step:2'], 'metadata': {}}
 ...
 ```
-#### By Type
+#### 按类型过滤
 
 
 ```python
@@ -715,13 +704,13 @@ async for event in chain.astream_events(
 {'event': 'on_chat_model_stream', 'data': {'chunk': AIMessageChunk(content='"', id='run-db246792-2a91-4eb3-a14b-29658947065d')}, 'run_id': 'db246792-2a91-4eb3-a14b-29658947065d', 'name': 'model', 'tags': ['seq:step:1'], 'metadata': {}}
 ...
 ```
-#### By Tags
+#### 按标签过滤
 
 :::caution
 
-Tags are inherited by child components of a given runnable. 
+标签由给定可运行组件的子组件继承。
 
-If you're using tags to filter, make sure that this is what you want.
+如果您使用标签进行过滤，请确保这是您想要的。
 :::
 
 
@@ -755,11 +744,12 @@ async for event in chain.astream_events(
 {'event': 'on_chat_model_stream', 'data': {'chunk': AIMessageChunk(content=' [', id='run-efd3c8af-4be5-4f6c-9327-e3f9865dd1cd')}, 'run_id': 'efd3c8af-4be5-4f6c-9327-e3f9865dd1cd', 'name': 'ChatAnthropic', 'tags': ['seq:step:1', 'my_chain'], 'metadata': {}}
 ...
 ```
-### Non-streaming components
 
-Remember how some components don't stream well because they don't operate on **input streams**?
+### 非流式组件
 
-While such components can break streaming of the final output when using `astream`, `astream_events` will still yield streaming events from intermediate steps that support streaming!
+记得有些组件由于不操作**输入流**而不适合流式处理吗？
+
+虽然这样的组件在使用`astream`时可能会中断最终输出的流式处理，但`astream_events`仍然会从支持流式处理的中间步骤中产生流式事件！
 
 
 ```python
@@ -790,7 +780,7 @@ chain = (
 )  # This parser only works with OpenAI right now
 ```
 
-As expected, the `astream` API doesn't work correctly because `_extract_country_names` doesn't operate on streams.
+正如预期的那样，`astream` API无法正常工作，因为`_extract_country_names`不在流上操作。
 
 
 ```python
@@ -804,7 +794,7 @@ async for chunk in chain.astream(
 ```output
 ['France', 'Spain', 'Japan']
 ```
-Now, let's confirm that with astream_events we're still seeing streaming output from the model and the parser.
+现在，让我们确认使用astream_events时，我们仍然能够从模型和解析器看到流式输出。
 
 
 ```python
@@ -860,14 +850,15 @@ Chat model chunk: '67'
 Parser chunk: {'countries': [{'name': 'France', 'population': 67}]}
 ...
 ```
-### Propagating Callbacks
+
+### 传播回调
 
 :::caution
-If you're using invoking runnables inside your tools, you need to propagate callbacks to the runnable; otherwise, no stream events will be generated.
+如果您在工具中使用调用可运行对象，您需要将回调传播到可运行对象；否则，将不会生成任何流事件。
 :::
 
 :::note
-When using `RunnableLambdas` or `@chain` decorator, callbacks are propagated automatically behind the scenes.
+使用 `RunnableLambdas` 或 `@chain` 装饰器时，回调会在后台自动传播。
 :::
 
 
@@ -885,7 +876,7 @@ reverse_word = RunnableLambda(reverse_word)
 
 @tool
 def bad_tool(word: str):
-    """Custom tool that doesn't propagate callbacks."""
+    """自定义工具，不传播回调。"""
     return reverse_word.invoke(word)
 
 
@@ -898,13 +889,13 @@ async for event in bad_tool.astream_events("hello", version="v2"):
 {'event': 'on_chain_end', 'data': {'output': 'olleh', 'input': 'hello'}, 'run_id': '77b01284-0515-48f4-8d7c-eb27c1882f86', 'name': 'reverse_word', 'tags': [], 'metadata': {}}
 {'event': 'on_tool_end', 'data': {'output': 'olleh'}, 'run_id': 'ea900472-a8f7-425d-b627-facdef936ee8', 'name': 'bad_tool', 'tags': [], 'metadata': {}}
 ```
-Here's a re-implementation that does propagate callbacks correctly. You'll notice that now we're getting events from the `reverse_word` runnable as well.
+这是一个正确传播回调的重新实现。您会注意到现在我们也收到了来自 `reverse_word` 可运行对象的事件。
 
 
 ```python
 @tool
 def correct_tool(word: str, callbacks):
-    """A tool that correctly propagates callbacks."""
+    """一个正确传播回调的工具。"""
     return reverse_word.invoke(word, {"callbacks": callbacks})
 
 
@@ -917,7 +908,7 @@ async for event in correct_tool.astream_events("hello", version="v2"):
 {'event': 'on_chain_end', 'data': {'output': 'olleh', 'input': 'hello'}, 'run_id': '44dafbf4-2f87-412b-ae0e-9f71713810df', 'name': 'reverse_word', 'tags': [], 'metadata': {}}
 {'event': 'on_tool_end', 'data': {'output': 'olleh'}, 'run_id': 'd5ea83b9-9278-49cc-9f1d-aa302d671040', 'name': 'correct_tool', 'tags': [], 'metadata': {}}
 ```
-If you're invoking runnables from within Runnable Lambdas or `@chains`, then callbacks will be passed automatically on your behalf.
+如果您从 `Runnable Lambdas` 或 `@chains` 中调用可运行对象，则回调将自动传递给您。
 
 
 ```python
@@ -942,7 +933,7 @@ async for event in reverse_and_double.astream_events("1234", version="v2"):
 {'event': 'on_chain_stream', 'data': {'chunk': '43214321'}, 'run_id': '03b0e6a1-3e60-42fc-8373-1e7829198d80', 'name': 'reverse_and_double', 'tags': [], 'metadata': {}}
 {'event': 'on_chain_end', 'data': {'output': '43214321'}, 'run_id': '03b0e6a1-3e60-42fc-8373-1e7829198d80', 'name': 'reverse_and_double', 'tags': [], 'metadata': {}}
 ```
-And with the `@chain` decorator:
+使用 `@chain` 装饰器：
 
 
 ```python
@@ -966,8 +957,9 @@ async for event in reverse_and_double.astream_events("1234", version="v2"):
 {'event': 'on_chain_stream', 'data': {'chunk': '43214321'}, 'run_id': '1bfcaedc-f4aa-4d8e-beee-9bba6ef17008', 'name': 'reverse_and_double', 'tags': [], 'metadata': {}}
 {'event': 'on_chain_end', 'data': {'output': '43214321'}, 'run_id': '1bfcaedc-f4aa-4d8e-beee-9bba6ef17008', 'name': 'reverse_and_double', 'tags': [], 'metadata': {}}
 ```
-## Next steps
 
-Now you've learned some ways to stream both final outputs and internal steps with LangChain.
+## 下一步
 
-To learn more, check out the other how-to guides in this section, or the [conceptual guide on Langchain Expression Language](/docs/concepts/#langchain-expression-language/).
+现在您已经了解了一些使用 LangChain 流式传输最终输出和内部步骤的方法。
+
+要了解更多信息，请查看本节中的其他操作指南，或查看 [Langchain 表达语言的概念指南](/docs/concepts/#langchain-expression-language/)。

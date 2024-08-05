@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/cloudflare_workersai.ipynb
 ---
+
 # Cloudflare Workers AI
 
-[Cloudflare AI documentation](https://developers.cloudflare.com/workers-ai/models/text-generation/) listed all generative text models available.
+[Cloudflare AI 文档](https://developers.cloudflare.com/workers-ai/models/text-generation/) 列出了所有可用的生成文本模型。
 
-Both Cloudflare account ID and API token are required. Find how to obtain them from [this document](https://developers.cloudflare.com/workers-ai/get-started/rest-api/).
+需要 Cloudflare 账户 ID 和 API 令牌。请查看 [此文档](https://developers.cloudflare.com/workers-ai/get-started/rest-api/) 以了解如何获取它们。
 
 
 ```python
@@ -20,7 +21,7 @@ AI Assistant: """
 prompt = PromptTemplate.from_template(template)
 ```
 
-Get authentication before running LLM.
+在运行 LLM 之前获取认证。
 
 
 ```python
@@ -58,7 +59,7 @@ Ah | , |  a |  most |  excellent |  question | , |  my |  dear |  human | ! |  *
  | I |  hope |  this |  explanation |  has |  been |  helpful | , |  my |  dear |  human | ! |  Is |  there |  anything |  else |  you |  would |  like |  to |  know | ? |  * | sm | iles | * | * |  |
 ```
 
-## Related
+## 相关
 
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

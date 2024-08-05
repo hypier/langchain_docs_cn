@@ -1,19 +1,19 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/baichuan.ipynb
 ---
-# Baichuan LLM
-Baichuan Inc. (https://www.baichuan-ai.com/) is a Chinese startup in the era of AGI, dedicated to addressing fundamental human needs: Efficiency, Health, and Happiness.
 
+# 百川 LLM
+百川公司 (https://www.baichuan-ai.com/) 是一家专注于解决人类基本需求的中国初创企业，涵盖效率、健康和幸福。
 
 ```python
 ##Installing the langchain packages needed to use the integration
 %pip install -qU langchain-community
 ```
 
-## Prerequisite
-An API key is required to access Baichuan LLM API. Visit https://platform.baichuan-ai.com/ to get your API key.
+## 前提条件
+需要一个 API 密钥才能访问 Baichuan LLM API。访问 https://platform.baichuan-ai.com/ 获取您的 API 密钥。
 
-## Use Baichuan LLM
+## 使用 Baichuan LLM
 
 
 ```python
@@ -26,7 +26,7 @@ os.environ["BAICHUAN_API_KEY"] = "YOUR_API_KEY"
 ```python
 from langchain_community.llms import BaichuanLLM
 
-# Load the model
+# 加载模型
 llm = BaichuanLLM()
 
 res = llm.invoke("What's your name?")
@@ -58,8 +58,7 @@ async def run_aio_stream():
 asyncio.run(run_aio_stream())
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

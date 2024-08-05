@@ -1,13 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/databricks.ipynb
 ---
+
 # Databricks Unity Catalog (UC)
 
-This notebook shows how to use UC functions as LangChain tools.
+本笔记本展示如何将 UC 函数用作 LangChain 工具。
 
-See Databricks documentation ([AWS](https://docs.databricks.com/en/sql/language-manual/sql-ref-syntax-ddl-create-sql-function.html)|[Azure](https://learn.microsoft.com/en-us/azure/databricks/sql/language-manual/sql-ref-syntax-ddl-create-sql-function)|[GCP](https://docs.gcp.databricks.com/en/sql/language-manual/sql-ref-syntax-ddl-create-sql-function.html)) to learn how to create SQL or Python functions in UC. Do not skip function and parameter comments, which are critical for LLMs to call functions properly.
+请参阅 Databricks 文档（[AWS](https://docs.databricks.com/en/sql/language-manual/sql-ref-syntax-ddl-create-sql-function.html)|[Azure](https://learn.microsoft.com/en-us/azure/databricks/sql/language-manual/sql-ref-syntax-ddl-create-sql-function)|[GCP](https://docs.gcp.databricks.com/en/sql/language-manual/sql-ref-syntax-ddl-create-sql-function.html)）了解如何在 UC 中创建 SQL 或 Python 函数。请勿跳过函数和参数注释，这对于 LLM 正确调用函数至关重要。
 
-In this example notebook, we create a simple Python function that executes arbitrary code and use it as a LangChain tool:
+在这个示例笔记本中，我们创建一个简单的 Python 函数来执行任意代码，并将其用作 LangChain 工具：
 
 ```sql
 CREATE FUNCTION main.tools.python_exec (
@@ -26,7 +27,7 @@ AS $$
 $$
 ```
 
-It runs in a secure and isolated environment within a Databricks SQL warehouse.
+它在 Databricks SQL 仓库中的安全隔离环境中运行。
 
 
 ```python
@@ -91,7 +92,7 @@ agent_executor.invoke({"input": "36939 * 8922.4"})
 Invoking: `main__tools__python_exec` with `{'code': 'print(36939 * 8922.4)'}`
 
 
-[0m[36;1m[1;3m{"format": "SCALAR", "value": "329584533.59999996\n", "truncated": false}[0m[32;1m[1;3mThe result of the multiplication 36939 * 8922.4 is 329,584,533.60.[0m
+[0m[36;1m[1;3m{"format": "SCALAR", "value": "329584533.59999996\n", "truncated": false}[0m[32;1m[1;3m乘法 36939 * 8922.4 的结果是 329,584,533.60。[0m
 
 [1m> Finished chain.[0m
 ```
@@ -99,12 +100,10 @@ Invoking: `main__tools__python_exec` with `{'code': 'print(36939 * 8922.4)'}`
 
 ```output
 {'input': '36939 * 8922.4',
- 'output': 'The result of the multiplication 36939 * 8922.4 is 329,584,533.60.'}
+ 'output': '乘法 36939 * 8922.4 的结果是 329,584,533.60.'}
 ```
 
+## 相关
 
-
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

@@ -1,24 +1,23 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/rockset_chat_message_history.ipynb
 ---
+
 # Rockset
 
->[Rockset](https://rockset.com/product/) is a real-time analytics database service for serving low latency, high concurrency analytical queries at scale. It builds a Converged Index™ on structured and semi-structured data with an efficient store for vector embeddings. Its support for running SQL on schemaless data makes it a perfect choice for running vector search with metadata filters. 
+>[Rockset](https://rockset.com/product/) 是一个实时分析数据库服务，旨在以低延迟和高并发处理大规模分析查询。它在结构化和半结构化数据上构建了一个融合索引™，并为向量嵌入提供了高效的存储。它对无模式数据运行 SQL 的支持使其成为使用元数据过滤进行向量搜索的完美选择。
 
+本笔记本介绍了如何使用 [Rockset](https://rockset.com/docs) 存储聊天消息历史。
 
-This notebook goes over how to use [Rockset](https://rockset.com/docs) to store chat message history. 
-
-
-## Setting up
+## 设置
 
 
 ```python
 %pip install --upgrade --quiet  rockset langchain-community
 ```
 
-To begin, with get your API key from the [Rockset console](https://console.rockset.com/apikeys). Find your API region for the Rockset [API reference](https://rockset.com/docs/rest-api#introduction).
+首先，从 [Rockset 控制台](https://console.rockset.com/apikeys) 获取您的 API 密钥。查找您的 API 区域，请参阅 Rockset [API 参考](https://rockset.com/docs/rest-api#introduction)。
 
-## Example
+## 示例
 
 
 ```python
@@ -41,7 +40,7 @@ history.add_ai_message("whats up?")
 print(history.messages)
 ```
 
-The output should be something like:
+输出应该类似于：
 
 ```python
 [

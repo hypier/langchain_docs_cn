@@ -1,26 +1,26 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/infinity.ipynb
 ---
-# Infinity
 
-`Infinity` allows to create `Embeddings` using a MIT-licensed Embedding Server. 
+# 无限
 
-This notebook goes over how to use Langchain with Embeddings with the [Infinity Github Project](https://github.com/michaelfeil/infinity).
+`Infinity` 允许使用 MIT 许可的嵌入服务器创建 `Embeddings`。
 
+本笔记本介绍了如何使用 Langchain 和嵌入与 [Infinity Github 项目](https://github.com/michaelfeil/infinity) 一起使用。
 
-## Imports
+## 导入
 
 
 ```python
 from langchain_community.embeddings import InfinityEmbeddings, InfinityEmbeddingsLocal
 ```
 
-# Option 1: Use infinity from Python
+# 选项 1：使用 Python 中的 infinity
 
-#### Optional: install infinity
+#### 可选：安装 infinity
 
-To install infinity use the following command. For further details check out the [Docs on Github](https://github.com/michaelfeil/infinity).
-Install the torch and onnx dependencies. 
+要安装 infinity，请使用以下命令。有关更多详细信息，请查看 [Github 上的文档](https://github.com/michaelfeil/infinity)。
+安装 torch 和 onnx 依赖项。
 
 ```bash
 pip install infinity_emb[torch,optimum]
@@ -52,18 +52,17 @@ embeddings = InfinityEmbeddingsLocal(
 
 
 async def embed():
-    # TODO: This function is just to showcase that your call can run async.
+    # TODO: 这个函数只是为了展示你的调用可以异步运行。
 
-    # important: use engine inside of `async with` statement to start/stop the batching engine.
+    # 重要：在 `async with` 语句中使用引擎以启动/停止批处理引擎。
     async with embeddings:
-        # avoid closing and starting the engine often.
-        # rather keep it running.
-        # you may call `await embeddings.__aenter__()` and `__aexit__()
-        # if you are sure when to manually start/stop execution` in a more granular way
+        # 避免频繁关闭和启动引擎。
+        # 而是保持它运行。
+        # 如果你确定何时手动启动/停止执行，可以更细粒度地调用 `await embeddings.__aenter__()` 和 `__aexit__()`
 
         documents_embedded = await embeddings.aembed_documents(documents)
         query_result = await embeddings.aembed_query(query)
-        print("embeddings created successful")
+        print("嵌入创建成功")
     return documents_embedded, query_result
 ```
 ```output
@@ -75,33 +74,33 @@ The BetterTransformer implementation does not support padding during training, a
 ```
 
 ```python
-# run the async code however you would like
-# if you are in a jupyter notebook, you can use the following
+# 以你喜欢的方式运行异步代码
+# 如果你在 jupyter notebook 中，可以使用以下代码
 documents_embedded, query_result = await embed()
 ```
 
 
 ```python
-# (demo) compute similarity
+# (demo) 计算相似度
 import numpy as np
 
 scores = np.array(documents_embedded) @ np.array(query_result).T
 dict(zip(documents, scores))
 ```
 
-# Option 2: Run the server, and connect via the API
+# 选项 2：运行服务器，并通过 API 连接
 
-#### Optional: Make sure to start the Infinity instance
+#### 可选：确保启动 Infinity 实例
 
-To install infinity use the following command. For further details check out the [Docs on Github](https://github.com/michaelfeil/infinity).
+要安装 infinity，请使用以下命令。有关更多详细信息，请查看 [Docs on Github](https://github.com/michaelfeil/infinity)。
 ```bash
 pip install infinity_emb[all]
 ```
 
-# Install the infinity package
+# 安装 infinity 包
 %pip install --upgrade --quiet  infinity_emb[all]
 
-Start up the server - best to be done from a separate terminal, not inside Jupyter Notebook
+启动服务器 - 最好在单独的终端中进行，而不是在 Jupyter Notebook 内部
 
 ```bash
 model=sentence-transformers/all-MiniLM-L6-v2
@@ -109,14 +108,14 @@ port=7797
 infinity_emb --port $port --model-name-or-path $model
 ```
 
-or alternativley just use docker:
+或者也可以直接使用 docker:
 ```bash
 model=sentence-transformers/all-MiniLM-L6-v2
 port=7797
 docker run -it --gpus all -p $port:$port michaelf34/infinity:latest --model-name-or-path $model --port $port
 ```
 
-## Embed your documents using your Infinity instance 
+## 使用您的 Infinity 实例嵌入文档
 
 
 ```python
@@ -168,9 +167,7 @@ dict(zip(documents, scores))
  "You escaped what I've escaped - You'd be in Paris getting fucked up too": 0.5088476180154582}
 ```
 
+## 相关
 
-
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

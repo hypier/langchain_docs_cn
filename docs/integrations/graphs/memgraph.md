@@ -1,47 +1,45 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/graphs/memgraph.ipynb
 ---
+
 # Memgraph
 
->[Memgraph](https://github.com/memgraph/memgraph) is the open-source graph database, compatible with `Neo4j`.
->The database is using the `Cypher` graph query language, 
+>[Memgraph](https://github.com/memgraph/memgraph) 是开源图数据库，兼容 `Neo4j`。 
+>该数据库使用 `Cypher` 图查询语言， 
 >
->[Cypher](https://en.wikipedia.org/wiki/Cypher_(query_language)) is a declarative graph query language that allows for expressive and efficient data querying in a property graph.
+>[Cypher](https://en.wikipedia.org/wiki/Cypher_(query_language)) 是一种声明式图查询语言，允许在属性图中进行富有表现力和高效的数据查询。
 
-This notebook shows how to use LLMs to provide a natural language interface to a [Memgraph](https://github.com/memgraph/memgraph) database.
+本笔记本展示了如何使用 LLMs 为 [Memgraph](https://github.com/memgraph/memgraph) 数据库提供自然语言接口。
 
+## 设置
 
-## Setting up
+要完成本教程，您需要安装 [Docker](https://www.docker.com/get-started/) 和 [Python 3.x](https://www.python.org/)。
 
-To complete this tutorial, you will need [Docker](https://www.docker.com/get-started/) and [Python 3.x](https://www.python.org/) installed.
+确保您有一个正在运行的 Memgraph 实例。要快速首次运行 Memgraph 平台（Memgraph 数据库 + MAGE 库 + Memgraph Lab），请执行以下操作：
 
-Ensure you have a running Memgraph instance. To quickly run Memgraph Platform (Memgraph database + MAGE library + Memgraph Lab) for the first time, do the following:
-
-On Linux/MacOS:
+在 Linux/MacOS 上：
 ```
 curl https://install.memgraph.com | sh
 ```
 
-On Windows:
+在 Windows 上：
 ```
 iwr https://windows.memgraph.com | iex
 ```
 
-Both commands run a script that downloads a Docker Compose file to your system, builds and starts `memgraph-mage` and `memgraph-lab` Docker services in two separate containers. 
+这两个命令运行一个脚本，将 Docker Compose 文件下载到您的系统，并在两个独立的容器中构建和启动 `memgraph-mage` 和 `memgraph-lab` Docker 服务。
 
-Read more about the installation process on [Memgraph documentation](https://memgraph.com/docs/getting-started/install-memgraph).
+有关安装过程的更多信息，请参阅 [Memgraph 文档](https://memgraph.com/docs/getting-started/install-memgraph)。
 
-Now you can start playing with `Memgraph`!
+现在，您可以开始使用 `Memgraph` 了！
 
-Begin by installing and importing all the necessary packages. We'll use the package manager called [pip](https://pip.pypa.io/en/stable/installation/), along with the `--user` flag, to ensure proper permissions. If you've installed Python 3.4 or a later version, pip is included by default. You can install all the required packages using the following command:
-
+首先安装并导入所有必要的包。我们将使用名为 [pip](https://pip.pypa.io/en/stable/installation/) 的包管理器，并使用 `--user` 标志以确保正确的权限。如果您安装了 Python 3.4 或更高版本，pip 默认包含在内。您可以使用以下命令安装所有所需的包：
 
 ```python
 pip install langchain langchain-openai neo4j gqlalchemy --user
 ```
 
-You can either run the provided code blocks in this notebook or use a separate Python file to experiment with Memgraph and LangChain.
-
+您可以在此笔记本中运行提供的代码块，或使用单独的 Python 文件来实验 Memgraph 和 LangChain。
 
 ```python
 import os
@@ -53,16 +51,14 @@ from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 ```
 
-We're utilizing the Python library [GQLAlchemy](https://github.com/memgraph/gqlalchemy) to establish a connection between our Memgraph database and Python script. You can establish the connection to a running Memgraph instance with the Neo4j driver as well, since it's compatible with Memgraph. To execute queries with GQLAlchemy, we can set up a Memgraph instance as follows:
-
+我们利用 Python 库 [GQLAlchemy](https://github.com/memgraph/gqlalchemy) 在我们的 Memgraph 数据库和 Python 脚本之间建立连接。您还可以使用 Neo4j 驱动程序与运行中的 Memgraph 实例建立连接，因为它与 Memgraph 兼容。要使用 GQLAlchemy 执行查询，我们可以如下设置 Memgraph 实例：
 
 ```python
 memgraph = Memgraph(host="127.0.0.1", port=7687)
 ```
 
-## Populating the database
-You can effortlessly populate your new, empty database using the Cypher query language. Don't worry if you don't grasp every line just yet, you can learn Cypher from the documentation [here](https://memgraph.com/docs/cypher-manual/). Running the following script will execute a seeding query on the database, giving us data about a video game, including details like the publisher, available platforms, and genres. This data will serve as a basis for our work.
-
+## 填充数据库
+您可以使用 Cypher 查询语言轻松填充新的空数据库。如果您还不完全理解每一行，也不用担心，您可以从文档 [这里](https://memgraph.com/docs/cypher-manual/) 学习 Cypher。运行以下脚本将在数据库上执行种子查询，为我们提供有关视频游戏的数据，包括发布者、可用平台和类型等详细信息。这些数据将作为我们工作的基础。
 
 ```python
 # Creating and executing the seeding query
@@ -85,24 +81,21 @@ query = """
 memgraph.execute(query)
 ```
 
-## Refresh graph schema
+## 刷新图谱架构
 
-You're all set to instantiate the Memgraph-LangChain graph using the following script. This interface will allow us to query our database using LangChain, automatically creating the required graph schema for generating Cypher queries through LLM.
-
+您已准备好使用以下脚本实例化 Memgraph-LangChain 图谱。此接口将允许我们使用 LangChain 查询我们的数据库，自动创建生成 Cypher 查询所需的图谱架构，通过 LLM。
 
 ```python
 graph = MemgraphGraph(url="bolt://localhost:7687", username="", password="")
 ```
 
-If necessary, you can manually refresh the graph schema as follows.
-
+如有必要，您可以手动刷新图谱架构，如下所示。
 
 ```python
 graph.refresh_schema()
 ```
 
-To familiarize yourself with the data and verify the updated graph schema, you can print it using the following statement.
-
+为了熟悉数据并验证更新后的图谱架构，您可以使用以下语句打印它。
 
 ```python
 print(graph.schema)
@@ -123,17 +116,15 @@ The relationships are the following:
 ['(:Game)-[:PUBLISHED_BY]->(:Publisher)']
 ```
 
-## Querying the database
+## 查询数据库
 
-To interact with the OpenAI API, you must configure your API key as an environment variable using the Python [os](https://docs.python.org/3/library/os.html) package. This ensures proper authorization for your requests. You can find more information on obtaining your API key [here](https://help.openai.com/en/articles/4936850-where-do-i-find-my-secret-api-key).
-
+要与 OpenAI API 交互，您必须使用 Python [os](https://docs.python.org/3/library/os.html) 包将您的 API 密钥配置为环境变量。这确保了您请求的正确授权。您可以在 [这里](https://help.openai.com/en/articles/4936850-where-do-i-find-my-secret-api-key) 找到有关获取 API 密钥的更多信息。
 
 ```python
 os.environ["OPENAI_API_KEY"] = "your-key-here"
 ```
 
-You should create the graph chain using the following script, which will be utilized in the question-answering process based on your graph data. While it defaults to GPT-3.5-turbo, you might also consider experimenting with other models like [GPT-4](https://help.openai.com/en/articles/7102672-how-can-i-access-gpt-4) for notably improved Cypher queries and outcomes. We'll utilize the OpenAI chat, utilizing the key you previously configured. We'll set the temperature to zero, ensuring predictable and consistent answers. Additionally, we'll use our Memgraph-LangChain graph and set the verbose parameter, which defaults to False, to True to receive more detailed messages regarding query generation.
-
+您应该使用以下脚本创建图形链，该脚本将在基于您的图形数据的问题回答过程中使用。虽然它默认使用 GPT-3.5-turbo，但您也可以考虑尝试其他模型，例如 [GPT-4](https://help.openai.com/en/articles/7102672-how-can-i-access-gpt-4)，以显著改善 Cypher 查询和结果。我们将利用 OpenAI 聊天，使用您之前配置的密钥。我们将温度设置为零，以确保答案的可预测性和一致性。此外，我们将使用我们的 Memgraph-LangChain 图形，并将 verbose 参数（默认为 False）设置为 True，以接收有关查询生成的更详细消息。
 
 ```python
 chain = GraphCypherQAChain.from_llm(
@@ -141,8 +132,7 @@ chain = GraphCypherQAChain.from_llm(
 )
 ```
 
-Now you can start asking questions!
-
+现在您可以开始提问！
 
 ```python
 response = chain.run("Which platforms is Baldur's Gate 3 available on?")
@@ -179,13 +169,12 @@ Full Context:
 Yes, Baldur's Gate 3 is available on Windows.
 ```
 
-## Chain modifiers
+## 链修饰符
 
-To modify the behavior of your chain and obtain more context or additional information, you can modify the chain's parameters.
+要修改链的行为并获得更多上下文或额外信息，您可以修改链的参数。
 
-#### Return direct query results
-The `return_direct` modifier specifies whether to return the direct results of the executed Cypher query or the processed natural language response.
-
+#### 返回直接查询结果
+`return_direct` 修饰符指定是否返回执行的 Cypher 查询的直接结果或处理过的自然语言响应。
 
 ```python
 # Return the result of querying the graph directly
@@ -193,7 +182,6 @@ chain = GraphCypherQAChain.from_llm(
     ChatOpenAI(temperature=0), graph=graph, verbose=True, return_direct=True
 )
 ```
-
 
 ```python
 response = chain.run("Which studio published Baldur's Gate 3?")
@@ -210,9 +198,8 @@ RETURN p.name
 [{'p.name': 'Larian Studios'}]
 ```
 
-#### Return query intermediate steps
-The `return_intermediate_steps` chain modifier enhances the returned response by including the intermediate steps of the query in addition to the initial query result.
-
+#### 返回查询中间步骤
+`return_intermediate_steps` 链修饰符通过在初始查询结果之外包含查询的中间步骤来增强返回的响应。
 
 ```python
 # Return all the intermediate steps of query execution
@@ -220,7 +207,6 @@ chain = GraphCypherQAChain.from_llm(
     ChatOpenAI(temperature=0), graph=graph, verbose=True, return_intermediate_steps=True
 )
 ```
-
 
 ```python
 response = chain("Is Baldur's Gate 3 an Adventure game?")
@@ -241,9 +227,8 @@ Intermediate steps: [{'query': "MATCH (g:Game {name: 'Baldur\\'s Gate 3'})-[:HAS
 Final response: Yes, Baldur's Gate 3 is an Adventure game.
 ```
 
-#### Limit the number of query results
-The `top_k` modifier can be used when you want to restrict the maximum number of query results.
-
+#### 限制查询结果的数量
+`top_k` 修饰符可用于限制返回的查询结果的最大数量。
 
 ```python
 # Limit the maximum number of results returned by query
@@ -251,7 +236,6 @@ chain = GraphCypherQAChain.from_llm(
     ChatOpenAI(temperature=0), graph=graph, verbose=True, top_k=2
 )
 ```
-
 
 ```python
 response = chain.run("What genres are associated with Baldur's Gate 3?")
@@ -270,19 +254,17 @@ Full Context:
 Baldur's Gate 3 is associated with the genres Adventure and Role-Playing Game.
 ```
 
-# Advanced querying
+# 高级查询
 
-As the complexity of your solution grows, you might encounter different use-cases that require careful handling. Ensuring your application's scalability is essential to maintain a smooth user flow without any hitches.
+随着解决方案复杂性的增加，您可能会遇到需要仔细处理的不同用例。确保应用程序的可扩展性对于保持用户流畅体验至关重要。
 
-Let's instantiate our chain once again and attempt to ask some questions that users might potentially ask.
-
+让我们再次实例化我们的链，并尝试询问一些用户可能会问的问题。
 
 ```python
 chain = GraphCypherQAChain.from_llm(
     ChatOpenAI(temperature=0), graph=graph, verbose=True, model_name="gpt-3.5-turbo"
 )
 ```
-
 
 ```python
 response = chain.run("Is Baldur's Gate 3 available on PS5?")
@@ -301,12 +283,11 @@ Full Context:
 I'm sorry, but I don't have the information to answer your question.
 ```
 
-The generated Cypher query looks fine, but we didn't receive any information in response. This illustrates a common challenge when working with LLMs - the misalignment between how users phrase queries and how data is stored. In this case, the difference between user perception and the actual data storage can cause mismatches. Prompt refinement, the process of honing the model's prompts to better grasp these distinctions, is an efficient solution that tackles this issue. Through prompt refinement, the model gains increased proficiency in generating precise and pertinent queries, leading to the successful retrieval of the desired data.
+生成的Cypher查询看起来很好，但我们没有收到任何信息作为响应。这说明了与LLM工作时常见的挑战——用户提出查询的方式与数据存储方式之间的不一致。在这种情况下，用户的认知与实际数据存储之间的差异可能会导致不匹配。提示优化，即精细化模型提示以更好地理解这些差异的过程，是解决此问题的有效方案。通过提示优化，模型在生成准确和相关查询方面的能力得到了提高，从而成功检索所需的数据。
 
-### Prompt refinement
+### 提示优化
 
-To address this, we can adjust the initial Cypher prompt of the QA chain. This involves adding guidance to the LLM on how users can refer to specific platforms, such as PS5 in our case. We achieve this using the LangChain [PromptTemplate](/docs/how_to#prompt-templates), creating a modified initial prompt. This modified prompt is then supplied as an argument to our refined Memgraph-LangChain instance.
-
+为了解决这个问题，我们可以调整QA链的初始Cypher提示。这涉及到为LLM添加指导，以便用户可以引用特定的平台，例如在我们的案例中是PS5。我们通过使用LangChain [PromptTemplate](/docs/how_to#prompt-templates) 来实现这一点，创建一个修改过的初始提示。然后将这个修改后的提示作为参数提供给我们优化后的Memgraph-LangChain实例。
 
 ```python
 CYPHER_GENERATION_TEMPLATE = """
@@ -330,7 +311,6 @@ CYPHER_GENERATION_PROMPT = PromptTemplate(
 )
 ```
 
-
 ```python
 chain = GraphCypherQAChain.from_llm(
     ChatOpenAI(temperature=0),
@@ -340,7 +320,6 @@ chain = GraphCypherQAChain.from_llm(
     model_name="gpt-3.5-turbo",
 )
 ```
-
 
 ```python
 response = chain.run("Is Baldur's Gate 3 available on PS5?")
@@ -359,6 +338,6 @@ Full Context:
 Yes, Baldur's Gate 3 is available on PlayStation 5.
 ```
 
-Now, with the revised initial Cypher prompt that includes guidance on platform naming, we are obtaining accurate and relevant results that align more closely with user queries. 
+现在，通过修订后的初始Cypher提示，包括关于平台命名的指导，我们获得了更准确和相关的结果，更加符合用户查询。
 
-This approach allows for further improvement of your QA chain. You can effortlessly integrate extra prompt refinement data into your chain, thereby enhancing the overall user experience of your app.
+这种方法可以进一步改善您的QA链。您可以轻松地将额外的提示优化数据集成到您的链中，从而增强应用程序的整体用户体验。

@@ -1,27 +1,25 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/vsdx.ipynb
 ---
+
 # Vsdx
 
-> A [visio file](https://fr.wikipedia.org/wiki/Microsoft_Visio) (with extension .vsdx) is associated with Microsoft Visio, a diagram creation software. It stores information about the structure, layout, and graphical elements of a diagram. This format facilitates the creation and sharing of visualizations in areas such as business, engineering, and computer science.
+> 一个 [visio 文件](https://fr.wikipedia.org/wiki/Microsoft_Visio)（扩展名为 .vsdx）与 Microsoft Visio 相关，这是一款图表创建软件。它存储有关图表的结构、布局和图形元素的信息。这种格式便于在商业、工程和计算机科学等领域创建和共享可视化内容。
 
-A Visio file can contain multiple pages. Some of them may serve as the background for others, and this can occur across multiple layers. This **loader** extracts the textual content from each page and its associated pages, enabling the extraction of all visible text from each page, similar to what an OCR algorithm would do.
+Visio 文件可以包含多个页面。其中一些页面可能作为其他页面的背景，这可以发生在多个层次之间。这个 **loader** 从每个页面及其相关页面中提取文本内容，使得可以从每个页面中提取所有可见文本，类似于 OCR 算法的工作原理。
 
-**WARNING** : Only Visio files with the **.vsdx** extension are compatible with this loader. Files with extensions such as .vsd, ... are not compatible because they cannot be converted to compressed XML.
-
+**警告**：只有扩展名为 **.vsdx** 的 Visio 文件与此 loader 兼容。扩展名为 .vsd 等文件不兼容，因为它们无法转换为压缩 XML。
 
 ```python
 from langchain_community.document_loaders import VsdxLoader
 ```
-
 
 ```python
 loader = VsdxLoader(file_path="./example_data/fake.vsdx")
 documents = loader.load()
 ```
 
-**Display loaded documents**
-
+**显示加载的文档**
 
 ```python
 for i, doc in enumerate(documents):
@@ -420,7 +418,7 @@ This diagramm is a base of many pages in this file. But it is editable in file \
 Only connectors on this page. This is the CoNNeCtor page
 ```
 
-## Related
+## 相关
 
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

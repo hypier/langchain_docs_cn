@@ -1,15 +1,15 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/symblai_nebula.ipynb
 ---
+
 # Nebula (Symbl.ai)
-[Nebula](https://symbl.ai/nebula/) is a large language model (LLM) built by [Symbl.ai](https://symbl.ai). It is trained to perform generative tasks on human conversations. Nebula excels at modeling the nuanced details of a conversation and performing tasks on the conversation.
+[Nebula](https://symbl.ai/nebula/) 是由 [Symbl.ai](https://symbl.ai) 构建的大型语言模型 (LLM)。它经过训练，能够在与人类对话中执行生成性任务。Nebula 擅长建模对话的细微细节并在对话中执行任务。
 
-Nebula documentation: https://docs.symbl.ai/docs/nebula-llm
+Nebula 文档: https://docs.symbl.ai/docs/nebula-llm
 
-This example goes over how to use LangChain to interact with the [Nebula platform](https://docs.symbl.ai/docs/nebula-llm).
+本示例介绍如何使用 LangChain 与 [Nebula 平台](https://docs.symbl.ai/docs/nebula-llm) 进行交互。
 
-Make sure you have API Key with you. If you don't have one please [request one](https://info.symbl.ai/Nebula_Private_Beta.html).
-
+确保您手中有 API 密钥。如果没有，请 [申请一个](https://info.symbl.ai/Nebula_Private_Beta.html)。
 
 ```python
 from langchain_community.llms.symblai_nebula import Nebula
@@ -17,8 +17,7 @@ from langchain_community.llms.symblai_nebula import Nebula
 llm = Nebula(nebula_api_key="<your_api_key>")
 ```
 
-Use a conversation transcript and instruction to construct a prompt.
-
+使用对话记录和指令构建提示。
 
 ```python
 from langchain.chains import LLMChain
@@ -43,8 +42,7 @@ llm_chain = LLMChain(prompt=prompt, llm=llm)
 llm_chain.run(instruction=instruction, conversation=conversation)
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

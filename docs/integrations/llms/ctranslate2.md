@@ -1,22 +1,23 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/ctranslate2.ipynb
 ---
+
 # CTranslate2
 
-**CTranslate2** is a C++ and Python library for efficient inference with Transformer models.
+**CTranslate2** 是一个用于高效推理 Transformer 模型的 C++ 和 Python 库。
 
-The project implements a custom runtime that applies many performance optimization techniques such as weights quantization, layers fusion, batch reordering, etc., to accelerate and reduce the memory usage of Transformer models on CPU and GPU.
+该项目实现了一个自定义运行时，应用了许多性能优化技术，如权重量化、层融合、批次重排序等，以加速和减少 Transformer 模型在 CPU 和 GPU 上的内存使用。
 
-Full list of features and supported models is included in the [project's repository](https://opennmt.net/CTranslate2/guides/transformers.html). To start, please check out the official [quickstart guide](https://opennmt.net/CTranslate2/quickstart.html).
+完整的功能和支持的模型列表包含在 [项目的仓库](https://opennmt.net/CTranslate2/guides/transformers.html) 中。要开始使用，请查看官方 [快速入门指南](https://opennmt.net/CTranslate2/quickstart.html)。
 
-To use, you should have `ctranslate2` python package installed.
+使用前，请确保已安装 `ctranslate2` python 包。
 
 
 ```python
 %pip install --upgrade --quiet  ctranslate2
 ```
 
-To use a Hugging Face model with CTranslate2, it has to be first converted to CTranslate2 format using the `ct2-transformers-converter` command. The command takes the pretrained model name and the path to the converted model directory.
+要使用 Hugging Face 模型与 CTranslate2，必须首先使用 `ct2-transformers-converter` 命令将其转换为 CTranslate2 格式。该命令接受预训练模型名称和转换后模型目录的路径。
 
 
 ```python
@@ -42,7 +43,7 @@ llm = CTranslate2(
 )
 ```
 
-## Single call
+## 单次调用
 
 
 ```python
@@ -61,8 +62,8 @@ print(
 He presented me with plausible evidence for the existence of unicorns: 1) they are mentioned in ancient texts; and, more importantly to him (and not so much as a matter that would convince most people), he had seen one.
 I was skeptical but I didn't want my friend upset by his belief being dismissed outright without any consideration or argument on its behalf whatsoever - which is why we were having this conversation at all! So instead asked if there might be some other explanation besides "unicorning"... maybe it could have been an ostrich? Or perhaps just another horse-like animal like zebras do exist afterall even though no humans alive today has ever witnesses them firsthand either due lacking accessibility/availability etc.. But then again those animals aren’ t exactly known around here anyway…” And thus began our discussion about whether these creatures actually existed anywhere else outside Earth itself where only few scientists ventured before us nowadays because technology allows exploration beyond borders once thought impossible centuries ago when travel meant walking everywhere yourself until reaching destination point A->B via footsteps alone unless someone helped guide along way through woods full darkness nighttime hours
 ```
-## Multiple calls:
 
+## 多次调用：
 
 ```python
 print(
@@ -75,7 +76,8 @@ print(
 ```output
 generations=[[Generation(text='The list of top romantic songs:\n1. “I Will Always Love You” by Whitney Houston\n2. “Can’t Help Falling in Love” by Elvis Presley\n3. “Unchained Melody” by The Righteous Brothers\n4. “I Will Always Love You” by Dolly Parton\n5. “I Will Always Love You” by Whitney Houston\n6. “I Will Always Love You” by Dolly Parton\n7. “I Will Always Love You” by The Beatles\n8. “I Will Always Love You” by The Rol', generation_info=None)], [Generation(text='The list of top rap songs:\n1. “God’s Plan” by Drake\n2. “Rockstar” by Post Malone\n3. “Bad and Boujee” by Migos\n4. “Humble” by Kendrick Lamar\n5. “Bodak Yellow” by Cardi B\n6. “I’m the One” by DJ Khaled\n7. “Motorsport” by Migos\n8. “No Limit” by G-Eazy\n9. “Bounce Back” by Big Sean\n10. “', generation_info=None)]] llm_output=None run=[RunInfo(run_id=UUID('628e0491-a310-4d12-81db-6f2c5309d5c2')), RunInfo(run_id=UUID('f88fdbcd-c1f6-4f13-b575-810b80ecbaaf'))]
 ```
-## Integrate the model in an LLMChain
+
+## 在 LLMChain 中集成模型
 
 
 ```python
@@ -133,7 +135,7 @@ Comment: @JoeZ. I'm not sure if this is a valid question, but I'm sure it's a fu
 Comment: @JoeZ. I'm not sure if this is a valid question, but I'm sure it's a fun one.
 ```
 
-## Related
+## 相关
 
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

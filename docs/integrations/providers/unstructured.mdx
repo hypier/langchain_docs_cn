@@ -1,58 +1,42 @@
 # Unstructured
 
->The `unstructured` package from
-[Unstructured.IO](https://www.unstructured.io/) extracts clean text from raw source documents like
-PDFs and Word documents.
-This page covers how to use the [`unstructured`](https://github.com/Unstructured-IO/unstructured)
-ecosystem within LangChain.
+>`unstructured` 包来自 [Unstructured.IO](https://www.unstructured.io/)，可以从 PDF 和 Word 文档等原始源文件中提取干净的文本。  
+本页介绍如何在 LangChain 中使用 [`unstructured`](https://github.com/Unstructured-IO/unstructured) 生态系统。
 
-## Installation and Setup
+## 安装和设置
 
-If you are using a loader that runs locally, use the following steps to get `unstructured` and its
-dependencies running.
+如果您使用的是本地运行的加载器，请按照以下步骤获取 `unstructured` 及其依赖项的运行。
 
-- For the smallest installation footprint and to take advantage of features not available in the
-  open-source `unstructured` package, install the Python SDK with `pip install unstructured-client`
-  along with `pip install langchain-unstructured` to use the `UnstructuredLoader` and partition
-  remotely against the Unstructured API. This loader lives
-  in a LangChain partner repo instead of the `langchain-community` repo and you will need an
-  `api_key`, which you can generate a free key [here](https://unstructured.io/api-key/).
-    - Unstructured's documentation for the sdk can be found here:
+- 为了获得最小的安装占用并利用开源 `unstructured` 包中不可用的功能，请使用 `pip install unstructured-client` 安装 Python SDK，并使用 `pip install langchain-unstructured` 来使用 `UnstructuredLoader` 并通过 Unstructured API 进行远程分区。此加载器位于 LangChain 合作伙伴库中，而不是 `langchain-community` 库中，您需要一个 `api_key`，可以在 [这里](https://unstructured.io/api-key/) 生成免费的密钥。
+    - Unstructured 的 SDK 文档可以在这里找到：
       https://docs.unstructured.io/api-reference/api-services/sdk
 
-- To run everything locally, install the open-source python package with `pip install unstructured`
-  along with `pip install langchain-community` and use the same `UnstructuredLoader` as mentioned above.
-    - You can install document specific dependencies with extras, e.g. `pip install "unstructured[docx]"`.
-    - To install the dependencies for all document types, use `pip install "unstructured[all-docs]"`.
-- Install the following system dependencies if they are not already available on your system with e.g. `brew install` for Mac.
-  Depending on what document types you're parsing, you may not need all of these.
-    - `libmagic-dev` (filetype detection)
-    - `poppler-utils` (images and PDFs)
-    - `tesseract-ocr`(images and PDFs)
-    - `qpdf` (PDFs)
-    - `libreoffice` (MS Office docs)
-    - `pandoc` (EPUBs)
-- When running locally, Unstructured also recommends using Docker [by following this
-  guide](https://docs.unstructured.io/open-source/installation/docker-installation) to ensure all
-  system dependencies are installed correctly.
+- 要在本地运行所有内容，请使用 `pip install unstructured` 安装开源 Python 包，并使用 `pip install langchain-community`，并使用上述提到的相同 `UnstructuredLoader`。
+    - 您可以通过额外选项安装特定于文档的依赖项，例如 `pip install "unstructured[docx]"`。
+    - 要安装所有文档类型的依赖项，请使用 `pip install "unstructured[all-docs]"`。
+- 如果您的系统中尚未提供以下系统依赖项，请使用例如 `brew install` 对于 Mac 进行安装。根据您解析的文档类型，您可能不需要所有这些依赖项。
+    - `libmagic-dev`（文件类型检测）
+    - `poppler-utils`（图像和 PDF）
+    - `tesseract-ocr`（图像和 PDF）
+    - `qpdf`（PDF）
+    - `libreoffice`（MS Office 文档）
+    - `pandoc`（EPUB）
+- 在本地运行时，Unstructured 还建议使用 Docker [通过遵循此指南](https://docs.unstructured.io/open-source/installation/docker-installation) 确保所有系统依赖项正确安装。
 
-The Unstructured API requires API keys to make requests.
-You can request an API key [here](https://unstructured.io/api-key-hosted) and start using it today!
-Checkout the README [here](https://github.com/Unstructured-IO/unstructured-api) here to get started making API calls.
-We'd love to hear your feedback, let us know how it goes in our [community slack](https://join.slack.com/t/unstructuredw-kbe4326/shared_invite/zt-1x7cgo0pg-PTptXWylzPQF9xZolzCnwQ).
-And stay tuned for improvements to both quality and performance!
-Check out the instructions
-[here](https://github.com/Unstructured-IO/unstructured-api#dizzy-instructions-for-using-the-docker-image) if you'd like to self-host the Unstructured API or run it locally.
+Unstructured API 需要 API 密钥才能发出请求。
+您可以在 [这里](https://unstructured.io/api-key-hosted) 请求 API 密钥并立即开始使用！
+查看 README [这里](https://github.com/Unstructured-IO/unstructured-api) 以开始进行 API 调用。
+我们很想听到您的反馈，请在我们的 [社区 Slack](https://join.slack.com/t/unstructuredw-kbe4326/shared_invite/zt-1x7cgo0pg-PTptXWylzPQF9xZolzCnwQ) 中告诉我们您的使用情况。
+并请关注质量和性能的改进！
+如果您希望自托管 Unstructured API 或在本地运行，请查看 [这里](https://github.com/Unstructured-IO/unstructured-api#dizzy-instructions-for-using-the-docker-image) 的说明。
 
+## 数据加载器
 
-## Data Loaders
-
-The primary usage of `Unstructured` is in data loaders.
+`Unstructured` 的主要用途是在数据加载器中。
 
 ### UnstructuredLoader
 
-See a [usage example](/docs/integrations/document_loaders/unstructured_file) to see how you can use
-this loader for both partitioning locally and remotely with the serverless Unstructured API.
+查看[使用示例](/docs/integrations/document_loaders/unstructured_file)，了解如何使用此加载器进行本地和远程的无服务器 Unstructured API 分区。
 
 ```python
 from langchain_unstructured import UnstructuredLoader
@@ -60,7 +44,7 @@ from langchain_unstructured import UnstructuredLoader
 
 ### UnstructuredCHMLoader
 
-`CHM` means `Microsoft Compiled HTML Help`.
+`CHM` 指的是 `Microsoft Compiled HTML Help`。
 
 ```python
 from langchain_community.document_loaders import UnstructuredCHMLoader
@@ -68,11 +52,9 @@ from langchain_community.document_loaders import UnstructuredCHMLoader
 
 ### UnstructuredCSVLoader
 
-A `comma-separated values` (`CSV`) file is a delimited text file that uses 
-a comma to separate values. Each line of the file is a data record. 
-Each record consists of one or more fields, separated by commas.
+`逗号分隔值`（`CSV`）文件是一种使用逗号分隔值的定界文本文件。文件的每一行都是一个数据记录。每个记录由一个或多个字段组成，这些字段由逗号分隔。
 
-See a [usage example](/docs/integrations/document_loaders/csv#unstructuredcsvloader).
+请参见[使用示例](/docs/integrations/document_loaders/csv#unstructuredcsvloader)。
 
 ```python
 from langchain_community.document_loaders import UnstructuredCSVLoader
@@ -80,7 +62,7 @@ from langchain_community.document_loaders import UnstructuredCSVLoader
 
 ### UnstructuredEmailLoader
 
-See a [usage example](/docs/integrations/document_loaders/email).
+查看[使用示例](/docs/integrations/document_loaders/email)。
 
 ```python
 from langchain_community.document_loaders import UnstructuredEmailLoader
@@ -88,12 +70,9 @@ from langchain_community.document_loaders import UnstructuredEmailLoader
 
 ### UnstructuredEPubLoader
 
-[EPUB](https://en.wikipedia.org/wiki/EPUB) is an `e-book file format` that uses 
-the “.epub” file extension. The term is short for electronic publication and 
-is sometimes styled `ePub`. `EPUB` is supported by many e-readers, and compatible 
-software is available for most smartphones, tablets, and computers.
+[EPUB](https://en.wikipedia.org/wiki/EPUB) 是一种使用“.epub”文件扩展名的 `电子书文件格式`。该术语是电子出版物的缩写，有时被称为 `ePub`。`EPUB` 得到了许多电子阅读器的支持，兼容的软件可在大多数智能手机、平板电脑和计算机上使用。
 
-See a [usage example](/docs/integrations/document_loaders/epub).
+请参见 [使用示例](/docs/integrations/document_loaders/epub)。
 
 ```python
 from langchain_community.document_loaders import UnstructuredEPubLoader
@@ -101,7 +80,7 @@ from langchain_community.document_loaders import UnstructuredEPubLoader
 
 ### UnstructuredExcelLoader
 
-See a [usage example](/docs/integrations/document_loaders/microsoft_excel).
+请参见 [使用示例](/docs/integrations/document_loaders/microsoft_excel)。
 
 ```python
 from langchain_community.document_loaders import UnstructuredExcelLoader
@@ -109,7 +88,7 @@ from langchain_community.document_loaders import UnstructuredExcelLoader
 
 ### UnstructuredFileIOLoader
 
-See a [usage example](/docs/integrations/document_loaders/google_drive#passing-in-optional-file-loaders).
+查看 [用法示例](/docs/integrations/document_loaders/google_drive#passing-in-optional-file-loaders)。
 
 ```python
 from langchain_community.document_loaders import UnstructuredFileIOLoader
@@ -117,7 +96,7 @@ from langchain_community.document_loaders import UnstructuredFileIOLoader
 
 ### UnstructuredHTMLLoader
 
-See a [usage example](/docs/how_to/document_loader_html).
+查看[用法示例](/docs/how_to/document_loader_html)。
 
 ```python
 from langchain_community.document_loaders import UnstructuredHTMLLoader
@@ -125,7 +104,7 @@ from langchain_community.document_loaders import UnstructuredHTMLLoader
 
 ### UnstructuredImageLoader
 
-See a [usage example](/docs/integrations/document_loaders/image).
+请参阅[用法示例](/docs/integrations/document_loaders/image)。
 
 ```python
 from langchain_community.document_loaders import UnstructuredImageLoader
@@ -133,7 +112,7 @@ from langchain_community.document_loaders import UnstructuredImageLoader
 
 ### UnstructuredMarkdownLoader
 
-See a [usage example](/docs/integrations/vectorstores/starrocks).
+查看 [用法示例](/docs/integrations/vectorstores/starrocks)。
 
 ```python
 from langchain_community.document_loaders import UnstructuredMarkdownLoader
@@ -141,12 +120,9 @@ from langchain_community.document_loaders import UnstructuredMarkdownLoader
 
 ### UnstructuredODTLoader
 
-The `Open Document Format for Office Applications (ODF)`, also known as `OpenDocument`, 
-is an open file format for word processing documents, spreadsheets, presentations 
-and graphics and using ZIP-compressed XML files. It was developed with the aim of 
-providing an open, XML-based file format specification for office applications.
+`Open Document Format for Office Applications (ODF)`，也称为`OpenDocument`，是一种用于文字处理文档、电子表格、演示文稿和图形的开放文件格式，采用ZIP压缩的XML文件。它的开发旨在为办公应用程序提供一种开放的、基于XML的文件格式规范。
 
-See a [usage example](/docs/integrations/document_loaders/odt).
+请参见[使用示例](/docs/integrations/document_loaders/odt)。
 
 ```python
 from langchain_community.document_loaders import UnstructuredODTLoader
@@ -154,9 +130,9 @@ from langchain_community.document_loaders import UnstructuredODTLoader
 
 ### UnstructuredOrgModeLoader
 
-An [Org Mode](https://en.wikipedia.org/wiki/Org-mode) document is a document editing, formatting, and organizing mode, designed for notes, planning, and authoring within the free software text editor Emacs.
+一个 [Org Mode](https://en.wikipedia.org/wiki/Org-mode) 文档是一个文档编辑、格式化和组织的模式，旨在为笔记、规划和在自由软件文本编辑器 Emacs 中撰写提供支持。
 
-See a [usage example](/docs/integrations/document_loaders/org_mode).
+请参见 [用法示例](/docs/integrations/document_loaders/org_mode)。
 
 ```python
 from langchain_community.document_loaders import UnstructuredOrgModeLoader
@@ -164,7 +140,7 @@ from langchain_community.document_loaders import UnstructuredOrgModeLoader
 
 ### UnstructuredPDFLoader
 
-See a [usage example](/docs/how_to/document_loader_pdf#using-unstructured).
+查看[使用示例](/docs/how_to/document_loader_pdf#using-unstructured)。
 
 ```python
 from langchain_community.document_loaders import UnstructuredPDFLoader
@@ -172,7 +148,7 @@ from langchain_community.document_loaders import UnstructuredPDFLoader
 
 ### UnstructuredPowerPointLoader
 
-See a [usage example](/docs/integrations/document_loaders/microsoft_powerpoint).
+查看 [使用示例](/docs/integrations/document_loaders/microsoft_powerpoint)。
 
 ```python
 from langchain_community.document_loaders import UnstructuredPowerPointLoader
@@ -180,10 +156,9 @@ from langchain_community.document_loaders import UnstructuredPowerPointLoader
 
 ### UnstructuredRSTLoader
 
-A `reStructured Text` (`RST`) file is a file format for textual data 
-used primarily in the Python programming language community for technical documentation.
+`reStructured Text` (`RST`) 文件是一种用于文本数据的文件格式，主要在 Python 编程语言社区中用于技术文档。
 
-See a [usage example](/docs/integrations/document_loaders/rst).
+请参见 [使用示例](/docs/integrations/document_loaders/rst)。
 
 ```python
 from langchain_community.document_loaders import UnstructuredRSTLoader
@@ -191,7 +166,7 @@ from langchain_community.document_loaders import UnstructuredRSTLoader
 
 ### UnstructuredRTFLoader
 
-See a usage example in the API documentation.
+在API文档中查看用法示例。
 
 ```python
 from langchain_community.document_loaders import UnstructuredRTFLoader
@@ -199,10 +174,9 @@ from langchain_community.document_loaders import UnstructuredRTFLoader
 
 ### UnstructuredTSVLoader
 
-A `tab-separated values` (`TSV`) file is a simple, text-based file format for storing tabular data.
-Records are separated by newlines, and values within a record are separated by tab characters.
+`制表符分隔值`（`TSV`）文件是一种简单的基于文本的文件格式，用于存储表格数据。记录由换行符分隔，记录中的值由制表符分隔。
 
-See a [usage example](/docs/integrations/document_loaders/tsv).
+请参见 [使用示例](/docs/integrations/document_loaders/tsv)。
 
 ```python
 from langchain_community.document_loaders import UnstructuredTSVLoader
@@ -210,7 +184,7 @@ from langchain_community.document_loaders import UnstructuredTSVLoader
 
 ### UnstructuredURLLoader
 
-See a [usage example](/docs/integrations/document_loaders/url).
+查看 [用法示例](/docs/integrations/document_loaders/url)。
 
 ```python
 from langchain_community.document_loaders import UnstructuredURLLoader
@@ -218,7 +192,7 @@ from langchain_community.document_loaders import UnstructuredURLLoader
 
 ### UnstructuredWordDocumentLoader
 
-See a [usage example](/docs/integrations/document_loaders/microsoft_word#using-unstructured).
+查看[使用示例](/docs/integrations/document_loaders/microsoft_word#using-unstructured)。
 
 ```python
 from langchain_community.document_loaders import UnstructuredWordDocumentLoader
@@ -226,9 +200,8 @@ from langchain_community.document_loaders import UnstructuredWordDocumentLoader
 
 ### UnstructuredXMLLoader
 
-See a [usage example](/docs/integrations/document_loaders/xml).
+查看[使用示例](/docs/integrations/document_loaders/xml)。
 
 ```python
 from langchain_community.document_loaders import UnstructuredXMLLoader
 ```
-

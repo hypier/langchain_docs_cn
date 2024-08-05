@@ -1,29 +1,27 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/cohere-reranker.ipynb
 ---
-# Cohere reranker
 
->[Cohere](https://cohere.ai/about) is a Canadian startup that provides natural language processing models that help companies improve human-machine interactions.
+# Cohere 重新排序器
 
-This notebook shows how to use [Cohere's rerank endpoint](https://docs.cohere.com/docs/reranking) in a retriever. This builds on top of ideas in the [ContextualCompressionRetriever](/docs/how_to/contextual_compression).
+>[Cohere](https://cohere.ai/about) 是一家加拿大初创公司，提供自然语言处理模型，帮助公司改善人机交互。
 
+本笔记本展示了如何在检索器中使用 [Cohere 的重新排序端点](https://docs.cohere.com/docs/reranking)。这基于 [ContextualCompressionRetriever](/docs/how_to/contextual_compression) 中的概念。
 
 ```python
 %pip install --upgrade --quiet  cohere
 ```
 
-
 ```python
 %pip install --upgrade --quiet  faiss
 
-# OR  (depending on Python version)
+# 或者  (根据 Python 版本)
 
 %pip install --upgrade --quiet  faiss-cpu
 ```
 
-
 ```python
-# get a new token: https://dashboard.cohere.ai/
+# 获取新令牌: https://dashboard.cohere.ai/
 
 import getpass
 import os
@@ -31,10 +29,8 @@ import os
 os.environ["COHERE_API_KEY"] = getpass.getpass("Cohere API Key:")
 ```
 
-
 ```python
-# Helper function for printing docs
-
+# 打印文档的辅助函数
 
 def pretty_print_docs(docs):
     print(
@@ -44,9 +40,8 @@ def pretty_print_docs(docs):
     )
 ```
 
-## Set up the base vector store retriever
-Let's start by initializing a simple vector store retriever and storing the 2023 State of the Union speech (in chunks). We can set up the retriever to retrieve a high number (20) of docs.
-
+## 设置基础向量存储检索器
+让我们开始初始化一个简单的向量存储检索器，并存储2023年国情咨文演讲（分块）。我们可以设置检索器以检索大量文档（20）。
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -268,10 +263,10 @@ With a duty to one another to the American people to the Constitution.
 
 And with an unwavering resolve that freedom will always triumph over tyranny.
 ```
-## Doing reranking with CohereRerank
-Now let's wrap our base retriever with a `ContextualCompressionRetriever`. We'll add an `CohereRerank`, uses the Cohere rerank endpoint to rerank the returned results.
-Do note that it is mandatory to specify the model name in CohereRerank!
 
+## 使用 CohereRerank 进行重排序
+现在让我们用 `ContextualCompressionRetriever` 包装我们的基础检索器。我们将添加一个 `CohereRerank`，它使用 Cohere 的重排序端点对返回的结果进行重排序。
+请注意，必须在 CohereRerank 中指定模型名称！
 
 ```python
 from langchain.retrievers.contextual_compression import ContextualCompressionRetriever
@@ -290,13 +285,11 @@ compressed_docs = compression_retriever.invoke(
 pretty_print_docs(compressed_docs)
 ```
 
-You can of course use this retriever within a QA pipeline
-
+当然，你可以在 QA 流水线中使用这个检索器
 
 ```python
 from langchain.chains import RetrievalQA
 ```
-
 
 ```python
 chain = RetrievalQA.from_chain_type(
@@ -304,21 +297,16 @@ chain = RetrievalQA.from_chain_type(
 )
 ```
 
-
 ```python
 chain({"query": query})
 ```
-
-
 
 ```output
 {'query': 'What did the president say about Ketanji Brown Jackson',
  'result': " The president speaks highly of Ketanji Brown Jackson, stating that she is one of the nation's top legal minds, and will continue the legacy of excellence of Justice Breyer. The president also mentions that he worked with her family and that she comes from a family of public school educators and police officers. Since her nomination, she has received support from various groups, including the Fraternal Order of Police and judges from both major political parties. \n\nWould you like me to extract another sentence from the provided text? "}
 ```
 
+## 相关
 
-
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

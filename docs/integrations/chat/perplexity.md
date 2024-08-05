@@ -2,9 +2,10 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/perplexity.ipynb
 sidebar_label: Perplexity
 ---
+
 # ChatPerplexity
 
-This notebook covers how to get started with Perplexity chat models.
+本笔记本介绍如何开始使用 Perplexity 聊天模型。
 
 
 ```python
@@ -12,13 +13,13 @@ from langchain_community.chat_models import ChatPerplexity
 from langchain_core.prompts import ChatPromptTemplate
 ```
 
-The code provided assumes that your PPLX_API_KEY is set in your environment variables. If you would like to manually specify your API key and also choose a different model, you can use the following code:
+提供的代码假设您的 PPLX_API_KEY 已在环境变量中设置。如果您想手动指定您的 API 密钥并选择不同的模型，可以使用以下代码：
 
 ```python
 chat = ChatPerplexity(temperature=0, pplx_api_key="YOUR_API_KEY", model="llama-3-sonar-small-32k-online")
 ```
 
-You can check a list of available models [here](https://docs.perplexity.ai/docs/model-cards). For reproducibility, we can set the API key dynamically by taking it as an input in this notebook.
+您可以在 [这里](https://docs.perplexity.ai/docs/model-cards) 查看可用模型的列表。为了可重复性，我们可以通过在本笔记本中将其作为输入动态设置 API 密钥。
 
 
 ```python
@@ -52,7 +53,7 @@ response.content
 ```
 
 
-You can format and structure the prompts like you would typically. In the following example, we ask the model to tell us a joke about cats.
+您可以像往常一样格式化和构建提示。在以下示例中，我们要求模型告诉我们一个关于猫的笑话。
 
 
 ```python
@@ -69,14 +70,12 @@ response.content
 'Here\'s a joke about cats:\n\nWhy did the cat want math lessons from a mermaid?\n\nBecause it couldn\'t find its "core purpose" in life!\n\nRemember, cats are unique and fascinating creatures, and each one has its own special traits and abilities. While some may see them as mysterious or even a bit aloof, they are still beloved pets that bring joy and companionship to their owners. So, if your cat ever seeks guidance from a mermaid, just remember that they are on their own journey to self-discovery!\n'
 ```
 
-
-## `ChatPerplexity` also supports streaming functionality:
-
+## `ChatPerplexity` 还支持流式功能：
 
 ```python
 chat = ChatPerplexity(temperature=0.7, model="llama-3-sonar-small-32k-online")
 prompt = ChatPromptTemplate.from_messages(
-    [("human", "Give me a list of famous tourist attractions in Pakistan")]
+    [("human", "给我一份巴基斯坦著名旅游景点的列表")]
 )
 chain = prompt | chat
 for chunk in chain.stream({}):
@@ -99,7 +98,7 @@ Here is a list of some famous tourist attractions in Pakistan:
 These attractions showcase the rich history, diverse culture, and natural beauty of Pakistan, making them popular destinations for both local and international tourists.
 ```
 
-## Related
+## 相关
 
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

@@ -1,32 +1,32 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/tutorials/agents.ipynb
-keywords: [agent, agents]
+keywords: [代理, 代理人]
 ---
-# Build an Agent
 
-:::info Prerequisites
+# 构建一个代理
 
-This guide assumes familiarity with the following concepts:
+:::info 先决条件
 
-- [Chat Models](/docs/concepts/#chat-models)
-- [Tools](/docs/concepts/#tools)
-- [Agents](/docs/concepts/#agents)
+本指南假设您熟悉以下概念：
+
+- [聊天模型](/docs/concepts/#chat-models)
+- [工具](/docs/concepts/#tools)
+- [代理](/docs/concepts/#agents)
 
 :::
 
-By themselves, language models can't take actions - they just output text.
-A big use case for LangChain is creating **agents**.
-Agents are systems that use LLMs as reasoning engines to determine which actions to take and the inputs to pass them.
-After executing actions, the results can be fed back into the LLM to determine whether more actions are needed, or whether it is okay to finish.
+仅凭语言模型无法执行操作 - 它们只输出文本。
+LangChain 的一个重要用例是创建 **代理**。
+代理是使用 LLM 作为推理引擎的系统，以确定采取哪些行动以及传递给它们的输入。
+在执行操作后，结果可以反馈到 LLM 中，以确定是否需要更多操作，或者是否可以结束。
 
-In this tutorial we will build an agent that can interact with a search engine. You will be able to ask this agent questions, watch it call the search tool, and have conversations with it.
+在本教程中，我们将构建一个可以与搜索引擎互动的代理。您将能够向该代理提问，观察它调用搜索工具，并与它进行对话。
 
-## End-to-end agent
+## 端到端代理
 
-The code snippet below represents a fully functional agent that uses an LLM to decide which tools to use. It is equipped with a generic search tool. It has conversational memory - meaning that it can be used as a multi-turn chatbot.
+下面的代码片段表示一个功能齐全的代理，它使用 LLM 来决定使用哪些工具。它配备了一个通用搜索工具。它具有对话记忆 - 这意味着它可以作为一个多轮聊天机器人使用。
 
-In the rest of the guide, we will walk through the individual components and what each part does - but if you want to just grab some code and get started, feel free to use this!
-
+在本指南的其余部分，我们将逐步介绍各个组件及其功能 - 但是如果您只想获取一些代码并开始使用，可以随意使用这个！
 
 ```python
 # Import relevant functionality
@@ -67,39 +67,39 @@ for chunk in agent_executor.stream(
 {'agent': {'messages': [AIMessage(content='Based on the search results, the current weather in San Francisco is:\n\nTemperature: 53.6°F (12°C)\nConditions: Misty\nWind: 5.6 mph (9 kph) from the Northwest\nHumidity: 88%\nCloud Cover: 100% \n\nThe results provide detailed information like wind chill, heat index, visibility and more. It looks like a typical cool, foggy morning in San Francisco. Let me know if you need any other details about the weather where you live!', response_metadata={'id': 'msg_019WGLbaojuNdbCnqac7zaGW', 'model': 'claude-3-sonnet-20240229', 'stop_reason': 'end_turn', 'stop_sequence': None, 'usage': {'input_tokens': 1035, 'output_tokens': 120}}, id='run-1bb68bf3-b212-4ef4-8a31-10c830421c78-0', usage_metadata={'input_tokens': 1035, 'output_tokens': 120, 'total_tokens': 1155})]}}
 ----
 ```
-## Setup
+
+## 设置
 
 ### Jupyter Notebook
 
-This guide (and most of the other guides in the documentation) uses [Jupyter notebooks](https://jupyter.org/) and assumes the reader is as well. Jupyter notebooks are perfect interactive environments for learning how to work with LLM systems because oftentimes things can go wrong (unexpected output, API down, etc), and observing these cases is a great way to better understand building with LLMs.
+本指南（以及文档中的大多数其他指南）使用 [Jupyter notebooks](https://jupyter.org/) 并假设读者也使用它。Jupyter notebooks 是学习如何使用 LLM 系统的完美交互环境，因为在操作过程中常常会出现问题（意外输出、API 停止服务等），观察这些情况是更好地理解 LLM 构建的好方法。
 
-This and other tutorials are perhaps most conveniently run in a Jupyter notebook. See [here](https://jupyter.org/install) for instructions on how to install.
+本教程和其他教程最方便的运行方式是使用 Jupyter notebook。有关安装的说明，请参见 [这里](https://jupyter.org/install)。
 
-### Installation
+### 安装
 
-To install LangChain run:
-
+要安装 LangChain，请运行：
 
 ```python
 %pip install -U langchain-community langgraph langchain-anthropic tavily-python
 ```
 
-For more details, see our [Installation guide](/docs/how_to/installation).
+有关更多详细信息，请参阅我们的 [安装指南](/docs/how_to/installation)。
 
 ### LangSmith
 
-Many of the applications you build with LangChain will contain multiple steps with multiple invocations of LLM calls.
-As these applications get more and more complex, it becomes crucial to be able to inspect what exactly is going on inside your chain or agent.
-The best way to do this is with [LangSmith](https://smith.langchain.com).
+您使用 LangChain 构建的许多应用程序将包含多个步骤和多次调用 LLM。
+随着这些应用程序变得越来越复杂，能够检查您的链或代理内部究竟发生了什么变得至关重要。
+最好的方法是使用 [LangSmith](https://smith.langchain.com)。
 
-After you sign up at the link above, make sure to set your environment variables to start logging traces:
+在您通过上述链接注册后，请确保设置您的环境变量以开始记录追踪：
 
 ```shell
 export LANGCHAIN_TRACING_V2="true"
 export LANGCHAIN_API_KEY="..."
 ```
 
-Or, if in a notebook, you can set them with:
+或者，如果在笔记本中，您可以通过以下方式设置它们：
 
 ```python
 import getpass
@@ -111,14 +111,14 @@ os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 
 ### Tavily
 
-We will be using [Tavily](/docs/integrations/tools/tavily_search) (a search engine) as a tool.
-In order to use it, you will need to get and set an API key:
+我们将使用 [Tavily](/docs/integrations/tools/tavily_search)（一个搜索引擎）作为工具。  
+为了使用它，您需要获取并设置 API 密钥：
 
 ```bash
 export TAVILY_API_KEY="..."
 ```
 
-Or, if in a notebook, you can set it with:
+或者，如果在笔记本中，您可以使用以下代码设置：
 
 ```python
 import getpass
@@ -127,11 +127,9 @@ import os
 os.environ["TAVILY_API_KEY"] = getpass.getpass()
 ```
 
-## Define tools
+## 定义工具
 
-We first need to create the tools we want to use. Our main tool of choice will be [Tavily](/docs/integrations/tools/tavily_search) - a search engine. We have a built-in tool in LangChain to easily use Tavily search engine as tool.
-
-
+我们首先需要创建我们想要使用的工具。我们主要选择的工具是 [Tavily](/docs/integrations/tools/tavily_search) - 一个搜索引擎。我们在 LangChain 中有一个内置工具，可以轻松使用 Tavily 搜索引擎作为工具。
 
 ```python
 from langchain_community.tools.tavily_search import TavilySearchResults
@@ -139,12 +137,10 @@ from langchain_community.tools.tavily_search import TavilySearchResults
 search = TavilySearchResults(max_results=2)
 search_results = search.invoke("what is the weather in SF")
 print(search_results)
-# If we want, we can create other tools.
-# Once we have all the tools we want, we can put them in a list that we will reference later.
+# 如果我们愿意，可以创建其他工具。
+# 一旦我们拥有了所有想要的工具，就可以将它们放在一个列表中，以便稍后引用。
 tools = [search]
 ```
-
-
 
 ```output
 [{'url': 'https://www.weatherapi.com/',
@@ -153,17 +149,15 @@ tools = [search]
   'content': 'Current Weather for Popular Cities . San Francisco, CA 58 ° F Partly Cloudy; Manhattan, NY warning 51 ° F Cloudy; Schiller Park, IL (60176) warning 51 ° F Fair; Boston, MA warning 41 ° F ...'}]
 ```
 
+## 使用语言模型
 
-## Using Language Models
-
-Next, let's learn how to use a language model by to call tools. LangChain supports many different language models that you can use interchangably - select the one you want to use below!
+接下来，让我们学习如何通过调用工具来使用语言模型。LangChain 支持许多不同的语言模型，您可以互换使用 - 请选择您想要使用的模型！
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
 <ChatModelTabs openaiParams={`model="gpt-4"`} />
 
-You can call the language model by passing in a list of messages. By default, the response is a `content` string.
-
+您可以通过传递消息列表来调用语言模型。默认情况下，响应是一个 `content` 字符串。
 
 ```python
 from langchain_core.messages import HumanMessage
@@ -172,22 +166,17 @@ response = model.invoke([HumanMessage(content="hi!")])
 response.content
 ```
 
-
-
 ```output
 'Hi there!'
 ```
 
-
-We can now see what it is like to enable this model to do tool calling. In order to enable that we use `.bind_tools` to give the language model knowledge of these tools
-
+我们现在可以看到如何使该模型能够进行工具调用。为了实现这一点，我们使用 `.bind_tools` 使语言模型了解这些工具。
 
 ```python
 model_with_tools = model.bind_tools(tools)
 ```
 
-We can now call the model. Let's first call it with a normal message, and see how it responds. We can look at both the `content` field as well as the `tool_calls` field.
-
+我们现在可以调用模型。让我们首先用普通消息调用它，看看它的响应。我们可以查看 `content` 字段和 `tool_calls` 字段。
 
 ```python
 response = model_with_tools.invoke([HumanMessage(content="Hi!")])
@@ -199,8 +188,7 @@ print(f"ToolCalls: {response.tool_calls}")
 ContentString: Hello!
 ToolCalls: []
 ```
-Now, let's try calling it with some input that would expect a tool to be called.
-
+现在，让我们尝试用一些期望调用工具的输入来调用它。
 
 ```python
 response = model_with_tools.invoke([HumanMessage(content="What's the weather in SF?")])
@@ -212,20 +200,18 @@ print(f"ToolCalls: {response.tool_calls}")
 ContentString: 
 ToolCalls: [{'name': 'tavily_search_results_json', 'args': {'query': 'weather san francisco'}, 'id': 'toolu_01VTP7DUvSfgtYxsq9x4EwMp'}]
 ```
-We can see that there's now no text content, but there is a tool call! It wants us to call the Tavily Search tool.
+我们可以看到现在没有文本内容，但有一个工具调用！它希望我们调用 Tavily Search 工具。
 
-This isn't calling that tool yet - it's just telling us to. In order to actually call it, we'll want to create our agent.
+这还没有真正调用那个工具 - 它只是告诉我们去调用。为了真正调用它，我们需要创建我们的代理。
 
-## Create the agent
+## 创建代理
 
-Now that we have defined the tools and the LLM, we can create the agent. We will be using [LangGraph](/docs/concepts/#langgraph) to construct the agent. 
-Currently we are using a high level interface to construct the agent, but the nice thing about LangGraph is that this high-level interface is backed by a low-level, highly controllable API in case you want to modify the agent logic.
+现在我们已经定义了工具和 LLM，我们可以创建代理。我们将使用 [LangGraph](/docs/concepts/#langgraph) 来构建代理。 
+目前我们使用的是一个高级接口来构建代理，但 LangGraph 的好处在于，这个高级接口背后有一个低级的、高度可控的 API，以防您想修改代理逻辑。
 
+现在，我们可以用 LLM 和工具初始化代理。
 
-Now, we can initialize the agent with the LLM and the tools.
-
-Note that we are passing in the `model`, not `model_with_tools`. That is because `create_react_agent` will call `.bind_tools` for us under the hood.
-
+请注意，我们传入的是 `model`，而不是 `model_with_tools`。这是因为 `create_react_agent` 会在后台为我们调用 `.bind_tools`。
 
 ```python
 from langgraph.prebuilt import create_react_agent
@@ -233,12 +219,11 @@ from langgraph.prebuilt import create_react_agent
 agent_executor = create_react_agent(model, tools)
 ```
 
-## Run the agent
+## 运行代理
 
-We can now run the agent on a few queries! Note that for now, these are all **stateless** queries (it won't remember previous interactions). Note that the agent will return the **final** state at the end of the interaction (which includes any inputs, we will see later on how to get only the outputs).
+我们现在可以在几个查询上运行代理！请注意，目前这些都是**无状态**查询（它不会记住之前的交互）。请注意，代理将在交互结束时返回**最终**状态（包括任何输入，稍后我们将看到如何仅获取输出）。
 
-First up, let's see how it responds when there's no need to call a tool:
-
+首先，让我们看看当没有必要调用工具时它的响应：
 
 ```python
 response = agent_executor.invoke({"messages": [HumanMessage(content="hi!")]})
@@ -246,18 +231,14 @@ response = agent_executor.invoke({"messages": [HumanMessage(content="hi!")]})
 response["messages"]
 ```
 
-
-
 ```output
 [HumanMessage(content='hi!', id='a820fcc5-9b87-457a-9af0-f21768143ee3'),
  AIMessage(content='Hello!', response_metadata={'id': 'msg_01VbC493X1VEDyusgttiEr1z', 'model': 'claude-3-sonnet-20240229', 'stop_reason': 'end_turn', 'stop_sequence': None, 'usage': {'input_tokens': 264, 'output_tokens': 5}}, id='run-0e0ddae8-a85b-4bd6-947c-c36c857a4698-0', usage_metadata={'input_tokens': 264, 'output_tokens': 5, 'total_tokens': 269})]
 ```
 
+为了确切了解发生了什么（并确保它没有调用工具），我们可以查看[LangSmith trace](https://smith.langchain.com/public/28311faa-e135-4d6a-ab6b-caecf6482aaa/r)
 
-In order to see exactly what is happening under the hood (and to make sure it's not calling a tool) we can take a look at the [LangSmith trace](https://smith.langchain.com/public/28311faa-e135-4d6a-ab6b-caecf6482aaa/r)
-
-Let's now try it out on an example where it should be invoking the tool
-
+现在让我们在一个应该调用工具的示例上试试：
 
 ```python
 response = agent_executor.invoke(
@@ -266,22 +247,18 @@ response = agent_executor.invoke(
 response["messages"]
 ```
 
-
-
 ```output
 [HumanMessage(content='whats the weather in sf?', id='1d6c96bb-4ddb-415c-a579-a07d5264de0d'),
  AIMessage(content=[{'id': 'toolu_01Y5EK4bw2LqsQXeaUv8iueF', 'input': {'query': 'weather in san francisco'}, 'name': 'tavily_search_results_json', 'type': 'tool_use'}], response_metadata={'id': 'msg_0132wQUcEduJ8UKVVVqwJzM4', 'model': 'claude-3-sonnet-20240229', 'stop_reason': 'tool_use', 'stop_sequence': None, 'usage': {'input_tokens': 269, 'output_tokens': 61}}, id='run-26d5e5e8-d4fd-46d2-a197-87b95b10e823-0', tool_calls=[{'name': 'tavily_search_results_json', 'args': {'query': 'weather in san francisco'}, 'id': 'toolu_01Y5EK4bw2LqsQXeaUv8iueF'}], usage_metadata={'input_tokens': 269, 'output_tokens': 61, 'total_tokens': 330}),
  ToolMessage(content='[{"url": "https://www.weatherapi.com/", "content": "{\'location\': {\'name\': \'San Francisco\', \'region\': \'California\', \'country\': \'United States of America\', \'lat\': 37.78, \'lon\': -122.42, \'tz_id\': \'America/Los_Angeles\', \'localtime_epoch\': 1717238703, \'localtime\': \'2024-06-01 3:45\'}, \'current\': {\'last_updated_epoch\': 1717237800, \'last_updated\': \'2024-06-01 03:30\', \'temp_c\': 12.0, \'temp_f\': 53.6, \'is_day\': 0, \'condition\': {\'text\': \'Mist\', \'icon\': \'//cdn.weatherapi.com/weather/64x64/night/143.png\', \'code\': 1030}, \'wind_mph\': 5.6, \'wind_kph\': 9.0, \'wind_degree\': 310, \'wind_dir\': \'NW\', \'pressure_mb\': 1013.0, \'pressure_in\': 29.92, \'precip_mm\': 0.0, \'precip_in\': 0.0, \'humidity\': 88, \'cloud\': 100, \'feelslike_c\': 10.5, \'feelslike_f\': 50.8, \'windchill_c\': 9.3, \'windchill_f\': 48.7, \'heatindex_c\': 11.1, \'heatindex_f\': 51.9, \'dewpoint_c\': 8.8, \'dewpoint_f\': 47.8, \'vis_km\': 6.4, \'vis_miles\': 3.0, \'uv\': 1.0, \'gust_mph\': 12.5, \'gust_kph\': 20.1}}"}, {"url": "https://www.timeanddate.com/weather/usa/san-francisco/hourly", "content": "Sun & Moon. Weather Today Weather Hourly 14 Day Forecast Yesterday/Past Weather Climate (Averages) Currently: 59 \\u00b0F. Passing clouds. (Weather station: San Francisco International Airport, USA). See more current weather."}]', name='tavily_search_results_json', id='37aa1fd9-b232-4a02-bd22-bc5b9b44a22c', tool_call_id='toolu_01Y5EK4bw2LqsQXeaUv8iueF'),
- AIMessage(content='Based on the search results, here is a summary of the current weather in San Francisco:\n\nThe weather in San Francisco is currently misty with a temperature of around 53°F (12°C). There is complete cloud cover and moderate winds from the northwest around 5-9 mph (9-14 km/h). Humidity is high at 88%. Visibility is around 3 miles (6.4 km). \n\nThe results provide an hourly forecast as well as current conditions from a couple different weather sources. Let me know if you need any additional details about the San Francisco weather!', response_metadata={'id': 'msg_01BRX9mrT19nBDdHYtR7wJ92', 'model': 'claude-3-sonnet-20240229', 'stop_reason': 'end_turn', 'stop_sequence': None, 'usage': {'input_tokens': 920, 'output_tokens': 132}}, id='run-d0325583-3ddc-4432-b2b2-d023eb97660f-0', usage_metadata={'input_tokens': 920, 'output_tokens': 132, 'total_tokens': 1052})]
+ AIMessage(content='根据搜索结果，以下是旧金山当前天气的摘要：\n\n旧金山的天气目前是雾霭，温度约为53°F（12°C）。天上云层覆盖，西北方向有中等风速，约为5-9 mph（9-14 km/h）。湿度高达88%。能见度约为3英里（6.4 km）。\n\n结果提供了每小时的天气预报以及来自几个不同天气来源的当前状况。如果您需要关于旧金山天气的更多详细信息，请告诉我！', response_metadata={'id': 'msg_01BRX9mrT19nBDdHYtR7wJ92', 'model': 'claude-3-sonnet-20240229', 'stop_reason': 'end_turn', 'stop_sequence': None, 'usage': {'input_tokens': 920, 'output_tokens': 132}}, id='run-d0325583-3ddc-4432-b2b2-d023eb97660f-0', usage_metadata={'input_tokens': 920, 'output_tokens': 132, 'total_tokens': 1052})]
 ```
 
+我们可以查看[LangSmith trace](https://smith.langchain.com/public/f520839d-cd4d-4495-8764-e32b548e235d/r)以确保它有效地调用搜索工具。
 
-We can check out the [LangSmith trace](https://smith.langchain.com/public/f520839d-cd4d-4495-8764-e32b548e235d/r) to make sure it's calling the search tool effectively.
+## 流式消息
 
-## Streaming Messages
-
-We've seen how the agent can be called with `.invoke` to get back a final response. If the agent is executing multiple steps, that may take a while. In order to show intermediate progress, we can stream back messages as they occur.
-
+我们已经看到如何通过 `.invoke` 调用代理以获取最终响应。如果代理正在执行多个步骤，这可能需要一些时间。为了显示中间进度，我们可以在消息发生时流式返回消息。
 
 ```python
 for chunk in agent_executor.stream(
@@ -295,16 +272,17 @@ for chunk in agent_executor.stream(
 ----
 {'action': {'messages': [ToolMessage(content='[{"url": "https://www.weatherapi.com/", "content": "{\'location\': {\'name\': \'San Francisco\', \'region\': \'California\', \'country\': \'United States of America\', \'lat\': 37.78, \'lon\': -122.42, \'tz_id\': \'America/Los_Angeles\', \'localtime_epoch\': 1714426906, \'localtime\': \'2024-04-29 14:41\'}, \'current\': {\'last_updated_epoch\': 1714426200, \'last_updated\': \'2024-04-29 14:30\', \'temp_c\': 17.8, \'temp_f\': 64.0, \'is_day\': 1, \'condition\': {\'text\': \'Sunny\', \'icon\': \'//cdn.weatherapi.com/weather/64x64/day/113.png\', \'code\': 1000}, \'wind_mph\': 23.0, \'wind_kph\': 37.1, \'wind_degree\': 290, \'wind_dir\': \'WNW\', \'pressure_mb\': 1019.0, \'pressure_in\': 30.09, \'precip_mm\': 0.0, \'precip_in\': 0.0, \'humidity\': 50, \'cloud\': 0, \'feelslike_c\': 17.8, \'feelslike_f\': 64.0, \'vis_km\': 16.0, \'vis_miles\': 9.0, \'uv\': 5.0, \'gust_mph\': 27.5, \'gust_kph\': 44.3}}"}, {"url": "https://world-weather.info/forecast/usa/san_francisco/april-2024/", "content": "Extended weather forecast in San Francisco. Hourly Week 10 days 14 days 30 days Year. Detailed \\u26a1 San Francisco Weather Forecast for April 2024 - day/night \\ud83c\\udf21\\ufe0f temperatures, precipitations - World-Weather.info."}]', name='tavily_search_results_json', id='d88320ac-3fe1-4f73-870a-3681f15f6982', tool_call_id='call_50Kb8zHmFqPYavQwF5TgcOH8')]}}
 ----
-{'agent': {'messages': [AIMessage(content='The current weather in San Francisco, California is sunny with a temperature of 17.8°C (64.0°F). The wind is coming from the WNW at 23.0 mph. The humidity is at 50%. [source](https://www.weatherapi.com/)', response_metadata={'token_usage': {'completion_tokens': 58, 'prompt_tokens': 602, 'total_tokens': 660}, 'model_name': 'gpt-4', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-0cd2a507-ded5-4601-afe3-3807400e9989-0')]}}
+{'agent': {'messages': [AIMessage(content='旧金山，加利福尼亚州的当前天气为晴天，气温为17.8°C (64.0°F)。风速来自西北偏西，风速为23.0 mph。湿度为50%。 [source](https://www.weatherapi.com/)', response_metadata={'token_usage': {'completion_tokens': 58, 'prompt_tokens': 602, 'total_tokens': 660}, 'model_name': 'gpt-4', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-0cd2a507-ded5-4601-afe3-3807400e9989-0')]}}
 ----
 ```
-## Streaming tokens
 
-In addition to streaming back messages, it is also useful to be streaming back tokens.
-We can do this with the `.astream_events` method.
+## 流式令牌
+
+除了流式返回消息外，流式返回令牌也是非常有用的。
+我们可以使用 `.astream_events` 方法来实现。
 
 :::important
-This `.astream_events` method only works with Python 3.11 or higher.
+此 `.astream_events` 方法仅适用于 Python 3.11 或更高版本。
 :::
 
 
@@ -354,10 +332,10 @@ Tool output was: [{'url': 'https://www.weatherapi.com/', 'content': "{'location'
 --
 The| current| weather| in| San| Francisco|,| California|,| USA| is| sunny| with| a| temperature| of| |17|.|8|°C| (|64|.|0|°F|).| The| wind| is| blowing| from| the| W|NW| at| a| speed| of| |37|.|1| k|ph| (|23|.|0| mph|).| The| humidity| level| is| at| |50|%.| [|Source|](|https|://|www|.weather|api|.com|/)|
 ```
-## Adding in memory
 
-As mentioned earlier, this agent is stateless. This means it does not remember previous interactions. To give it memory we need to pass in a checkpointer. When passing in a checkpointer, we also have to pass in a `thread_id` when invoking the agent (so it knows which thread/conversation to resume from).
+## 添加内存
 
+如前所述，该代理是无状态的。这意味着它不会记住之前的交互。为了给它提供内存，我们需要传入一个检查点。当传入检查点时，我们还必须在调用代理时传入一个 `thread_id`（以便它知道从哪个线程/对话恢复）。
 
 ```python
 from langgraph.checkpoint.sqlite import SqliteSaver
@@ -365,13 +343,11 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 memory = SqliteSaver.from_conn_string(":memory:")
 ```
 
-
 ```python
 agent_executor = create_react_agent(model, tools, checkpointer=memory)
 
 config = {"configurable": {"thread_id": "abc123"}}
 ```
-
 
 ```python
 for chunk in agent_executor.stream(
@@ -396,10 +372,9 @@ for chunk in agent_executor.stream(
 {'agent': {'messages': [AIMessage(content='You mentioned your name is Bob when you introduced yourself earlier. So your name is Bob.', response_metadata={'id': 'msg_01WNwnRNGwGDRw6vRdivt6i1', 'model': 'claude-3-sonnet-20240229', 'stop_reason': 'end_turn', 'stop_sequence': None, 'usage': {'input_tokens': 1184, 'output_tokens': 21}}, id='run-f5c0b957-8878-405a-9d4b-a7cd38efe81f-0', usage_metadata={'input_tokens': 1184, 'output_tokens': 21, 'total_tokens': 1205})]}}
 ----
 ```
-Example [LangSmith trace](https://smith.langchain.com/public/fa73960b-0f7d-4910-b73d-757a12f33b2b/r)
+示例 [LangSmith 跟踪](https://smith.langchain.com/public/fa73960b-0f7d-4910-b73d-757a12f33b2b/r)
 
-If I want to start a new conversation, all I have to do is change the `thread_id` used
-
+如果我想开始一个新的对话，我只需更改所使用的 `thread_id`
 
 ```python
 config = {"configurable": {"thread_id": "xyz123"}}
@@ -413,11 +388,12 @@ for chunk in agent_executor.stream(
 {'agent': {'messages': [AIMessage(content="I'm afraid I don't actually know your name. As an AI assistant without personal information about you, I don't have a specific name associated with our conversation.", response_metadata={'id': 'msg_01NoaXNNYZKSoBncPcLkdcbo', 'model': 'claude-3-sonnet-20240229', 'stop_reason': 'end_turn', 'stop_sequence': None, 'usage': {'input_tokens': 267, 'output_tokens': 36}}, id='run-c9f7df3d-525a-4d8f-bbcf-a5b4a5d2e4b0-0', usage_metadata={'input_tokens': 267, 'output_tokens': 36, 'total_tokens': 303})]}}
 ----
 ```
-## Conclusion
 
-That's a wrap! In this quick start we covered how to create a simple agent. 
-We've then shown how to stream back a response - not only the intermediate steps, but also tokens!
-We've also added in memory so you can have a conversation with them.
-Agents are a complex topic, and there's lot to learn! 
+## 结论
 
-For more information on Agents, please check out the [LangGraph](/docs/concepts/#langgraph) documentation. This has it's own set of concepts, tutorials, and how-to guides.
+这就是结束！在这个快速入门中，我们介绍了如何创建一个简单的代理。 
+然后我们展示了如何流式返回响应——不仅是中间步骤，还有标记！
+我们还添加了内存，以便您可以与他们进行对话。
+代理是一个复杂的话题，还有很多需要学习的内容！
+
+有关代理的更多信息，请查看 [LangGraph](/docs/concepts/#langgraph) 文档。这有自己的一套概念、教程和操作指南。

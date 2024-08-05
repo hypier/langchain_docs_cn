@@ -1,10 +1,11 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/instruct_embeddings.ipynb
 ---
-# Instruct Embeddings on Hugging Face
 
->[Hugging Face sentence-transformers](https://huggingface.co/sentence-transformers) is a Python framework for state-of-the-art sentence, text and image embeddings.
->One of the instruct embedding models is used in the `HuggingFaceInstructEmbeddings` class.
+# 在 Hugging Face 上的指令嵌入
+
+>[Hugging Face sentence-transformers](https://huggingface.co/sentence-transformers) 是一个用于最先进的句子、文本和图像嵌入的 Python 框架。
+>其中一个指令嵌入模型在 `HuggingFaceInstructEmbeddings` 类中使用。
 
 
 
@@ -32,8 +33,7 @@ text = "This is a test document."
 query_result = embeddings.embed_query(text)
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

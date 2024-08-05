@@ -1,24 +1,23 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/ernie.ipynb
 ---
+
 # ERNIE
 
-[ERNIE Embedding-V1](https://cloud.baidu.com/doc/WENXINWORKSHOP/s/alj562vvu) is a text representation model based on `Baidu Wenxin` large-scale model technology, 
-which converts text into a vector form represented by numerical values, and is used in text retrieval, information recommendation, knowledge mining and other scenarios.
+[ERNIE Embedding-V1](https://cloud.baidu.com/doc/WENXINWORKSHOP/s/alj562vvu) 是基于 `Baidu Wenxin` 大规模模型技术的文本表示模型，将文本转换为由数值表示的向量形式，广泛应用于文本检索、信息推荐、知识挖掘等场景。
 
-**Deprecated Warning**
+**弃用警告**
 
-We recommend users using `langchain_community.embeddings.ErnieEmbeddings` 
-to use `langchain_community.embeddings.QianfanEmbeddingsEndpoint` instead.
+我们建议用户使用 `langchain_community.embeddings.ErnieEmbeddings` 的用户改用 `langchain_community.embeddings.QianfanEmbeddingsEndpoint`。
 
-documentation for `QianfanEmbeddingsEndpoint` is [here](/docs/integrations/text_embedding/baidu_qianfan_endpoint/).
+`QianfanEmbeddingsEndpoint` 的文档在 [这里](/docs/integrations/text_embedding/baidu_qianfan_endpoint/)。
 
-they are 2 why we recommend users to use `QianfanEmbeddingsEndpoint`:
+我们推荐用户使用 `QianfanEmbeddingsEndpoint` 的原因有两个：
 
-1. `QianfanEmbeddingsEndpoint` support more embedding model in the Qianfan platform.
-2. `ErnieEmbeddings` is lack of maintenance and deprecated.
+1. `QianfanEmbeddingsEndpoint` 在 Qianfan 平台上支持更多的嵌入模型。
+2. `ErnieEmbeddings` 缺乏维护并已被弃用。
 
-Some tips for migration:
+迁移的一些提示：
 
 
 ```python
@@ -30,7 +29,7 @@ embeddings = QianfanEmbeddingsEndpoint(
 )
 ```
 
-## Usage
+## 用法
 
 
 ```python
@@ -52,8 +51,7 @@ query_result = embeddings.embed_query("foo")
 doc_results = embeddings.embed_documents(["foo"])
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

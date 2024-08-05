@@ -1,21 +1,19 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/yellowbrick.ipynb
 ---
+
 # Yellowbrick
 
-[Yellowbrick](https://yellowbrick.com/yellowbrick-data-warehouse/) is an elastic, massively parallel processing (MPP) SQL database that runs in the cloud and on-premises, using kubernetes for scale, resilience and cloud portability. Yellowbrick is designed to address the largest and most complex business-critical data warehousing use cases. The efficiency at scale that Yellowbrick provides also enables it to be used as a high performance and scalable vector database to store and search vectors with SQL. 
+[Yellowbrick](https://yellowbrick.com/yellowbrick-data-warehouse/) 是一个弹性、具备大规模并行处理 (MPP) 的 SQL 数据库，能够在云端和本地运行，利用 Kubernetes 实现扩展性、弹性和云端可移植性。Yellowbrick 的设计旨在解决最大和最复杂的业务关键数据仓库用例。Yellowbrick 提供的高效扩展性使其能够作为高性能和可扩展的向量数据库，使用 SQL 存储和搜索向量。
 
+## 使用 Yellowbrick 作为 ChatGpt 的向量存储
 
-## Using Yellowbrick as the vector store for ChatGpt
+本教程演示如何创建一个简单的聊天机器人，基于 ChatGpt，并使用 Yellowbrick 作为向量存储来支持检索增强生成（RAG）。您需要以下内容：
 
-This tutorial demonstrates how to create a simple chatbot backed by ChatGpt that uses Yellowbrick as a vector store to support Retrieval Augmented Generation (RAG). What you'll need:
+1. 一个 [Yellowbrick 沙盒](https://cloudlabs.yellowbrick.com/) 的账户
+2. 来自 [OpenAI](https://platform.openai.com/) 的 API 密钥
 
-1. An account on the [Yellowbrick sandbox](https://cloudlabs.yellowbrick.com/)
-2. An api key from [OpenAI](https://platform.openai.com/)
-
-The tutorial is divided into five parts. First we'll use langchain to create a baseline chatbot to interact with ChatGpt without a vector store. Second, we'll create an embeddings table in Yellowbrick that will represent the vector store. Third, we'll load a series of documents (the Administration chapter of the Yellowbrick Manual). Fourth, we'll create the vector representation of those documents and store in a Yellowbrick table.  Lastly, we'll send the same queries to the improved chatbox to see the results.
-
-
+本教程分为五个部分。首先，我们将使用 langchain 创建一个基线聊天机器人，以便在没有向量存储的情况下与 ChatGpt 互动。第二，我们将在 Yellowbrick 中创建一个表示向量存储的嵌入表。第三，我们将加载一系列文档（Yellowbrick 手册的管理章节）。第四，我们将创建这些文档的向量表示并存储在 Yellowbrick 表中。最后，我们将向改进后的聊天框发送相同的查询，以查看结果。
 
 ```python
 # Install all needed libraries
@@ -25,19 +23,18 @@ The tutorial is divided into five parts. First we'll use langchain to create a b
 %pip install --upgrade --quiet  tiktoken
 ```
 
-## Setup: Enter the information used to connect to Yellowbrick and OpenAI API
+## 设置：输入用于连接 Yellowbrick 和 OpenAI API 的信息
 
-Our chatbot integrates with ChatGpt via the langchain library, so you'll need an API key from OpenAI first:
+我们的聊天机器人通过 langchain 库与 ChatGpt 集成，因此您需要首先从 OpenAI 获取 API 密钥：
 
-To get an api key for OpenAI:
-1. Register at https://platform.openai.com/
-2. Add a payment method - You're unlikely to go over free quota
-3. Create an API key
+要获取 OpenAI 的 API 密钥：
+1. 注册 https://platform.openai.com/
+2. 添加支付方式 - 您不太可能超过免费配额
+3. 创建一个 API 密钥
 
-You'll also need your Username, Password, and Database name from the welcome email when you sign up for the Yellowbrick Sandbox Account.
+您还需要在注册 Yellowbrick Sandbox 账户时收到的欢迎邮件中找到您的用户名、密码和数据库名。
 
-
-The following should be modified to include the information for your Yellowbrick database and OpenAPI Key
+以下内容应修改以包含您的 Yellowbrick 数据库和 OpenAPI 密钥的信息
 
 
 ```python
@@ -87,11 +84,9 @@ from langchain_core.prompts.chat import (
 )
 ```
 
-## Part 1: Creating a baseline chatbot backed by ChatGpt without a Vector Store
+## 第1部分：创建一个不使用向量存储的基线聊天机器人，基于ChatGpt
 
-We will use langchain to query ChatGPT.  As there is no Vector Store, ChatGPT will have no context in which to answer the question.
-
-
+我们将使用langchain来查询ChatGPT。由于没有向量存储，ChatGPT将没有上下文来回答问题。
 
 ```python
 # Set up the chat model and specific prompt
@@ -132,14 +127,11 @@ print_result_simple("How many databases can be in a Yellowbrick Instance?")
 print_result_simple("What's an easy way to add users in bulk to Yellowbrick?")
 ```
 
-## Part 2: Connect to Yellowbrick and create the embedding tables
+## 第2部分：连接到Yellowbrick并创建嵌入表
 
-To load your document embeddings into Yellowbrick, you should create your own table for storing them in. Note that the 
-Yellowbrick database that the table is in has to be UTF-8 encoded. 
+要将文档嵌入加载到Yellowbrick中，您应该创建自己的表来存储它们。请注意，表所在的Yellowbrick数据库必须是UTF-8编码的。
 
-Create a table in a UTF-8 database with the following schema, providing a table name of your choice:
-
-
+在UTF-8数据库中创建一个具有以下模式的表，提供您选择的表名：
 
 ```python
 # Establish a connection to the Yellowbrick database
@@ -177,11 +169,8 @@ cursor.close()
 conn.close()
 ```
 
-## Part 3: Extract the documents to index from an existing table in Yellowbrick
-Extract document paths and contents from an existing Yellowbrick table. We'll use these documents to create embeddings from in the next step.
-
-
-
+## 第3部分：从现有的Yellowbrick表中提取要索引的文档
+从现有的Yellowbrick表中提取文档路径和内容。我们将在下一步中使用这些文档来创建嵌入。
 
 
 
@@ -214,8 +203,8 @@ cursor.close()
 conn.close()
 ```
 
-## Part 4: Load the Yellowbrick Vector Store with Documents
-Go through documents, split them into digestable chunks, create the embedding and insert into the Yellowbrick table. This takes around 5 minutes.
+## 第4部分：用文档加载Yellowbrick向量存储
+处理文档，将其拆分为可消化的块，创建嵌入并插入Yellowbrick表中。这大约需要5分钟。
 
 
 
@@ -256,11 +245,11 @@ vector_store = Yellowbrick.from_documents(
 print(f"Created vector store with {len(documents)} documents")
 ```
 
-## Part 5: Creating a chatbot that uses Yellowbrick as the vector store
+## 第5部分：创建一个使用Yellowbrick作为向量存储的聊天机器人
 
-Next, we add Yellowbrick as a vector store. The vector store has been populated with embeddings representing the administrative chapter of the Yellowbrick product documentation.
+接下来，我们将Yellowbrick添加为向量存储。该向量存储已填充了表示Yellowbrick产品文档管理章节的嵌入。
 
-We'll send the same queries as above to see the impoved responses.
+我们将发送与上述相同的查询，以查看改进的响应。
 
 
 
@@ -318,15 +307,14 @@ print_result_sources("How many databases can be in a Yellowbrick Instance?")
 print_result_sources("Whats an easy way to add users in bulk to Yellowbrick?")
 ```
 
-## Part 6: Introducing an Index to Increase Performance
+## 第6部分：引入索引以提高性能
 
-Yellowbrick also supports indexing using the Locality-Sensitive Hashing approach. This is an approximate nearest-neighbor search technique, and allows one to trade off similarity search time at the expense of accuracy. The index introduces two new tunable parameters:
+Yellowbrick还支持使用局部敏感哈希（Locality-Sensitive Hashing）方法进行索引。这是一种近似最近邻搜索技术，允许在准确性降低的情况下权衡相似性搜索时间。索引引入了两个可调参数：
 
-- The number of hyperplanes, which is provided as an argument to `create_lsh_index(num_hyperplanes)`. The more documents, the more hyperplanes are needed. LSH is a form of dimensionality reduction. The original embeddings are transformed into lower dimensional vectors where the number of components is the same as the number of hyperplanes.
-- The Hamming distance, an integer representing the breadth of the search. Smaller Hamming distances result in faster retreival but lower accuracy.
+- 超平面的数量，作为参数提供给`create_lsh_index(num_hyperplanes)`。文档越多，需要的超平面就越多。LSH是一种降维形式。原始嵌入被转换为低维向量，其中组件的数量与超平面的数量相同。
+- 汉明距离，一个表示搜索广度的整数。较小的汉明距离会导致更快的检索，但准确性较低。
 
-Here's how you can create an index on the embeddings we loaded into Yellowbrick. We'll also re-run the previous chat session, but this time the retrieval will use the index. Note that for such a small number of documents, you won't see the benefit of indexing in terms of performance.
-
+以下是如何在我们加载到Yellowbrick中的嵌入上创建索引。我们还将重新运行之前的聊天会话，但这次检索将使用索引。请注意，对于如此少量的文档，您不会看到在性能方面的索引好处。
 
 ```python
 system_template = """Use the following pieces of context to answer the users question.
@@ -389,14 +377,13 @@ print_result_sources("How many databases can be in a Yellowbrick Instance?")
 print_result_sources("Whats an easy way to add users in bulk to Yellowbrick?")
 ```
 
-## Next Steps:
+## 下一步：
 
-This code can be modified to ask different questions. You can also load your own documents into the vector store. The langchain module is very flexible and can parse a large variety of files (including HTML, PDF, etc).
+此代码可以修改以提出不同的问题。您还可以将自己的文档加载到向量存储中。langchain 模块非常灵活，可以解析多种文件（包括 HTML、PDF 等）。
 
-You can also modify this to use Huggingface embeddings models and Meta's Llama 2 LLM for a completely private chatbox experience.
+您还可以修改此代码以使用 Huggingface 嵌入模型和 Meta 的 Llama 2 LLM，以实现完全私密的聊天体验。
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

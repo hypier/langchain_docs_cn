@@ -1,28 +1,26 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/sambanova.ipynb
 ---
+
 # SambaNova
 
-**[SambaNova](https://sambanova.ai/)'s** [Sambaverse](https://sambaverse.sambanova.ai/) and [Sambastudio](https://sambanova.ai/technology/full-stack-ai-platform) are platforms for running your own open-source models
+**[SambaNova](https://sambanova.ai/)** 的 [Sambaverse](https://sambaverse.sambanova.ai/) 和 [Sambastudio](https://sambanova.ai/technology/full-stack-ai-platform) 是运行您自己的开源模型的平台
 
-This example goes over how to use LangChain to interact with SambaNova models
+本示例介绍如何使用 LangChain 与 SambaNova 模型进行交互
 
 ## Sambaverse
 
-**Sambaverse** allows you to interact with multiple open-source models. You can view the list of available models and interact with them in the [playground](https://sambaverse.sambanova.ai/playground).
- **Please note that Sambaverse's free offering is performance-limited.** Companies that are ready to evaluate the production tokens-per-second performance, volume throughput, and 10x lower total cost of ownership (TCO) of SambaNova should [contact us](https://sambaverse.sambanova.ai/contact-us) for a non-limited evaluation instance.
+**Sambaverse** 允许您与多个开源模型进行交互。您可以在 [playground](https://sambaverse.sambanova.ai/playground) 查看可用模型的列表并与之互动。 **请注意，Sambaverse 的免费服务有性能限制。** 准备评估 SambaNova 的生产每秒令牌性能、吞吐量以及降低 10 倍的总拥有成本 (TCO) 的公司应 [联系我们](https://sambaverse.sambanova.ai/contact-us) 以获取无限制的评估实例。
 
-An API key is required to access Sambaverse models. To get a key, create an account at [sambaverse.sambanova.ai](https://sambaverse.sambanova.ai/)
+访问 Sambaverse 模型需要 API 密钥。要获取密钥，请在 [sambaverse.sambanova.ai](https://sambaverse.sambanova.ai/) 创建一个帐户。
 
-The [sseclient-py](https://pypi.org/project/sseclient-py/) package is required to run streaming predictions 
-
+运行流式预测需要 [sseclient-py](https://pypi.org/project/sseclient-py/) 包。
 
 ```python
 %pip install --quiet sseclient-py==1.8.0
 ```
 
-Register your API key as an environment variable:
-
+将您的 API 密钥注册为环境变量：
 
 ```python
 import os
@@ -33,8 +31,7 @@ sambaverse_api_key = "<Your sambaverse API key>"
 os.environ["SAMBAVERSE_API_KEY"] = sambaverse_api_key
 ```
 
-Call Sambaverse models directly from LangChain!
-
+直接从 LangChain 调用 Sambaverse 模型！
 
 ```python
 from langchain_community.llms.sambanova import Sambaverse
@@ -57,7 +54,6 @@ llm = Sambaverse(
 
 print(llm.invoke("Why should I use open source models?"))
 ```
-
 
 ```python
 # Streaming response
@@ -86,18 +82,18 @@ for chunk in llm.stream("Why should I use open source models?"):
 
 ## SambaStudio
 
-**SambaStudio** allows you to train, run batch inference jobs, and deploy online inference endpoints to run open source models that you fine tuned yourself.
+**SambaStudio** 允许您训练、运行批量推理作业，并部署在线推理端点，以运行您自己微调的开源模型。
 
-A SambaStudio environment is required to deploy a model. Get more information at [sambanova.ai/products/enterprise-ai-platform-sambanova-suite](https://sambanova.ai/products/enterprise-ai-platform-sambanova-suite)
+部署模型需要一个 SambaStudio 环境。获取更多信息请访问 [sambanova.ai/products/enterprise-ai-platform-sambanova-suite](https://sambanova.ai/products/enterprise-ai-platform-sambanova-suite)
 
-The [sseclient-py](https://pypi.org/project/sseclient-py/) package is required to run streaming predictions 
+运行流式预测需要 [sseclient-py](https://pypi.org/project/sseclient-py/) 包
 
 
 ```python
 %pip install --quiet sseclient-py==1.8.0
 ```
 
-Register your environment variables:
+注册您的环境变量：
 
 
 ```python
@@ -117,7 +113,7 @@ os.environ["SAMBASTUDIO_ENDPOINT_ID"] = sambastudio_endpoint_id
 os.environ["SAMBASTUDIO_API_KEY"] = sambastudio_api_key
 ```
 
-Call SambaStudio models directly from LangChain!
+直接从 LangChain 调用 SambaStudio 模型！
 
 
 ```python
@@ -162,7 +158,7 @@ for chunk in llm.stream("Why should I use open source models?"):
     print(chunk, end="", flush=True)
 ```
 
-You can also call a CoE endpoint expert model 
+您还可以调用 CoE 端点专家模型
 
 
 ```python
@@ -188,8 +184,7 @@ llm = SambaStudio(
 print(llm.invoke("Why should I use open source models?"))
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

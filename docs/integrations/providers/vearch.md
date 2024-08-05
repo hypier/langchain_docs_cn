@@ -1,14 +1,14 @@
 # Vearch
 
-[Vearch](https://github.com/vearch/vearch) is a scalable distributed system for efficient similarity search of deep learning vectors.
+[Vearch](https://github.com/vearch/vearch) 是一个可扩展的分布式系统，用于高效地对深度学习向量进行相似性搜索。
 
-# Installation and Setup
+# 安装与设置
 
-Vearch Python SDK enables vearch to use locally. Vearch python sdk can be installed easily by pip install vearch.
+Vearch Python SDK 使 Vearch 可以在本地使用。可以通过 pip install vearch 轻松安装 Vearch Python SDK。
 
-# Vectorstore
+# 向量存储
 
-Vearch also can used as vectorstore. Most details in [this notebook](/docs/integrations/vectorstores/vearch)
+Vearch 也可以用作向量存储。大部分细节在 [这个笔记本](/docs/integrations/vectorstores/vearch)
 
 ```python
 from langchain_community.vectorstores import Vearch

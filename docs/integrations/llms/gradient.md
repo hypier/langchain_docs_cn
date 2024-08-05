@@ -1,14 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/gradient.ipynb
 ---
-# Gradient
 
-`Gradient` allows to fine tune and get completions on LLMs with a simple web API.
+# 渐变
 
-This notebook goes over how to use Langchain with [Gradient](https://gradient.ai/).
+`Gradient` 允许通过简单的 web API 对 LLM 进行微调和获取补全。
 
+本笔记本介绍如何使用 Langchain 与 [Gradient](https://gradient.ai/)。
 
-## Imports
+## 导入
 
 
 ```python
@@ -17,25 +17,23 @@ from langchain_community.llms import GradientLLM
 from langchain_core.prompts import PromptTemplate
 ```
 
-## Set the Environment API Key
-Make sure to get your API key from Gradient AI. You are given $10 in free credits to test and fine-tune different models.
-
+## 设置环境 API 密钥
+确保从 Gradient AI 获取您的 API 密钥。您将获得 $10 的免费积分以测试和微调不同的模型。
 
 ```python
 import os
 from getpass import getpass
 
 if not os.environ.get("GRADIENT_ACCESS_TOKEN", None):
-    # Access token under https://auth.gradient.ai/select-workspace
-    os.environ["GRADIENT_ACCESS_TOKEN"] = getpass("gradient.ai access token:")
+    # 访问令牌在 https://auth.gradient.ai/select-workspace
+    os.environ["GRADIENT_ACCESS_TOKEN"] = getpass("gradient.ai 访问令牌:")
 if not os.environ.get("GRADIENT_WORKSPACE_ID", None):
-    # `ID` listed in `$ gradient workspace list`
-    # also displayed after login at at https://auth.gradient.ai/select-workspace
-    os.environ["GRADIENT_WORKSPACE_ID"] = getpass("gradient.ai workspace id:")
+    # 在 `$ gradient workspace list` 中列出的 `ID`
+    # 登录后也在 https://auth.gradient.ai/select-workspace 显示
+    os.environ["GRADIENT_WORKSPACE_ID"] = getpass("gradient.ai 工作区 ID:")
 ```
 
-Optional: Validate your Environment variables ```GRADIENT_ACCESS_TOKEN``` and ```GRADIENT_WORKSPACE_ID``` to get currently deployed models. Using the `gradientai` Python package.
-
+可选：验证您的环境变量 ```GRADIENT_ACCESS_TOKEN``` 和 ```GRADIENT_WORKSPACE_ID``` 以获取当前部署的模型。使用 `gradientai` Python 包。
 
 ```python
 %pip install --upgrade --quiet  gradientai
@@ -70,18 +68,14 @@ new_model = models[-1].create_model_adapter(name="my_model_adapter")
 new_model.id, new_model.name
 ```
 
-
-
 ```output
 ('674119b5-f19e-4856-add2-767ae7f7d7ef_model_adapter', 'my_model_adapter')
 ```
 
+## 创建 Gradient 实例
+您可以指定不同的参数，例如模型、生成的最大令牌数、温度等。
 
-## Create the Gradient instance
-You can specify different parameters such as the model, max_tokens generated, temperature, etc.
-
-As we later want to fine-tune out model, we select the model_adapter with the id `674119b5-f19e-4856-add2-767ae7f7d7ef_model_adapter`, but you can use any base or fine-tunable model.
-
+由于我们稍后想要微调我们的模型，因此我们选择具有 ID `674119b5-f19e-4856-add2-767ae7f7d7ef_model_adapter` 的 model_adapter，但您可以使用任何基础或可微调的模型。
 
 ```python
 llm = GradientLLM(
@@ -94,9 +88,8 @@ llm = GradientLLM(
 )
 ```
 
-## Create a Prompt Template
-We will create a prompt template for Question and Answer.
-
+## 创建一个提示模板
+我们将为问答创建一个提示模板。
 
 ```python
 template = """Question: {question}
@@ -106,16 +99,15 @@ Answer: """
 prompt = PromptTemplate.from_template(template)
 ```
 
-## Initiate the LLMChain
+## 初始化 LLMChain
 
 
 ```python
 llm_chain = LLMChain(prompt=prompt, llm=llm)
 ```
 
-## Run the LLMChain
-Provide a question and run the LLMChain.
-
+## 运行 LLMChain
+提供一个问题并运行 LLMChain。
 
 ```python
 question = "What NFL team won the Super Bowl in 1994?"
@@ -123,25 +115,22 @@ question = "What NFL team won the Super Bowl in 1994?"
 llm_chain.run(question=question)
 ```
 
-
-
 ```output
 '\nThe San Francisco 49ers won the Super Bowl in 1994.'
 ```
 
+# 通过微调提高结果（可选）
+好吧 - 这是错误的 - 旧金山49人队并没有获胜。
+正确的答案是`达拉斯牛仔队！`。
 
-# Improve the results by fine-tuning (optional)
-Well - that is wrong - the San Francisco 49ers did not win.
-The correct answer to the question would be `The Dallas Cowboys!`.
-
-Let's increase the odds for the correct answer, by fine-tuning on the correct answer using the PromptTemplate.
+让我们通过使用PromptTemplate对正确答案进行微调来提高正确答案的概率。
 
 
 ```python
 dataset = [
     {
-        "inputs": template.format(question="What NFL team won the Super Bowl in 1994?")
-        + " The Dallas Cowboys!"
+        "inputs": template.format(question="1994年哪支NFL球队赢得了超级碗？")
+        + " 达拉斯牛仔队！"
     }
 ]
 dataset
@@ -150,7 +139,7 @@ dataset
 
 
 ```output
-[{'inputs': 'Question: What NFL team won the Super Bowl in 1994?\n\nAnswer:  The Dallas Cowboys!'}]
+[{'inputs': '问题：1994年哪支NFL球队赢得了超级碗？\n\n答案：  达拉斯牛仔队！'}]
 ```
 
 
@@ -168,19 +157,17 @@ FineTuneResponse(number_of_trainable_tokens=27, sum_loss=78.17996)
 
 
 ```python
-# we can keep the llm_chain, as the registered model just got refreshed on the gradient.ai servers.
+# 我们可以保持llm_chain，因为注册的模型刚刚在gradient.ai服务器上刷新。
 llm_chain.run(question=question)
 ```
 
 
 
 ```output
-'The Dallas Cowboys'
+'达拉斯牛仔队'
 ```
 
+## 相关
 
-
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

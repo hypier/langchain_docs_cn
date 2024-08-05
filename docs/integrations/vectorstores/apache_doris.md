@@ -1,25 +1,25 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/apache_doris.ipynb
 ---
+
 # Apache Doris
 
->[Apache Doris](https://doris.apache.org/) is a modern data warehouse for real-time analytics.
-It delivers lightning-fast analytics on real-time data at scale.
+>[Apache Doris](https://doris.apache.org/) 是一个现代化的数据仓库，用于实时分析。它能够对大规模的实时数据进行闪电般快速的分析。
 
->Usually `Apache Doris` is categorized into OLAP, and it has showed excellent performance in [ClickBench — a Benchmark For Analytical DBMS](https://benchmark.clickhouse.com/). Since it has a super-fast vectorized execution engine, it could also be used as a fast vectordb.
+>通常 `Apache Doris` 被归类为 OLAP，并且在 [ClickBench — 一个分析型数据库的基准测试](https://benchmark.clickhouse.com/) 中表现出色。由于它具有超快速的向量化执行引擎，它也可以作为一个快速的向量数据库使用。
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
+您需要通过 `pip install -qU langchain-community` 安装 `langchain-community` 才能使用此集成。
 
-Here we'll show how to use the Apache Doris Vector Store.
+在这里，我们将展示如何使用 Apache Doris 向量存储。
 
-## Setup
+## 设置
 
 
 ```python
 %pip install --upgrade --quiet  pymysql
 ```
 
-Set `update_vectordb = False` at the beginning. If there is no docs updated, then we don't need to rebuild the embeddings of docs
+在开始时设置 `update_vectordb = False`。如果没有文档被更新，那么我们就不需要重建文档的嵌入
 
 
 ```python
@@ -44,12 +44,11 @@ from langchain_text_splitters import TokenTextSplitter
 update_vectordb = False
 ```
 
-## Load docs and split them into tokens
+## 加载文档并将其拆分为标记
 
-Load all markdown files under the `docs` directory
+加载 `docs` 目录下的所有 markdown 文件
 
-for Apache Doris documents, you can clone repo from https://github.com/apache/doris, and there is `docs` directory in it.
-
+对于 Apache Doris 文档，您可以从 https://github.com/apache/doris 克隆代码库，其中有 `docs` 目录。
 
 ```python
 loader = DirectoryLoader(
@@ -58,8 +57,7 @@ loader = DirectoryLoader(
 documents = loader.load()
 ```
 
-Split docs into tokens, and set `update_vectordb = True` because there are new docs/tokens.
-
+将文档拆分为标记，并设置 `update_vectordb = True`，因为有新的文档/标记。
 
 ```python
 # load text splitter and split docs into snippets of text
@@ -74,9 +72,9 @@ split_docs[-20]
 
 print("# docs  = %d, # splits = %d" % (len(documents), len(split_docs)))
 
-## Create vectordb instance
+## 创建 vectordb 实例
 
-### Use Apache Doris as vectordb
+### 使用 Apache Doris 作为向量数据库
 
 
 ```python
@@ -88,16 +86,16 @@ def gen_apache_doris(update_vectordb, embeddings, settings):
     return docsearch
 ```
 
-## Convert tokens into embeddings and put them into vectordb
+## 将令牌转换为嵌入并放入 vectordb
 
-Here we use Apache Doris as vectordb, you can configure Apache Doris instance via `ApacheDorisSettings`.
+在这里，我们使用 Apache Doris 作为 vectordb，您可以通过 `ApacheDorisSettings` 配置 Apache Doris 实例。
 
-Configuring Apache Doris instance is pretty much like configuring mysql instance. You need to specify:
-1. host/port
-2. username(default: 'root')
-3. password(default: '')
-4. database(default: 'default')
-5. table(default: 'langchain')
+配置 Apache Doris 实例与配置 mysql 实例非常相似。您需要指定：
+1. 主机/端口
+2. 用户名（默认：'root'）
+3. 密码（默认：''）
+4. 数据库（默认：'default'）
+5. 表（默认：'langchain'）
 
 
 ```python
@@ -127,7 +125,7 @@ print(docsearch)
 update_vectordb = False
 ```
 
-## Build QA and ask question to it
+## 构建 QA 并向其提问
 
 
 ```python
@@ -140,8 +138,7 @@ resp = qa.run(query)
 print(resp)
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

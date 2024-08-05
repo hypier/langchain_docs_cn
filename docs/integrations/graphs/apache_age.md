@@ -1,19 +1,18 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/graphs/apache_age.ipynb
 ---
+
 # Apache AGE
 
->[Apache AGE](https://age.apache.org/) is a PostgreSQL extension that provides graph database functionality. AGE is an acronym for A Graph Extension, and is inspired by Bitnine’s fork of PostgreSQL 10, AgensGraph, which is a multi-model database. The goal of the project is to create single storage that can handle both relational and graph model data so that users can use standard ANSI SQL along with openCypher, the Graph query language. The data elements `Apache AGE` stores are nodes, edges connecting them, and attributes of nodes and edges.
+>[Apache AGE](https://age.apache.org/) 是一个 PostgreSQL 扩展，提供图数据库功能。AGE 是 A Graph Extension 的缩写，灵感来自 Bitnine 对 PostgreSQL 10 的分支 AgensGraph，这是一种多模型数据库。该项目的目标是创建一个能够处理关系数据和图模型数据的单一存储，以便用户可以同时使用标准 ANSI SQL 和图查询语言 openCypher。`Apache AGE` 存储的数据元素包括节点、连接它们的边以及节点和边的属性。
 
->This notebook shows how to use LLMs to provide a natural language interface to a graph database you can query with the `Cypher` query language.
+>本笔记本展示了如何使用 LLM 提供自然语言接口，以便使用 `Cypher` 查询语言查询图数据库。
 
->[Cypher](https://en.wikipedia.org/wiki/Cypher_(query_language)) is a declarative graph query language that allows for expressive and efficient data querying in a property graph.
+>[Cypher](https://en.wikipedia.org/wiki/Cypher_(query_language)) 是一种声明式图查询语言，允许在属性图中进行表达性和高效的数据查询。
 
+## 设置
 
-## Setting up
-
-You will need to have a running `Postgre` instance with the AGE extension installed. One option for testing is to run a docker container using the official AGE docker image.
-You can run a local docker container by running the executing the following script:
+您需要有一个运行中的 `Postgre` 实例，并安装了 AGE 扩展。测试的一个选项是使用官方的 AGE docker 镜像运行一个 docker 容器。您可以通过执行以下脚本来运行本地 docker 容器：
 
 ```
 docker run \
@@ -26,15 +25,13 @@ docker run \
     apache/age
 ```
 
-Additional instructions on running in docker can be found [here](https://hub.docker.com/r/apache/age).
-
+有关在 docker 中运行的其他说明，请参见 [这里](https://hub.docker.com/r/apache/age)。
 
 ```python
 from langchain.chains import GraphCypherQAChain
 from langchain_community.graphs.age_graph import AGEGraph
 from langchain_openai import ChatOpenAI
 ```
-
 
 ```python
 conf = {
@@ -48,10 +45,9 @@ conf = {
 graph = AGEGraph(graph_name="age_test", conf=conf)
 ```
 
-## Seeding the database
+## 填充数据库
 
-Assuming your database is empty, you can populate it using Cypher query language. The following Cypher statement is idempotent, which means the database information will be the same if you run it one or multiple times.
-
+假设您的数据库是空的，您可以使用 Cypher 查询语言来填充它。以下 Cypher 语句是幂等的，这意味着如果您运行一次或多次，数据库信息将保持不变。
 
 ```python
 graph.query(
@@ -65,37 +61,33 @@ MERGE (a)-[:ACTED_IN]->(m)
 )
 ```
 
-
-
 ```output
 []
 ```
 
-
-## Refresh graph schema information
-If the schema of database changes, you can refresh the schema information needed to generate Cypher statements.
-
+## 刷新图形模式信息
+如果数据库的模式发生变化，您可以刷新生成 Cypher 语句所需的模式信息。
 
 ```python
 graph.refresh_schema()
 ```
-
 
 ```python
 print(graph.schema)
 ```
 ```output
 
-        Node properties are the following:
+        节点属性如下：
         [{'properties': [{'property': 'name', 'type': 'STRING'}], 'labels': 'Actor'}, {'properties': [{'property': 'property_a', 'type': 'STRING'}], 'labels': 'LabelA'}, {'properties': [], 'labels': 'LabelB'}, {'properties': [], 'labels': 'LabelC'}, {'properties': [{'property': 'name', 'type': 'STRING'}], 'labels': 'Movie'}]
-        Relationship properties are the following:
+        关系属性如下：
         [{'properties': [], 'type': 'ACTED_IN'}, {'properties': [{'property': 'rel_prop', 'type': 'STRING'}], 'type': 'REL_TYPE'}]
-        The relationships are the following:
+        关系如下：
         ['(:`Actor`)-[:`ACTED_IN`]->(:`Movie`)', '(:`LabelA`)-[:`REL_TYPE`]->(:`LabelB`)', '(:`LabelA`)-[:`REL_TYPE`]->(:`LabelC`)']
 ```
-## Querying the graph
 
-We can now use the graph cypher QA chain to ask question of the graph
+## 查询图形
+
+我们现在可以使用图形 cypher QA 链来询问图形
 
 
 ```python
@@ -111,16 +103,16 @@ chain.invoke("Who played in Top Gun?")
 ```output
 
 
-[1m> Entering new GraphCypherQAChain chain...[0m
+[1m> 进入新的 GraphCypherQAChain 链...[0m
 ``````output
-Generated Cypher:
+生成的 Cypher:
 [32;1m[1;3mMATCH (a:Actor)-[:ACTED_IN]->(m:Movie)
 WHERE m.name = 'Top Gun'
 RETURN a.name[0m
-Full Context:
+完整上下文:
 [32;1m[1;3m[{'name': 'Tom Cruise'}, {'name': 'Val Kilmer'}, {'name': 'Anthony Edwards'}, {'name': 'Meg Ryan'}][0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 ```
 
 
@@ -129,10 +121,9 @@ Full Context:
  'result': 'Tom Cruise, Val Kilmer, Anthony Edwards, Meg Ryan played in Top Gun.'}
 ```
 
-
-## Limit the number of results
-You can limit the number of results from the Cypher QA Chain using the `top_k` parameter.
-The default is 10.
+## 限制结果数量
+您可以使用 `top_k` 参数限制 Cypher QA Chain 的结果数量。
+默认值为 10。
 
 
 ```python
@@ -164,9 +155,8 @@ Full Context:
  'result': 'Tom Cruise, Val Kilmer played in Top Gun.'}
 ```
 
-
-## Return intermediate results
-You can return intermediate steps from the Cypher QA Chain using the `return_intermediate_steps` parameter
+## 返回中间结果
+您可以使用 `return_intermediate_steps` 参数从 Cypher QA Chain 返回中间步骤
 
 
 ```python
@@ -196,8 +186,9 @@ Full Context:
 Intermediate steps: [{'query': "MATCH (a:Actor)-[:ACTED_IN]->(m:Movie)\nWHERE m.name = 'Top Gun'\nRETURN a.name"}, {'context': [{'name': 'Tom Cruise'}, {'name': 'Val Kilmer'}, {'name': 'Anthony Edwards'}, {'name': 'Meg Ryan'}]}]
 Final answer: Tom Cruise, Val Kilmer, Anthony Edwards, Meg Ryan played in Top Gun.
 ```
-## Return direct results
-You can return direct results from the Cypher QA Chain using the `return_direct` parameter
+
+## 返回直接结果
+您可以使用 `return_direct` 参数从 Cypher QA Chain 返回直接结果
 
 
 ```python
@@ -208,51 +199,49 @@ chain = GraphCypherQAChain.from_llm(
 
 
 ```python
-chain.invoke("Who played in Top Gun?")
+chain.invoke("谁在《壮志凌云》中出演？")
 ```
 ```output
 
 
-[1m> Entering new GraphCypherQAChain chain...[0m
-Generated Cypher:
+[1m> 进入新的 GraphCypherQAChain 链...[0m
+生成的 Cypher:
 [32;1m[1;3mMATCH (a:Actor)-[:ACTED_IN]->(m:Movie {name: 'Top Gun'})
 RETURN a.name[0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 ```
 
 
 ```output
-{'query': 'Who played in Top Gun?',
- 'result': [{'name': 'Tom Cruise'},
-  {'name': 'Val Kilmer'},
-  {'name': 'Anthony Edwards'},
-  {'name': 'Meg Ryan'}]}
+{'query': '谁在《壮志凌云》中出演？',
+ 'result': [{'name': '汤姆·克鲁斯'},
+  {'name': '瓦尔·基尔默'},
+  {'name': '安东尼·爱德华兹'},
+  {'name': '梅格·瑞恩'}]}
 ```
 
-
-## Add examples in the Cypher generation prompt
-You can define the Cypher statement you want the LLM to generate for particular questions
-
+## 在Cypher生成提示中添加示例
+您可以定义希望LLM为特定问题生成的Cypher语句
 
 ```python
 from langchain_core.prompts.prompt import PromptTemplate
 
-CYPHER_GENERATION_TEMPLATE = """Task:Generate Cypher statement to query a graph database.
-Instructions:
-Use only the provided relationship types and properties in the schema.
-Do not use any other relationship types or properties that are not provided.
-Schema:
+CYPHER_GENERATION_TEMPLATE = """任务：生成Cypher语句以查询图数据库。
+说明：
+仅使用架构中提供的关系类型和属性。
+不要使用任何未提供的其他关系类型或属性。
+架构：
 {schema}
-Note: Do not include any explanations or apologies in your responses.
-Do not respond to any questions that might ask anything else than for you to construct a Cypher statement.
-Do not include any text except the generated Cypher statement.
-Examples: Here are a few examples of generated Cypher statements for particular questions:
-# How many people played in Top Gun?
+注意：在您的回答中不要包含任何解释或道歉。
+不要回答任何可能询问您构建Cypher语句以外内容的问题。
+不要包含除生成的Cypher语句以外的任何文本。
+示例：以下是针对特定问题生成的Cypher语句的一些示例：
+# 有多少人参与了《壮志凌云》？
 MATCH (m:Movie {{title:"Top Gun"}})<-[:ACTED_IN]-()
 RETURN count(*) AS numberOfActors
 
-The question is:
+问题是：
 {question}"""
 
 CYPHER_GENERATION_PROMPT = PromptTemplate(
@@ -267,33 +256,30 @@ chain = GraphCypherQAChain.from_llm(
 )
 ```
 
-
 ```python
-chain.invoke("How many people played in Top Gun?")
+chain.invoke("有多少人参与了《壮志凌云》？")
 ```
 ```output
 
 
-[1m> Entering new GraphCypherQAChain chain...[0m
+[1m> 进入新的GraphCypherQAChain链...[0m
 ``````output
-Generated Cypher:
+生成的Cypher：
 [32;1m[1;3mMATCH (:Movie {name:"Top Gun"})<-[:ACTED_IN]-(:Actor)
 RETURN count(*) AS numberOfActors[0m
-Full Context:
+完整上下文：
 [32;1m[1;3m[{'numberofactors': 4}][0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 ```
-
 
 ```output
-{'query': 'How many people played in Top Gun?',
- 'result': "I don't know the answer."}
+{'query': '有多少人参与了《壮志凌云》？',
+ 'result': "我不知道答案。"}
 ```
 
-
-## Use separate LLMs for Cypher and answer generation
-You can use the `cypher_llm` and `qa_llm` parameters to define different llms
+## 使用独立的 LLM 进行 Cypher 和回答生成
+您可以使用 `cypher_llm` 和 `qa_llm` 参数来定义不同的 LLM
 
 
 ```python
@@ -330,11 +316,9 @@ Full Context:
  'result': 'Tom Cruise, Val Kilmer, Anthony Edwards, and Meg Ryan played in Top Gun.'}
 ```
 
+## 忽略指定的节点和关系类型
 
-## Ignore specified node and relationship types
-
-You can use `include_types` or `exclude_types` to ignore parts of the graph schema when generating Cypher statements.
-
+您可以使用 `include_types` 或 `exclude_types` 在生成 Cypher 语句时忽略图谱模式的部分内容。
 
 ```python
 chain = GraphCypherQAChain.from_llm(
@@ -346,9 +330,8 @@ chain = GraphCypherQAChain.from_llm(
 )
 ```
 
-
 ```python
-# Inspect graph schema
+# 检查图谱模式
 print(chain.graph_schema)
 ```
 ```output
@@ -359,9 +342,9 @@ ACTED_IN {},REL_TYPE {rel_prop: STRING}
 The relationships are the following:
 (:LabelA)-[:REL_TYPE]->(:LabelB),(:LabelA)-[:REL_TYPE]->(:LabelC)
 ```
-## Validate generated Cypher statements
-You can use the `validate_cypher` parameter to validate and correct relationship directions in generated Cypher statements
 
+## 验证生成的 Cypher 语句
+您可以使用 `validate_cypher` 参数来验证和纠正生成的 Cypher 语句中的关系方向。
 
 ```python
 chain = GraphCypherQAChain.from_llm(
@@ -371,7 +354,6 @@ chain = GraphCypherQAChain.from_llm(
     validate_cypher=True,
 )
 ```
-
 
 ```python
 chain.invoke("Who played in Top Gun?")
@@ -390,9 +372,7 @@ Full Context:
 [1m> Finished chain.[0m
 ```
 
-
 ```output
 {'query': 'Who played in Top Gun?',
  'result': 'Tom Cruise, Val Kilmer, Anthony Edwards, Meg Ryan played in Top Gun.'}
 ```
-

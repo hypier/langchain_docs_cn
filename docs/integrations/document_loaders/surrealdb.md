@@ -1,36 +1,37 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/surrealdb.ipynb
 ---
+
 # SurrealDB
 
->[SurrealDB](https://surrealdb.com/) is an end-to-end cloud-native database designed for modern applications, including web, mobile, serverless, Jamstack, backend, and traditional applications. With SurrealDB, you can simplify your database and API infrastructure, reduce development time, and build secure, performant apps quickly and cost-effectively.
+>[SurrealDB](https://surrealdb.com/) 是一个端到端的云原生数据库，专为现代应用程序设计，包括网页、移动端、无服务器、Jamstack、后端和传统应用程序。使用 SurrealDB，您可以简化数据库和 API 基础设施，缩短开发时间，快速且高效地构建安全和高性能的应用程序。
 >
->**Key features of SurrealDB include:**
+>**SurrealDB 的主要特点包括：**
 >
->* **Reduces development time:** SurrealDB simplifies your database and API stack by removing the need for most server-side components, allowing you to build secure, performant apps faster and cheaper.
->* **Real-time collaborative API backend service:** SurrealDB functions as both a database and an API backend service, enabling real-time collaboration.
->* **Support for multiple querying languages:** SurrealDB supports SQL querying from client devices, GraphQL, ACID transactions, WebSocket connections, structured and unstructured data, graph querying, full-text indexing, and geospatial querying.
->* **Granular access control:** SurrealDB provides row-level permissions-based access control, giving you the ability to manage data access with precision.
+>* **减少开发时间：** SurrealDB 通过消除大多数服务器端组件的需要，简化了您的数据库和 API 堆栈，使您能够更快、更便宜地构建安全和高性能的应用程序。
+>* **实时协作 API 后端服务：** SurrealDB 同时作为数据库和 API 后端服务，支持实时协作。
+>* **支持多种查询语言：** SurrealDB 支持来自客户端设备的 SQL 查询、GraphQL、ACID 事务、WebSocket 连接、结构化和非结构化数据、图查询、全文索引和地理空间查询。
+>* **细粒度访问控制：** SurrealDB 提供基于行级权限的访问控制，使您能够精确管理数据访问。
 >
->View the [features](https://surrealdb.com/features), the latest [releases](https://surrealdb.com/releases), and [documentation](https://surrealdb.com/docs).
+>查看 [features](https://surrealdb.com/features)、最新 [releases](https://surrealdb.com/releases) 和 [documentation](https://surrealdb.com/docs)。
 
 This notebook shows how to use functionality related to the `SurrealDBLoader`.
 
-## Overview
+## 概述
 
-The SurrealDB Document Loader returns a list of Langchain Documents from a SurrealDB database.
+SurrealDB 文档加载器从 SurrealDB 数据库返回 Langchain 文档列表。
 
-The Document Loader takes the following optional parameters:
+文档加载器接受以下可选参数：
 
-* `dburl`: connection string to the websocket endpoint. default: `ws://localhost:8000/rpc`
-* `ns`: name of the namespace. default: `langchain`
-* `db`: name of the database. default: `database`
-* `table`: name of the table. default: `documents`
-* `db_user`: SurrealDB credentials if needed: db username.
-* `db_pass`: SurrealDB credentails if needed: db password.
-* `filter_criteria`: dictionary to construct the `WHERE` clause for filtering results from table.
+* `dburl`: 连接到 websocket 端点的字符串。默认值：`ws://localhost:8000/rpc`
+* `ns`: 命名空间的名称。默认值：`langchain`
+* `db`: 数据库的名称。默认值：`database`
+* `table`: 表的名称。默认值：`documents`
+* `db_user`: 如果需要，SurrealDB 凭据：数据库用户名。
+* `db_pass`: 如果需要，SurrealDB 凭据：数据库密码。
+* `filter_criteria`: 用于构造 `WHERE` 子句以过滤表中结果的字典。
 
-The output `Document` takes the following shape:
+输出的 `Document` 形状如下：
 ```
 Document(
     page_content=<json encoded string containing the result document>,
@@ -44,30 +45,26 @@ Document(
 )
 ```
 
-## Setup
+## 设置
 
-Uncomment the below cells to install surrealdb and langchain.
-
+取消注释下面的单元格以安装 surrealdb 和 langchain。
 
 ```python
 # %pip install --upgrade --quiet  surrealdb langchain langchain-community
 ```
 
-
 ```python
-# add this import for running in jupyter notebook
+# 添加此导入以在 jupyter notebook 中运行
 import nest_asyncio
 
 nest_asyncio.apply()
 ```
-
 
 ```python
 import json
 
 from langchain_community.document_loaders.surrealdb import SurrealDBLoader
 ```
-
 
 ```python
 loader = SurrealDBLoader(
@@ -83,20 +80,14 @@ docs = loader.load()
 len(docs)
 ```
 
-
-
 ```output
 42
 ```
-
-
 
 ```python
 doc = docs[-1]
 doc.metadata
 ```
-
-
 
 ```output
 {'id': 'documents:zzz434sa584xl3b4ohvk',
@@ -106,38 +97,27 @@ doc.metadata
  'table': 'documents'}
 ```
 
-
-
 ```python
 len(doc.page_content)
 ```
-
-
 
 ```output
 18078
 ```
 
-
-
 ```python
 page_content = json.loads(doc.page_content)
 ```
-
 
 ```python
 page_content["text"]
 ```
 
-
-
 ```output
 'When we use taxpayer dollars to rebuild America – we are going to Buy American: buy American products to support American jobs. \n\nThe federal government spends about $600 Billion a year to keep the country safe and secure. \n\nThere’s been a law on the books for almost a century \nto make sure taxpayers’ dollars support American jobs and businesses. \n\nEvery Administration says they’ll do it, but we are actually doing it. \n\nWe will buy American to make sure everything from the deck of an aircraft carrier to the steel on highway guardrails are made in America. \n\nBut to compete for the best jobs of the future, we also need to level the playing field with China and other competitors. \n\nThat’s why it is so important to pass the Bipartisan Innovation Act sitting in Congress that will make record investments in emerging technologies and American manufacturing. \n\nLet me give you one example of why it’s so important to pass it.'
 ```
 
+## 相关
 
-
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

@@ -1,31 +1,31 @@
 # TigerGraph
 
->[TigerGraph](https://www.tigergraph.com/tigergraph-db/) is a natively distributed and high-performance graph database.
-> The storage of data in a graph format of vertices and edges leads to rich relationships, 
-> ideal for grouding LLM responses.
- 
-A big example of the `TigerGraph` and `LangChain` integration [presented here](https://github.com/tigergraph/graph-ml-notebooks/blob/main/applications/large_language_models/TigerGraph_LangChain_Demo.ipynb).
+>[TigerGraph](https://www.tigergraph.com/tigergraph-db/) 是一个原生分布式和高性能的图数据库。
+> 以图形格式存储数据（包括顶点和边）会导致丰富的关系，
+> 非常适合为 LLM 响应提供基础。
 
-## Installation and Setup
+一个关于 `TigerGraph` 和 `LangChain` 集成的大示例 [在这里展示](https://github.com/tigergraph/graph-ml-notebooks/blob/main/applications/large_language_models/TigerGraph_LangChain_Demo.ipynb)。
 
-Follow instructions [how to connect to the `TigerGraph` database](https://docs.tigergraph.com/pytigergraph/current/getting-started/connection).
+## 安装和设置
 
-Install the Python SDK:
+按照说明 [如何连接到 `TigerGraph` 数据库](https://docs.tigergraph.com/pytigergraph/current/getting-started/connection)。
+
+安装 Python SDK：
 
 ```bash
 pip install pyTigerGraph
 ```
 
-## Example
+## 示例
 
-To utilize the `TigerGraph InquiryAI` functionality, you can import `TigerGraph` from `langchain_community.graphs`.
+要利用 `TigerGraph InquiryAI` 功能，您可以从 `langchain_community.graphs` 导入 `TigerGraph`。
 
 ```python
 import pyTigerGraph as tg
 
 conn = tg.TigerGraphConnection(host="DATABASE_HOST_HERE", graphname="GRAPH_NAME_HERE", username="USERNAME_HERE", password="PASSWORD_HERE")
 
-### ==== CONFIGURE INQUIRYAI HOST ====
+### ==== 配置 INQUIRYAI 主机 ====
 conn.ai.configureInquiryAIHost("INQUIRYAI_HOST_HERE")
 
 from langchain_community.graphs import TigerGraph
@@ -34,4 +34,3 @@ graph = TigerGraph(conn)
 result = graph.query("How many servers are there?")
 print(result)
 ```
-

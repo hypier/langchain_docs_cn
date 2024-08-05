@@ -1,76 +1,73 @@
-
 # hyde
 
-This template uses HyDE with RAG. 
+该模板使用了带有RAG的HyDE。
 
-Hyde is a retrieval method that stands for Hypothetical Document Embeddings (HyDE). It is a method used to enhance retrieval by generating a hypothetical document for an incoming query. 
+Hyde是一种检索方法，代表假设文档嵌入（Hypothetical Document Embeddings，HyDE）。它是一种通过为传入查询生成假设文档来增强检索的方法。
 
-The document is then embedded, and that embedding is utilized to look up real documents that are similar to the hypothetical document. 
+然后将该文档嵌入，并利用该嵌入查找与假设文档相似的真实文档。
 
-The underlying concept is that the hypothetical document may be closer in the embedding space than the query. 
+其基本概念是，假设文档在嵌入空间中可能比查询更接近。
 
-For a more detailed description, see the paper [here](https://arxiv.org/abs/2212.10496).
+有关更详细的描述，请参见[此处](https://arxiv.org/abs/2212.10496)。
 
-## Environment Setup
+## 环境设置
 
-Set the `OPENAI_API_KEY` environment variable to access the OpenAI models.
+设置 `OPENAI_API_KEY` 环境变量以访问 OpenAI 模型。
 
-## Usage
+## 用法
 
-To use this package, you should first have the LangChain CLI installed:
+要使用此包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将此包作为唯一的包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package hyde
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，只需运行：
 
 ```shell
 langchain app add hyde
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 ```python
 from hyde.chain import chain as hyde_chain
 
 add_routes(app, hyde_chain, path="/hyde")
 ```
 
-(Optional) Let's now configure LangSmith. 
-LangSmith will help us trace, monitor and debug LangChain applications. 
-You can sign up for LangSmith [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
-
+（可选）现在让我们配置 LangSmith。
+LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接通过以下命令启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server is running locally at 
-[http://localhost:8000](http://localhost:8000)
+这将启动 FastAPI 应用，服务器在本地运行，地址为 
+[http://localhost:8000](http://localhost:8000)。
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/hyde/playground](http://127.0.0.1:8000/hyde/playground)  
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板。
+我们可以在 [http://127.0.0.1:8000/hyde/playground](http://127.0.0.1:8000/hyde/playground) 访问游乐场。
 
-We can access the template from code with:
+我们可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable
 
 runnable = RemoteRunnable("http://localhost:8000/hyde")
 ```
-

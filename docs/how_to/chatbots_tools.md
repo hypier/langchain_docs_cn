@@ -1,26 +1,26 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/chatbots_tools.ipynb
 ---
-# How to add tools to chatbots
 
-:::info Prerequisites
+# 如何为聊天机器人添加工具
 
-This guide assumes familiarity with the following concepts:
+:::info 前提条件
 
-- [Chatbots](/docs/concepts/#messages)
-- [Agents](/docs/tutorials/agents)
-- [Chat history](/docs/concepts/#chat-history)
+本指南假设您熟悉以下概念：
+
+- [聊天机器人](/docs/concepts/#messages)
+- [代理](/docs/tutorials/agents)
+- [聊天记录](/docs/concepts/#chat-history)
 
 :::
 
-This section will cover how to create conversational agents: chatbots that can interact with other systems and APIs using tools.
+本节将介绍如何创建对话代理：能够使用工具与其他系统和API互动的聊天机器人。
 
-## Setup
+## 设置
 
-For this guide, we'll be using a [tool calling agent](/docs/how_to/agent_executor) with a single tool for searching the web. The default will be powered by [Tavily](/docs/integrations/tools/tavily_search), but you can switch it out for any similar tool. The rest of this section will assume you're using Tavily.
+在本指南中，我们将使用一个 [tool calling agent](/docs/how_to/agent_executor)，该代理使用单一工具进行网页搜索。默认情况下将由 [Tavily](/docs/integrations/tools/tavily_search) 提供支持，但您可以将其替换为任何类似的工具。本节的其余部分将假设您正在使用 Tavily。
 
-You'll need to [sign up for an account](https://tavily.com/) on the Tavily website, and install the following packages:
-
+您需要在 Tavily 网站上 [注册一个账户](https://tavily.com/)，并安装以下软件包：
 
 ```python
 %pip install --upgrade --quiet langchain-community langchain-openai tavily-python
@@ -31,14 +31,13 @@ import dotenv
 dotenv.load_dotenv()
 ```
 
-You will also need your OpenAI key set as `OPENAI_API_KEY` and your Tavily API key set as `TAVILY_API_KEY`.
+您还需要将您的 OpenAI 密钥设置为 `OPENAI_API_KEY`，并将您的 Tavily API 密钥设置为 `TAVILY_API_KEY`。
 
-## Creating an agent
+## 创建一个代理
 
-Our end goal is to create an agent that can respond conversationally to user questions while looking up information as needed.
+我们的最终目标是创建一个能够在需要时查找信息并以对话方式回答用户问题的代理。
 
-First, let's initialize Tavily and an OpenAI chat model capable of tool calling:
-
+首先，让我们初始化 Tavily 和一个能够调用工具的 OpenAI 聊天模型：
 
 ```python
 from langchain_community.tools.tavily_search import TavilySearchResults
@@ -51,8 +50,7 @@ tools = [TavilySearchResults(max_results=1)]
 chat = ChatOpenAI(model="gpt-3.5-turbo-1106", temperature=0)
 ```
 
-To make our agent conversational, we must also choose a prompt with a placeholder for our chat history. Here's an example:
-
+为了使我们的代理具有对话能力，我们还必须选择一个带有聊天历史占位符的提示。以下是一个示例：
 
 ```python
 from langchain_core.prompts import ChatPromptTemplate
@@ -70,8 +68,7 @@ prompt = ChatPromptTemplate.from_messages(
 )
 ```
 
-Great! Now let's assemble our agent:
-
+太好了！现在让我们组装我们的代理：
 
 ```python
 from langchain.agents import AgentExecutor, create_tool_calling_agent
@@ -81,9 +78,9 @@ agent = create_tool_calling_agent(chat, tools, prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 ```
 
-## Running the agent
+## 运行代理
 
-Now that we've set up our agent, let's try interacting with it! It can handle both trivial queries that require no lookup:
+现在我们已经设置好了代理，让我们尝试与它进行互动！它可以处理不需要查找的简单查询：
 
 
 ```python
@@ -107,7 +104,7 @@ agent_executor.invoke({"messages": [HumanMessage(content="I'm Nemo!")]})
 ```
 
 
-Or, it can use of the passed search tool to get up to date information if needed:
+或者，如果需要，它可以使用传递的搜索工具获取最新信息：
 
 
 ```python
@@ -142,11 +139,9 @@ You can read more about it in this article: [Great Barrier Reef hit with widespr
  'output': "The Great Barrier Reef is currently showing signs of recovery, with record coral cover being seen across much of the reef. This recovery comes after past storms and mass-bleaching events. However, the rapid growth in coral cover appears to have come at the expense of the diversity of coral on the reef, with most of the increases accounted for by fast-growing branching coral called Acropora. There were discussions about the reef's potential inclusion on the World Heritage In Danger list, but the meeting to consider this was indefinitely postponed due to the war in Ukraine.\n\nYou can read more about it in this article: [Great Barrier Reef hit with widespread and severe bleaching event](https://www.abc.net.au/news/2022-08-04/great-barrier-reef-report-says-coral-recovering-after-bleaching/101296186)"}
 ```
 
+## 对话响应
 
-## Conversational responses
-
-Because our prompt contains a placeholder for chat history messages, our agent can also take previous interactions into account and respond conversationally like a standard chatbot:
-
+因为我们的提示包含了聊天历史消息的占位符，我们的代理也可以考虑之前的互动并像标准聊天机器人一样进行对话响应：
 
 ```python
 from langchain_core.messages import AIMessage, HumanMessage
@@ -179,8 +174,7 @@ agent_executor.invoke(
 ```
 
 
-If preferred, you can also wrap the agent executor in a [`RunnableWithMessageHistory`](/docs/how_to/message_history/) class to internally manage history messages. Let's redeclare it this way:
-
+如果需要，您还可以将代理执行器包装在一个 [`RunnableWithMessageHistory`](/docs/how_to/message_history/) 类中，以内部管理历史消息。让我们这样重新声明它：
 
 ```python
 agent = create_tool_calling_agent(chat, tools, prompt)
@@ -188,8 +182,7 @@ agent = create_tool_calling_agent(chat, tools, prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 ```
 
-Then, because our agent executor has multiple outputs, we also have to set the `output_messages_key` property when initializing the wrapper:
-
+然后，因为我们的代理执行器有多个输出，我们还必须在初始化包装器时设置 `output_messages_key` 属性：
 
 ```python
 from langchain_community.chat_message_histories import ChatMessageHistory
@@ -225,8 +218,7 @@ conversational_agent_executor.invoke(
 ```
 
 
-And then if we rerun our wrapped agent executor:
-
+然后，如果我们重新运行我们的包装代理执行器：
 
 ```python
 conversational_agent_executor.invoke(
@@ -252,10 +244,10 @@ conversational_agent_executor.invoke(
 ```
 
 
-This [LangSmith trace](https://smith.langchain.com/public/1a9f712a-7918-4661-b3ff-d979bcc2af42/r) shows what's going on under the hood.
+这个 [LangSmith 跟踪](https://smith.langchain.com/public/1a9f712a-7918-4661-b3ff-d979bcc2af42/r) 显示了背后发生的事情。
 
-## Further reading
+## 进一步阅读
 
-Other types agents can also support conversational responses too - for more, check out the [agents section](/docs/tutorials/agents).
+其他类型的代理也可以支持对话响应 - 欲了解更多，请查看[代理部分](/docs/tutorials/agents)。
 
-For more on tool usage, you can also check out [this use case section](/docs/how_to#tools).
+有关工具使用的更多信息，您还可以查看[此用例部分](/docs/how_to#tools)。

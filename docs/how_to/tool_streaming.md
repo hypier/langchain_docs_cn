@@ -1,24 +1,19 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/tool_streaming.ipynb
 ---
-# How to stream tool calls
 
-When tools are called in a streaming context, 
-[message chunks](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessageChunk.html#langchain_core.messages.ai.AIMessageChunk) 
-will be populated with [tool call chunk](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.tool.ToolCallChunk.html#langchain_core.messages.tool.ToolCallChunk) 
-objects in a list via the `.tool_call_chunks` attribute. A `ToolCallChunk` includes 
-optional string fields for the tool `name`, `args`, and `id`, and includes an optional 
-integer field `index` that can be used to join chunks together. Fields are optional 
-because portions of a tool call may be streamed across different chunks (e.g., a chunk 
-that includes a substring of the arguments may have null values for the tool name and id).
+# 如何流式调用工具
 
-Because message chunks inherit from their parent message class, an 
+在流式上下文中调用工具时， 
+[消息块](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessageChunk.html#langchain_core.messages.ai.AIMessageChunk) 
+将通过 `.tool_call_chunks` 属性以列表形式填充 [工具调用块](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.tool.ToolCallChunk.html#langchain_core.messages.tool.ToolCallChunk) 
+对象。一个 `ToolCallChunk` 包含工具 `name`、`args` 和 `id` 的可选字符串字段，并包含一个可选的整数字段 `index`，可用于将块连接在一起。字段是可选的，因为工具调用的某些部分可能会跨不同的块进行流式传输（例如，包含参数子字符串的块可能在工具名称和 ID 上具有空值）。
+
+由于消息块继承自其父消息类，带有工具调用块的 
 [AIMessageChunk](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessageChunk.html#langchain_core.messages.ai.AIMessageChunk) 
-with tool call chunks will also include `.tool_calls` and `.invalid_tool_calls` fields. 
-These fields are parsed best-effort from the message's tool call chunks.
+也将包含 `.tool_calls` 和 `.invalid_tool_calls` 字段。这些字段是从消息的工具调用块进行尽力解析的。
 
-Note that not all providers currently support streaming for tool calls. Before we start let's define our tools and our model.
-
+请注意，并非所有提供者目前都支持工具调用的流式传输。在开始之前，让我们定义我们的工具和模型。
 
 ```python
 from langchain_core.tools import tool
@@ -39,7 +34,6 @@ def multiply(a: int, b: int) -> int:
 tools = [add, multiply]
 ```
 
-
 ```python
 import os
 from getpass import getpass
@@ -52,8 +46,7 @@ llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 llm_with_tools = llm.bind_tools(tools)
 ```
 
-Now let's define our query and stream our output:
-
+现在让我们定义我们的查询并流式输出：
 
 ```python
 query = "What is 3 * 12? Also, what is 11 + 49?"
@@ -75,10 +68,9 @@ async for chunk in llm_with_tools.astream(query):
 [{'name': None, 'args': '49}', 'id': None, 'index': 1}]
 []
 ```
-Note that adding message chunks will merge their corresponding tool call chunks. This is the principle by which LangChain's various [tool output parsers](/docs/how_to/output_parser_structured) support streaming.
+请注意，添加消息块将合并其对应的工具调用块。这是 LangChain 各种 [工具输出解析器](/docs/how_to/output_parser_structured) 支持流式传输的原理。
 
-For example, below we accumulate tool call chunks:
-
+例如，下面我们累积工具调用块：
 
 ```python
 first = True
@@ -112,8 +104,7 @@ print(type(gathered.tool_call_chunks[0]["args"]))
 ```output
 <class 'str'>
 ```
-And below we accumulate tool calls to demonstrate partial parsing:
-
+下面我们累积工具调用以演示部分解析：
 
 ```python
 first = True

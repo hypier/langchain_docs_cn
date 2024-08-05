@@ -1,40 +1,39 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/tutorials/pdf_qa.ipynb
-keywords: [pdf, document loader]
+keywords: [pdf, 文档加载器]
 ---
-# Build a PDF ingestion and Question/Answering system
 
-:::info Prerequisites
+# 构建 PDF 导入和问答系统
 
-This guide assumes familiarity with the following concepts:
+:::info 前提条件
 
-- [Document loaders](/docs/concepts/#document-loaders)
-- [Chat models](/docs/concepts/#chat-models)
-- [Embeddings](/docs/concepts/#embedding-models)
-- [Vector stores](/docs/concepts/#vector-stores)
-- [Retrieval-augmented generation](/docs/tutorials/rag/)
+本指南假设您熟悉以下概念：
+
+- [文档加载器](/docs/concepts/#document-loaders)
+- [聊天模型](/docs/concepts/#chat-models)
+- [嵌入](/docs/concepts/#embedding-models)
+- [向量存储](/docs/concepts/#vector-stores)
+- [检索增强生成](/docs/tutorials/rag/)
 
 :::
 
-PDF files often hold crucial unstructured data unavailable from other sources. They can be quite lengthy, and unlike plain text files, cannot generally be fed directly into the prompt of a language model.
+PDF 文件通常包含其他来源无法获得的重要非结构化数据。它们可能相当冗长，并且与纯文本文件不同，通常不能直接输入到语言模型的提示中。
 
-In this tutorial, you'll create a system that can answer questions about PDF files. More specifically, you'll use a [Document Loader](/docs/concepts/#document-loaders) to load text in a format usable by an LLM, then build a retrieval-augmented generation (RAG) pipeline to answer questions, including citations from the source material.
+在本教程中，您将创建一个可以回答有关 PDF 文件的问题的系统。更具体地说，您将使用 [文档加载器](/docs/concepts/#document-loaders) 加载可供 LLM 使用的文本格式，然后构建一个检索增强生成（RAG）管道来回答问题，包括引用源材料。
 
-This tutorial will gloss over some concepts more deeply covered in our [RAG](/docs/tutorials/rag/) tutorial, so you may want to go through those first if you haven't already.
+本教程将略过一些在我们的 [RAG](/docs/tutorials/rag/) 教程中更深入讨论的概念，因此如果您还没有阅读过这些内容，您可能想先了解一下。
 
-Let's dive in!
+让我们开始吧！
 
-## Loading documents
+## 加载文档
 
-First, you'll need to choose a PDF to load. We'll use a document from [Nike's annual public SEC report](https://s1.q4cdn.com/806093406/files/doc_downloads/2023/414759-1-_5_Nike-NPS-Combo_Form-10-K_WR.pdf). It's over 100 pages long, and contains some crucial data mixed with longer explanatory text. However, you can feel free to use a PDF of your choosing.
+首先，您需要选择一个要加载的 PDF。我们将使用来自 [Nike 的年度公共 SEC 报告](https://s1.q4cdn.com/806093406/files/doc_downloads/2023/414759-1-_5_Nike-NPS-Combo_Form-10-K_WR.pdf) 的文档。它超过 100 页，包含一些关键数据和较长的解释性文本。不过，您可以自由选择任何 PDF。
 
-Once you've chosen your PDF, the next step is to load it into a format that an LLM can more easily handle, since LLMs generally require text inputs. LangChain has a few different [built-in document loaders](/docs/how_to/document_loader_pdf/) for this purpose which you can experiment with. Below, we'll use one powered by the [`pypdf`](https://pypi.org/project/pypdf/) package that reads from a filepath:
-
+一旦您选择了 PDF，下一步是将其加载到 LLM 更容易处理的格式中，因为 LLM 通常需要文本输入。LangChain 有一些不同的 [内置文档加载器](/docs/how_to/document_loader_pdf/) 可供您实验。下面，我们将使用一个由 [`pypdf`](https://pypi.org/project/pypdf/) 包驱动的加载器，它从文件路径读取：
 
 ```python
 %pip install -qU pypdf langchain_community
 ```
-
 
 ```python
 from langchain_community.document_loaders import PyPDFLoader
@@ -63,17 +62,17 @@ FORM 10-K
 
 {'source': '../example_data/nke-10k-2023.pdf', 'page': 0}
 ```
-So what just happened?
+那么刚刚发生了什么？
 
-- The loader reads the PDF at the specified path into memory.
-- It then extracts text data using the `pypdf` package.
-- Finally, it creates a LangChain [Document](/docs/concepts/#documents) for each page of the PDF with the page's content and some metadata about where in the document the text came from.
+- 加载器从指定路径读取 PDF 到内存中。
+- 然后，它使用 `pypdf` 包提取文本数据。
+- 最后，它为 PDF 的每一页创建一个 LangChain [文档](/docs/concepts/#documents)，其中包含页面内容和一些关于文本来源的元数据。
 
-LangChain has [many other document loaders](/docs/integrations/document_loaders/) for other data sources, or you can create a [custom document loader](/docs/how_to/document_loader_custom/).
+LangChain 还有 [许多其他文档加载器](/docs/integrations/document_loaders/) 适用于其他数据源，或者您可以创建一个 [自定义文档加载器](/docs/how_to/document_loader_custom/)。
 
-## Question answering with RAG
+## 使用 RAG 的问答
 
-Next, you'll prepare the loaded documents for later retrieval. Using a [text splitter](/docs/concepts/#text-splitters), you'll split your loaded documents into smaller documents that can more easily fit into an LLM's context window, then load them into a [vector store](/docs/concepts/#vector-stores). You can then create a [retriever](/docs/concepts/#retrievers) from the vector store for use in our RAG chain:
+接下来，您将为后续检索准备加载的文档。使用 [text splitter](/docs/concepts/#text-splitters)，您将把加载的文档拆分为更小的文档，以便更容易适应 LLM 的上下文窗口，然后将它们加载到 [vector store](/docs/concepts/#vector-stores) 中。然后，您可以从向量存储中创建一个 [retriever](/docs/concepts/#retrievers)，以便在我们的 RAG 链中使用：
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
@@ -97,7 +96,7 @@ vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings
 retriever = vectorstore.as_retriever()
 ```
 
-Finally, you'll use some built-in helpers to construct the final `rag_chain`:
+最后，您将使用一些内置助手来构建最终的 `rag_chain`：
 
 
 ```python
@@ -133,35 +132,24 @@ results
 
 
 
-```output
-{'input': "What was Nike's revenue in 2023?",
- 'context': [Document(page_content='Table of Contents\nFISCAL 2023 NIKE BRAND REVENUE HIGHLIGHTS\nThe following tables present NIKE Brand revenues disaggregated by reportable operating segment, distribution channel and major product line:\nFISCAL 2023 COMPARED TO FISCAL 2022\n•NIKE, Inc. Revenues were $51.2 billion in fiscal 2023, which increased 10% and 16% compared to fiscal 2022 on a reported and currency-neutral basis, respectively.\nThe increase was due to higher revenues in North America, Europe, Middle East & Africa ("EMEA"), APLA and Greater China, which contributed approximately 7, 6,\n2 and 1 percentage points to NIKE, Inc. Revenues, respectively.\n•NIKE Brand revenues, which represented over 90% of NIKE, Inc. Revenues, increased 10% and 16% on a reported and currency-neutral basis, respectively. This\nincrease was primarily due to higher revenues in Men\'s, the Jordan Brand, Women\'s and Kids\' which grew 17%, 35%,11% and 10%, respectively, on a wholesale\nequivalent basis.', metadata={'page': 35, 'source': '../example_data/nke-10k-2023.pdf'}),
-  Document(page_content='Enterprise Resource Planning Platform, data and analytics, demand sensing, insight gathering, and other areas to create an end-to-end technology foundation, which we\nbelieve will further accelerate our digital transformation. We believe this unified approach will accelerate growth and unlock more efficiency for our business, while driving\nspeed and responsiveness as we serve consumers globally.\nFINANCIAL HIGHLIGHTS\n•In fiscal 2023, NIKE, Inc. achieved record Revenues of $51.2 billion, which increased 10% and 16% on a reported and currency-neutral basis, respectively\n•NIKE Direct revenues grew 14% from $18.7 billion in fiscal 2022 to $21.3 billion in fiscal 2023, and represented approximately 44% of total NIKE Brand revenues for\nfiscal 2023\n•Gross margin for the fiscal year decreased 250 basis points to 43.5% primarily driven by higher product costs, higher markdowns and unfavorable changes in foreign\ncurrency exchange rates, partially offset by strategic pricing actions', metadata={'page': 30, 'source': '../example_data/nke-10k-2023.pdf'}),
-  Document(page_content="Table of Contents\nNORTH AMERICA\n(Dollars in millions) FISCAL 2023FISCAL 2022 % CHANGE% CHANGE\nEXCLUDING\nCURRENCY\nCHANGESFISCAL 2021 % CHANGE% CHANGE\nEXCLUDING\nCURRENCY\nCHANGES\nRevenues by:\nFootwear $ 14,897 $ 12,228 22 % 22 %$ 11,644 5 % 5 %\nApparel 5,947 5,492 8 % 9 % 5,028 9 % 9 %\nEquipment 764 633 21 % 21 % 507 25 % 25 %\nTOTAL REVENUES $ 21,608 $ 18,353 18 % 18 %$ 17,179 7 % 7 %\nRevenues by:    \nSales to Wholesale Customers $ 11,273 $ 9,621 17 % 18 %$ 10,186 -6 % -6 %\nSales through NIKE Direct 10,335 8,732 18 % 18 % 6,993 25 % 25 %\nTOTAL REVENUES $ 21,608 $ 18,353 18 % 18 %$ 17,179 7 % 7 %\nEARNINGS BEFORE INTEREST AND TAXES $ 5,454 $ 5,114 7 % $ 5,089 0 %\nFISCAL 2023 COMPARED TO FISCAL 2022\n•North America revenues increased 18% on a currency-neutral basis, primarily due to higher revenues in Men's and the Jordan Brand. NIKE Direct revenues\nincreased 18%, driven by strong digital sales growth of 23%, comparable store sales growth of 9% and the addition of new stores.", metadata={'page': 39, 'source': '../example_data/nke-10k-2023.pdf'}),
-  Document(page_content="Table of Contents\nEUROPE, MIDDLE EAST & AFRICA\n(Dollars in millions) FISCAL 2023FISCAL 2022 % CHANGE% CHANGE\nEXCLUDING\nCURRENCY\nCHANGESFISCAL 2021 % CHANGE% CHANGE\nEXCLUDING\nCURRENCY\nCHANGES\nRevenues by:\nFootwear $ 8,260 $ 7,388 12 % 25 %$ 6,970 6 % 9 %\nApparel 4,566 4,527 1 % 14 % 3,996 13 % 16 %\nEquipment 592 564 5 % 18 % 490 15 % 17 %\nTOTAL REVENUES $ 13,418 $ 12,479 8 % 21 %$ 11,456 9 % 12 %\nRevenues by:    \nSales to Wholesale Customers $ 8,522 $ 8,377 2 % 15 %$ 7,812 7 % 10 %\nSales through NIKE Direct 4,896 4,102 19 % 33 % 3,644 13 % 15 %\nTOTAL REVENUES $ 13,418 $ 12,479 8 % 21 %$ 11,456 9 % 12 %\nEARNINGS BEFORE INTEREST AND TAXES $ 3,531 $ 3,293 7 % $ 2,435 35 % \nFISCAL 2023 COMPARED TO FISCAL 2022\n•EMEA revenues increased 21% on a currency-neutral basis, due to higher revenues in Men's, the Jordan Brand, Women's and Kids'. NIKE Direct revenues\nincreased 33%, driven primarily by strong digital sales growth of 43% and comparable store sales growth of 22%.", metadata={'page': 40, 'source': '../example_data/nke-10k-2023.pdf'})],
- 'answer': 'According to the financial highlights, Nike, Inc. achieved record revenues of $51.2 billion in fiscal 2023, which increased 10% on a reported basis and 16% on a currency-neutral basis compared to fiscal 2022.'}
-```
 
 
-You can see that you get both a final answer in the `answer` key of the results dict, and the `context` the LLM used to generate an answer.
+您可以看到，结果字典的 `answer` 键中得到了最终答案，以及 LLM 用于生成答案的 `context`。
 
-Examining the values under the `context` further, you can see that they are documents that each contain a chunk of the ingested page content. Usefully, these documents also preserve the original metadata from way back when you first loaded them:
+进一步检查 `context` 下的值，您可以看到它们是每个包含摄取页面内容块的文档。值得注意的是，这些文档还保留了您首次加载时的原始元数据：
 
 
 ```python
 print(results["context"][0].page_content)
 ```
 ```output
-Table of Contents
-FISCAL 2023 NIKE BRAND REVENUE HIGHLIGHTS
-The following tables present NIKE Brand revenues disaggregated by reportable operating segment, distribution channel and major product line:
-FISCAL 2023 COMPARED TO FISCAL 2022
-•NIKE, Inc. Revenues were $51.2 billion in fiscal 2023, which increased 10% and 16% compared to fiscal 2022 on a reported and currency-neutral basis, respectively.
-The increase was due to higher revenues in North America, Europe, Middle East & Africa ("EMEA"), APLA and Greater China, which contributed approximately 7, 6,
-2 and 1 percentage points to NIKE, Inc. Revenues, respectively.
-•NIKE Brand revenues, which represented over 90% of NIKE, Inc. Revenues, increased 10% and 16% on a reported and currency-neutral basis, respectively. This
-increase was primarily due to higher revenues in Men's, the Jordan Brand, Women's and Kids' which grew 17%, 35%,11% and 10%, respectively, on a wholesale
-equivalent basis.
+目录
+2023 财年耐克品牌收入亮点
+以下表格按可报告的运营部门、分销渠道和主要产品线列出了耐克品牌的收入：
+2023 财年与 2022 财年比较
+•耐克公司2023 财年的收入为 512 亿美元，较 2022 财年分别增长了 10% 和 16%（按报告和货币中性计算）。
+增长主要得益于北美、欧洲、中东和非洲（“EMEA”）、APLA 和大中华区的收入增长，分别对耐克公司的收入贡献了约 7%、6%、2% 和 1 个百分点。
+•耐克品牌的收入占耐克公司收入的90%以上，按报告和货币中性计算，分别增长了10%和16%。这一增长主要得益于男装、乔丹品牌、女装和儿童装的收入增长，分别在批发等效基础上增长了17%、35%、11%和10%。
 ```
 
 ```python
@@ -170,24 +158,24 @@ print(results["context"][0].metadata)
 ```output
 {'page': 35, 'source': '../example_data/nke-10k-2023.pdf'}
 ```
-This particular chunk came from page 35 in the original PDF. You can use this data to show which page in the PDF the answer came from, allowing users to quickly verify that answers are based on the source material.
+这一特定块来自原始 PDF 的第 35 页。您可以使用这些数据来显示答案来自 PDF 的哪一页，从而使用户能够快速验证答案是否基于源材料。
 
 :::info
-For a deeper dive into RAG, see [this more focused tutorial](/docs/tutorials/rag/) or [our how-to guides](/docs/how_to/#qa-with-rag).
+要深入了解 RAG，请查看 [这个更专注的教程](/docs/tutorials/rag/) 或 [我们的操作指南](/docs/how_to/#qa-with-rag)。
 :::
 
-## Next steps
+## 下一步
 
-You've now seen how to load documents from a PDF file with a Document Loader and some techniques you can use to prepare that loaded data for RAG.
+您现在已经了解了如何使用文档加载器从 PDF 文件中加载文档，以及一些可以用来准备加载数据以进行 RAG 的技术。
 
-For more on document loaders, you can check out:
+有关文档加载器的更多信息，您可以查看：
 
-- [The entry in the conceptual guide](/docs/concepts/#document-loaders)
-- [Related how-to guides](/docs/how_to/#document-loaders)
-- [Available integrations](/docs/integrations/document_loaders/)
-- [How to create a custom document loader](/docs/how_to/document_loader_custom/)
+- [概念指南中的条目](/docs/concepts/#document-loaders)
+- [相关的操作指南](/docs/how_to/#document-loaders)
+- [可用的集成](/docs/integrations/document_loaders/)
+- [如何创建自定义文档加载器](/docs/how_to/document_loader_custom/)
 
-For more on RAG, see:
+有关 RAG 的更多信息，请参见：
 
-- [Build a Retrieval Augmented Generation (RAG) App](/docs/tutorials/rag/)
-- [Related how-to guides](/docs/how_to/#qa-with-rag)
+- [构建检索增强生成 (RAG) 应用程序](/docs/tutorials/rag/)
+- [相关的操作指南](/docs/how_to/#qa-with-rag)

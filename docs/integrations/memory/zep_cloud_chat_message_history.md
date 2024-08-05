@@ -1,18 +1,19 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/zep_cloud_chat_message_history.ipynb
 ---
+
 # ZepCloudChatMessageHistory
-> Recall, understand, and extract data from chat histories. Power personalized AI experiences.
+> 回忆、理解并提取聊天记录中的数据。增强个性化的AI体验。
 
->[Zep](https://www.getzep.com) is a long-term memory service for AI Assistant apps.
-> With Zep, you can provide AI assistants with the ability to recall past conversations, no matter how distant,
-> while also reducing hallucinations, latency, and cost.
+>[Zep](https://www.getzep.com) 是一个为AI助手应用提供长期记忆服务的工具。
+> 使用Zep，您可以让AI助手回忆起过去的对话，无论距离多远，
+> 同时减少幻觉、延迟和成本。
 
-> See [Zep Cloud Installation Guide](https://help.getzep.com/sdks) and more [Zep Cloud Langchain Examples](https://github.com/getzep/zep-python/tree/main/examples)
+> 请参阅 [Zep Cloud安装指南](https://help.getzep.com/sdks) 和更多 [Zep Cloud Langchain示例](https://github.com/getzep/zep-python/tree/main/examples)
 
-## Example
+## 示例
 
-This notebook demonstrates how to use [Zep](https://www.getzep.com/) to persist chat history and use Zep Memory with your chain.
+本笔记本演示了如何使用 [Zep](https://www.getzep.com/) 来持久化聊天记录，并在您的链中使用 Zep Memory。
 
 
 
@@ -33,7 +34,7 @@ from langchain_openai import ChatOpenAI
 session_id = str(uuid4())  # This is a unique identifier for the session
 ```
 
-Provide your OpenAI key
+提供您的 OpenAI 密钥
 
 
 ```python
@@ -42,7 +43,7 @@ import getpass
 openai_key = getpass.getpass()
 ```
 
-Provide your Zep API key. See https://help.getzep.com/projects#api-keys
+提供您的 Zep API 密钥。请参见 https://help.getzep.com/projects#api-keys
 
 
 
@@ -50,65 +51,63 @@ Provide your Zep API key. See https://help.getzep.com/projects#api-keys
 zep_api_key = getpass.getpass()
 ```
 
-Preload some messages into the memory. The default message window is 4 messages. We want to push beyond this to demonstrate auto-summarization.
+将一些消息预加载到内存中。默认消息窗口为 4 条消息。我们希望超出此范围以演示自动总结。
 
 
 ```python
 test_history = [
-    {"role": "human", "content": "Who was Octavia Butler?"},
+    {"role": "human", "content": "谁是奥克塔维亚·巴特勒？"},
     {
         "role": "ai",
         "content": (
-            "Octavia Estelle Butler (June 22, 1947 – February 24, 2006) was an American"
-            " science fiction author."
+            "奥克塔维亚·埃斯特尔·巴特勒（1947年6月22日 - 2006年2月24日）是一位美国"
+            " 科幻小说作家。"
         ),
     },
-    {"role": "human", "content": "Which books of hers were made into movies?"},
+    {"role": "human", "content": "她的哪本书被改编成电影？"},
     {
         "role": "ai",
         "content": (
-            "The most well-known adaptation of Octavia Butler's work is the FX series"
-            " Kindred, based on her novel of the same name."
+            "奥克塔维亚·巴特勒作品中最著名的改编是 FX 系列"
+            " 《亲缘关系》，该系列改编自她同名小说。"
         ),
     },
-    {"role": "human", "content": "Who were her contemporaries?"},
+    {"role": "human", "content": "她的同时代人是谁？"},
     {
         "role": "ai",
         "content": (
-            "Octavia Butler's contemporaries included Ursula K. Le Guin, Samuel R."
-            " Delany, and Joanna Russ."
+            "奥克塔维亚·巴特勒的同时代人包括厄休拉·K·勒古恩、塞缪尔·R·"
+            " 德拉尼和乔安娜·拉斯。"
         ),
     },
-    {"role": "human", "content": "What awards did she win?"},
+    {"role": "human", "content": "她获得了哪些奖项？"},
     {
         "role": "ai",
         "content": (
-            "Octavia Butler won the Hugo Award, the Nebula Award, and the MacArthur"
-            " Fellowship."
+            "奥克塔维亚·巴特勒获得了雨果奖、星云奖和麦克阿瑟"
+            " 奖学金。"
         ),
     },
     {
         "role": "human",
-        "content": "Which other women sci-fi writers might I want to read?",
+        "content": "还有哪些女性科幻作家值得我阅读？",
     },
     {
         "role": "ai",
-        "content": "You might want to read Ursula K. Le Guin or Joanna Russ.",
+        "content": "您可能想阅读厄休拉·K·勒古恩或乔安娜·拉斯。"
     },
     {
         "role": "human",
         "content": (
-            "Write a short synopsis of Butler's book, Parable of the Sower. What is it"
-            " about?"
+            "写一段关于巴特勒的书《播种者的寓言》的简短简介。它讲述了什么？"
         ),
     },
     {
         "role": "ai",
         "content": (
-            "Parable of the Sower is a science fiction novel by Octavia Butler,"
-            " published in 1993. It follows the story of Lauren Olamina, a young woman"
-            " living in a dystopian future where society has collapsed due to"
-            " environmental disasters, poverty, and violence."
+            "《播种者的寓言》是奥克塔维亚·巴特勒于1993年出版的科幻小说。"
+            " 故事讲述了年轻女性劳伦·奥拉米娜的故事，她生活在一个反乌托邦的未来，"
+            " 在这个未来中，由于环境灾难、贫困和暴力，社会已经崩溃。"
         ),
         "metadata": {"foo": "bar"},
     },
@@ -133,14 +132,14 @@ time.sleep(
 )  # Wait for the messages to be embedded and summarized, this happens asynchronously.
 ```
 
-**MessagesPlaceholder** - We’re using the variable name chat_history here. This will incorporate the chat history into the prompt.
-It’s important that this variable name aligns with the history_messages_key in the RunnableWithMessageHistory chain for seamless integration.
+**MessagesPlaceholder** - 我们在这里使用变量名 chat_history。这将把聊天记录纳入提示中。
+确保该变量名与 RunnableWithMessageHistory 链中的 history_messages_key 对齐，以实现无缝集成。
 
-**question** must match input_messages_key in `RunnableWithMessageHistory“ chain.
+**question** 必须与 `RunnableWithMessageHistory` 链中的 input_messages_key 匹配。
 
 
 ```python
-template = """Be helpful and answer the question below using the provided context:
+template = """请提供帮助并使用提供的上下文回答下面的问题：
     """
 answer_prompt = ChatPromptTemplate.from_messages(
     [
@@ -151,7 +150,7 @@ answer_prompt = ChatPromptTemplate.from_messages(
 )
 ```
 
-We use RunnableWithMessageHistory to incorporate Zep’s Chat History into our chain. This class requires a session_id as a parameter when you activate the chain.
+我们使用 RunnableWithMessageHistory 将 Zep 的聊天记录纳入我们的链中。激活链时，此类需要一个 session_id 作为参数。
 
 
 ```python
@@ -177,17 +176,16 @@ chain = RunnableWithMessageHistory(
 ```python
 chain.invoke(
     {
-        "question": "What is the book's relevance to the challenges facing contemporary society?"
+        "question": "这本书与当代社会面临的挑战有什么关系？"
     },
     config={"configurable": {"session_id": session_id}},
 )
 ```
 ```output
-Parent run 622c6f75-3e4a-413d-ba20-558c1fea0d50 not found for run af12a4b1-e882-432d-834f-e9147465faf6. Treating as a root run.
+父运行 622c6f75-3e4a-413d-ba20-558c1fea0d50 未找到运行 af12a4b1-e882-432d-834f-e9147465faf6。将其视为根运行。
 ```
 
 
 ```output
-'"Parable of the Sower" is relevant to the challenges facing contemporary society as it explores themes of environmental degradation, economic inequality, social unrest, and the search for hope and community in the face of chaos. The novel\'s depiction of a dystopian future where society has collapsed due to environmental and economic crises serves as a cautionary tale about the potential consequences of our current societal and environmental challenges. By addressing issues such as climate change, social injustice, and the impact of technology on humanity, Octavia Butler\'s work prompts readers to reflect on the pressing issues of our time and the importance of resilience, empathy, and collective action in building a better future.'
+'"播种者的寓言" 与当代社会面临的挑战相关，因为它探讨了环境退化、经济不平等、社会动荡以及在混乱面前寻找希望和社区的主题。小说描绘了一个反乌托邦的未来，社会因环境和经济危机而崩溃，作为对我们当前社会和环境挑战潜在后果的警示故事。通过讨论气候变化、社会不公和技术对人类的影响等问题，奥克塔维亚·巴特勒的作品促使读者反思我们时代的紧迫问题，以及在建设更美好未来中韧性、同情心和集体行动的重要性。'
 ```
-

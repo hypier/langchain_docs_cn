@@ -1,7 +1,8 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/predictionguard.ipynb
 ---
-# Prediction Guard
+
+# 预测保护
 
 
 ```python
@@ -17,7 +18,7 @@ from langchain_community.llms import PredictionGuard
 from langchain_core.prompts import PromptTemplate
 ```
 
-## Basic LLM usage
+## 基本 LLM 使用方法
 
 
 
@@ -41,8 +42,7 @@ pgllm = PredictionGuard(model="OpenAI-text-davinci-003")
 pgllm("Tell me a joke")
 ```
 
-## Control the output structure/ type of LLMs
-
+## 控制 LLM 的输出结构/类型
 
 ```python
 template = """Respond to the following query based on the context.
@@ -59,12 +59,10 @@ Result: """
 prompt = PromptTemplate.from_template(template)
 ```
 
-
 ```python
 # Without "guarding" or controlling the output of the LLM.
 pgllm(prompt.format(query="What kind of post is this?"))
 ```
-
 
 ```python
 # With "guarding" or controlling the output of the LLM. See the
@@ -81,7 +79,7 @@ pgllm = PredictionGuard(
 pgllm(prompt.format(query="What kind of post is this?"))
 ```
 
-## Chaining
+## 链接
 
 
 ```python
@@ -90,28 +88,27 @@ pgllm = PredictionGuard(model="OpenAI-text-davinci-003")
 
 
 ```python
-template = """Question: {question}
+template = """问题: {question}
 
-Answer: Let's think step by step."""
+答案: 让我们一步一步来思考。"""
 prompt = PromptTemplate.from_template(template)
 llm_chain = LLMChain(prompt=prompt, llm=pgllm, verbose=True)
 
-question = "What NFL team won the Super Bowl in the year Justin Beiber was born?"
+question = "哪支NFL球队在贾斯汀·比伯出生那年赢得了超级碗？"
 
 llm_chain.predict(question=question)
 ```
 
 
 ```python
-template = """Write a {adjective} poem about {subject}."""
+template = """写一首关于{subject}的{adjective}诗。"""
 prompt = PromptTemplate.from_template(template)
 llm_chain = LLMChain(prompt=prompt, llm=pgllm, verbose=True)
 
 llm_chain.predict(adjective="sad", subject="ducks")
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

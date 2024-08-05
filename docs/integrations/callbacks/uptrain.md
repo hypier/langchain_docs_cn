@@ -2,57 +2,56 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/callbacks/uptrain.ipynb
 ---
 <a target="_blank" href="https://colab.research.google.com/github/langchain-ai/langchain/blob/master/docs/docs/integrations/callbacks/uptrain.ipynb">
-  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="在 Colab 中打开"/>
 </a>
 
 # UpTrain
 
-> UpTrain [[github](https://github.com/uptrain-ai/uptrain) || [website](https://uptrain.ai/) || [docs](https://docs.uptrain.ai/getting-started/introduction)] is an open-source platform to evaluate and improve LLM applications. It provides grades for 20+ preconfigured checks (covering language, code, embedding use cases), performs root cause analyses on instances of failure cases and provides guidance for resolving them.
+> UpTrain [[github](https://github.com/uptrain-ai/uptrain) || [website](https://uptrain.ai/) || [docs](https://docs.uptrain.ai/getting-started/introduction)] 是一个开源平台，用于评估和改进 LLM 应用程序。它提供 20 多个预配置检查的评分（涵盖语言、代码、嵌入用例），对失败案例的实例进行根本原因分析，并提供解决方案的指导。
 
-## UpTrain Callback Handler
+## UpTrain 回调处理程序
 
-This notebook showcases the UpTrain callback handler seamlessly integrating into your pipeline, facilitating diverse evaluations. We have chosen a few evaluations that we deemed apt for evaluating the chains. These evaluations run automatically, with results displayed in the output. More details on UpTrain's evaluations can be found [here](https://github.com/uptrain-ai/uptrain?tab=readme-ov-file#pre-built-evaluations-we-offer-). 
+本笔记本展示了 UpTrain 回调处理程序如何无缝集成到您的管道中，以便进行多样的评估。我们选择了一些我们认为适合评估链的评估。这些评估会自动运行，结果会显示在输出中。有关 UpTrain 评估的更多细节，请参见 [这里](https://github.com/uptrain-ai/uptrain?tab=readme-ov-file#pre-built-evaluations-we-offer-)。 
 
-Selected retievers from Langchain are highlighted for demonstration:
+从 Langchain 中选择的检索器被突出显示以供演示：
 
 ### 1. **Vanilla RAG**:
-RAG plays a crucial role in retrieving context and generating responses. To ensure its performance and response quality, we conduct the following evaluations:
+RAG 在检索上下文和生成响应中起着至关重要的作用。为了确保其性能和响应质量，我们进行以下评估：
 
-- **[Context Relevance](https://docs.uptrain.ai/predefined-evaluations/context-awareness/context-relevance)**: Determines if the context extracted from the query is relevant to the response.
-- **[Factual Accuracy](https://docs.uptrain.ai/predefined-evaluations/context-awareness/factual-accuracy)**: Assesses if the LLM is hallcuinating or providing incorrect information.
-- **[Response Completeness](https://docs.uptrain.ai/predefined-evaluations/response-quality/response-completeness)**: Checks if the response contains all the information requested by the query.
+- **[上下文相关性](https://docs.uptrain.ai/predefined-evaluations/context-awareness/context-relevance)**: 确定从查询中提取的上下文是否与响应相关。
+- **[事实准确性](https://docs.uptrain.ai/predefined-evaluations/context-awareness/factual-accuracy)**: 评估 LLM 是否在幻想或提供不正确的信息。
+- **[响应完整性](https://docs.uptrain.ai/predefined-evaluations/response-quality/response-completeness)**: 检查响应是否包含查询所请求的所有信息。
 
-### 2. **Multi Query Generation**:
-MultiQueryRetriever creates multiple variants of a question having a similar meaning to the original question. Given the complexity, we include the previous evaluations and add:
+### 2. **多查询生成**：
+MultiQueryRetriever 创建多个与原始问题含义相似的问题变体。鉴于复杂性，我们包含之前的评估并添加：
 
-- **[Multi Query Accuracy](https://docs.uptrain.ai/predefined-evaluations/query-quality/multi-query-accuracy)**: Assures that the multi-queries generated mean the same as the original query.
+- **[多查询准确性](https://docs.uptrain.ai/predefined-evaluations/query-quality/multi-query-accuracy)**：确保生成的多查询与原始查询的含义相同。
 
-### 3. **Context Compression and Reranking**:
-Re-ranking involves reordering nodes based on relevance to the query and choosing top n nodes. Since the number of nodes can reduce once the re-ranking is complete, we perform the following evaluations:
+### 3. **上下文压缩与重排序**：
+重排序涉及根据与查询的相关性重新排列节点并选择前 n 个节点。由于在重排序完成后节点数量可能减少，我们进行以下评估：
 
-- **[Context Reranking](https://docs.uptrain.ai/predefined-evaluations/context-awareness/context-reranking)**: Checks if the order of re-ranked nodes is more relevant to the query than the original order.
-- **[Context Conciseness](https://docs.uptrain.ai/predefined-evaluations/context-awareness/context-conciseness)**: Examines whether the reduced number of nodes still provides all the required information.
+- **[上下文重排序](https://docs.uptrain.ai/predefined-evaluations/context-awareness/context-reranking)**：检查重排序后的节点顺序是否比原始顺序更相关于查询。
+- **[上下文简洁性](https://docs.uptrain.ai/predefined-evaluations/context-awareness/context-conciseness)**：检查减少的节点数量是否仍然提供所有所需的信息。
 
-These evaluations collectively ensure the robustness and effectiveness of the RAG, MultiQueryRetriever, and the Reranking process in the chain.
+这些评估共同确保了 RAG、MultiQueryRetriever 和链中重排序过程的稳健性和有效性。
 
-## Install Dependencies
-
+## 安装依赖
 
 ```python
 %pip install -qU langchain langchain_openai langchain-community uptrain faiss-cpu flashrank
 ```
 ```output
-huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
-To disable this warning, you can either:
-	- Avoid using `tokenizers` before the fork if possible
-	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: 当前进程刚被分叉，已经使用了并行处理。禁用并行处理以避免死锁...
+要禁用此警告，您可以：
+	- 如果可能，避免在分叉之前使用 `tokenizers`
+	- 明确设置环境变量 TOKENIZERS_PARALLELISM=(true | false)
 ``````output
-[33mWARNING: There was an error checking the latest version of pip.[0m[33m
-[0mNote: you may need to restart the kernel to use updated packages.
+[33m警告：检查 pip 最新版本时发生错误。[0m[33m
+[0m注意：您可能需要重新启动内核以使用更新的包。
 ```
-NOTE: that you can also install `faiss-gpu` instead of `faiss-cpu` if you want to use the GPU enabled version of the library.
+注意：如果您想使用启用 GPU 的库版本，您也可以安装 `faiss-gpu` 而不是 `faiss-cpu`。
 
-## Import Libraries
+## 导入库
 
 
 ```python
@@ -74,7 +73,7 @@ from langchain_text_splitters import (
 )
 ```
 
-## Load the documents
+## 加载文档
 
 
 ```python
@@ -82,7 +81,7 @@ loader = TextLoader("../../how_to/state_of_the_union.txt")
 documents = loader.load()
 ```
 
-## Split the document into chunks
+## 将文档分割成块
 
 
 ```python
@@ -90,7 +89,7 @@ text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
 chunks = text_splitter.split_documents(documents)
 ```
 
-## Create the retriever
+## 创建检索器
 
 
 ```python
@@ -99,26 +98,27 @@ db = FAISS.from_documents(chunks, embeddings)
 retriever = db.as_retriever()
 ```
 
-## Define the LLM
+## 定义 LLM
 
 
 ```python
 llm = ChatOpenAI(temperature=0, model="gpt-4")
 ```
 
-## Setup
+## 设置
 
-UpTrain provides you with:
-1. Dashboards with advanced drill-down and filtering options
-1. Insights and common topics among failing cases
-1. Observability and real-time monitoring of production data
-1. Regression testing via seamless integration with your CI/CD pipelines
+UpTrain 为您提供：
+1. 具有高级深入分析和过滤选项的仪表板
+1. 失败案例中的洞察和常见主题
+1. 生产数据的可观察性和实时监控
+1. 通过与您的 CI/CD 流水线无缝集成进行回归测试
 
-You can choose between the following options for evaluating using UpTrain:
-### 1. **UpTrain's Open-Source Software (OSS)**: 
-You can use the open-source evaluation service to evaluate your model. In this case, you will need to provie an OpenAI API key. UpTrain uses the GPT models to evaluate the responses generated by the LLM. You can get yours [here](https://platform.openai.com/account/api-keys).
+您可以选择以下选项来评估使用 UpTrain：
 
-In order to view your evaluations in the UpTrain dashboard, you will need to set it up by running the following commands in your terminal:
+### 1. **UpTrain的开源软件（OSS）**： 
+您可以使用开源评估服务来评估您的模型。在这种情况下，您需要提供一个OpenAI API密钥。UpTrain使用GPT模型来评估LLM生成的响应。您可以在[这里](https://platform.openai.com/account/api-keys)获取您的密钥。
+
+为了在UpTrain仪表板中查看您的评估，您需要通过在终端中运行以下命令进行设置：
 
 ```bash
 git clone https://github.com/uptrain-ai/uptrain
@@ -126,34 +126,33 @@ cd uptrain
 bash run_uptrain.sh
 ```
 
-This will start the UpTrain dashboard on your local machine. You can access it at `http://localhost:3000/dashboard`.
+这将在您的本地机器上启动UpTrain仪表板。您可以通过`http://localhost:3000/dashboard`访问它。
 
-Parameters:
+参数：
 - key_type="openai"
 - api_key="OPENAI_API_KEY"
 - project_name="PROJECT_NAME"
 
+### 2. **UpTrain 管理服务和仪表板**：
+另外，您可以使用 UpTrain 的管理服务来评估您的模型。您可以在 [这里](https://uptrain.ai/) 创建一个免费的 UpTrain 账户并获得免费试用积分。如果您想要更多的试用积分，请 [在这里与 UpTrain 的维护者预约电话](https://calendly.com/uptrain-sourabh/30min)。
 
-### 2. **UpTrain Managed Service and Dashboards**:
-Alternatively, you can use UpTrain's managed service to evaluate your model. You can create a free UpTrain account [here](https://uptrain.ai/) and get free trial credits. If you want more trial credits, [book a call with the maintainers of UpTrain here](https://calendly.com/uptrain-sourabh/30min).
+使用管理服务的好处包括：
+1. 无需在本地机器上设置 UpTrain 仪表板。
+1. 可以访问许多 LLM，而无需其 API 密钥。
 
-The benefits of using the managed service are:
-1. No need to set up the UpTrain dashboard on your local machine.
-1. Access to many LLMs without needing their API keys.
+一旦您完成评估，您可以在 UpTrain 仪表板中查看它们，网址为 `https://dashboard.uptrain.ai/dashboard`
 
-Once you perform the evaluations, you can view them in the UpTrain dashboard at `https://dashboard.uptrain.ai/dashboard`
-
-Parameters:
+参数：
 - key_type="uptrain"
 - api_key="UPTRAIN_API_KEY"
 - project_name="PROJECT_NAME"
 
 
-**Note:** The `project_name` will be the project name under which the evaluations performed will be shown in the UpTrain dashboard.
+**注意：** `project_name` 将是评估结果在 UpTrain 仪表板中显示的项目名称。
 
-## Set the API key
+## 设置 API 密钥
 
-The notebook will prompt you to enter the API key. You can choose between the OpenAI API key or the UpTrain API key by changing the `key_type` parameter in the cell below.
+笔记本将提示您输入 API 密钥。您可以通过更改下面单元格中的 `key_type` 参数来选择使用 OpenAI API 密钥或 UpTrain API 密钥。
 
 
 ```python
@@ -161,12 +160,12 @@ KEY_TYPE = "openai"  # or "uptrain"
 API_KEY = getpass()
 ```
 
-# 1. Vanilla RAG
+# 1. 原生 RAG
 
-UpTrain callback handler will automatically capture the query, context and response once generated and will run the following three evaluations *(Graded from 0 to 1)* on the response:
-- **[Context Relevance](https://docs.uptrain.ai/predefined-evaluations/context-awareness/context-relevance)**: Check if the context extractedfrom the query is relevant to the response.
-- **[Factual Accuracy](https://docs.uptrain.ai/predefined-evaluations/context-awareness/factual-accuracy)**: Check how factually accurate the response is.
-- **[Response Completeness](https://docs.uptrain.ai/predefined-evaluations/response-quality/response-completeness)**: Check if the response contains all the information that the query is asking for.
+UpTrain 回调处理程序将在生成后自动捕获查询、上下文和响应，并对响应进行以下三个评估 *(评分范围从 0 到 1)*：
+- **[上下文相关性](https://docs.uptrain.ai/predefined-evaluations/context-awareness/context-relevance)**：检查从查询中提取的上下文是否与响应相关。
+- **[事实准确性](https://docs.uptrain.ai/predefined-evaluations/context-awareness/factual-accuracy)**：检查响应的事实准确性。
+- **[响应完整性](https://docs.uptrain.ai/predefined-evaluations/response-quality/response-completeness)**：检查响应是否包含查询所要求的所有信息。
 
 
 ```python
@@ -205,13 +204,13 @@ Context Relevance Score: 1.0
 Factual Accuracy Score: 1.0
 Response Completeness Score: 1.0
 ```
-# 2. Multi Query Generation
 
-The **MultiQueryRetriever** is used to tackle the problem that the RAG pipeline might not return the best set of documents based on the query. It generates multiple queries that mean the same as the original query and then fetches documents for each.
+# 2. 多查询生成
 
-To evluate this retriever, UpTrain will run the following evaluation:
-- **[Multi Query Accuracy](https://docs.uptrain.ai/predefined-evaluations/query-quality/multi-query-accuracy)**: Checks if the multi-queries generated mean the same as the original query.
+**MultiQueryRetriever** 用于解决 RAG 流水线可能无法根据查询返回最佳文档集的问题。它生成多个与原始查询意思相同的查询，然后为每个查询获取文档。
 
+为了评估这个检索器，UpTrain 将执行以下评估：
+- **[多查询准确性](https://docs.uptrain.ai/predefined-evaluations/query-quality/multi-query-accuracy)**：检查生成的多查询是否与原始查询意思相同。
 
 ```python
 # Create the retriever
@@ -246,9 +245,9 @@ docs = chain.invoke(question, config=config)
 
 Question: What did the president say about Ketanji Brown Jackson
 Multi Queries:
-  - How did the president comment on Ketanji Brown Jackson?
-  - What were the president's remarks regarding Ketanji Brown Jackson?
-  - What statements has the president made about Ketanji Brown Jackson?
+  - 总统对 Ketanji Brown Jackson 的评论是什么？
+  - 总统关于 Ketanji Brown Jackson 的言论是什么？
+  - 总统对 Ketanji Brown Jackson 发表了什么声明？
 
 Multi Query Accuracy Score: 0.5
 ``````output
@@ -257,18 +256,18 @@ Multi Query Accuracy Score: 0.5
 ``````output
 
 Question: What did the president say about Ketanji Brown Jackson
-Response: The president mentioned that he had nominated Circuit Court of Appeals Judge Ketanji Brown Jackson to serve on the United States Supreme Court 4 days ago. He described her as one of the nation's top legal minds who will continue Justice Breyer’s legacy of excellence. He also mentioned that since her nomination, she has received a broad range of support—from the Fraternal Order of Police to former judges appointed by Democrats and Republicans.
+Response: 总统提到他在 4 天前提名了巡回上诉法院法官 Ketanji Brown Jackson 担任美国最高法院法官。他形容她是国家顶尖法律人才之一，将继续布雷耶法官的卓越遗产。他还提到，自她被提名以来，她得到了广泛的支持——从兄弟警察组织到由民主党和共和党任命的前法官。
 
 Context Relevance Score: 1.0
 Factual Accuracy Score: 1.0
 Response Completeness Score: 1.0
 ```
-# 3. Context Compression and Reranking
 
-The reranking process involves reordering nodes based on relevance to the query and choosing the top n nodes. Since the number of nodes can reduce once the reranking is complete, we perform the following evaluations:
-- **[Context Reranking](https://docs.uptrain.ai/predefined-evaluations/context-awareness/context-reranking)**: Check if the order of re-ranked nodes is more relevant to the query than the original order.
-- **[Context Conciseness](https://docs.uptrain.ai/predefined-evaluations/context-awareness/context-conciseness)**: Check if the reduced number of nodes still provides all the required information.
+# 3. 上下文压缩与重新排序
 
+重新排序过程涉及根据与查询的相关性对节点进行重新排序，并选择前 n 个节点。由于在重新排序完成后节点数量可能减少，我们执行以下评估：
+- **[上下文重新排序](https://docs.uptrain.ai/predefined-evaluations/context-awareness/context-reranking)**：检查重新排序的节点顺序是否比原始顺序更相关于查询。
+- **[上下文简洁性](https://docs.uptrain.ai/predefined-evaluations/context-awareness/context-conciseness)**：检查减少的节点数量是否仍然提供所有所需的信息。
 
 ```python
 # Create the retriever
@@ -309,8 +308,9 @@ Context Relevance Score: 1.0
 Factual Accuracy Score: 1.0
 Response Completeness Score: 0.5
 ```
-# UpTrain's Dashboard and Insights
 
-Here's a short video showcasing the dashboard and the insights:
+# UpTrain的仪表板和洞察
+
+这是一个展示仪表板和洞察的短视频：
 
 ![langchain_uptrain.gif](https://uptrain-assets.s3.ap-south-1.amazonaws.com/images/langchain/langchain_uptrain.gif)

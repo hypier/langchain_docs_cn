@@ -1,20 +1,14 @@
 # Dedoc
 
->[Dedoc](https://dedoc.readthedocs.io) is an [open-source](https://github.com/ispras/dedoc)
-library/service that extracts texts, tables, attached files and document structure
-(e.g., titles, list items, etc.) from files of various formats.
+>[Dedoc](https://dedoc.readthedocs.io) 是一个 [开源](https://github.com/ispras/dedoc) 库/服务，能够从各种格式的文件中提取文本、表格、附加文件和文档结构（例如，标题、列表项等）。
 
-`Dedoc` supports `DOCX`, `XLSX`, `PPTX`, `EML`, `HTML`, `PDF`, images and more.
-Full list of supported formats can be found [here](https://dedoc.readthedocs.io/en/latest/#id1).
+`Dedoc` 支持 `DOCX`、`XLSX`、`PPTX`、`EML`、`HTML`、`PDF`、图像等。支持格式的完整列表可以在 [这里](https://dedoc.readthedocs.io/en/latest/#id1) 找到。
 
-## Installation and Setup
+## 安装与设置
 
-### Dedoc library
+### Dedoc库
 
-You can install `Dedoc` using `pip`.
-In this case, you will need to install dependencies,
-please go [here](https://dedoc.readthedocs.io/en/latest/getting_started/installation.html)
-to get more information.
+您可以使用`pip`安装`Dedoc`。在这种情况下，您需要安装依赖项，请访问[这里](https://dedoc.readthedocs.io/en/latest/getting_started/installation.html)以获取更多信息。
 
 ```bash
 pip install dedoc
@@ -22,35 +16,31 @@ pip install dedoc
 
 ### Dedoc API
 
-If you are going to use `Dedoc` API, you don't need to install `dedoc` library.
-In this case, you should run the `Dedoc` service, e.g. `Docker` container (please see
-[the documentation](https://dedoc.readthedocs.io/en/latest/getting_started/installation.html#install-and-run-dedoc-using-docker)
-for more details):
+如果您打算使用 `Dedoc` API，您无需安装 `dedoc` 库。在这种情况下，您应该运行 `Dedoc` 服务，例如 `Docker` 容器（有关更多详细信息，请参见 [文档](https://dedoc.readthedocs.io/en/latest/getting_started/installation.html#install-and-run-dedoc-using-docker)）：
 
 ```bash
 docker pull dedocproject/dedoc
 docker run -p 1231:1231
 ```
 
-## Document Loader
+## 文档加载器
 
-* For handling files of any formats (supported by `Dedoc`), you can use `DedocFileLoader`:
+* 对于处理任何格式的文件（由 `Dedoc` 支持），您可以使用 `DedocFileLoader`：
 
     ```python
     from langchain_community.document_loaders import DedocFileLoader
     ```
 
-* For handling PDF files (with or without a textual layer), you can use `DedocPDFLoader`:
+* 对于处理 PDF 文件（有或没有文本层），您可以使用 `DedocPDFLoader`：
 
     ```python
     from langchain_community.document_loaders import DedocPDFLoader
     ```
 
-* For handling files of any formats without library installation,
-you can use `Dedoc API` with `DedocAPIFileLoader`:
+* 对于处理任何格式的文件而无需安装库，您可以使用 `Dedoc API` 和 `DedocAPIFileLoader`：
 
     ```python
     from langchain_community.document_loaders import DedocAPIFileLoader
     ```
 
-Please see a [usage example](/docs/integrations/document_loaders/dedoc) for more details.
+请参见 [使用示例](/docs/integrations/document_loaders/dedoc) 以获取更多详细信息。

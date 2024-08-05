@@ -1,25 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/huawei_obs_directory.ipynb
 ---
-# Huawei OBS Directory
-The following code demonstrates how to load objects from the Huawei OBS (Object Storage Service) as documents.
 
+# 华为 OBS 目录
+以下代码演示了如何从华为 OBS（对象存储服务）加载对象作为文档。
 
 ```python
 # Install the required package
 # pip install esdk-obs-python
 ```
 
-
 ```python
 from langchain_community.document_loaders import OBSDirectoryLoader
 ```
 
-
 ```python
 endpoint = "your-endpoint"
 ```
-
 
 ```python
 # Configure your access credentials\n
@@ -27,14 +24,12 @@ config = {"ak": "your-access-key", "sk": "your-secret-key"}
 loader = OBSDirectoryLoader("your-bucket-name", endpoint=endpoint, config=config)
 ```
 
-
 ```python
 loader.load()
 ```
 
-## Specify a Prefix for Loading
-If you want to load objects with a specific prefix from the bucket, you can use the following code:
-
+## 指定加载前缀
+如果您想从存储桶中加载具有特定前缀的对象，可以使用以下代码：
 
 ```python
 loader = OBSDirectoryLoader(
@@ -42,27 +37,24 @@ loader = OBSDirectoryLoader(
 )
 ```
 
-
 ```python
 loader.load()
 ```
 
-## Get Authentication Information from ECS
-If your langchain is deployed on Huawei Cloud ECS and [Agency is set up](https://support.huaweicloud.com/intl/en-us/usermanual-ecs/ecs_03_0166.html#section7), the loader can directly get the security token from ECS without needing access key and secret key. 
-
+## 从ECS获取认证信息
+如果您的langchain部署在华为云ECS上，并且已设置[代理](https://support.huaweicloud.com/intl/en-us/usermanual-ecs/ecs_03_0166.html#section7)，加载器可以直接从ECS获取安全令牌，而无需访问密钥和秘密密钥。
 
 ```python
 config = {"get_token_from_ecs": True}
 loader = OBSDirectoryLoader("your-bucket-name", endpoint=endpoint, config=config)
 ```
 
-
 ```python
 loader.load()
 ```
 
-## Use a Public Bucket
-If your bucket's bucket policy allows anonymous access (anonymous users have `listBucket` and `GetObject` permissions), you can directly load the objects without configuring the `config` parameter.
+## 使用公共存储桶
+如果您的存储桶策略允许匿名访问（匿名用户具有 `listBucket` 和 `GetObject` 权限），您可以直接加载对象，而无需配置 `config` 参数。
 
 
 ```python
@@ -74,8 +66,7 @@ loader = OBSDirectoryLoader("your-bucket-name", endpoint=endpoint)
 loader.load()
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

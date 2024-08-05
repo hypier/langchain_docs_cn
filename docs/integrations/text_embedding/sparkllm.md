@@ -1,14 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/sparkllm.ipynb
 ---
-# SparkLLM Text Embeddings
 
-Official Website: https://www.xfyun.cn/doc/spark/Embedding_new_api.html
+# SparkLLM 文本嵌入
 
-An API key is required to use this embedding model. You can get one by registering at https://platform.SparkLLM-ai.com/docs/text-Embedding.
+官方网站：https://www.xfyun.cn/doc/spark/Embedding_new_api.html
 
-SparkLLMTextEmbeddings support 2K token window and preduces vectors with 2560 dimensions.
+使用此嵌入模型需要API密钥。您可以通过在 https://platform.SparkLLM-ai.com/docs/text-Embedding 注册来获取一个。
 
+SparkLLMTextEmbeddings 支持 2K 令牌窗口，并生成 2560 维的向量。
 
 ```python
 from langchain_community.embeddings import SparkLLMTextEmbeddings
@@ -20,8 +20,7 @@ embeddings = SparkLLMTextEmbeddings(
 )
 ```
 
-Alternatively, you can set API key this way:
-
+或者，您可以通过以下方式设置 API 密钥：
 
 ```python
 text_q = "Introducing iFlytek"
@@ -34,8 +33,6 @@ query_result = embeddings.embed_query(text_q)
 query_result[:8]
 ```
 
-
-
 ```output
 [-0.043609619140625,
  0.2017822265625,
@@ -47,14 +44,10 @@ query_result[:8]
  -0.0146331787109375]
 ```
 
-
-
 ```python
 doc_result = embeddings.embed_documents([text_1, text_2])
 doc_result[0][:8]
 ```
-
-
 
 ```output
 [-0.161865234375,
@@ -67,9 +60,7 @@ doc_result[0][:8]
  -0.2666015625]
 ```
 
+## 相关
 
-
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

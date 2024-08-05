@@ -1,24 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/tencent_hunyuan.ipynb
-sidebar_label: Tencent Hunyuan
+sidebar_label: 腾讯混元
 ---
-# Tencent Hunyuan
 
->[Tencent's hybrid model API](https://cloud.tencent.com/document/product/1729) (`Hunyuan API`) 
-> implements dialogue communication, content generation, 
-> analysis and understanding, and can be widely used in various scenarios such as intelligent 
-> customer service, intelligent marketing, role playing, advertising copywriting, product description,
-> script creation, resume generation, article writing, code generation, data analysis, and content
-> analysis.
+# 腾讯混元
 
-See for [more information](https://cloud.tencent.com/document/product/1729).
+>[腾讯的混合模型 API](https://cloud.tencent.com/document/product/1729) (`Hunyuan API`) 
+> 实现了对话交流、内容生成、分析与理解， 
+> 可以广泛应用于智能客服、智能营销、角色扮演、广告文案、产品描述、
+> 脚本创作、简历生成、文章写作、代码生成、数据分析和内容
+> 分析等多种场景。
 
+查看 [更多信息](https://cloud.tencent.com/document/product/1729)。
 
 ```python
 from langchain_community.chat_models import ChatHunyuan
 from langchain_core.messages import HumanMessage
 ```
-
 
 ```python
 chat = ChatHunyuan(
@@ -27,7 +25,6 @@ chat = ChatHunyuan(
     hunyuan_secret_key="YOUR_SECRET_KEY",
 )
 ```
-
 
 ```python
 chat(
@@ -39,14 +36,11 @@ chat(
 )
 ```
 
-
-
 ```output
 AIMessage(content="J'aime programmer.")
 ```
 
-
-## For ChatHunyuan with Streaming
+## 用于 ChatHunyuan 的流式传输
 
 
 ```python
@@ -75,9 +69,7 @@ chat(
 AIMessageChunk(content="J'aime programmer.")
 ```
 
+## 相关
 
-
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

@@ -1,10 +1,10 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/searchapi.ipynb
 ---
+
 # SearchApi
 
-This notebook shows examples of how to use SearchApi to search the web. Go to [https://www.searchapi.io/](https://www.searchapi.io/) to sign up for a free account and get API key.
-
+本笔记本展示了如何使用 SearchApi 在网上进行搜索的示例。请访问 [https://www.searchapi.io/](https://www.searchapi.io/) 注册一个免费账户并获取 API 密钥。
 
 ```python
 import os
@@ -12,35 +12,27 @@ import os
 os.environ["SEARCHAPI_API_KEY"] = ""
 ```
 
-
 ```python
 from langchain_community.utilities import SearchApiAPIWrapper
 ```
-
 
 ```python
 search = SearchApiAPIWrapper()
 ```
 
-
 ```python
 search.run("Obama's first name?")
 ```
-
-
 
 ```output
 'Barack Hussein Obama II'
 ```
 
-
-## Using as part of a Self Ask With Search Chain
-
+## 使用自我提问与搜索链的部分
 
 ```python
 os.environ["OPENAI_API_KEY"] = ""
 ```
-
 
 ```python
 from langchain.agents import AgentType, initialize_agent
@@ -54,65 +46,58 @@ tools = [
     Tool(
         name="Intermediate Answer",
         func=search.run,
-        description="useful for when you need to ask with search",
+        description="当你需要通过搜索提问时很有用",
     )
 ]
 
 self_ask_with_search = initialize_agent(
     tools, llm, agent=AgentType.SELF_ASK_WITH_SEARCH, verbose=True
 )
-self_ask_with_search.run("Who lived longer: Plato, Socrates, or Aristotle?")
+self_ask_with_search.run("谁活得更久：柏拉图、苏格拉底还是亚里士多德？")
 ```
 ```output
 
 
 [1m> Entering new AgentExecutor chain...[0m
-[32;1m[1;3m Yes.
-Follow up: How old was Plato when he died?[0m
-Intermediate answer: [36;1m[1;3meighty[0m
-[32;1m[1;3mFollow up: How old was Socrates when he died?[0m
-Intermediate answer: [36;1m[1;3m| Socrates | 
+[32;1m[1;3m 是的。
+后续提问：柏拉图去世时多大？[0m
+Intermediate answer: [36;1m[1;3m八十[0m
+[32;1m[1;3m后续提问：苏格拉底去世时多大？[0m
+Intermediate answer: [36;1m[1;3m| 苏格拉底 | 
 | -------- | 
-| Born | c. 470 BC Deme Alopece, Athens | 
-| Died | 399 BC (aged approximately 71) Athens | 
-| Cause of death | Execution by forced suicide by poisoning | 
-| Spouse(s) | Xanthippe, Myrto | 
+| 出生 | 公元前470年，雅典阿洛佩斯 | 
+| 去世 | 公元前399年（大约71岁）雅典 | 
+| 死因 | 通过毒药强迫自杀处决 | 
+| 配偶 | 桑西比, 米尔托 | 
 [0m
-[32;1m[1;3mFollow up: How old was Aristotle when he died?[0m
-Intermediate answer: [36;1m[1;3m62 years[0m
-[32;1m[1;3mSo the final answer is: Plato[0m
+[32;1m[1;3m后续提问：亚里士多德去世时多大？[0m
+Intermediate answer: [36;1m[1;3m62岁[0m
+[32;1m[1;3m所以最终答案是：柏拉图[0m
 
 [1m> Finished chain.[0m
 ```
 
-
 ```output
-'Plato'
+'柏拉图'
 ```
 
+## 自定义参数
 
-## Custom parameters
-
-SearchApi wrapper can be customized to use different engines like [Google News](https://www.searchapi.io/docs/google-news), [Google Jobs](https://www.searchapi.io/docs/google-jobs), [Google Scholar](https://www.searchapi.io/docs/google-scholar), or others which can be found in [SearchApi](https://www.searchapi.io/docs/google) documentation. All parameters supported by SearchApi can be passed when executing the query. 
-
+SearchApi 包装器可以自定义以使用不同的引擎，如 [Google News](https://www.searchapi.io/docs/google-news)、[Google Jobs](https://www.searchapi.io/docs/google-jobs)、[Google Scholar](https://www.searchapi.io/docs/google-scholar) 或其他可以在 [SearchApi](https://www.searchapi.io/docs/google) 文档中找到的引擎。在执行查询时，可以传递所有 SearchApi 支持的参数。
 
 ```python
 search = SearchApiAPIWrapper(engine="google_jobs")
 ```
 
-
 ```python
 search.run("AI Engineer", location="Portugal", gl="pt")[0:500]
 ```
-
-
 
 ```output
 'Azure AI Engineer Be an XpanderCandidatar-meCandidatar-meCandidatar-me\n\nShare:\n\nAzure AI Engineer\n\nA área Digital Xperience da Xpand IT é uma equipa tecnológica de rápido crescimento que se concentra em tecnologias Microsoft e Mobile. A sua principal missão é fornecer soluções de software de alta qualidade que atendam às necessidades do utilizador final, num mundo tecnológico continuamente exigente e em ritmo acelerado, proporcionando a melhor experiência em termos de personalização, performance'
 ```
 
-
-## Getting results with metadata
+## 使用元数据获取结果
 
 
 ```python
@@ -122,7 +107,7 @@ import pprint
 
 ```python
 search = SearchApiAPIWrapper(engine="google_scholar")
-results = search.results("Large Language Models")
+results = search.results("大型语言模型")
 pprint.pp(results)
 ```
 ```output
@@ -136,9 +121,9 @@ pprint.pp(results)
                      'html_url': 'https://www.searchapi.io/api/v1/searches/search_qVdXG2jzvrlqTzayeYoaOb8A.html',
                      'json_url': 'https://www.searchapi.io/api/v1/searches/search_qVdXG2jzvrlqTzayeYoaOb8A'},
  'search_parameters': {'engine': 'google_scholar',
-                       'q': 'Large Language Models',
+                       'q': '大型语言模型',
                        'hl': 'en'},
- 'search_information': {'query_displayed': 'Large Language Models',
+ 'search_information': {'query_displayed': '大型语言模型',
                         'total_results': 6420000,
                         'page': 1,
                         'time_taken_displayed': 0.06},
@@ -502,7 +487,7 @@ pprint.pp(results)
                                 '10': 'https://scholar.google.com/scholar?start=90&q=Large+Language+Models&hl=en&as_sdt=0,33'}}}
 ```
 
-## Related
+## 相关
 
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

@@ -1,12 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/twitter.ipynb
 ---
+
 # Twitter
 
->[Twitter](https://twitter.com/) is an online social media and social networking service.
+>[Twitter](https://twitter.com/) 是一个在线社交媒体和社交网络服务。
 
-This loader fetches the text from the Tweets of a list of `Twitter` users, using the `tweepy` Python package.
-You must initialize the loader with your `Twitter API` token, and you need to pass in the Twitter username you want to extract.
+这个加载器使用 `tweepy` Python 包从一组 `Twitter` 用户的推文中获取文本。您必须用您的 `Twitter API` 令牌初始化加载器，并传入您想要提取的 Twitter 用户名。
 
 
 ```python
@@ -23,10 +23,10 @@ from langchain_community.document_loaders import TwitterTweetLoader
 loader = TwitterTweetLoader.from_bearer_token(
     oauth2_bearer_token="YOUR BEARER TOKEN",
     twitter_users=["elonmusk"],
-    number_tweets=50,  # Default value is 100
+    number_tweets=50,  # 默认值为 100
 )
 
-# Or load from access token and consumer keys
+# 或者从访问令牌和消费者密钥加载
 # loader = TwitterTweetLoader.from_secrets(
 #     access_token='YOUR ACCESS TOKEN',
 #     access_token_secret='YOUR ACCESS TOKEN SECRET',
@@ -55,7 +55,7 @@ documents[:5]
 
 
 
-## Related
+## 相关
 
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

@@ -1,57 +1,57 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/callbacks_custom_events.ipynb
 ---
-# How to dispatch custom callback events
 
-:::info Prerequisites
+# 如何调度自定义回调事件
 
-This guide assumes familiarity with the following concepts:
+:::info 前提条件
 
-- [Callbacks](/docs/concepts/#callbacks)
-- [Custom callback handlers](/docs/how_to/custom_callbacks)
-- [Astream Events API](/docs/concepts/#astream_events) the `astream_events` method will surface custom callback events.
+本指南假设您熟悉以下概念：
+
+- [回调](/docs/concepts/#callbacks)
+- [自定义回调处理程序](/docs/how_to/custom_callbacks)
+- [Astream 事件 API](/docs/concepts/#astream_events) `astream_events` 方法将显示自定义回调事件。
 :::
 
-In some situations, you may want to dipsatch a custom callback event from within a [Runnable](/docs/concepts/#runnable-interface) so it can be surfaced
-in a custom callback handler or via the [Astream Events API](/docs/concepts/#astream_events).
+在某些情况下，您可能希望从 [Runnable](/docs/concepts/#runnable-interface) 内部调度自定义回调事件，以便可以在自定义回调处理程序中或通过 [Astream 事件 API](/docs/concepts/#astream_events) 显示。
 
-For example, if you have a long running tool with multiple steps, you can dispatch custom events between the steps and use these custom events to monitor progress.
-You could also surface these custom events to an end user of your application to show them how the current task is progressing.
+例如，如果您有一个运行时间较长的工具，包含多个步骤，您可以在步骤之间调度自定义事件，并使用这些自定义事件来监控进度。
+您还可以将这些自定义事件展示给应用程序的最终用户，以向他们展示当前任务的进展情况。
 
-To dispatch a custom event you need to decide on two attributes for the event: the `name` and the `data`.
+要调度自定义事件，您需要为事件决定两个属性：`name` 和 `data`。
 
-| Attribute | Type | Description                                                                                              |
-|-----------|------|----------------------------------------------------------------------------------------------------------|
-| name      | str  | A user defined name for the event.                                                                       |
-| data      | Any  | The data associated with the event. This can be anything, though we suggest making it JSON serializable. |
+| 属性      | 类型  | 描述                                                                                                   |
+|-----------|-------|--------------------------------------------------------------------------------------------------------|
+| name      | str   | 事件的用户定义名称。                                                                                   |
+| data      | Any   | 与事件相关的数据。这可以是任何内容，但我们建议使其可序列化为 JSON。                                   |
 
 
 :::important
-* Dispatching custom callback events requires `langchain-core>=0.2.15`.
-* Custom callback events can only be dispatched from within an existing `Runnable`.
-* If using `astream_events`, you must use `version='v2'` to see custom events.
-* Sending or rendering custom callbacks events in LangSmith is not yet supported.
+* 调度自定义回调事件需要 `langchain-core>=0.2.15`。
+* 自定义回调事件只能在现有的 `Runnable` 内部调度。
+* 如果使用 `astream_events`，您必须使用 `version='v2'` 来查看自定义事件。
+* 目前不支持在 LangSmith 中发送或渲染自定义回调事件。
 :::
 
 
-:::caution COMPATIBILITY
-LangChain cannot automatically propagate configuration, including callbacks necessary for astream_events(), to child runnables if you are running async code in python<=3.10. This is a common reason why you may fail to see events being emitted from custom runnables or tools.
+:::caution 兼容性
+如果您在 python<=3.10 中运行异步代码，LangChain 不能自动传播配置，包括 astream_events() 所需的回调到子 runnable。这是您可能无法看到自定义 runnable 或工具发出事件的常见原因。
 
-If you are running python<=3.10, you will need to manually propagate the `RunnableConfig` object to the child runnable in async environments. For an example of how to manually propagate the config, see the implementation of the `bar` RunnableLambda below.
+如果您在 python<=3.10 中运行，您需要在异步环境中手动将 `RunnableConfig` 对象传播到子 runnable。有关如何手动传播配置的示例，请参见下面的 `bar` RunnableLambda 的实现。
 
-If you are running python>=3.11, the `RunnableConfig` will automatically propagate to child runnables in async environment. However, it is still a good idea to propagate the `RunnableConfig` manually if your code may run in other Python versions.
+如果您在 python>=3.11 中运行，`RunnableConfig` 将在异步环境中自动传播到子 runnable。然而，如果您的代码可能在其他 Python 版本中运行，手动传播 `RunnableConfig` 仍然是个好主意。
 :::
 
-## Astream Events API
+## Astream 事件 API
 
-The most useful way to consume custom events is via the [Astream Events API](/docs/concepts/#astream_events).
+消费自定义事件最有用的方法是通过 [Astream 事件 API](/docs/concepts/#astream_events)。
 
-We can use the `async` `adispatch_custom_event` API to emit custom events in an async setting. 
+我们可以使用 `async` `adispatch_custom_event` API 在异步环境中发出自定义事件。 
 
 
 :::important
 
-To see custom events via the astream events API, you need to use the newer `v2` API of `astream_events`.
+要通过 astream 事件 API 查看自定义事件，您需要使用更新的 `v2` API 的 `astream_events`。
 :::
 
 
@@ -80,7 +80,7 @@ async for event in foo.astream_events("hello world", version="v2"):
 {'event': 'on_chain_stream', 'run_id': 'f354ffe8-4c22-4881-890a-c1cad038a9a6', 'name': 'foo', 'tags': [], 'metadata': {}, 'data': {'chunk': 'hello world'}, 'parent_ids': []}
 {'event': 'on_chain_end', 'data': {'output': 'hello world'}, 'run_id': 'f354ffe8-4c22-4881-890a-c1cad038a9a6', 'name': 'foo', 'tags': [], 'metadata': {}, 'parent_ids': []}
 ```
-In python <= 3.10, you must propagate the config manually!
+在 Python <= 3.10 中，您必须手动传播配置！
 
 
 ```python
@@ -93,9 +93,9 @@ from langchain_core.runnables.config import RunnableConfig
 
 @RunnableLambda
 async def bar(x: str, config: RunnableConfig) -> str:
-    """An example that shows how to manually propagate config.
+    """一个示例，展示如何手动传播配置。
 
-    You must do this if you're running python<=3.10.
+    如果您正在运行 python<=3.10，必须这样做。
     """
     await adispatch_custom_event("event1", {"x": x}, config=config)
     await adispatch_custom_event("event2", 5, config=config)
@@ -112,10 +112,10 @@ async for event in bar.astream_events("hello world", version="v2"):
 {'event': 'on_chain_stream', 'run_id': 'c787b09d-698a-41b9-8290-92aaa656f3e7', 'name': 'bar', 'tags': [], 'metadata': {}, 'data': {'chunk': 'hello world'}, 'parent_ids': []}
 {'event': 'on_chain_end', 'data': {'output': 'hello world'}, 'run_id': 'c787b09d-698a-41b9-8290-92aaa656f3e7', 'name': 'bar', 'tags': [], 'metadata': {}, 'parent_ids': []}
 ```
-## Async Callback Handler
 
-You can also consume the dispatched event via an async callback handler.
+## 异步回调处理器
 
+您还可以通过异步回调处理器消费调度的事件。
 
 ```python
 from typing import Any, Dict, List, Optional
@@ -169,13 +169,11 @@ Received event event2 with data: 5, with tags: ['foo', 'bar'], with metadata: {}
 1
 ```
 
+## 同步回调处理程序
 
-## Sync Callback Handler
+让我们看看如何在同步环境中使用 `dispatch_custom_event` 发出自定义事件。
 
-Let's see how to emit custom events in a sync environment using `dispatch_custom_event`.
-
-You **must** call `dispatch_custom_event` from within an existing `Runnable`.
-
+您 **必须** 在现有的 `Runnable` 内部调用 `dispatch_custom_event`。
 
 ```python
 from typing import Any, Dict, List, Optional
@@ -225,7 +223,6 @@ Received event event2 with data: {'x': 1}, with tags: ['foo', 'bar'], with metad
 1
 ```
 
+## 下一步
 
-## Next steps
-
-You've seen how to emit custom events, you can check out the more in depth guide for [astream events](/docs/how_to/streaming/#using-stream-events) which is the easiest way to leverage custom events.
+您已经了解了如何发出自定义事件，您可以查看更深入的指南 [astream events](/docs/how_to/streaming/#using-stream-events)，这是利用自定义事件的最简单方法。

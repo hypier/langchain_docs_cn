@@ -1,17 +1,18 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/re_phrase.ipynb
 ---
+
 # RePhraseQuery
 
-`RePhraseQuery` is a simple retriever that applies an LLM between the user input and the query passed by the retriever.
+`RePhraseQuery` 是一个简单的检索器，它在用户输入和检索器传递的查询之间应用了 LLM。
 
-It can be used to pre-process the user input in any way.
+它可以以任何方式对用户输入进行预处理。
 
-## Example
+## 示例
 
-### Setting up
+### 设置
 
-Create a vector store.
+创建一个向量存储。
 
 
 ```python
@@ -38,9 +39,9 @@ all_splits = text_splitter.split_documents(data)
 vectorstore = Chroma.from_documents(documents=all_splits, embedding=OpenAIEmbeddings())
 ```
 
-### Using the default prompt
+### 使用默认提示
 
-The default prompt used in the `from_llm` classmethod:
+在 `from_llm` 类方法中使用的默认提示：
 
 ```
 DEFAULT_TEMPLATE = """You are an assistant tasked with taking a natural language \
@@ -77,7 +78,8 @@ docs = retriever_from_llm.invoke(
 ```output
 INFO:langchain.retrievers.re_phraser:Re-phrased question: Query for vectorstore: "Types of Memory"
 ```
-### Custom prompt
+
+### 自定义提示
 
 
 ```python
@@ -113,7 +115,7 @@ docs = retriever_from_llm_chain.invoke(
 INFO:langchain.retrievers.re_phraser:Re-phrased question: Ahoy matey! What be Maximum Inner Product Search, ye scurvy dog?
 ```
 
-## Related
+## 相关
 
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

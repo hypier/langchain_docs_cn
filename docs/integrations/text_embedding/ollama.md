@@ -2,34 +2,36 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/ollama.ipynb
 sidebar_label: Ollama
 ---
+
 # OllamaEmbeddings
 
-This notebook covers how to get started with Ollama embedding models.
+本笔记本介绍如何开始使用Ollama嵌入模型。
 
-## Installation
-# install package
+## 安装
+
+# 安装包
 %pip install langchain_ollama
-## Setup
 
-First, follow [these instructions](https://github.com/jmorganca/ollama) to set up and run a local Ollama instance:
+## 设置
 
-* [Download](https://ollama.ai/download) and install Ollama onto the available supported platforms (including Windows Subsystem for Linux)
-* Fetch available LLM model via `ollama pull <name-of-model>`
-    * View a list of available models via the [model library](https://ollama.ai/library)
-    * e.g., `ollama pull llama3`
-* This will download the default tagged version of the model. Typically, the default points to the latest, smallest sized-parameter model.
+首先，按照[这些说明](https://github.com/jmorganca/ollama)设置并运行本地的Ollama实例：
 
-> On Mac, the models will be download to `~/.ollama/models`
+* [下载](https://ollama.ai/download)并在可用的支持平台上安装Ollama（包括Windows子系统Linux）
+* 通过`ollama pull <name-of-model>`获取可用的LLM模型
+    * 通过[模型库](https://ollama.ai/library)查看可用模型列表
+    * 例如，`ollama pull llama3`
+* 这将下载模型的默认标签版本。通常，默认版本指向最新、参数最小的模型。
+
+> 在Mac上，模型将下载到`~/.ollama/models`
 > 
-> On Linux (or WSL), the models will be stored at `/usr/share/ollama/.ollama/models`
+> 在Linux（或WSL）上，模型将存储在`/usr/share/ollama/.ollama/models`
 
-* Specify the exact version of the model of interest as such `ollama pull vicuna:13b-v1.5-16k-q4_0` (View the [various tags for the `Vicuna`](https://ollama.ai/library/vicuna/tags) model in this instance)
-* To view all pulled models, use `ollama list`
-* To chat directly with a model from the command line, use `ollama run <name-of-model>`
-* View the [Ollama documentation](https://github.com/jmorganca/ollama) for more commands. Run `ollama help` in the terminal to see available commands too.
+* 指定感兴趣的模型的确切版本，如`ollama pull vicuna:13b-v1.5-16k-q4_0`（在此实例中查看`Vicuna`模型的[各种标签](https://ollama.ai/library/vicuna/tags)）
+* 要查看所有已拉取的模型，请使用`ollama list`
+* 要直接从命令行与模型聊天，请使用`ollama run <name-of-model>`
+* 查看[Ollama文档](https://github.com/jmorganca/ollama)以获取更多命令。在终端中运行`ollama help`也可以查看可用命令。
 
-
-## Usage
+## 使用方法
 
 
 ```python
@@ -40,7 +42,7 @@ embeddings = OllamaEmbeddings(model="llama3")
 
 
 ```python
-embeddings.embed_query("My query to look up")
+embeddings.embed_query("我的查询")
 ```
 
 
@@ -62,9 +64,9 @@ embeddings.embed_query("My query to look up")
 
 
 ```python
-# async embed documents
+# 异步嵌入文档
 await embeddings.aembed_documents(
-    ["This is a content of the document", "This is another document"]
+    ["这是文档的内容", "这是另一个文档"]
 )
 ```
 
@@ -84,9 +86,7 @@ await embeddings.aembed_documents(
   ...]]
 ```
 
+## 相关
 
-
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

@@ -1,21 +1,19 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/nlpcloud.ipynb
 ---
+
 # NLP Cloud
 
-The [NLP Cloud](https://nlpcloud.io) serves high performance pre-trained or custom models for NER, sentiment-analysis, classification, summarization, paraphrasing, grammar and spelling correction, keywords and keyphrases extraction, chatbot, product description and ad generation, intent classification, text generation, image generation, blog post generation, code generation, question answering, automatic speech recognition, machine translation, language detection, semantic search, semantic similarity, tokenization, POS tagging, embeddings, and dependency parsing. It is ready for production, served through a REST API.
+[NLP Cloud](https://nlpcloud.io) 提供高性能的预训练或自定义模型，用于命名实体识别（NER）、情感分析、分类、摘要、改写、语法和拼写检查、关键词和关键短语提取、聊天机器人、产品描述和广告生成、意图分类、文本生成、图像生成、博客文章生成、代码生成、问答、自动语音识别、机器翻译、语言检测、语义搜索、语义相似度、分词、词性标注、嵌入和依存句法分析。它已准备好投入生产，通过 REST API 提供服务。
 
-
-This example goes over how to use LangChain to interact with `NLP Cloud` [models](https://docs.nlpcloud.com/#models).
-
+本示例介绍如何使用 LangChain 与 `NLP Cloud` [模型](https://docs.nlpcloud.com/#models) 进行交互。
 
 ```python
 %pip install --upgrade --quiet  nlpcloud
 ```
 
-
 ```python
-# get a token: https://docs.nlpcloud.com/#authentication
+# 获取令牌: https://docs.nlpcloud.com/#authentication
 
 from getpass import getpass
 
@@ -31,48 +29,39 @@ import os
 os.environ["NLPCLOUD_API_KEY"] = NLPCLOUD_API_KEY
 ```
 
-
 ```python
 from langchain.chains import LLMChain
 from langchain_community.llms import NLPCloud
 from langchain_core.prompts import PromptTemplate
 ```
 
-
 ```python
-template = """Question: {question}
+template = """问题: {question}
 
-Answer: Let's think step by step."""
+答案: 让我们一步一步来想。"""
 
 prompt = PromptTemplate.from_template(template)
 ```
-
 
 ```python
 llm = NLPCloud()
 ```
 
-
 ```python
 llm_chain = LLMChain(prompt=prompt, llm=llm)
 ```
 
-
 ```python
-question = "What NFL team won the Super Bowl in the year Justin Beiber was born?"
+question = "在贾斯汀·比伯出生的那一年，哪支NFL球队赢得了超级碗？"
 
 llm_chain.run(question)
 ```
 
-
-
 ```output
-' Justin Bieber was born in 1994, so the team that won the Super Bowl that year was the San Francisco 49ers.'
+' 贾斯汀·比伯出生于1994年，因此那一年赢得超级碗的球队是旧金山49人。'
 ```
 
+## 相关
 
-
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

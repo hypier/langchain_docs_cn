@@ -1,28 +1,27 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/opensearch.ipynb
 ---
+
 # OpenSearch
 
-> [OpenSearch](https://opensearch.org/) is a scalable, flexible, and extensible open-source software suite for search, analytics, and observability applications licensed under Apache 2.0. `OpenSearch` is a distributed search and analytics engine based on `Apache Lucene`.
+> [OpenSearch](https://opensearch.org/) 是一个可扩展、灵活且可扩展的开源软件套件，用于搜索、分析和可观察性应用，采用 Apache 2.0 许可证。 `OpenSearch` 是一个基于 `Apache Lucene` 的分布式搜索和分析引擎。
 
+本笔记本展示了如何使用与 `OpenSearch` 数据库相关的功能。
 
-This notebook shows how to use functionality related to the `OpenSearch` database.
+要运行，您需要有一个正在运行的 OpenSearch 实例：[请查看这里以获取简单的 Docker 安装](https://hub.docker.com/r/opensearchproject/opensearch)。
 
-To run, you should have an OpenSearch instance up and running: [see here for an easy Docker installation](https://hub.docker.com/r/opensearchproject/opensearch).
+`similarity_search` 默认执行近似 k-NN 搜索，使用多种算法之一，如 lucene、nmslib、faiss，推荐用于大数据集。要执行暴力搜索，我们还有其他被称为脚本评分和 Painless 脚本的搜索方法。
+有关更多详细信息，请查看 [此处](https://opensearch.org/docs/latest/search-plugins/knn/index/)。
 
-`similarity_search` by default performs the Approximate k-NN Search which uses one of the several algorithms like lucene, nmslib, faiss recommended for
-large datasets. To perform brute force search we have other search methods known as Script Scoring and Painless Scripting.
-Check [this](https://opensearch.org/docs/latest/search-plugins/knn/index/) for more details.
-
-## Installation
-Install the Python client.
+## 安装
+安装 Python 客户端。
 
 
 ```python
 %pip install --upgrade --quiet  opensearch-py langchain-community
 ```
 
-We want to use OpenAIEmbeddings so we have to get the OpenAI API Key.
+我们想要使用 OpenAIEmbeddings，因此我们需要获取 OpenAI API 密钥。
 
 
 ```python
@@ -52,9 +51,9 @@ docs = text_splitter.split_documents(documents)
 embeddings = OpenAIEmbeddings()
 ```
 
-## similarity_search using Approximate k-NN
+## 使用近似 k-NN 的 similarity_search
 
-`similarity_search` using `Approximate k-NN` Search with Custom Parameters
+使用自定义参数的 `similarity_search` 进行 `Approximate k-NN` 搜索
 
 
 ```python
@@ -62,7 +61,7 @@ docsearch = OpenSearchVectorSearch.from_documents(
     docs, embeddings, opensearch_url="http://localhost:9200"
 )
 
-# If using the default Docker installation, use this instantiation instead:
+# 如果使用默认的 Docker 安装，请使用此实例化：
 # docsearch = OpenSearchVectorSearch.from_documents(
 #     docs,
 #     embeddings,
@@ -107,9 +106,9 @@ docs = docsearch.similarity_search(query)
 print(docs[0].page_content)
 ```
 
-## similarity_search using Script Scoring
+## 使用脚本评分的相似性搜索
 
-`similarity_search` using `Script Scoring` with Custom Parameters
+使用自定义参数的 `similarity_search` 和 `Script Scoring`
 
 
 ```python
@@ -130,9 +129,9 @@ docs = docsearch.similarity_search(
 print(docs[0].page_content)
 ```
 
-## similarity_search using Painless Scripting
+## 使用 Painless 脚本的 similarity_search
 
-`similarity_search` using `Painless Scripting` with Custom Parameters
+使用带有自定义参数的 `similarity_search` 和 `Painless Scripting`
 
 
 ```python
@@ -154,19 +153,17 @@ docs = docsearch.similarity_search(
 print(docs[0].page_content)
 ```
 
-## Maximum marginal relevance search (MMR)
-If you’d like to look up for some similar documents, but you’d also like to receive diverse results, MMR is method you should consider. Maximal marginal relevance optimizes for similarity to query AND diversity among selected documents.
-
+## 最大边际相关性搜索 (MMR)
+如果您想查找一些相似的文档，但又希望获得多样化的结果，MMR 是您应该考虑的方法。最大边际相关性在优化与查询的相似性和所选文档之间的多样性方面表现出色。
 
 ```python
 query = "What did the president say about Ketanji Brown Jackson"
 docs = docsearch.max_marginal_relevance_search(query, k=2, fetch_k=10, lambda_param=0.5)
 ```
 
-## Using a preexisting OpenSearch instance
+## 使用现有的 OpenSearch 实例
 
-It's also possible to use a preexisting OpenSearch instance with documents that already have vectors present.
-
+也可以使用已经存在的 OpenSearch 实例，该实例中的文档已经包含向量。
 
 ```python
 # this is just an example, you would need to change these values to point to another opensearch instance
@@ -187,18 +184,15 @@ docs = docsearch.similarity_search(
 )
 ```
 
-## Using AOSS (Amazon OpenSearch Service Serverless)
+## 使用 AOSS (Amazon OpenSearch Service Serverless)
 
-It is an example of the `AOSS` with `faiss` engine and `efficient_filter`.
+这是一个使用 `faiss` 引擎和 `efficient_filter` 的 `AOSS` 示例。
 
-
-We need to install several `python` packages.
-
+我们需要安装几个 `python` 包。
 
 ```python
 %pip install --upgrade --quiet  boto3 requests requests-aws4auth
 ```
-
 
 ```python
 import boto3
@@ -232,7 +226,7 @@ docs = docsearch.similarity_search(
 )
 ```
 
-## Using AOS (Amazon OpenSearch Service)
+## 使用 AOS (Amazon OpenSearch Service)
 
 
 ```python
@@ -270,8 +264,7 @@ docs = docsearch.similarity_search(
 )
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

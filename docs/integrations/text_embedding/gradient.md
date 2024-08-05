@@ -1,23 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/gradient.ipynb
 ---
-# Gradient
 
-`Gradient` allows to create `Embeddings` as well fine tune and get completions on LLMs with a simple web API.
+# 渐变
 
-This notebook goes over how to use Langchain with Embeddings of [Gradient](https://gradient.ai/).
+`Gradient` 允许通过简单的网页 API 创建 `Embeddings`，并对 LLM 进行微调和获取完成结果。
 
+本笔记本介绍如何使用 Langchain 与 [Gradient](https://gradient.ai/) 的 Embeddings。
 
-## Imports
+## 导入
 
 
 ```python
 from langchain_community.embeddings import GradientEmbeddings
 ```
 
-## Set the Environment API Key
-Make sure to get your API key from Gradient AI. You are given $10 in free credits to test and fine-tune different models.
-
+## 设置环境 API 密钥
+确保从 Gradient AI 获取您的 API 密钥。您将获得 $10 的免费积分来测试和微调不同的模型。
 
 ```python
 import os
@@ -32,14 +31,13 @@ if not os.environ.get("GRADIENT_WORKSPACE_ID", None):
     os.environ["GRADIENT_WORKSPACE_ID"] = getpass("gradient.ai workspace id:")
 ```
 
-Optional: Validate your environment variables ```GRADIENT_ACCESS_TOKEN``` and ```GRADIENT_WORKSPACE_ID``` to get currently deployed models. Using the `gradientai` Python package.
-
+可选：验证您的环境变量 ```GRADIENT_ACCESS_TOKEN``` 和 ```GRADIENT_WORKSPACE_ID``` 以获取当前部署的模型。使用 `gradientai` Python 包。
 
 ```python
 %pip install --upgrade --quiet  gradientai
 ```
 
-## Create the Gradient instance
+## 创建 Gradient 实例
 
 
 ```python
@@ -61,15 +59,14 @@ query_result = embeddings.embed_query(query)
 
 
 ```python
-# (demo) compute similarity
+# (demo) 计算相似度
 import numpy as np
 
 scores = np.array(documents_embedded) @ np.array(query_result).T
 dict(zip(documents, scores))
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

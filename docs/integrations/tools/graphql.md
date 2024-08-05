@@ -1,30 +1,28 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/graphql.ipynb
 ---
+
 # GraphQL
 
->[GraphQL](https://graphql.org/) is a query language for APIs and a runtime for executing those queries against your data. `GraphQL` provides a complete and understandable description of the data in your API, gives clients the power to ask for exactly what they need and nothing more, makes it easier to evolve APIs over time, and enables powerful developer tools.
+>[GraphQL](https://graphql.org/) 是一种用于 API 的查询语言，以及执行这些查询以访问数据的运行时。 `GraphQL` 提供了 API 中数据的完整且易于理解的描述，使客户端能够精确请求所需的内容，而不是多余的内容，简化了 API 随时间的演变，并支持强大的开发者工具。
 
-By including a `BaseGraphQLTool` in the list of tools provided to an Agent, you can grant your Agent the ability to query data from GraphQL APIs for any purposes you need.
+通过在提供给代理的工具列表中包含 `BaseGraphQLTool`，您可以赋予代理从 GraphQL API 查询数据的能力，以满足您所需的任何目的。
 
-This Jupyter Notebook demonstrates how to use the `GraphQLAPIWrapper` component with an Agent.
+此 Jupyter Notebook 演示了如何使用 `GraphQLAPIWrapper` 组件与代理。
 
-In this example, we'll be using the public `Star Wars GraphQL API` available at the following endpoint: https://swapi-graphql.netlify.app/.netlify/functions/index.
+在此示例中，我们将使用可在以下端点访问的公共 `Star Wars GraphQL API`： https://swapi-graphql.netlify.app/.netlify/functions/index。
 
-First, you need to install `httpx` and `gql` Python packages.
-
+首先，您需要安装 `httpx` 和 `gql` Python 包。
 
 ```python
 pip install httpx gql > /dev/null
 ```
 
-
 ```python
 %pip install --upgrade --quiet  langchain-community
 ```
 
-Now, let's create a BaseGraphQLTool instance with the specified Star Wars API endpoint and initialize an Agent with the tool.
-
+现在，让我们创建一个带有指定星球大战 API 端点的 BaseGraphQLTool 实例，并用该工具初始化一个代理。
 
 ```python
 from langchain.agents import AgentType, initialize_agent, load_tools
@@ -42,8 +40,7 @@ agent = initialize_agent(
 )
 ```
 
-Now, we can use the Agent to run queries against the Star Wars GraphQL API. Let's ask the Agent to list all the Star Wars films and their release dates.
-
+现在，我们可以使用代理对星球大战 GraphQL API 运行查询。让我们请求代理列出所有星球大战电影及其上映日期。
 
 ```python
 graphql_fields = """allFilms {
@@ -67,7 +64,6 @@ graphql_fields = """allFilms {
 
 suffix = "Search for the titles of all the stawars films stored in the graphql database that has this schema "
 
-
 agent.run(suffix + graphql_fields)
 ```
 ```output
@@ -89,9 +85,7 @@ Final Answer: The titles of all the star wars films are: A New Hope, The Empire 
 'The titles of all the star wars films are: A New Hope, The Empire Strikes Back, Return of the Jedi, The Phantom Menace, Attack of the Clones, and Revenge of the Sith.'
 ```
 
+## 相关
 
-
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

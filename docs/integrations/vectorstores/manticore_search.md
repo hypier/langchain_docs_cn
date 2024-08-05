@@ -1,36 +1,37 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/manticore_search.ipynb
 ---
-# ManticoreSearch VectorStore
 
-[ManticoreSearch](https://manticoresearch.com/) is an open-source search engine that offers fast, scalable, and user-friendly capabilities. Originating as a fork of [Sphinx Search](http://sphinxsearch.com/), it has evolved to incorporate modern search engine features and improvements. ManticoreSearch distinguishes itself with its robust performance and ease of integration into various applications.
+# ManticoreSearch 向量存储
 
-ManticoreSearch has recently introduced [vector search capabilities](https://manual.manticoresearch.com/dev/Searching/KNN), starting with search engine version 6.2 and only with [manticore-columnar-lib](https://github.com/manticoresoftware/columnar) package installed. This feature is a considerable advancement, allowing for the execution of searches based on vector similarity.
+[ManticoreSearch](https://manticoresearch.com/) 是一个开源搜索引擎，提供快速、可扩展和用户友好的功能。它起源于 [Sphinx Search](http://sphinxsearch.com/) 的一个分支，经过发展，融入了现代搜索引擎的特性和改进。ManticoreSearch 以其强大的性能和易于集成到各种应用程序中的特点而脱颖而出。
 
-As of now, the vector search functionality is only accessible in the developmental (dev) versions of the search engine. Consequently, it is imperative to employ a developmental [manticoresearch-dev](https://pypi.org/project/manticoresearch-dev/) Python client for utilizing this feature effectively.
+ManticoreSearch 最近推出了 [向量搜索功能](https://manual.manticoresearch.com/dev/Searching/KNN)，从搜索引擎版本 6.2 开始，仅在安装了 [manticore-columnar-lib](https://github.com/manticoresoftware/columnar) 包的情况下可用。此功能是一个重要的进展，允许基于向量相似性执行搜索。
 
-## Setting up environments
+截至目前，向量搜索功能仅在搜索引擎的开发（dev）版本中可用。因此，必须使用开发版的 [manticoresearch-dev](https://pypi.org/project/manticoresearch-dev/) Python 客户端，以有效利用此功能。
 
-Starting Docker-container with ManticoreSearch and installing manticore-columnar-lib package (optional)
+## 设置环境
+
+启动带有 ManticoreSearch 的 Docker 容器并安装 manticore-columnar-lib 包（可选）
 
 
 ```python
 import time
 
-# Start container
+# 启动容器
 containers = !docker ps --filter "name=langchain-manticoresearch-server" -q
 if len(containers) == 0:
     !docker run -d -p 9308:9308 --name langchain-manticoresearch-server manticoresearch/manticore:dev
-    time.sleep(20)  # Wait for the container to start up
+    time.sleep(20)  # 等待容器启动
 
-# Get ID of container
+# 获取容器 ID
 container_id = containers[0]
 
-# Install manticore-columnar-lib package as root user
+# 以 root 用户身份安装 manticore-columnar-lib 包
 !docker exec -it --user 0 {container_id} apt-get update
 !docker exec -it --user 0 {container_id} apt-get install -y manticore-columnar-lib
 
-# Restart container
+# 重启容器
 !docker restart {container_id}
 ```
 ```output
@@ -74,7 +75,7 @@ Unpacking manticore-columnar-lib (2.2.5-240217-a5342a1) ...
 Setting up manticore-columnar-lib (2.2.5-240217-a5342a1) ...
 a546aec22291
 ```
-Installing ManticoreSearch python client
+安装 ManticoreSearch Python 客户端
 
 
 ```python
@@ -86,7 +87,7 @@ Installing ManticoreSearch python client
 [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m To update, run: [0m[32;49mpip install --upgrade pip[0m
 Note: you may need to restart the kernel to use updated packages.
 ```
-We want to use OpenAIEmbeddings so we have to get the OpenAI API Key.
+我们希望使用 OpenAIEmbeddings，因此我们需要获取 OpenAI API 密钥。
 
 
 ```python
@@ -106,181 +107,7 @@ docs = text_splitter.split_documents(documents)
 
 embeddings = GPT4AllEmbeddings()
 ```
-```output
-Created a chunk of size 338, which is longer than the specified 100
-Created a chunk of size 508, which is longer than the specified 100
-Created a chunk of size 277, which is longer than the specified 100
-Created a chunk of size 777, which is longer than the specified 100
-Created a chunk of size 247, which is longer than the specified 100
-Created a chunk of size 228, which is longer than the specified 100
-Created a chunk of size 557, which is longer than the specified 100
-Created a chunk of size 587, which is longer than the specified 100
-Created a chunk of size 173, which is longer than the specified 100
-Created a chunk of size 622, which is longer than the specified 100
-Created a chunk of size 775, which is longer than the specified 100
-Created a chunk of size 292, which is longer than the specified 100
-Created a chunk of size 456, which is longer than the specified 100
-Created a chunk of size 291, which is longer than the specified 100
-Created a chunk of size 367, which is longer than the specified 100
-Created a chunk of size 604, which is longer than the specified 100
-Created a chunk of size 618, which is longer than the specified 100
-Created a chunk of size 340, which is longer than the specified 100
-Created a chunk of size 395, which is longer than the specified 100
-Created a chunk of size 321, which is longer than the specified 100
-Created a chunk of size 453, which is longer than the specified 100
-Created a chunk of size 354, which is longer than the specified 100
-Created a chunk of size 481, which is longer than the specified 100
-Created a chunk of size 233, which is longer than the specified 100
-Created a chunk of size 270, which is longer than the specified 100
-Created a chunk of size 305, which is longer than the specified 100
-Created a chunk of size 520, which is longer than the specified 100
-Created a chunk of size 289, which is longer than the specified 100
-Created a chunk of size 280, which is longer than the specified 100
-Created a chunk of size 417, which is longer than the specified 100
-Created a chunk of size 495, which is longer than the specified 100
-Created a chunk of size 602, which is longer than the specified 100
-Created a chunk of size 1004, which is longer than the specified 100
-Created a chunk of size 272, which is longer than the specified 100
-Created a chunk of size 1203, which is longer than the specified 100
-Created a chunk of size 844, which is longer than the specified 100
-Created a chunk of size 135, which is longer than the specified 100
-Created a chunk of size 306, which is longer than the specified 100
-Created a chunk of size 407, which is longer than the specified 100
-Created a chunk of size 910, which is longer than the specified 100
-Created a chunk of size 398, which is longer than the specified 100
-Created a chunk of size 674, which is longer than the specified 100
-Created a chunk of size 356, which is longer than the specified 100
-Created a chunk of size 474, which is longer than the specified 100
-Created a chunk of size 814, which is longer than the specified 100
-Created a chunk of size 530, which is longer than the specified 100
-Created a chunk of size 469, which is longer than the specified 100
-Created a chunk of size 489, which is longer than the specified 100
-Created a chunk of size 433, which is longer than the specified 100
-Created a chunk of size 603, which is longer than the specified 100
-Created a chunk of size 380, which is longer than the specified 100
-Created a chunk of size 354, which is longer than the specified 100
-Created a chunk of size 391, which is longer than the specified 100
-Created a chunk of size 772, which is longer than the specified 100
-Created a chunk of size 267, which is longer than the specified 100
-Created a chunk of size 571, which is longer than the specified 100
-Created a chunk of size 594, which is longer than the specified 100
-Created a chunk of size 458, which is longer than the specified 100
-Created a chunk of size 386, which is longer than the specified 100
-Created a chunk of size 417, which is longer than the specified 100
-Created a chunk of size 370, which is longer than the specified 100
-Created a chunk of size 402, which is longer than the specified 100
-Created a chunk of size 306, which is longer than the specified 100
-Created a chunk of size 173, which is longer than the specified 100
-Created a chunk of size 628, which is longer than the specified 100
-Created a chunk of size 321, which is longer than the specified 100
-Created a chunk of size 294, which is longer than the specified 100
-Created a chunk of size 689, which is longer than the specified 100
-Created a chunk of size 641, which is longer than the specified 100
-Created a chunk of size 473, which is longer than the specified 100
-Created a chunk of size 414, which is longer than the specified 100
-Created a chunk of size 585, which is longer than the specified 100
-Created a chunk of size 764, which is longer than the specified 100
-Created a chunk of size 502, which is longer than the specified 100
-Created a chunk of size 640, which is longer than the specified 100
-Created a chunk of size 507, which is longer than the specified 100
-Created a chunk of size 564, which is longer than the specified 100
-Created a chunk of size 707, which is longer than the specified 100
-Created a chunk of size 380, which is longer than the specified 100
-Created a chunk of size 615, which is longer than the specified 100
-Created a chunk of size 733, which is longer than the specified 100
-Created a chunk of size 277, which is longer than the specified 100
-Created a chunk of size 497, which is longer than the specified 100
-Created a chunk of size 625, which is longer than the specified 100
-Created a chunk of size 468, which is longer than the specified 100
-Created a chunk of size 289, which is longer than the specified 100
-Created a chunk of size 576, which is longer than the specified 100
-Created a chunk of size 297, which is longer than the specified 100
-Created a chunk of size 534, which is longer than the specified 100
-Created a chunk of size 427, which is longer than the specified 100
-Created a chunk of size 412, which is longer than the specified 100
-Created a chunk of size 381, which is longer than the specified 100
-Created a chunk of size 417, which is longer than the specified 100
-Created a chunk of size 244, which is longer than the specified 100
-Created a chunk of size 307, which is longer than the specified 100
-Created a chunk of size 528, which is longer than the specified 100
-Created a chunk of size 565, which is longer than the specified 100
-Created a chunk of size 487, which is longer than the specified 100
-Created a chunk of size 470, which is longer than the specified 100
-Created a chunk of size 332, which is longer than the specified 100
-Created a chunk of size 552, which is longer than the specified 100
-Created a chunk of size 427, which is longer than the specified 100
-Created a chunk of size 596, which is longer than the specified 100
-Created a chunk of size 192, which is longer than the specified 100
-Created a chunk of size 403, which is longer than the specified 100
-Created a chunk of size 255, which is longer than the specified 100
-Created a chunk of size 1025, which is longer than the specified 100
-Created a chunk of size 438, which is longer than the specified 100
-Created a chunk of size 900, which is longer than the specified 100
-Created a chunk of size 250, which is longer than the specified 100
-Created a chunk of size 614, which is longer than the specified 100
-Created a chunk of size 635, which is longer than the specified 100
-Created a chunk of size 443, which is longer than the specified 100
-Created a chunk of size 478, which is longer than the specified 100
-Created a chunk of size 473, which is longer than the specified 100
-Created a chunk of size 302, which is longer than the specified 100
-Created a chunk of size 549, which is longer than the specified 100
-Created a chunk of size 644, which is longer than the specified 100
-Created a chunk of size 402, which is longer than the specified 100
-Created a chunk of size 489, which is longer than the specified 100
-Created a chunk of size 551, which is longer than the specified 100
-Created a chunk of size 527, which is longer than the specified 100
-Created a chunk of size 563, which is longer than the specified 100
-Created a chunk of size 472, which is longer than the specified 100
-Created a chunk of size 511, which is longer than the specified 100
-Created a chunk of size 419, which is longer than the specified 100
-Created a chunk of size 245, which is longer than the specified 100
-Created a chunk of size 371, which is longer than the specified 100
-Created a chunk of size 484, which is longer than the specified 100
-Created a chunk of size 306, which is longer than the specified 100
-Created a chunk of size 190, which is longer than the specified 100
-Created a chunk of size 499, which is longer than the specified 100
-Created a chunk of size 480, which is longer than the specified 100
-Created a chunk of size 634, which is longer than the specified 100
-Created a chunk of size 611, which is longer than the specified 100
-Created a chunk of size 356, which is longer than the specified 100
-Created a chunk of size 478, which is longer than the specified 100
-Created a chunk of size 369, which is longer than the specified 100
-Created a chunk of size 526, which is longer than the specified 100
-Created a chunk of size 311, which is longer than the specified 100
-Created a chunk of size 181, which is longer than the specified 100
-Created a chunk of size 637, which is longer than the specified 100
-Created a chunk of size 219, which is longer than the specified 100
-Created a chunk of size 305, which is longer than the specified 100
-Created a chunk of size 409, which is longer than the specified 100
-Created a chunk of size 235, which is longer than the specified 100
-Created a chunk of size 302, which is longer than the specified 100
-Created a chunk of size 236, which is longer than the specified 100
-Created a chunk of size 209, which is longer than the specified 100
-Created a chunk of size 366, which is longer than the specified 100
-Created a chunk of size 277, which is longer than the specified 100
-Created a chunk of size 591, which is longer than the specified 100
-Created a chunk of size 232, which is longer than the specified 100
-Created a chunk of size 543, which is longer than the specified 100
-Created a chunk of size 199, which is longer than the specified 100
-Created a chunk of size 214, which is longer than the specified 100
-Created a chunk of size 263, which is longer than the specified 100
-Created a chunk of size 375, which is longer than the specified 100
-Created a chunk of size 221, which is longer than the specified 100
-Created a chunk of size 261, which is longer than the specified 100
-Created a chunk of size 203, which is longer than the specified 100
-Created a chunk of size 758, which is longer than the specified 100
-Created a chunk of size 271, which is longer than the specified 100
-Created a chunk of size 323, which is longer than the specified 100
-Created a chunk of size 275, which is longer than the specified 100
-``````output
-bert_load_from_file: gguf version     = 2
-bert_load_from_file: gguf alignment   = 32
-bert_load_from_file: gguf data offset = 695552
-bert_load_from_file: model name           = BERT
-bert_load_from_file: model architecture   = bert
-bert_load_from_file: model file type      = 1
-bert_load_from_file: bert tokenizer vocab = 30522
-```
+
 
 ```python
 for d in docs:
@@ -296,7 +123,7 @@ print(docs)
 [Document(page_content='Computer Science is an uneasy alliance between two halves, theory and systems. The theory people prove things, and the systems people build things. I wanted to build things. I had plenty of respect for theory — indeed, a sneaking suspicion that it was the more admirable of the two halves — but building things seemed so much more exciting.', metadata={'some': 'metadata'}), Document(page_content="I applied to 3 grad schools: MIT and Yale, which were renowned for AI at the time, and Harvard, which I'd visited because Rich Draves went there, and was also home to Bill Woods, who'd invented the type of parser I used in my SHRDLU clone. Only Harvard accepted me, so that was where I went.", metadata={'some': 'metadata'}), Document(page_content='For my undergraduate thesis, I reverse-engineered SHRDLU. My God did I love working on that program. It was a pleasing bit of code, but what made it even more exciting was my belief — hard to imagine now, but not unique in 1985 — that it was already climbing the lower slopes of intelligence.', metadata={'some': 'metadata'}), Document(page_content="The problem with systems work, though, was that it didn't last. Any program you wrote today, no matter how good, would be obsolete in a couple decades at best. People might mention your software in footnotes, but no one would actually use it. And indeed, it would seem very feeble work. Only people with a sense of the history of the field would even realize that, in its time, it had been good.", metadata={'some': 'metadata'})]
 ```
 
-## Related
+## 相关
 
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

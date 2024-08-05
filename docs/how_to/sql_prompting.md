@@ -1,42 +1,40 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/sql_prompting.ipynb
 ---
-# How to better prompt when doing SQL question-answering
 
-In this guide we'll go over prompting strategies to improve SQL query generation using [create_sql_query_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.sql_database.query.create_sql_query_chain.html). We'll largely focus on methods for getting relevant database-specific information in your prompt.
+# 如何更好地提示 SQL 问答
 
-We will cover: 
+在本指南中，我们将讨论提示策略，以改善使用 [create_sql_query_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.sql_database.query.create_sql_query_chain.html) 生成 SQL 查询的效果。我们将主要关注在提示中获取相关数据库特定信息的方法。
 
-- How the dialect of the LangChain [SQLDatabase](https://api.python.langchain.com/en/latest/utilities/langchain_community.utilities.sql_database.SQLDatabase.html) impacts the prompt of the chain;
-- How to format schema information into the prompt using `SQLDatabase.get_context`;
-- How to build and select few-shot examples to assist the model.
+我们将涵盖：
 
-## Setup
+- LangChain [SQLDatabase](https://api.python.langchain.com/en/latest/utilities/langchain_community.utilities.sql_database.SQLDatabase.html) 的方言如何影响链的提示；
+- 如何使用 `SQLDatabase.get_context` 将模式信息格式化到提示中；
+- 如何构建和选择少量示例以帮助模型。
 
-First, get required packages and set environment variables:
+## 设置
 
+首先，获取所需的包并设置环境变量：
 
 ```python
 %pip install --upgrade --quiet  langchain langchain-community langchain-experimental langchain-openai
 ```
 
-
 ```python
-# Uncomment the below to use LangSmith. Not required.
+# 取消注释以下内容以使用 LangSmith。不是必需的。
 # import os
 # os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 # os.environ["LANGCHAIN_TRACING_V2"] = "true"
 ```
 
-The below example will use a SQLite connection with Chinook database. Follow [these installation steps](https://database.guide/2-sample-databases-sqlite/) to create `Chinook.db` in the same directory as this notebook:
+下面的示例将使用与 Chinook 数据库的 SQLite 连接。请按照 [这些安装步骤](https://database.guide/2-sample-databases-sqlite/) 在与此笔记本相同的目录中创建 `Chinook.db`：
 
-* Save [this file](https://raw.githubusercontent.com/lerocha/chinook-database/master/ChinookDatabase/DataSources/Chinook_Sqlite.sql) as `Chinook_Sqlite.sql`
-* Run `sqlite3 Chinook.db`
-* Run `.read Chinook_Sqlite.sql`
-* Test `SELECT * FROM Artist LIMIT 10;`
+* 将 [此文件](https://raw.githubusercontent.com/lerocha/chinook-database/master/ChinookDatabase/DataSources/Chinook_Sqlite.sql) 保存为 `Chinook_Sqlite.sql`
+* 运行 `sqlite3 Chinook.db`
+* 运行 `.read Chinook_Sqlite.sql`
+* 测试 `SELECT * FROM Artist LIMIT 10;`
 
-Now, `Chinhook.db` is in our directory and we can interface with it using the SQLAlchemy-driven `SQLDatabase` class:
-
+现在，`Chinhook.db` 在我们的目录中，我们可以使用 SQLAlchemy 驱动的 `SQLDatabase` 类与之接口：
 
 ```python
 from langchain_community.utilities import SQLDatabase
@@ -51,9 +49,10 @@ sqlite
 ['Album', 'Artist', 'Customer', 'Employee', 'Genre', 'Invoice', 'InvoiceLine', 'MediaType', 'Playlist', 'PlaylistTrack', 'Track']
 [(1, 'AC/DC'), (2, 'Accept'), (3, 'Aerosmith'), (4, 'Alanis Morissette'), (5, 'Alice In Chains'), (6, 'Antônio Carlos Jobim'), (7, 'Apocalyptica'), (8, 'Audioslave'), (9, 'BackBeat'), (10, 'Billy Cobham')]
 ```
-## Dialect-specific prompting
 
-One of the simplest things we can do is make our prompt specific to the SQL dialect we're using. When using the built-in [create_sql_query_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.sql_database.query.create_sql_query_chain.html) and [SQLDatabase](https://api.python.langchain.com/en/latest/utilities/langchain_community.utilities.sql_database.SQLDatabase.html), this is handled for you for any of the following dialects:
+## 方言特定提示
+
+我们可以做的最简单的事情之一是使我们的提示特定于我们使用的 SQL 方言。当使用内置的 [create_sql_query_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.sql_database.query.create_sql_query_chain.html) 和 [SQLDatabase](https://api.python.langchain.com/en/latest/utilities/langchain_community.utilities.sql_database.SQLDatabase.html) 时，以下方言的处理会为您自动完成：
 
 
 ```python
@@ -79,7 +78,7 @@ list(SQL_PROMPTS)
 ```
 
 
-For example, using our current DB we can see that we'll get a SQLite-specific prompt.
+例如，使用我们当前的数据库，我们可以看到我们将获得一个特定于 SQLite 的提示。
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
@@ -111,12 +110,12 @@ Only use the following tables:
 
 Question: [33;1m[1;3m{input}[0m
 ```
-## Table definitions and example rows
 
-In most SQL chains, we'll need to feed the model at least part of the database schema. Without this it won't be able to write valid queries. Our database comes with some convenience methods to give us the relevant context. Specifically, we can get the table names, their schemas, and a sample of rows from each table.
+## 表定义和示例行
 
-Here we will use `SQLDatabase.get_context`, which provides available tables and their schemas:
+在大多数 SQL 链中，我们需要至少提供数据库架构的一部分给模型。没有这些，它将无法编写有效的查询。我们的数据库提供了一些便利的方法来给我们相关的上下文。具体来说，我们可以获取表名、它们的架构以及每个表的示例行。
 
+在这里，我们将使用 `SQLDatabase.get_context`，它提供可用的表及其架构：
 
 ```python
 context = db.get_context()
@@ -135,7 +134,7 @@ CREATE TABLE "Album" (
 )
 
 /*
-3 rows from Album table:
+来自 Album 表的 3 行：
 AlbumId	Title	ArtistId
 1	For Those About To Rock We Salute You	1
 2	Balls to the Wall	2
@@ -150,7 +149,7 @@ CREATE TABLE "Artist" (
 )
 
 /*
-3 rows from Artist table:
+来自 Artist 表的 3 行：
 ArtistId	Name
 1	AC/DC
 2	Accept
@@ -177,7 +176,7 @@ CREATE TABLE "Customer" (
 )
 
 /*
-3 rows from Customer table:
+来自 Customer 表的 3 行：
 CustomerId	FirstName	LastName	Company	Address	City	State	Country	PostalCode	Phone	Fax	Email	SupportRepId
 1	Luís	Gonçalves	Embraer - Empresa Brasileira de Aeronáutica S.A.	Av. Brigadeiro Faria Lima, 2170	São José dos Campos	SP	Brazil	12227-000	+55 (12) 3923-5555	+55 (12) 3923-5566	luisg@embraer.com.br	3
 2	Leonie	Köhler	None	Theodor-Heuss-Straße 34	Stuttgart	None	Germany	70174	+49 0711 2842222	None	leonekohler@surfeu.de	5
@@ -206,7 +205,7 @@ CREATE TABLE "Employee" (
 )
 
 /*
-3 rows from Employee table:
+来自 Employee 表的 3 行：
 EmployeeId	LastName	FirstName	Title	ReportsTo	BirthDate	HireDate	Address	City	State	Country	PostalCode	Phone	Fax	Email
 1	Adams	Andrew	General Manager	None	1962-02-18 00:00:00	2002-08-14 00:00:00	11120 Jasper Ave NW	Edmonton	AB	Canada	T5K 2N1	+1 (780) 428-9482	+1 (780) 428-3457	andrew@chinookcorp.com
 2	Edwards	Nancy	Sales Manager	1	1958-12-08 00:00:00	2002-05-01 00:00:00	825 8 Ave SW	Calgary	AB	Canada	T2P 2T3	+1 (403) 262-3443	+1 (403) 262-3322	nancy@chinookcorp.com
@@ -221,7 +220,7 @@ CREATE TABLE "Genre" (
 )
 
 /*
-3 rows from Genre table:
+来自 Genre 表的 3 行：
 GenreId	Name
 1	Rock
 2	Jazz
@@ -244,7 +243,7 @@ CREATE TABLE "Invoice" (
 )
 
 /*
-3 rows from Invoice table:
+来自 Invoice 表的 3 行：
 InvoiceId	CustomerId	InvoiceDate	BillingAddress	BillingCity	BillingState	BillingCountry	BillingPostalCode	Total
 1	2	2021-01-01 00:00:00	Theodor-Heuss-Straße 34	Stuttgart	None	Germany	70174	1.98
 2	4	2021-01-02 00:00:00	Ullevålsveien 14	Oslo	None	Norway	0171	3.96
@@ -264,7 +263,7 @@ CREATE TABLE "InvoiceLine" (
 )
 
 /*
-3 rows from InvoiceLine table:
+来自 InvoiceLine 表的 3 行：
 InvoiceLineId	InvoiceId	TrackId	UnitPrice	Quantity
 1	1	2	0.99	1
 2	1	4	0.99	1
@@ -279,7 +278,7 @@ CREATE TABLE "MediaType" (
 )
 
 /*
-3 rows from MediaType table:
+来自 MediaType 表的 3 行：
 MediaTypeId	Name
 1	MPEG audio file
 2	Protected AAC audio file
@@ -294,7 +293,7 @@ CREATE TABLE "Playlist" (
 )
 
 /*
-3 rows from Playlist table:
+来自 Playlist 表的 3 行：
 PlaylistId	Name
 1	Music
 2	Movies
@@ -311,7 +310,7 @@ CREATE TABLE "PlaylistTrack" (
 )
 
 /*
-3 rows from PlaylistTrack table:
+来自 PlaylistTrack 表的 3 行：
 PlaylistId	TrackId
 1	3402
 1	3389
@@ -336,15 +335,14 @@ CREATE TABLE "Track" (
 )
 
 /*
-3 rows from Track table:
+来自 Track 表的 3 行：
 TrackId	Name	AlbumId	MediaTypeId	GenreId	Composer	Milliseconds	Bytes	UnitPrice
 1	For Those About To Rock (We Salute You)	1	1	1	Angus Young, Malcolm Young, Brian Johnson	343719	11170334	0.99
 2	Balls to the Wall	2	2	1	U. Dirkschneider, W. Hoffmann, H. Frank, P. Baltes, S. Kaufmann, G. Hoffmann	342562	5510424	0.99
 3	Fast As a Shark	3	2	1	F. Baltes, S. Kaufman, U. Dirkscneider & W. Hoffman	230619	3990994	0.99
 */
 ```
-When we don't have too many, or too wide of, tables, we can just insert the entirety of this information in our prompt:
-
+当我们没有太多或太宽的表时，我们可以将这些信息的全部插入到我们的提示中：
 
 ```python
 prompt_with_context = chain.get_prompts()[0].partial(table_info=context["table_info"])
@@ -375,7 +373,7 @@ CREATE TABLE "Album" (
 )
 
 /*
-3 rows from Album table:
+来自 Album 表的 3 行：
 AlbumId	Title	ArtistId
 1	For Those About To Rock We Salute You	1
 2	Balls to the Wall	2
@@ -387,14 +385,13 @@ CREATE TABLE "Artist" (
 	"ArtistId" INTEGER NOT NULL, 
 	"Name" NVARCHAR(120)
 ```
-When we do have database schemas that are too large to fit into our model's context window, we'll need to come up with ways of inserting only the relevant table definitions into the prompt based on the user input. For more on this head to the [Many tables, wide tables, high-cardinality feature](/docs/how_to/sql_large_db) guide.
+当我们有数据库架构过大而无法适应模型的上下文窗口时，我们需要想出根据用户输入将相关的表定义插入提示中的方法。有关更多信息，请参阅 [许多表、宽表、高基数特征](/docs/how_to/sql_large_db) 指南。
 
-## Few-shot examples
+## 少量示例
 
-Including examples of natural language questions being converted to valid SQL queries against our database in the prompt will often improve model performance, especially for complex queries.
+在提示中包含自然语言问题转换为有效 SQL 查询的示例，通常会提高模型性能，特别是对于复杂查询。
 
-Let's say we have the following examples:
-
+假设我们有以下示例：
 
 ```python
 examples = [
@@ -442,8 +439,7 @@ examples = [
 ]
 ```
 
-We can create a few-shot prompt with them like so:
-
+我们可以用它们创建一个少量示例提示，如下所示：
 
 ```python
 from langchain_core.prompts import FewShotPromptTemplate, PromptTemplate
@@ -452,22 +448,21 @@ example_prompt = PromptTemplate.from_template("User input: {input}\nSQL query: {
 prompt = FewShotPromptTemplate(
     examples=examples[:5],
     example_prompt=example_prompt,
-    prefix="You are a SQLite expert. Given an input question, create a syntactically correct SQLite query to run. Unless otherwise specificed, do not return more than {top_k} rows.\n\nHere is the relevant table info: {table_info}\n\nBelow are a number of examples of questions and their corresponding SQL queries.",
+    prefix="你是一个 SQLite 专家。给定一个输入问题，创建一个语法正确的 SQLite 查询来执行。除非另有说明，否则请勿返回超过 {top_k} 行。\n\n以下是相关的表信息: {table_info}\n\n以下是一些问题及其对应 SQL 查询的示例。",
     suffix="User input: {input}\nSQL query: ",
     input_variables=["input", "top_k", "table_info"],
 )
 ```
 
-
 ```python
 print(prompt.format(input="How many artists are there?", top_k=3, table_info="foo"))
 ```
 ```output
-You are a SQLite expert. Given an input question, create a syntactically correct SQLite query to run. Unless otherwise specificed, do not return more than 3 rows.
+你是一个 SQLite 专家。给定一个输入问题，创建一个语法正确的 SQLite 查询来执行。除非另有说明，否则请勿返回超过 3 行。
 
-Here is the relevant table info: foo
+以下是相关的表信息: foo
 
-Below are a number of examples of questions and their corresponding SQL queries.
+以下是一些问题及其对应 SQL 查询的示例。
 
 User input: List all artists.
 SQL query: SELECT * FROM Artist;
@@ -487,14 +482,14 @@ SQL query: SELECT * FROM Customer WHERE Country = 'Canada';
 User input: How many artists are there?
 SQL query:
 ```
-## Dynamic few-shot examples
 
-If we have enough examples, we may want to only include the most relevant ones in the prompt, either because they don't fit in the model's context window or because the long tail of examples distracts the model. And specifically, given any input we want to include the examples most relevant to that input.
+## 动态少样本示例
 
-We can do just this using an ExampleSelector. In this case we'll use a [SemanticSimilarityExampleSelector](https://api.python.langchain.com/en/latest/example_selectors/langchain_core.example_selectors.semantic_similarity.SemanticSimilarityExampleSelector.html), which will store the examples in the vector database of our choosing. At runtime it will perform a similarity search between the input and our examples, and return the most semantically similar ones.
+如果我们有足够的示例，我们可能只想在提示中包含最相关的示例，无论是因为它们不适合模型的上下文窗口，还是因为示例的长尾分散了模型的注意力。具体来说，给定任何输入，我们希望包括与该输入最相关的示例。
 
-We default to OpenAI embeddings here, but you can swap them out for the model provider of your choice.
+我们可以使用 ExampleSelector 来实现这一点。在这种情况下，我们将使用 [SemanticSimilarityExampleSelector](https://api.python.langchain.com/en/latest/example_selectors/langchain_core.example_selectors.semantic_similarity.SemanticSimilarityExampleSelector.html)，它将把示例存储在我们选择的向量数据库中。在运行时，它将对输入和我们的示例之间进行相似性搜索，并返回最语义相似的示例。
 
+我们在这里默认使用 OpenAI embeddings，但您可以将其替换为您选择的模型提供者。
 
 ```python
 from langchain_community.vectorstores import FAISS
@@ -510,12 +505,9 @@ example_selector = SemanticSimilarityExampleSelector.from_examples(
 )
 ```
 
-
 ```python
 example_selector.select_examples({"input": "how many artists are there?"})
 ```
-
-
 
 ```output
 [{'input': 'List all artists.', 'query': 'SELECT * FROM Artist;'},
@@ -529,60 +521,53 @@ example_selector.select_examples({"input": "how many artists are there?"})
   'query': "SELECT * FROM Track WHERE GenreId = (SELECT GenreId FROM Genre WHERE Name = 'Rock');"}]
 ```
 
-
-To use it, we can pass the ExampleSelector directly in to our FewShotPromptTemplate:
-
+要使用它，我们可以将 ExampleSelector 直接传递给我们的 FewShotPromptTemplate：
 
 ```python
 prompt = FewShotPromptTemplate(
     example_selector=example_selector,
     example_prompt=example_prompt,
-    prefix="You are a SQLite expert. Given an input question, create a syntactically correct SQLite query to run. Unless otherwise specificed, do not return more than {top_k} rows.\n\nHere is the relevant table info: {table_info}\n\nBelow are a number of examples of questions and their corresponding SQL queries.",
-    suffix="User input: {input}\nSQL query: ",
+    prefix="您是 SQLite 专家。给定一个输入问题，创建一个语法正确的 SQLite 查询来执行。除非另有说明，否则请不要返回超过 {top_k} 行。\n\n以下是相关的表信息：{table_info}\n\n下面是一些问题及其对应的 SQL 查询示例。",
+    suffix="用户输入：{input}\nSQL 查询：",
     input_variables=["input", "top_k", "table_info"],
 )
 ```
-
 
 ```python
 print(prompt.format(input="how many artists are there?", top_k=3, table_info="foo"))
 ```
 ```output
-You are a SQLite expert. Given an input question, create a syntactically correct SQLite query to run. Unless otherwise specificed, do not return more than 3 rows.
+您是 SQLite 专家。给定一个输入问题，创建一个语法正确的 SQLite 查询来执行。除非另有说明，否则请不要返回超过 3 行。
 
-Here is the relevant table info: foo
+以下是相关的表信息：foo
 
-Below are a number of examples of questions and their corresponding SQL queries.
+下面是一些问题及其对应的 SQL 查询示例。
 
-User input: List all artists.
-SQL query: SELECT * FROM Artist;
+用户输入：List all artists.
+SQL 查询：SELECT * FROM Artist;
 
-User input: How many employees are there
-SQL query: SELECT COUNT(*) FROM "Employee"
+用户输入：How many employees are there
+SQL 查询：SELECT COUNT(*) FROM "Employee"
 
-User input: How many tracks are there in the album with ID 5?
-SQL query: SELECT COUNT(*) FROM Track WHERE AlbumId = 5;
+用户输入：How many tracks are there in the album with ID 5?
+SQL 查询：SELECT COUNT(*) FROM Track WHERE AlbumId = 5;
 
-User input: Which albums are from the year 2000?
-SQL query: SELECT * FROM Album WHERE strftime('%Y', ReleaseDate) = '2000';
+用户输入：Which albums are from the year 2000?
+SQL 查询：SELECT * FROM Album WHERE strftime('%Y', ReleaseDate) = '2000';
 
-User input: List all tracks in the 'Rock' genre.
-SQL query: SELECT * FROM Track WHERE GenreId = (SELECT GenreId FROM Genre WHERE Name = 'Rock');
+用户输入：List all tracks in the 'Rock' genre.
+SQL 查询：SELECT * FROM Track WHERE GenreId = (SELECT GenreId FROM Genre WHERE Name = 'Rock');
 
-User input: how many artists are there?
-SQL query:
+用户输入：how many artists are there?
+SQL 查询：
 ```
-Trying it out, we see that the model identifies the relevant table:
-
+尝试一下，我们看到模型识别了相关的表：
 
 ```python
 chain = create_sql_query_chain(llm, db, prompt)
 chain.invoke({"question": "how many artists are there?"})
 ```
 
-
-
 ```output
 'SELECT COUNT(*) FROM Artist;'
 ```
-

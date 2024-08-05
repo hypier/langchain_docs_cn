@@ -1,47 +1,40 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/google_el_carro.ipynb
 ---
+
 # Google El Carro for Oracle Workloads
 
 > Google [El Carro Oracle Operator](https://github.com/GoogleCloudPlatform/elcarro-oracle-operator)
-offers a way to run Oracle databases in Kubernetes as a portable, open source,
-community driven, no vendor lock-in container orchestration system. El Carro
-provides a powerful declarative API for comprehensive and consistent
-configuration and deployment as well as for real-time operations and
-monitoring.
-Extend your Oracle database's capabilities to build AI-powered experiences
-by leveraging the El Carro Langchain integration.
+提供了一种在Kubernetes中运行Oracle数据库的方法，作为一个可移植的、开源的、社区驱动的、无供应商锁定的容器编排系统。El Carro
+提供了强大的声明式API，用于全面和一致的配置和部署，以及实时操作和监控。
+通过利用El Carro Langchain集成，扩展您的Oracle数据库的功能，以构建AI驱动的体验。
 
-This guide goes over how to use El Carro Langchain integration to
-[save, load and delete langchain documents](/docs/how_to#document-loaders)
-with `ElCarroLoader` and `ElCarroDocumentSaver`. This integration works for any Oracle database, regardless of where it is running.
+本指南介绍了如何使用El Carro Langchain集成来
+[保存、加载和删除langchain文档](/docs/how_to#document-loaders)
+使用`ElCarroLoader`和`ElCarroDocumentSaver`。此集成适用于任何Oracle数据库，无论其运行在哪里。
 
-Learn more about the package on [GitHub](https://github.com/googleapis/langchain-google-el-carro-python/).
+在[GitHub](https://github.com/googleapis/langchain-google-el-carro-python/)上了解更多关于该包的信息。
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/googleapis/langchain-google-el-carro-python/blob/main/docs/document_loader.ipynb)
 
-## Before You Begin
+## 开始之前
 
-Please complete
-the [Getting Started](https://github.com/googleapis/langchain-google-el-carro-python/tree/main/README.md#getting-started)
-section of
-the README to set up your El Carro Oracle database.
+请完成
+[入门指南](https://github.com/googleapis/langchain-google-el-carro-python/tree/main/README.md#getting-started)
+部分，以设置您的 El Carro Oracle 数据库。
 
-### 🦜🔗 Library Installation
+### 🦜🔗 库安装
 
-The integration lives in its own `langchain-google-el-carro` package, so
-we need to install it.
-
+集成位于其自己的 `langchain-google-el-carro` 包中，因此我们需要安装它。
 
 ```python
 %pip install --upgrade --quiet langchain-google-el-carro
 ```
 
-## Basic Usage
+## 基本用法
 
-### Set Up Oracle Database Connection
-Fill out the following variable with your Oracle database connections details.
-
+### 设置 Oracle 数据库连接
+填写以下变量以提供您的 Oracle 数据库连接详细信息。
 
 ```python
 # @title Set Your Values Here { display-mode: "form" }
@@ -50,16 +43,12 @@ PORT = 3307  # @param {type: "integer"}
 DATABASE = "my-database"  # @param {type: "string"}
 TABLE_NAME = "message_store"  # @param {type: "string"}
 USER = "my-user"  # @param {type: "string"}
-PASSWORD = input("Please provide a password to be used for the database user: ")
+PASSWORD = input("请输入用于数据库用户的密码: ")
 ```
 
+如果您使用的是 El Carro，您可以在 El Carro Kubernetes 实例的状态中找到主机名和端口值。使用您为 PDB 创建的用户密码。
 
-If you are using El Carro, you can find the hostname and port values in the
-status of the El Carro Kubernetes instance.
-Use the user password you created for your PDB.
-
-Example Ouput:
-
+示例输出：
 
 ```
 kubectl get -w instances.oracle.db.anthosapis.com -n db
@@ -68,10 +57,9 @@ NAME   DB ENGINE   VERSION   EDITION      ENDPOINT      URL                DB NA
 mydb   Oracle      18c       Express      mydb-svc.db   34.71.69.25:6021   ['pdbname']            TRUE          CreateComplete     True            CreateComplete
 ```
 
-### ElCarroEngine Connection Pool
+### ElCarroEngine 连接池
 
-`ElCarroEngine` configures a connection pool to your Oracle database, enabling successful connections from your application and following industry best practices.
-
+`ElCarroEngine` 配置一个连接池到您的 Oracle 数据库，允许您的应用程序成功连接，并遵循行业最佳实践。
 
 ```python
 from langchain_google_el_carro import ElCarroEngine
@@ -85,13 +73,12 @@ elcarro_engine = ElCarroEngine.from_instance(
 )
 ```
 
-### Initialize a table
+### 初始化表格
 
-Initialize a table of default schema
-via `elcarro_engine.init_document_table(<table_name>)`. Table Columns:
+通过 `elcarro_engine.init_document_table(<table_name>)` 初始化默认模式的表格。表格列：
 
-- page_content (type: text)
-- langchain_metadata (type: JSON)
+- page_content (类型: text)
+- langchain_metadata (类型: JSON)
 
 
 ```python
@@ -101,15 +88,12 @@ elcarro_engine.init_document_table(
 )
 ```
 
-### Save documents
+### 保存文档
 
-Save langchain documents with `ElCarroDocumentSaver.add_documents(<documents>)`.
-To initialize `ElCarroDocumentSaver` class you need to provide 2 things:
+使用 `ElCarroDocumentSaver.add_documents(<documents>)` 保存 langchain 文档。要初始化 `ElCarroDocumentSaver` 类，您需要提供两样东西：
 
-1. `elcarro_engine` - An instance of a `ElCarroEngine` engine.
-2. `table_name` - The name of the table within the Oracle database to store
-   langchain documents.
-
+1. `elcarro_engine` - 一个 `ElCarroEngine` 引擎的实例。
+2. `table_name` - 存储 langchain 文档的 Oracle 数据库中的表名。
 
 ```python
 from langchain_core.documents import Document
@@ -127,16 +111,14 @@ saver = ElCarroDocumentSaver(
 saver.add_documents([doc])
 ```
 
-### Load documents
+### 加载文档
 
-Load langchain documents with `ElCarroLoader.load()`
-or `ElCarroLoader.lazy_load()`.
-`lazy_load` returns a generator that only queries database during the iteration.
-To initialize `ElCarroLoader` class you need to provide:
+使用 `ElCarroLoader.load()` 或 `ElCarroLoader.lazy_load()` 加载 langchain 文档。
+`lazy_load` 返回一个生成器，该生成器在迭代过程中仅查询数据库。
+要初始化 `ElCarroLoader` 类，您需要提供：
 
-1. `elcarro_engine` - An instance of a `ElCarroEngine` engine.
-2. `table_name` - The name of the table within the Oracle database to store
-   langchain documents.
+1. `elcarro_engine` - `ElCarroEngine` 引擎的实例。
+2. `table_name` - Oracle 数据库中存储 langchain 文档的表名。
 
 
 
@@ -149,11 +131,9 @@ for doc in docs:
     print("Loaded documents:", doc)
 ```
 
-### Load documents via query
+### 通过查询加载文档
 
-Other than loading documents from a table, we can also choose to load documents
-from a view generated from a SQL query. For example:
-
+除了从表中加载文档外，我们还可以选择从通过 SQL 查询生成的视图中加载文档。例如：
 
 ```python
 from langchain_google_el_carro import ElCarroLoader
@@ -166,23 +146,19 @@ onedoc = loader.load()
 print(onedoc)
 ```
 
-The view generated from SQL query can have different schema than default table.
-In such cases, the behavior of ElCarroLoader is the same as loading from table
-with non-default schema. Please refer to
-section [Load documents with customized document page content & metadata](#load-documents-with-customized-document-page-content--metadata).
+通过 SQL 查询生成的视图可以具有与默认表不同的模式。在这种情况下，ElCarroLoader 的行为与从具有非默认模式的表中加载文档相同。请参阅
+部分 [加载带有自定义文档页面内容和元数据的文档](#load-documents-with-customized-document-page-content--metadata)。
 
-### Delete documents
+### 删除文档
 
-Delete a list of langchain documents from an Oracle table
-with `ElCarroDocumentSaver.delete(<documents>)`.
+从 Oracle 表中删除一组 langchain 文档，使用 `ElCarroDocumentSaver.delete(<documents>)`。
 
-For a table with a default schema (page_content, langchain_metadata), the
-deletion criteria is:
+对于具有默认模式（page_content, langchain_metadata）的表，删除标准为：
 
-A `row` should be deleted if there exists a `document` in the list, such that
+如果在列表中存在一个 `document`，则应删除 `row`，满足以下条件：
 
-- `document.page_content` equals `row[page_content]`
-- `document.metadata` equals `row[langchain_metadata]`
+- `document.page_content` 等于 `row[page_content]`
+- `document.metadata` 等于 `row[langchain_metadata]`
 
 
 ```python
@@ -192,13 +168,11 @@ saver.delete(onedoc)
 print("Documents after delete:", loader.load())
 ```
 
-## Advanced Usage
+## 高级用法
 
-### Load documents with customized document page content & metadata
+### 使用自定义文档页面内容和元数据加载文档
 
-First we prepare an example table with non-default schema, and populate it with
-some arbitrary data.
-
+首先，我们准备一个具有非默认模式的示例表，并用一些任意数据填充它。
 
 ```python
 import sqlalchemy
@@ -243,11 +217,7 @@ with elcarro_engine.connect() as conn:
     conn.commit()
 ```
 
-If we still load langchain documents with default parameters of `ElCarroLoader`
-from this example table, the `page_content` of loaded documents will be the
-first column of the table, and `metadata` will be consisting of key-value pairs
-of all the other columns.
-
+如果我们仍然使用默认参数的 `ElCarroLoader` 从这个示例表加载 langchain 文档，加载文档的 `page_content` 将是表的第一列，而 `metadata` 将由所有其他列的键值对组成。
 
 ```python
 loader = ElCarroLoader(
@@ -258,19 +228,12 @@ loaded_docs = loader.load()
 print(f"Loaded Documents: [{loaded_docs}]")
 ```
 
-We can specify the content and metadata we want to load by setting
-the `content_columns` and `metadata_columns` when initializing
-the `ElCarroLoader`.
+我们可以通过在初始化 `ElCarroLoader` 时设置 `content_columns` 和 `metadata_columns` 来指定要加载的内容和元数据。
 
-1. `content_columns`: The columns to write into the `page_content` of the
-   document.
-2. `metadata_columns`: The columns to write into the `metadata` of the document.
+1. `content_columns`: 要写入文档的 `page_content` 的列。
+2. `metadata_columns`: 要写入文档的 `metadata` 的列。
 
-For example here, the values of columns in `content_columns` will be joined
-together into a space-separated string, as `page_content` of loaded documents,
-and `metadata` of loaded documents will only contain key-value pairs of columns
-specified in `metadata_columns`.
-
+例如，在这里，`content_columns` 中列的值将被连接成一个以空格分隔的字符串，作为加载文档的 `page_content`，而加载文档的 `metadata` 将仅包含在 `metadata_columns` 中指定的列的键值对。
 
 ```python
 loader = ElCarroLoader(
@@ -288,31 +251,21 @@ loaded_docs = loader.load()
 print(f"Loaded Documents: [{loaded_docs}]")
 ```
 
-### Save document with customized page content & metadata
+### 保存带有自定义页面内容和元数据的文档
 
-In order to save langchain document into table with customized metadata fields
-we need first create such a table via `ElCarroEngine.init_document_table()`, and
-specify the list of `metadata_columns` we want it to have. In this example, the
-created table will have table columns:
+为了将 langchain 文档保存到带有自定义元数据字段的表中，我们首先需要通过 `ElCarroEngine.init_document_table()` 创建这样一个表，并指定我们希望拥有的 `metadata_columns` 列表。在这个例子中，创建的表将包含以下列：
 
-- content (type: text): for storing fruit description.
-- type (type VARCHAR2(200)): for storing fruit type.
-- weight (type INT): for storing fruit weight.
-- extra_json_metadata (type: JSON): for storing other metadata information of the
-  fruit.
+- content (类型: text): 用于存储水果描述。
+- type (类型 VARCHAR2(200)): 用于存储水果类型。
+- weight (类型 INT): 用于存储水果重量。
+- extra_json_metadata (类型: JSON): 用于存储水果的其他元数据信息。
 
-We can use the following parameters
-with `elcarro_engine.init_document_table()` to create the table:
+我们可以使用以下参数与 `elcarro_engine.init_document_table()` 创建表：
 
-1. `table_name`: The name of the table within the Oracle database to store
-   langchain documents.
-2. `metadata_columns`: A list of `sqlalchemy.Column` indicating the list of
-   metadata columns we need.
-3. `content_column`: column name to store `page_content` of langchain
-   document. Default: `"page_content", "VARCHAR2(4000)"`
-4. `metadata_json_column`: column name to store extra
-   JSON `metadata` of langchain document.
-   Default: `"langchain_metadata", "VARCHAR2(4000)"`.
+1. `table_name`: 在 Oracle 数据库中用于存储 langchain 文档的表名。
+2. `metadata_columns`: 一个 `sqlalchemy.Column` 的列表，表示我们需要的元数据列列表。
+3. `content_column`: 用于存储 langchain 文档的 `page_content` 的列名。默认值: `"page_content", "VARCHAR2(4000)"`
+4. `metadata_json_column`: 用于存储 langchain 文档的额外 JSON `metadata` 的列名。默认值: `"langchain_metadata", "VARCHAR2(4000)"`。
 
 
 
@@ -329,14 +282,12 @@ elcarro_engine.init_document_table(
 )
 ```
 
-Save documents with `ElCarroDocumentSaver.add_documents(<documents>)`. As you
-can see in this example,
+使用 `ElCarroDocumentSaver.add_documents(<documents>)` 保存文档。如您在本例中所见，
 
-- `document.page_content` will be saved into `content` column.
-- `document.metadata.type` will be saved into `type` column.
-- `document.metadata.weight` will be saved into `weight` column.
-- `document.metadata.organic` will be saved into `extra_json_metadata` column in
-  JSON format.
+- `document.page_content` 将被保存到 `content` 列中。
+- `document.metadata.type` 将被保存到 `type` 列中。
+- `document.metadata.weight` 将被保存到 `weight` 列中。
+- `document.metadata.organic` 将以 JSON 格式保存到 `extra_json_metadata` 列中。
 
 
 
@@ -371,19 +322,17 @@ loaded_docs = loader.load()
 print(f"Loaded Document: [{loaded_docs[0]}]")
 ```
 
-### Delete documents with customized page content & metadata
+### 删除具有自定义页面内容和元数据的文档
 
-We can also delete documents from table with customized metadata columns
-via `ElCarroDocumentSaver.delete(<documents>)`. The deletion criteria is:
+我们还可以通过 `ElCarroDocumentSaver.delete(<documents>)` 从具有自定义元数据列的表中删除文档。删除标准如下：
 
-A `row` should be deleted if there exists a `document` in the list, such that
+如果列表中存在一个 `document`，则应删除 `row`，满足以下条件：
 
-- `document.page_content` equals `row[page_content]`
-- For every metadata field `k` in `document.metadata`
-    - `document.metadata[k]` equals `row[k]` or `document.metadata[k]`
-      equals `row[langchain_metadata][k]`
-- There is no extra metadata field present in `row` but not
-  in `document.metadata`.
+- `document.page_content` 等于 `row[page_content]`
+- 对于 `document.metadata` 中的每个元数据字段 `k`
+    - `document.metadata[k]` 等于 `row[k]` 或 `document.metadata[k]`
+      等于 `row[langchain_metadata][k]`
+- `row` 中没有额外的元数据字段，而这些字段在 `document.metadata` 中不存在。
 
 
 ```python
@@ -392,17 +341,15 @@ saver.delete(loader.load())
 print(f"Documents left: {len(loader.load())}")
 ```
 
-## More examples
+## 更多示例
 
-Please look
-at [demo_doc_loader_basic.py](https://github.com/googleapis/langchain-google-el-carro-python/tree/main/samples/demo_doc_loader_basic.py)
-and [demo_doc_loader_advanced.py](https://github.com/googleapis/langchain-google-el-carro-python/tree/main/samples/demo_doc_loader_advanced.py)
-for
-complete code examples.
+请查看
+[demo_doc_loader_basic.py](https://github.com/googleapis/langchain-google-el-carro-python/tree/main/samples/demo_doc_loader_basic.py)
+和
+[demo_doc_loader_advanced.py](https://github.com/googleapis/langchain-google-el-carro-python/tree/main/samples/demo_doc_loader_advanced.py)
+以获取完整的代码示例。
 
+## 相关
 
-
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

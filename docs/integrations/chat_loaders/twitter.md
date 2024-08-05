@@ -1,12 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat_loaders/twitter.ipynb
 ---
-# Twitter (via Apify)
 
-This notebook shows how to load chat messages from Twitter to fine-tune on. We do this by utilizing Apify. 
+# Twitter (通过 Apify)
 
-First, use Apify to export tweets. An example
+本笔记展示了如何从 Twitter 加载聊天消息以进行微调。我们通过利用 Apify 实现这一点。
 
+首先，使用 Apify 导出推文。一个示例
 
 ```python
 import json
@@ -15,20 +15,18 @@ from langchain_community.adapters.openai import convert_message_to_dict
 from langchain_core.messages import AIMessage
 ```
 
-
 ```python
 with open("example_data/dataset_twitter-scraper_2023-08-23_22-13-19-740.json") as f:
     data = json.load(f)
 ```
 
-
 ```python
-# Filter out tweets that reference other tweets, because it's a bit weird
+# 过滤掉引用其他推文的推文，因为这有点奇怪
 tweets = [d["full_text"] for d in data if "t.co" not in d["full_text"]]
-# Create them as AI messages
+# 将它们创建为 AI 消息
 messages = [AIMessage(content=t) for t in tweets]
-# Add in a system message at the start
-# TODO: we could try to extract the subject from the tweets, and put that in the system message.
+# 在开头添加一条系统消息
+# TODO: 我们可以尝试从推文中提取主题，并将其放入系统消息中。
 system_message = {"role": "system", "content": "write a tweet"}
 data = [[system_message, convert_message_to_dict(m)] for m in messages]
 ```

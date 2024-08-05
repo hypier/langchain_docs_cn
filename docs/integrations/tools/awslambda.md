@@ -1,30 +1,29 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/awslambda.ipynb
 ---
+
 # AWS Lambda
 
->[`Amazon AWS Lambda`](https://aws.amazon.com/pm/lambda/) is a serverless computing service provided by `Amazon Web Services` (`AWS`). It helps developers to build and run applications and services without provisioning or managing servers. This serverless architecture enables you to focus on writing and deploying code, while AWS automatically takes care of scaling, patching, and managing the infrastructure required to run your applications.
+>[`Amazon AWS Lambda`](https://aws.amazon.com/pm/lambda/) 是由 `Amazon Web Services` (`AWS`) 提供的无服务器计算服务。它帮助开发人员构建和运行应用程序和服务，而无需配置或管理服务器。这种无服务器架构使您能够专注于编写和部署代码，同时 AWS 自动处理运行应用程序所需的基础设施的扩展、补丁和管理。
 
-This notebook goes over how to use the `AWS Lambda` Tool.
+本笔记本介绍了如何使用 `AWS Lambda` 工具。
 
-By including the `AWS Lambda` in the list of tools provided to an Agent, you can grant your Agent the ability to invoke code running in your AWS Cloud for whatever purposes you need.
+通过将 `AWS Lambda` 包含在提供给代理的工具列表中，您可以授予您的代理在 AWS 云中调用代码的能力，以满足您的各种需求。
 
-When an Agent uses the `AWS Lambda` tool, it will provide an argument of type string which will in turn be passed into the Lambda function via the event parameter.
+当代理使用 `AWS Lambda` 工具时，它将提供一个字符串类型的参数，该参数将通过事件参数传递给 Lambda 函数。
 
-First, you need to install `boto3` python package.
-
+首先，您需要安装 `boto3` python 包。
 
 ```python
 %pip install --upgrade --quiet  boto3 > /dev/null
 %pip install --upgrade --quiet langchain-community
 ```
 
-In order for an agent to use the tool, you must provide it with the name and description that match the functionality of you lambda function's logic. 
+为了让代理使用该工具，您必须提供与您 Lambda 函数逻辑功能匹配的名称和描述。
 
-You must also provide the name of your function. 
+您还必须提供您的函数名称。
 
-Note that because this tool is effectively just a wrapper around the boto3 library, you will need to run `aws configure` in order to make use of the tool. For more detail, see [here](https://docs.aws.amazon.com/cli/index.html)
-
+请注意，由于此工具实际上只是 boto3 库的一个包装，您需要运行 `aws configure` 才能使用该工具。有关更多详细信息，请参见 [这里](https://docs.aws.amazon.com/cli/index.html)
 
 ```python
 from langchain.agents import AgentType, initialize_agent, load_tools
@@ -46,8 +45,7 @@ agent = initialize_agent(
 agent.run("Send an email to test@testing123.com saying hello world.")
 ```
 
+## 相关
 
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

@@ -1,8 +1,9 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/self-hosted.ipynb
 ---
-# Self Hosted
-Let's load the `SelfHostedEmbeddings`, `SelfHostedHuggingFaceEmbeddings`, and `SelfHostedHuggingFaceInstructEmbeddings` classes.
+
+# 自托管
+让我们加载 `SelfHostedEmbeddings`、`SelfHostedHuggingFaceEmbeddings` 和 `SelfHostedHuggingFaceInstructEmbeddings` 类。
 
 
 ```python
@@ -16,13 +17,13 @@ from langchain_community.embeddings import (
 
 
 ```python
-# For an on-demand A100 with GCP, Azure, or Lambda
+# 对于 GCP、Azure 或 Lambda 的按需 A100
 gpu = rh.cluster(name="rh-a10x", instance_type="A100:1", use_spot=False)
 
-# For an on-demand A10G with AWS (no single A100s on AWS)
+# 对于 AWS 的按需 A10G（AWS 上没有单个 A100）
 # gpu = rh.cluster(name='rh-a10x', instance_type='g5.2xlarge', provider='aws')
 
-# For an existing cluster
+# 对于现有集群
 # gpu = rh.cluster(ips=['<ip of the cluster>'],
 #                  ssh_creds={'ssh_user': '...', 'ssh_private_key':'<path_to_key>'},
 #                  name='my-cluster')
@@ -43,14 +44,14 @@ text = "This is a test document."
 query_result = embeddings.embed_query(text)
 ```
 
-And similarly for SelfHostedHuggingFaceInstructEmbeddings:
+对于 SelfHostedHuggingFaceInstructEmbeddings 也是如此：
 
 
 ```python
 embeddings = SelfHostedHuggingFaceInstructEmbeddings(hardware=gpu)
 ```
 
-Now let's load an embedding model with a custom load function:
+现在让我们使用自定义加载函数加载一个嵌入模型：
 
 
 ```python
@@ -68,7 +69,7 @@ def get_pipeline():
 
 
 def inference_fn(pipeline, prompt):
-    # Return last hidden state of the model
+    # 返回模型的最后隐藏状态
     if isinstance(prompt, list):
         return [emb[0][-1] for emb in pipeline(prompt)]
     return pipeline(prompt)[0][-1]
@@ -89,8 +90,7 @@ embeddings = SelfHostedEmbeddings(
 query_result = embeddings.embed_query(text)
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

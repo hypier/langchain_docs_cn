@@ -1,21 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/toolkits/json.ipynb
 ---
+
 # JSON
 
-This notebook showcases an agent interacting with large `JSON/dict` objects. 
-This is useful when you want to answer questions about a JSON blob that's too large to fit in the context window of an LLM. The agent is able to iteratively explore the blob to find what it needs to answer the user's question.
+这个笔记本展示了一个代理与大型 `JSON/dict` 对象的交互。 
+当你想要回答关于一个太大而无法放入 LLM 上下文窗口的 JSON 数据块的问题时，这非常有用。代理能够迭代地探索数据块，以找到回答用户问题所需的信息。
 
-In the below example, we are using the OpenAPI spec for the OpenAI API, which you can find [here](https://github.com/openai/openai-openapi/blob/master/openapi.yaml).
+在下面的例子中，我们使用的是 OpenAI API 的 OpenAPI 规范，你可以在 [这里](https://github.com/openai/openai-openapi/blob/master/openapi.yaml) 找到。
 
-We will use the JSON agent to answer some questions about the API spec.
+我们将使用 JSON 代理来回答一些关于 API 规范的问题。
 
 
 ```python
 %pip install -qU langchain-community
 ```
 
-## Initialization
+## 初始化
 
 
 ```python
@@ -37,7 +38,7 @@ json_agent_executor = create_json_agent(
 )
 ```
 
-## Example: getting the required POST parameters for a request
+## 示例：获取请求所需的 POST 参数
 
 
 ```python
@@ -106,4 +107,3 @@ Final Answer: The required parameters in the request body to the /completions en
 ```output
 "The required parameters in the request body to the /completions endpoint are 'model'."
 ```
-

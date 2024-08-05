@@ -1,108 +1,108 @@
 # Intel
 
->[Optimum Intel](https://github.com/huggingface/optimum-intel?tab=readme-ov-file#optimum-intel) is the interface between the 🤗 Transformers and Diffusers libraries and the different tools and libraries provided by Intel to accelerate end-to-end pipelines on Intel architectures.
+>[Optimum Intel](https://github.com/huggingface/optimum-intel?tab=readme-ov-file#optimum-intel) 是 🤗 Transformers 和 Diffusers 库与 Intel 提供的不同工具和库之间的接口，以加速在 Intel 架构上的端到端管道。
 
->[Intel® Extension for Transformers](https://github.com/intel/intel-extension-for-transformers?tab=readme-ov-file#intel-extension-for-transformers) (ITREX) is an innovative toolkit designed to accelerate GenAI/LLM everywhere with the optimal performance of Transformer-based models on various Intel platforms, including Intel Gaudi2, Intel CPU, and Intel GPU.
+>[Intel® Extension for Transformers](https://github.com/intel/intel-extension-for-transformers?tab=readme-ov-file#intel-extension-for-transformers) (ITREX) 是一个创新工具包，旨在以最佳性能加速各种 Intel 平台上基于 Transformer 的模型的 GenAI/LLM，包括 Intel Gaudi2、Intel CPU 和 Intel GPU。
 
-This page covers how to use optimum-intel and ITREX with LangChain.
+本页面介绍如何将 optimum-intel 和 ITREX 与 LangChain 一起使用。
 
 ## Optimum-intel
 
-All functionality related to the [optimum-intel](https://github.com/huggingface/optimum-intel.git) and [IPEX](https://github.com/intel/intel-extension-for-pytorch).
+与 [optimum-intel](https://github.com/huggingface/optimum-intel.git) 和 [IPEX](https://github.com/intel/intel-extension-for-pytorch) 相关的所有功能。
 
-### Installation
+### 安装
 
-Install using optimum-intel and ipex using:
+使用 optimum-intel 和 ipex 安装：
 
 ```bash
 pip install optimum[neural-compressor]
 pip install intel_extension_for_pytorch
 ```
 
-Please follow the installation instructions as specified below:
+请按照以下指定的安装说明进行操作：
 
-* Install optimum-intel as shown [here](https://github.com/huggingface/optimum-intel).
-* Install IPEX as shown [here](https://intel.github.io/intel-extension-for-pytorch/index.html#installation?platform=cpu&version=v2.2.0%2Bcpu).
+* 按照 [这里](https://github.com/huggingface/optimum-intel) 所示安装 optimum-intel。
+* 按照 [这里](https://intel.github.io/intel-extension-for-pytorch/index.html#installation?platform=cpu&version=v2.2.0%2Bcpu) 所示安装 IPEX。
 
-### Embedding Models
+### 嵌入模型
 
-See a [usage example](/docs/integrations/text_embedding/optimum_intel).
-We also offer a full tutorial notebook "rag_with_quantized_embeddings.ipynb" for using the embedder in a RAG pipeline in the cookbook dir.
+请参阅 [用法示例](/docs/integrations/text_embedding/optimum_intel)。  
+我们还在食谱目录中提供了完整的教程笔记本 "rag_with_quantized_embeddings.ipynb"，用于在 RAG 管道中使用嵌入器。
 
 ```python
 from langchain_community.embeddings import QuantizedBiEncoderEmbeddings
 ```
 
 ## Intel® Extension for Transformers (ITREX)
-(ITREX) is an innovative toolkit to accelerate Transformer-based models on Intel platforms, in particular, effective on 4th Intel Xeon Scalable processor Sapphire Rapids (codenamed Sapphire Rapids).
+(ITREX) 是一个创新工具包，用于加速基于 Transformer 的模型在 Intel 平台上的运行，特别是在第 4 代 Intel Xeon 可扩展处理器 Sapphire Rapids（代号 Sapphire Rapids）上表现卓越。
 
-Quantization is a process that involves reducing the precision of these weights by representing them using a smaller number of bits. Weight-only quantization specifically focuses on quantizing the weights of the neural network while keeping other components, such as activations, in their original precision.
+量化是一个通过使用更少的位数来表示这些权重，从而降低其精度的过程。仅权重量化专注于对神经网络的权重进行量化，同时保持其他组件（如激活）在其原始精度下。
 
-As large language models (LLMs) become more prevalent, there is a growing need for new and improved quantization methods that can meet the computational demands of these modern architectures while maintaining the accuracy. Compared to [normal quantization](https://github.com/intel/intel-extension-for-transformers/blob/main/docs/quantization.md) like W8A8, weight only quantization is probably a better trade-off to balance the performance and the accuracy, since we will see below that the bottleneck of deploying LLMs is the memory bandwidth and normally weight only quantization could lead to better accuracy.
+随着大型语言模型（LLMs）的日益普及，对新型和改进的量化方法的需求不断增加，这些方法能够满足现代架构的计算需求，同时保持准确性。与 [普通量化](https://github.com/intel/intel-extension-for-transformers/blob/main/docs/quantization.md)（如 W8A8）相比，仅权重量化可能是平衡性能和准确性的更好折衷，因为我们将在下面看到，部署 LLM 的瓶颈是内存带宽，而通常仅权重量化可以导致更好的准确性。
 
-Here, we will introduce Embedding Models and Weight-only quantization for Transformers large language models with ITREX. Weight-only quantization is a technique used in deep learning to reduce the memory and computational requirements of neural networks. In the context of deep neural networks, the model parameters, also known as weights, are typically represented using floating-point numbers, which can consume a significant amount of memory and require intensive computational resources.
+在这里，我们将介绍 ITREX 中的嵌入模型和仅权重量化，用于 Transformers 大型语言模型。仅权重量化是一种用于深度学习的技术，用于减少神经网络的内存和计算需求。在深度神经网络的上下文中，模型参数，也称为权重，通常使用浮点数表示，这可能会消耗大量内存并需要大量计算资源。
 
-All functionality related to the [intel-extension-for-transformers](https://github.com/intel/intel-extension-for-transformers).
+所有与 [intel-extension-for-transformers](https://github.com/intel/intel-extension-for-transformers) 相关的功能。
 
-### Installation
+### 安装
 
-Install intel-extension-for-transformers. For system requirements and other installation tips, please refer to [Installation Guide](https://github.com/intel/intel-extension-for-transformers/blob/main/docs/installation.md)
+安装 intel-extension-for-transformers。有关系统要求和其他安装提示，请参阅 [安装指南](https://github.com/intel/intel-extension-for-transformers/blob/main/docs/installation.md)
 
 ```bash
 pip install intel-extension-for-transformers
 ```
-Install other required packages.
+安装其他所需的包。
 
 ```bash
 pip install -U torch onnx accelerate datasets
 ```
 
-### Embedding Models
+### 嵌入模型
 
-See a [usage example](/docs/integrations/text_embedding/itrex).
+查看[使用示例](/docs/integrations/text_embedding/itrex)。
 
 ```python
 from langchain_community.embeddings import QuantizedBgeEmbeddings
 ```
 
-### Weight-Only Quantization with ITREX
+### 仅权重量化与 ITREX
 
-See a [usage example](/docs/integrations/llms/weight_only_quantization).
+请参阅 [使用示例](/docs/integrations/llms/weight_only_quantization)。
 
-## Detail of Configuration Parameters
+## 配置参数细节
 
-Here is the detail of the `WeightOnlyQuantConfig` class.
+以下是 `WeightOnlyQuantConfig` 类的详细信息。
 
-#### weight_dtype (string): Weight Data Type, default is "nf4".
-We support quantize the weights to following data types for storing(weight_dtype in WeightOnlyQuantConfig):
-* **int8**: Uses 8-bit data type.
-* **int4_fullrange**: Uses the -8 value of int4 range compared with the normal int4 range [-7,7].
-* **int4_clip**: Clips and retains the values within the int4 range, setting others to zero.
-* **nf4**: Uses the normalized float 4-bit data type.
-* **fp4_e2m1**: Uses regular float 4-bit data type. "e2" means that 2 bits are used for the exponent, and "m1" means that 1 bits are used for the mantissa.
+#### weight_dtype (string): 权重数据类型，默认值为 "nf4"。
+我们支持将权重量化为以下数据类型以进行存储（WeightOnlyQuantConfig 中的 weight_dtype）：
+* **int8**: 使用 8 位数据类型。
+* **int4_fullrange**: 使用 int4 范围的 -8 值，与正常的 int4 范围 [-7,7] 相比。
+* **int4_clip**: 裁剪并保留 int4 范围内的值，将其他值设为零。
+* **nf4**: 使用规范化的 4 位浮点数据类型。
+* **fp4_e2m1**: 使用常规的 4 位浮点数据类型。"e2" 表示 2 位用于指数，"m1" 表示 1 位用于尾数。
 
-#### compute_dtype (string): Computing Data Type, Default is "fp32".
-While these techniques store weights in 4 or 8 bit, the computation still happens in float32, bfloat16 or int8(compute_dtype in WeightOnlyQuantConfig):
-* **fp32**: Uses the float32 data type to compute.
-* **bf16**: Uses the bfloat16 data type to compute.
-* **int8**: Uses 8-bit data type to compute.
+#### compute_dtype (string): 计算数据类型，默认值为 "fp32"。
+虽然这些技术将权重存储为 4 位或 8 位，但计算仍然发生在 float32、bfloat16 或 int8（WeightOnlyQuantConfig 中的 compute_dtype）：
+* **fp32**: 使用 float32 数据类型进行计算。
+* **bf16**: 使用 bfloat16 数据类型进行计算。
+* **int8**: 使用 8 位数据类型进行计算。
 
-#### llm_int8_skip_modules (list of module's name): Modules to Skip Quantization, Default is None.
-It is a list of modules to be skipped quantization.
+#### llm_int8_skip_modules (list of module's name): 跳过量化的模块，默认值为 None。
+这是一个要跳过量化的模块列表。
 
-#### scale_dtype (string): The Scale Data Type, Default is "fp32".
-Now only support "fp32"(float32).
+#### scale_dtype (string): 缩放数据类型，默认值为 "fp32"。
+目前仅支持 "fp32"（float32）。
 
-#### mse_range (boolean): Whether to Search for The Best Clip Range from Range [0.805, 1.0, 0.005], default is False.
-#### use_double_quant (boolean): Whether to Quantize Scale, Default is False.
-Not support yet.
-#### double_quant_dtype (string): Reserve for Double Quantization.
-#### double_quant_scale_dtype (string): Reserve for Double Quantization.
-#### group_size (int): Group Size When Auantization.
-#### scheme (string): Which Format Weight Be Quantize to. Default is "sym".
-* **sym**: Symmetric.
-* **asym**: Asymmetric.
-#### algorithm (string): Which Algorithm to Improve the Accuracy . Default is "RTN"
-* **RTN**: Round-to-nearest (RTN) is a quantification method that we can think of very intuitively.
-* **AWQ**: Protecting only 1% of salient weights can greatly reduce quantization error. the salient weight channels are selected by observing the distribution of activation and weight per channel. The salient weights are also quantized after multiplying a big scale factor before quantization for preserving. .
-* **TEQ**: A trainable equivalent transformation that preserves the FP32 precision in weight-only quantization.
+#### mse_range (boolean): 是否从范围 [0.805, 1.0, 0.005] 中搜索最佳裁剪范围，默认值为 False。
+#### use_double_quant (boolean): 是否量化缩放，默认值为 False。
+尚不支持。
+#### double_quant_dtype (string): 保留用于双重量化。
+#### double_quant_scale_dtype (string): 保留用于双重量化。
+#### group_size (int): 量化时的组大小。
+#### scheme (string): 权重量化的格式。默认值为 "sym"。
+* **sym**: 对称。
+* **asym**: 非对称。
+#### algorithm (string): 用于提高准确性的算法。默认值为 "RTN"。
+* **RTN**: 最近邻舍入 (RTN) 是一种我们可以非常直观理解的量化方法。
+* **AWQ**: 仅保护 1% 的显著权重可以大大减少量化误差。显著权重通道是通过观察每个通道的激活和权重分布来选择的。显著权重在量化前在乘以一个大缩放因子后也会被量化以进行保留。
+* **TEQ**: 一种可训练的等效变换，在仅权重量化中保留 FP32 精度。

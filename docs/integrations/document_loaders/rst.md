@@ -1,14 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/rst.ipynb
 ---
+
 # RST
 
->A [reStructured Text (RST)](https://en.wikipedia.org/wiki/ReStructuredText) file is a file format for textual data used primarily in the Python programming language community for technical documentation.
+>A [reStructured Text (RST)](https://en.wikipedia.org/wiki/ReStructuredText) 文件是一种文本数据文件格式，主要用于 Python 编程语言社区的技术文档。
 
 ## `UnstructuredRSTLoader`
 
-You can load data from RST files with `UnstructuredRSTLoader` using the following workflow.
-
+您可以使用 `UnstructuredRSTLoader` 从 RST 文件加载数据，工作流程如下。
 
 ```python
 from langchain_community.document_loaders import UnstructuredRSTLoader
@@ -22,7 +22,7 @@ print(docs[0])
 page_content='Example Docs' metadata={'source': './example_data/README.rst', 'category_depth': 0, 'last_modified': '2023-12-19T13:42:18', 'languages': ['eng'], 'filetype': 'text/x-rst', 'file_directory': './example_data', 'filename': 'README.rst', 'category': 'Title'}
 ```
 
-## Related
+## 相关
 
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

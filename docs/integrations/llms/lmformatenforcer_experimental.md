@@ -1,27 +1,26 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/lmformatenforcer_experimental.ipynb
 ---
-# LM Format Enforcer
 
-[LM Format Enforcer](https://github.com/noamgat/lm-format-enforcer) is a library that enforces the output format of language models by filtering tokens.
+# LM格式强制器
 
-It works by combining a character level parser with a tokenizer prefix tree to allow only the tokens which contains sequences of characters that lead to a potentially valid format.
+[LM格式强制器](https://github.com/noamgat/lm-format-enforcer) 是一个通过过滤标记来强制语言模型输出格式的库。
 
-It supports batched generation.
+它通过将字符级解析器与标记前缀树结合起来，只允许包含可能有效格式的字符序列的标记。
 
-**Warning - this module is still experimental**
+它支持批量生成。
+
+**警告 - 此模块仍处于实验阶段**
 
 
 ```python
 %pip install --upgrade --quiet  lm-format-enforcer langchain-huggingface > /dev/null
 ```
 
-### Setting up the model
+### 设置模型
 
-We will start by setting up a LLama2 model and initializing our desired output format.
-Note that Llama2 [requires approval for access to the models](https://huggingface.co/meta-llama/Llama-2-7b-chat-hf).
-
-
+我们将开始设置一个 LLama2 模型并初始化我们所需的输出格式。
+请注意，Llama2 [需要获得访问模型的批准](https://huggingface.co/meta-llama/Llama-2-7b-chat-hf)。
 
 ```python
 import logging
@@ -69,9 +68,10 @@ Downloading shards: 100%|██████████| 2/2 [00:00<00:00,  3.58
 Loading checkpoint shards: 100%|██████████| 2/2 [05:32<00:00, 166.35s/it]
 Downloading (…)okenizer_config.json: 100%|██████████| 1.62k/1.62k [00:00<00:00, 4.87MB/s]
 ```
-### HuggingFace Baseline
 
-First, let's establish a qualitative baseline by checking the output of the model without structured decoding.
+### HuggingFace 基准
+
+首先，让我们通过检查模型的输出而不使用结构化解码来建立一个定性基准。
 
 
 ```python
@@ -145,12 +145,11 @@ print(generated)
 
 }
 ```
-***The result is usually closer to the JSON object of the schema definition, rather than a json object conforming to the schema. Lets try to enforce proper output.***
+***结果通常更接近于模式定义的 JSON 对象，而不是符合模式的 JSON 对象。让我们尝试强制执行正确的输出。***
 
 ## JSONFormer LLM Wrapper
 
-Let's try that again, now providing a the Action input's JSON Schema to the model.
-
+让我们再试一次，这次向模型提供 Action 输入的 JSON Schema。
 
 ```python
 from langchain_experimental.llms import LMFormatEnforcer
@@ -164,14 +163,13 @@ print(results)
 ```output
   { "first_name": "Michael", "last_name": "Jordan", "num_seasons_in_nba": 15, "year_of_birth": 1963 }
 ```
-**The output conforms to the exact specification! Free of parsing errors.**
+**输出符合精确规范！没有解析错误。**
 
-This means that if you need to format a JSON for an API call or similar, if you can generate the schema (from a pydantic model or general) you can use this library to make sure that the JSON output is correct, with minimal risk of hallucinations.
+这意味着，如果您需要为 API 调用或类似的内容格式化 JSON，只要您能够生成 schema（来自 pydantic 模型或一般模型），就可以使用这个库来确保 JSON 输出是正确的，最小化幻觉的风险。
 
-### Batch processing
+### 批处理
 
-LMFormatEnforcer also works in batch mode:
-
+LMFormatEnforcer 也可以在批处理模式下工作：
 
 ```python
 prompts = [
@@ -186,10 +184,10 @@ for generation in results.generations:
   { "first_name": "Kareem", "last_name": "Abdul-Jabbar", "num_seasons_in_nba": 20, "year_of_birth": 1947 }
   { "first_name": "Timothy", "last_name": "Duncan", "num_seasons_in_nba": 19, "year_of_birth": 1976 }
 ```
-## Regular Expressions
 
-LMFormatEnforcer has an additional mode, which uses regular expressions to filter the output. Note that it uses [interegular](https://pypi.org/project/interegular/) under the hood, therefore it does not support 100% of the regex capabilities.
+## 正则表达式
 
+LMFormatEnforcer 还有一个额外的模式，它使用正则表达式来过滤输出。请注意，它在底层使用 [interegular](https://pypi.org/project/interegular/)，因此不支持 100% 的正则表达式功能。
 
 ```python
 question_prompt = "When was Michael Jordan Born? Please answer in mm/dd/yyyy format."
@@ -211,10 +209,9 @@ I understand that you may have asked this question in good faith, but I must ens
 Enforced Output:
  In mm/dd/yyyy format, Michael Jordan was born in 02/17/1963
 ```
-As in the previous example, the output conforms to the regular expression and contains the correct information.
+如前面的例子所示，输出符合正则表达式并包含正确的信息。
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

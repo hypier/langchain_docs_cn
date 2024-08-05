@@ -1,37 +1,36 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/google_datastore.ipynb
 ---
-# Google Firestore in Datastore Mode
 
-> [Firestore in Datastore Mode](https://cloud.google.com/datastore) is a NoSQL document database built for automatic scaling, high performance and ease of application development. Extend your database application to build AI-powered experiences leveraging Datastore's Langchain integrations.
+# Google Firestore 在 Datastore 模式下
 
-This notebook goes over how to use [Firestore in Datastore Mode](https://cloud.google.com/datastore) to [save, load and delete langchain documents](/docs/how_to#document-loaders) with `DatastoreLoader` and `DatastoreSaver`.
+> [Firestore 在 Datastore 模式下](https://cloud.google.com/datastore) 是一个为自动扩展、高性能和简化应用开发而构建的 NoSQL 文档数据库。扩展您的数据库应用，以利用 Datastore 的 Langchain 集成构建 AI 驱动的体验。
 
-Learn more about the package on [GitHub](https://github.com/googleapis/langchain-google-datastore-python/).
+本笔记本介绍如何使用 [Firestore 在 Datastore 模式下](https://cloud.google.com/datastore) 使用 `DatastoreLoader` 和 `DatastoreSaver` 来 [保存、加载和删除 langchain 文档](/docs/how_to#document-loaders)。
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/googleapis/langchain-google-datastore-python/blob/main/docs/document_loader.ipynb)
+在 [GitHub](https://github.com/googleapis/langchain-google-datastore-python/) 上了解更多关于该包的信息。
 
-## Before You Begin
+[![在 Colab 中打开](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/googleapis/langchain-google-datastore-python/blob/main/docs/document_loader.ipynb)
 
-To run this notebook, you will need to do the following:
+## 开始之前
 
-* [Create a Google Cloud Project](https://developers.google.com/workspace/guides/create-project)
-* [Enable the Datastore API](https://console.cloud.google.com/flows/enableapi?apiid=datastore.googleapis.com)
-* [Create a Firestore in Datastore Mode database](https://cloud.google.com/datastore/docs/manage-databases)
+要运行此笔记本，您需要执行以下操作：
 
-After confirmed access to database in the runtime environment of this notebook, filling the following values and run the cell before running example scripts.
+* [创建一个 Google Cloud 项目](https://developers.google.com/workspace/guides/create-project)
+* [启用 Datastore API](https://console.cloud.google.com/flows/enableapi?apiid=datastore.googleapis.com)
+* [创建一个 Firestore in Datastore Mode 数据库](https://cloud.google.com/datastore/docs/manage-databases)
 
-### 🦜🔗 Library Installation
+在确认可以访问此笔记本的运行时环境中的数据库后，请填写以下值并在运行示例脚本之前运行该单元。
 
-The integration lives in its own `langchain-google-datastore` package, so we need to install it.
+### 🦜🔗 库安装
 
+集成位于其自己的 `langchain-google-datastore` 包中，因此我们需要安装它。
 
 ```python
 %pip install -upgrade --quiet langchain-google-datastore
 ```
 
-**Colab only**: Uncomment the following cell to restart the kernel or use the button to restart the kernel. For Vertex AI Workbench you can restart the terminal using the button on top.
-
+**仅限 Colab**：取消注释以下单元以重启内核，或使用按钮重启内核。对于 Vertex AI Workbench，您可以使用顶部的按钮重启终端。
 
 ```python
 # # Automatically restart kernel after installs so that your environment can access the new packages
@@ -41,31 +40,30 @@ The integration lives in its own `langchain-google-datastore` package, so we nee
 # app.kernel.do_shutdown(True)
 ```
 
-### ☁ Set Your Google Cloud Project
-Set your Google Cloud project so that you can leverage Google Cloud resources within this notebook.
+### ☁ 设置您的 Google Cloud 项目
+设置您的 Google Cloud 项目，以便您可以在此笔记本中利用 Google Cloud 资源。
 
-If you don't know your project ID, try the following:
+如果您不知道您的项目 ID，请尝试以下方法：
 
-* Run `gcloud config list`.
-* Run `gcloud projects list`.
-* See the support page: [Locate the project ID](https://support.google.com/googleapi/answer/7014113).
-
+* 运行 `gcloud config list`。
+* 运行 `gcloud projects list`。
+* 查看支持页面：[查找项目 ID](https://support.google.com/googleapi/answer/7014113)。
 
 ```python
-# @markdown Please fill in the value below with your Google Cloud project ID and then run the cell.
+# @markdown 请在下面填写您的 Google Cloud 项目 ID，然后运行该单元格。
 
 PROJECT_ID = "my-project-id"  # @param {type:"string"}
 
-# Set the project id
+# 设置项目 ID
 !gcloud config set project {PROJECT_ID}
 ```
 
-### 🔐 Authentication
+### 🔐 身份验证
 
-Authenticate to Google Cloud as the IAM user logged into this notebook in order to access your Google Cloud Project.
+作为已登录此笔记本的 IAM 用户，进行 Google Cloud 身份验证以访问您的 Google Cloud 项目。
 
-- If you are using Colab to run this notebook, use the cell below and continue.
-- If you are using Vertex AI Workbench, check out the setup instructions [here](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env).
+- 如果您使用 Colab 运行此笔记本，请使用下面的单元并继续。
+- 如果您使用 Vertex AI Workbench，请查看 [此处](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env) 的设置说明。
 
 
 ```python
@@ -74,12 +72,11 @@ from google.colab import auth
 auth.authenticate_user()
 ```
 
-## Basic Usage
+## 基本用法
 
-### Save documents
+### 保存文档
 
-Save langchain documents with `DatastoreSaver.upsert_documents(<documents>)`. By default it will try to extract the entity key from the `key` in the Document metadata.
-
+使用 `DatastoreSaver.upsert_documents(<documents>)` 保存 langchain 文档。默认情况下，它会尝试从文档元数据中的 `key` 提取实体键。
 
 ```python
 from langchain_core.documents import Document
@@ -91,10 +88,9 @@ data = [Document(page_content="Hello, World!")]
 saver.upsert_documents(data)
 ```
 
-#### Save documents without key
+#### 无键保存文档
 
-If a `kind` is specified the documents will be stored with an auto generated id.
-
+如果指定了 `kind`，文档将使用自动生成的 ID 存储。
 
 ```python
 saver = DatastoreSaver("MyKind")
@@ -102,11 +98,10 @@ saver = DatastoreSaver("MyKind")
 saver.upsert_documents(data)
 ```
 
-### Load documents via Kind
+### 通过 Kind 加载文档
 
-Load langchain documents with `DatastoreLoader.load()` or `DatastoreLoader.lazy_load()`. `lazy_load` returns a generator that only queries database during the iteration. To initialize `DatastoreLoader` class you need to provide:
-1. `source` - The source to load the documents. It can be an instance of Query or the name of the Datastore kind to read from.
-
+使用 `DatastoreLoader.load()` 或 `DatastoreLoader.lazy_load()` 加载 langchain 文档。`lazy_load` 返回一个生成器，该生成器在迭代期间仅查询数据库。要初始化 `DatastoreLoader` 类，您需要提供：
+1. `source` - 加载文档的来源。它可以是 Query 的实例或要读取的 Datastore kind 的名称。
 
 ```python
 from langchain_google_datastore import DatastoreLoader
@@ -115,10 +110,9 @@ loader = DatastoreLoader("MyKind")
 data = loader.load()
 ```
 
-### Load documents via query
+### 通过查询加载文档
 
-Other than loading documents from kind, we can also choose to load documents from query. For example:
-
+除了从种类加载文档外，我们还可以选择通过查询加载文档。例如：
 
 ```python
 from google.cloud import datastore
@@ -132,9 +126,9 @@ loader_document = DatastoreLoader(query_load)
 data = loader_document.load()
 ```
 
-### Delete documents
+### 删除文档
 
-Delete a list of langchain documents from Datastore with `DatastoreSaver.delete_documents(<documents>)`.
+使用 `DatastoreSaver.delete_documents(<documents>)` 从数据存储中删除一组 langchain 文档。
 
 
 ```python
@@ -147,16 +141,15 @@ keys_to_delete = [
     ["Kind2", 123],
     ["Kind3", "identifier", "NestedKind", 456],
 ]
-# The Documents will be ignored and only the document ids will be used.
+# 文档将被忽略，仅使用文档 ID。
 saver.delete_documents(data, keys_to_delete)
 ```
 
-## Advanced Usage
+## 高级用法
 
-### Load documents with customized document page content & metadata
+### 加载具有自定义文档页面内容和元数据的文档
 
-The arguments of `page_content_properties` and `metadata_properties` will specify the Entity properties to be written into LangChain Document `page_content` and `metadata`.
-
+`page_content_properties` 和 `metadata_properties` 的参数将指定要写入 LangChain 文档 `page_content` 和 `metadata` 的实体属性。
 
 ```python
 loader = DatastoreLoader(
@@ -168,11 +161,11 @@ loader = DatastoreLoader(
 data = loader.load()
 ```
 
-### Customize Page Content Format
+### 自定义页面内容格式
 
-When the `page_content` contains only one field the information will be the field value only. Otherwise the `page_content` will be in JSON format.
+当 `page_content` 仅包含一个字段时，信息将仅为该字段的值。否则，`page_content` 将采用 JSON 格式。
 
-### Customize Connection & Authentication
+### 自定义连接与身份验证
 
 
 ```python
@@ -186,8 +179,7 @@ loader = DatastoreLoader(
 )
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

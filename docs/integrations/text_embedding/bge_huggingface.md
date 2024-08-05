@@ -1,12 +1,13 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/bge_huggingface.ipynb
 ---
-# BGE on Hugging Face
 
->[BGE models on the HuggingFace](https://huggingface.co/BAAI/bge-large-en) are [the best open-source embedding models](https://huggingface.co/spaces/mteb/leaderboard).
->BGE model is created by the [Beijing Academy of Artificial Intelligence (BAAI)](https://en.wikipedia.org/wiki/Beijing_Academy_of_Artificial_Intelligence). `BAAI` is a private non-profit organization engaged in AI research and development.
+# BGE 在 Hugging Face 上
 
-This notebook shows how to use `BGE Embeddings` through `Hugging Face`
+>[HuggingFace 上的 BGE 模型](https://huggingface.co/BAAI/bge-large-en) 是 [最佳开源嵌入模型](https://huggingface.co/spaces/mteb/leaderboard)。
+>BGE 模型由 [北京人工智能研究院 (BAAI)](https://en.wikipedia.org/wiki/Beijing_Academy_of_Artificial_Intelligence) 创建。`BAAI` 是一个从事人工智能研究与开发的私营非营利组织。
+
+本笔记本展示了如何通过 `Hugging Face` 使用 `BGE Embeddings`
 
 
 ```python
@@ -25,7 +26,7 @@ hf = HuggingFaceBgeEmbeddings(
 )
 ```
 
-Note that you need to pass `query_instruction=""` for `model_name="BAAI/bge-m3"` see [FAQ BGE M3](https://huggingface.co/BAAI/bge-m3#faq). 
+请注意，对于 `model_name="BAAI/bge-m3"`，您需要传递 `query_instruction=""`，详见 [FAQ BGE M3](https://huggingface.co/BAAI/bge-m3#faq)。 
 
 
 ```python
@@ -39,9 +40,7 @@ len(embedding)
 384
 ```
 
+## 相关
 
-
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

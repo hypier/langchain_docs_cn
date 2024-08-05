@@ -1,25 +1,26 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/zep_memory_cloud.ipynb
 ---
+
 # Zep Cloud Memory
-> Recall, understand, and extract data from chat histories. Power personalized AI experiences.
+> 回忆、理解并提取聊天记录中的数据。增强个性化的 AI 体验。
 
->[Zep](https://www.getzep.com) is a long-term memory service for AI Assistant apps.
-> With Zep, you can provide AI assistants with the ability to recall past conversations, no matter how distant,
-> while also reducing hallucinations, latency, and cost.
+>[Zep](https://www.getzep.com) 是一款用于 AI 助手应用的长期记忆服务。
+> 使用 Zep，您可以让 AI 助手具备回忆过去对话的能力，无论时间多么久远，
+> 同时减少幻觉、延迟和成本。
 
-> See [Zep Cloud Installation Guide](https://help.getzep.com/sdks) and more [Zep Cloud Langchain Examples](https://github.com/getzep/zep-python/tree/main/examples)
+> 请参阅 [Zep Cloud 安装指南](https://help.getzep.com/sdks) 和更多 [Zep Cloud Langchain 示例](https://github.com/getzep/zep-python/tree/main/examples)
 
-## Example
+## 示例
 
-This notebook demonstrates how to use [Zep](https://www.getzep.com/) as memory for your chatbot.
+本笔记本演示如何将 [Zep](https://www.getzep.com/) 用作您的聊天机器人的记忆。
 
-We'll demonstrate:
+我们将演示：
 
-1. Adding conversation history to Zep.
-2. Running an agent and having message automatically added to the store.
-3. Viewing the enriched messages.
-4. Vector search over the conversation history.
+1. 将对话历史添加到 Zep。
+2. 运行代理并自动将消息添加到存储。
+3. 查看丰富的消息。
+4. 在对话历史中进行向量搜索。
 
 
 ```python
@@ -194,7 +195,7 @@ File ~/job/zep-proprietary/venv/lib/python3.11/site-packages/pydantic/_internal/
     575     inner_schema = apply_model_validators(inner_schema, model_validators, 'inner')
     577     model_schema = core_schema.model_schema(
     578         cls,
-    579         inner_schema,
+    579,
 --> 580         custom_init=getattr(cls, '__pydantic_custom_init__', None),
     581         root_model=False,
     582         post_init=getattr(cls, '__pydantic_post_init__', None),
@@ -202,8 +203,6 @@ File ~/job/zep-proprietary/venv/lib/python3.11/site-packages/pydantic/_internal/
     584         ref=model_ref,
     585         metadata=metadata,
     586     )
-    588 schema = self._apply_model_serializers(model_schema, decorators.model_serializers.values())
-    589 schema = apply_model_validators(schema, model_validators, 'outer')
 ``````output
 File ~/job/zep-proprietary/venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:916, in _generate_md_field_schema(self, name, field_info, decorators)
     906     common_field = self._common_field_schema(name, field_info, decorators)
@@ -234,9 +233,8 @@ File ~/job/zep-proprietary/venv/lib/python3.11/site-packages/pydantic/_internal/
 AttributeError: 'FieldInfo' object has no attribute 'deprecated'
 ```
 
-
 ```python
-# Provide your OpenAI key
+# 提供您的 OpenAI 密钥
 import getpass
 
 openai_key = getpass.getpass()
@@ -244,12 +242,12 @@ openai_key = getpass.getpass()
 
 
 ```python
-# Provide your Zep API key. See https://help.getzep.com/projects#api-keys
+# 提供您的 Zep API 密钥。请参见 https://help.getzep.com/projects#api-keys
 
 zep_api_key = getpass.getpass()
 ```
 
-### Initialize the Zep Chat Message History Class and initialize the Agent
+### 初始化 Zep 聊天消息历史类并初始化代理
 
 
 
@@ -285,67 +283,64 @@ agent_chain = initialize_agent(
 )
 ```
 
-### Add some history data
+### 添加一些历史数据
 
 
 
 ```python
 # Preload some messages into the memory. The default message window is 12 messages. We want to push beyond this to demonstrate auto-summarization.
 test_history = [
-    {"role": "human", "content": "Who was Octavia Butler?"},
+    {"role": "human", "content": "谁是奥克塔维亚·巴特勒？"},
     {
         "role": "ai",
         "content": (
-            "Octavia Estelle Butler (June 22, 1947 – February 24, 2006) was an American"
-            " science fiction author."
+            "奥克塔维亚·埃斯特尔·巴特勒（1947年6月22日 – 2006年2月24日）是一位美国"
+            "科幻小说作家。"
         ),
     },
-    {"role": "human", "content": "Which books of hers were made into movies?"},
+    {"role": "human", "content": "她的哪些书被改编成电影？"},
     {
         "role": "ai",
         "content": (
-            "The most well-known adaptation of Octavia Butler's work is the FX series"
-            " Kindred, based on her novel of the same name."
+            "奥克塔维亚·巴特勒作品中最著名的改编是FX系列"
+            "《亲属》，基于她同名小说。"
         ),
     },
-    {"role": "human", "content": "Who were her contemporaries?"},
+    {"role": "human", "content": "她的同时代人有哪些？"},
     {
         "role": "ai",
         "content": (
-            "Octavia Butler's contemporaries included Ursula K. Le Guin, Samuel R."
-            " Delany, and Joanna Russ."
+            "奥克塔维亚·巴特勒的同时代人包括厄休拉·K·勒古恩、塞缪尔·R·德拉尼和乔安娜·拉斯。"
         ),
     },
-    {"role": "human", "content": "What awards did she win?"},
+    {"role": "human", "content": "她获得了哪些奖项？"},
     {
         "role": "ai",
         "content": (
-            "Octavia Butler won the Hugo Award, the Nebula Award, and the MacArthur"
-            " Fellowship."
+            "奥克塔维亚·巴特勒获得了雨果奖、星云奖和麦克阿瑟"
+            "奖学金。"
         ),
     },
     {
         "role": "human",
-        "content": "Which other women sci-fi writers might I want to read?",
+        "content": "还有哪些女性科幻作家我可能想读？",
     },
     {
         "role": "ai",
-        "content": "You might want to read Ursula K. Le Guin or Joanna Russ.",
+        "content": "你可能想读厄休拉·K·勒古恩或乔安娜·拉斯。"
     },
     {
         "role": "human",
         "content": (
-            "Write a short synopsis of Butler's book, Parable of the Sower. What is it"
-            " about?"
+            "写一段关于巴特勒的书《播种者的寓言》的简短概要。它讲述了什么？"
         ),
     },
     {
         "role": "ai",
         "content": (
-            "Parable of the Sower is a science fiction novel by Octavia Butler,"
-            " published in 1993. It follows the story of Lauren Olamina, a young woman"
-            " living in a dystopian future where society has collapsed due to"
-            " environmental disasters, poverty, and violence."
+            "《播种者的寓言》是奥克塔维亚·巴特勒于1993年出版的科幻小说。"
+            "它讲述了劳伦·奥拉米娜的故事，这是一位年轻女性，生活在一个因"
+            "环境灾难、贫困和暴力而崩溃的反乌托邦未来。"
         ),
         "metadata": {"foo": "bar"},
     },
@@ -362,9 +357,9 @@ for msg in test_history:
     )
 ```
 
-### Run the agent
+### 运行代理
 
-Doing so will automatically add the input and response to the Zep memory.
+这样做将自动将输入和响应添加到 Zep 内存中。
 
 
 
@@ -378,7 +373,7 @@ agent_chain.invoke(
 
 [1m> Entering new AgentExecutor chain...[0m
 [32;1m[1;3m
-AI: Parable of the Sower is highly relevant to contemporary society as it explores themes of environmental degradation, social and economic inequality, and the struggle for survival in a chaotic world. It also delves into issues of race, gender, and religion, making it a thought-provoking and timely read.[0m
+AI: 《播种者的寓言》与当代社会高度相关，因为它探讨了环境恶化、社会和经济不平等以及在混乱世界中生存斗争的主题。它还深入研究了种族、性别和宗教等问题，使其成为一本引人深思且及时的读物。[0m
 
 [1m> Finished chain.[0m
 ```
@@ -390,12 +385,11 @@ AI: Parable of the Sower is highly relevant to contemporary society as it explor
  'output': 'Parable of the Sower is highly relevant to contemporary society as it explores themes of environmental degradation, social and economic inequality, and the struggle for survival in a chaotic world. It also delves into issues of race, gender, and religion, making it a thought-provoking and timely read.'}
 ```
 
+### 检查 Zep 内存
 
-### Inspect the Zep memory
+注意摘要，以及历史记录已通过令牌计数、UUID 和时间戳进行了丰富。
 
-Note the summary, and that the history has been enriched with token counts, UUIDs, and timestamps.
-
-Summaries are biased towards the most recent messages.
+摘要偏向于最新的消息。
 
 
 
@@ -443,11 +437,12 @@ The novel also delves into issues of race, gender, and religion, making it a tho
 human :
  {'content': "Octavia Butler's contemporaries included Ursula K. Le Guin, Samuel R. Delany, and Joanna Russ.\nOctavia Butler won the Hugo Award, the Nebula Award, and the MacArthur Fellowship.\nUrsula K. Le Guin is known for novels like The Left Hand of Darkness and The Dispossessed.\nJoanna Russ is the author of the influential feminist science fiction novel The Female Man.\nMargaret Atwood is known for works like The Handmaid's Tale and the MaddAddam trilogy.\nConnie Willis is an award-winning author of science fiction and fantasy, known for novels like Doomsday Book.\nOctavia Butler is a pioneering black female science fiction author, known for Kindred and the Parable series.\nParable of the Sower is a science fiction novel by Octavia Butler, published in 1993.\nThe novel follows the story of Lauren Olamina, a young woman living in a dystopian future where society has collapsed due to environmental disasters, poverty, and violence.\nParable of the Sower explores themes of environmental degradation, social and economic inequality, and the struggle for survival in a chaotic world.\nThe novel also delves into issues of race, gender, and religion, making it a thought-provoking and timely read.\nOctavia Estelle Butler was an acclaimed American science fiction author. While none of her books were directly adapted into movies, her novel Kindred was adapted into a TV series on FX. Butler was part of a generation of prominent science fiction writers in the 20th century, including contemporaries such as Ursula K. Le Guin, Samuel R. Delany, Chip Delany, and Nalo Hopkinson.\nhuman: Which other women sci-fi writers might I want to read?\nai: You might want to read Ursula K. Le Guin or Joanna Russ.\nhuman: Write a short synopsis of Butler's book, Parable of the Sower. What is it about?\nai: Parable of the Sower is a science fiction novel by Octavia Butler, published in 1993. It follows the story of Lauren Olamina, a young woman living in a dystopian future where society has collapsed due to environmental disasters, poverty, and violence.\nhuman: What is the book's relevance to the challenges facing contemporary society?\nai: Parable of the Sower is highly relevant to contemporary society as it explores themes of environmental degradation, social and economic inequality, and the struggle for survival in a chaotic world. It also delves into issues of race, gender, and religion, making it a thought-provoking and timely read.", 'additional_kwargs': {}, 'response_metadata': {}, 'type': 'human', 'name': None, 'id': None, 'example': False}
 ```
-### Vector search over the Zep memory
 
-Zep provides native vector search over historical conversation memory via the `ZepRetriever`.
+### Zep内存中的向量搜索
 
-You can use the `ZepRetriever` with chains that support passing in a Langchain `Retriever` object.
+Zep通过`ZepRetriever`提供对历史对话记忆的原生向量搜索。
+
+您可以将`ZepRetriever`与支持传入Langchain `Retriever`对象的链一起使用。
 
 
 

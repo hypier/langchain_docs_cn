@@ -1,126 +1,123 @@
-
 # rag-chroma-multi-modal-multi-vector
 
-Multi-modal LLMs enable visual assistants that can perform question-answering about images. 
+多模态 LLMs 使得视觉助手能够对图像进行问答。
 
-This template create a visual assistant for slide decks, which often contain visuals such as graphs or figures.
+这个模板创建了一个用于幻灯片的视觉助手，幻灯片通常包含图表或图形等视觉内容。
 
-It uses GPT-4V to create image summaries for each slide, embeds the summaries, and stores them in Chroma.
- 
-Given a question, relevant slides are retrieved and passed to GPT-4V for answer synthesis.
+它使用 GPT-4V 为每个幻灯片创建图像摘要，嵌入这些摘要，并将其存储在 Chroma 中。
 
+给定一个问题，相关的幻灯片将被检索并传递给 GPT-4V 进行答案合成。
 
+## 输入
 
-## Input
+在 `/docs` 目录中提供一个 PDF 格式的幻灯片。
 
-Supply a slide deck as pdf in the `/docs` directory. 
+默认情况下，此模板包含关于 DataDog（一个公共科技公司）第三季度收益的幻灯片。
 
-By default, this template has a slide deck about Q3 earnings from DataDog, a public technology company.
-
-Example questions to ask can be:
+可以询问的示例问题包括：
 ```
-How many customers does Datadog have?
-What is Datadog platform % Y/Y growth in FY20, FY21, and FY22?
+Datadog 目前有多少客户？
+Datadog 平台在 FY20、FY21 和 FY22 的同比增长百分比是多少？
 ```
 
-To create an index of the slide deck, run:
+要创建幻灯片的索引，请运行：
 ```
 poetry install
 python ingest.py
 ```
 
-## Storage
+## 存储
 
-Here is the process the template will use to create an index of the slides (see [blog](https://blog.langchain.dev/multi-modal-rag-template/)):
+以下是模板将用于创建幻灯片索引的过程（参见 [blog](https://blog.langchain.dev/multi-modal-rag-template/)）：
 
-* Extract the slides as a collection of images
-* Use GPT-4V to summarize each image
-* Embed the image summaries using text embeddings with a link to the original images
-* Retrieve relevant image based on similarity between the image summary and the user input question
-* Pass those images to GPT-4V for answer synthesis
+* 将幻灯片提取为图像集合
+* 使用 GPT-4V 对每个图像进行总结
+* 使用文本嵌入将图像摘要嵌入，并链接到原始图像
+* 根据图像摘要与用户输入问题之间的相似性检索相关图像
+* 将这些图像传递给 GPT-4V 进行答案合成
 
-By default, this will use [LocalFileStore](https://python.langchain.com/docs/integrations/stores/file_system) to store images and Chroma to store summaries.
+默认情况下，这将使用 [LocalFileStore](https://python.langchain.com/docs/integrations/stores/file_system) 来存储图像，并使用 Chroma 来存储摘要。
 
-For production, it may be desirable to use a remote option such as Redis.
+在生产环境中，可能希望使用远程选项，例如 Redis。
 
-You can set the `local_file_store` flag in `chain.py` and `ingest.py` to switch between the two options.
+您可以在 `chain.py` 和 `ingest.py` 中设置 `local_file_store` 标志，以在这两种选项之间切换。
 
-For Redis, the template will use [UpstashRedisByteStore](https://python.langchain.com/docs/integrations/stores/upstash_redis).
+对于 Redis，模板将使用 [UpstashRedisByteStore](https://python.langchain.com/docs/integrations/stores/upstash_redis)。
 
-We will use Upstash to store the images, which offers Redis with a REST API.
+我们将使用 Upstash 来存储图像，它提供带有 REST API 的 Redis。
 
-Simply login [here](https://upstash.com/) and create a database.
+只需在 [这里](https://upstash.com/) 登录并创建一个数据库。
 
-This will give you a REST API with:
+这将为您提供一个带有以下内容的 REST API：
 
 * `UPSTASH_URL`
 * `UPSTASH_TOKEN`
  
-Set `UPSTASH_URL` and `UPSTASH_TOKEN` as environment variables to access your database.
+将 `UPSTASH_URL` 和 `UPSTASH_TOKEN` 设置为环境变量，以访问您的数据库。
 
-We will use Chroma to store and index the image summaries, which will be created locally in the template directory.
+我们将使用 Chroma 来存储和索引图像摘要，这些摘要将在模板目录中本地创建。
 
 ## LLM
 
-The app will retrieve images based on similarity between the text input and the image summary, and pass the images to GPT-4V.
+该应用将根据文本输入与图像摘要之间的相似性检索图像，并将图像传递给 GPT-4V。
 
-## Environment Setup
+## 环境设置
 
-Set the `OPENAI_API_KEY` environment variable to access the OpenAI GPT-4V.
+设置 `OPENAI_API_KEY` 环境变量以访问 OpenAI GPT-4V。
 
-Set `UPSTASH_URL` and `UPSTASH_TOKEN` as environment variables to access your database if you use `UpstashRedisByteStore`.
+如果您使用 `UpstashRedisByteStore`，请将 `UPSTASH_URL` 和 `UPSTASH_TOKEN` 设置为环境变量以访问您的数据库。
 
-## Usage
+## 使用
 
-To use this package, you should first have the LangChain CLI installed:
+要使用此包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将此作为唯一的包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package rag-chroma-multi-modal-multi-vector
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，您只需运行：
 
 ```shell
 langchain app add rag-chroma-multi-modal-multi-vector
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 ```python
 from rag_chroma_multi_modal_multi_vector import chain as rag_chroma_multi_modal_chain_mv
 
 add_routes(app, rag_chroma_multi_modal_chain_mv, path="/rag-chroma-multi-modal-multi-vector")
 ```
 
-(Optional) Let's now configure LangSmith. 
-LangSmith will help us trace, monitor and debug LangChain applications. 
-You can sign up for LangSmith [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
+（可选）现在让我们配置 LangSmith。
+LangSmith 将帮助我们追踪、监控和调试 LangChain 应用程序。
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以通过以下方式直接启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server is running locally at 
+这将启动 FastAPI 应用程序，服务器在本地运行，地址为 
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/rag-chroma-multi-modal-multi-vector/playground](http://127.0.0.1:8000/rag-chroma-multi-modal-multi-vector/playground)  
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板。
+我们可以在 [http://127.0.0.1:8000/rag-chroma-multi-modal-multi-vector/playground](http://127.0.0.1:8000/rag-chroma-multi-modal-multi-vector/playground) 访问游乐场。
 
-We can access the template from code with:
+我们可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable

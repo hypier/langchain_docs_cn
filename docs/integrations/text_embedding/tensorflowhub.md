@@ -1,12 +1,13 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/tensorflowhub.ipynb
 ---
+
 # TensorFlow Hub
 
->[TensorFlow Hub](https://www.tensorflow.org/hub) is a repository of trained machine learning models ready for fine-tuning and deployable anywhere. Reuse trained models like `BERT` and `Faster R-CNN` with just a few lines of code.
+>[TensorFlow Hub](https://www.tensorflow.org/hub) 是一个经过训练的机器学习模型的仓库，准备好进行微调并可以在任何地方部署。只需几行代码即可重用训练好的模型，如 `BERT` 和 `Faster R-CNN`。
 >
 >
-Let's load the TensorflowHub Embedding class.
+让我们加载 TensorflowHub Embedding 类。
 
 
 ```python
@@ -43,8 +44,7 @@ doc_results = embeddings.embed_documents(["foo"])
 doc_results
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

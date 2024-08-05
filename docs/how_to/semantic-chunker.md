@@ -1,26 +1,25 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/semantic-chunker.ipynb
 ---
-# How to split text based on semantic similarity
 
-Taken from Greg Kamradt's wonderful notebook:
+# 如何根据语义相似性拆分文本
+
+摘自 Greg Kamradt 的精彩笔记本：
 [5_Levels_Of_Text_Splitting](https://github.com/FullStackRetrieval-com/RetrievalTutorials/blob/main/tutorials/LevelsOfTextSplitting/5_Levels_Of_Text_Splitting.ipynb)
 
-All credit to him.
+所有的功劳归于他。
 
-This guide covers how to split chunks based on their semantic similarity. If embeddings are sufficiently far apart, chunks are split.
+本指南涵盖了如何根据语义相似性拆分文本块。如果嵌入之间的距离足够远，则会拆分文本块。
 
-At a high level, this splits into sentences, then groups into groups of 3
-sentences, and then merges one that are similar in the embedding space.
+从高层次来看，这个过程首先拆分成句子，然后将其分组为 3 个句子一组，并在嵌入空间中合并相似的组。
 
-## Install Dependencies
-
+## 安装依赖
 
 ```python
 !pip install --quiet langchain_experimental langchain_openai
 ```
 
-## Load Example Data
+## 加载示例数据
 
 
 ```python
@@ -29,10 +28,9 @@ with open("state_of_the_union.txt") as f:
     state_of_the_union = f.read()
 ```
 
-## Create Text Splitter
+## 创建文本分割器
 
-To instantiate a [SemanticChunker](https://api.python.langchain.com/en/latest/text_splitter/langchain_experimental.text_splitter.SemanticChunker.html), we must specify an embedding model. Below we will use [OpenAIEmbeddings](https://api.python.langchain.com/en/latest/embeddings/langchain_community.embeddings.openai.OpenAIEmbeddings.html). 
-
+要实例化一个 [SemanticChunker](https://api.python.langchain.com/en/latest/text_splitter/langchain_experimental.text_splitter.SemanticChunker.html)，我们必须指定一个嵌入模型。下面我们将使用 [OpenAIEmbeddings](https://api.python.langchain.com/en/latest/embeddings/langchain_community.embeddings.openai.OpenAIEmbeddings.html)。
 
 ```python
 from langchain_experimental.text_splitter import SemanticChunker
@@ -41,10 +39,9 @@ from langchain_openai.embeddings import OpenAIEmbeddings
 text_splitter = SemanticChunker(OpenAIEmbeddings())
 ```
 
-## Split Text
+## 拆分文本
 
-We split text in the usual way, e.g., by invoking `.create_documents` to create LangChain [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html) objects:
-
+我们以通常的方式拆分文本，例如，通过调用 `.create_documents` 来创建 LangChain [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html) 对象：
 
 ```python
 docs = text_splitter.create_documents([state_of_the_union])
@@ -53,23 +50,22 @@ print(docs[0].page_content)
 ```output
 Madam Speaker, Madam Vice President, our First Lady and Second Gentleman. Members of Congress and the Cabinet. Justices of the Supreme Court. My fellow Americans. Last year COVID-19 kept us apart. This year we are finally together again. Tonight, we meet as Democrats Republicans and Independents. But most importantly as Americans. With a duty to one another to the American people to the Constitution. And with an unwavering resolve that freedom will always triumph over tyranny. Six days ago, Russia’s Vladimir Putin sought to shake the foundations of the free world thinking he could make it bend to his menacing ways. But he badly miscalculated. He thought he could roll into Ukraine and the world would roll over. Instead he met a wall of strength he never imagined. He met the Ukrainian people. From President Zelenskyy to every Ukrainian, their fearlessness, their courage, their determination, inspires the world. Groups of citizens blocking tanks with their bodies. Everyone from students to retirees teachers turned soldiers defending their homeland. In this struggle as President Zelenskyy said in his speech to the European Parliament “Light will win over darkness.” The Ukrainian Ambassador to the United States is here tonight. Let each of us here tonight in this Chamber send an unmistakable signal to Ukraine and to the world. Please rise if you are able and show that, Yes, we the United States of America stand with the Ukrainian people. Throughout our history we’ve learned this lesson when dictators do not pay a price for their aggression they cause more chaos. They keep moving.
 ```
-## Breakpoints
 
-This chunker works by determining when to "break" apart sentences. This is done by looking for differences in embeddings between any two sentences. When that difference is past some threshold, then they are split.
+## 断点
 
-There are a few ways to determine what that threshold is, which are controlled by the `breakpoint_threshold_type` kwarg.
+这个分块器通过确定何时“拆分”句子来工作。这是通过查看任何两个句子之间的嵌入差异来完成的。当这种差异超过某个阈值时，它们就会被拆分。
 
-### Percentile
+有几种方法可以确定这个阈值，这些方法由 `breakpoint_threshold_type` 关键字参数控制。
 
-The default way to split is based on percentile. In this method, all differences between sentences are calculated, and then any difference greater than the X percentile is split.
+### 百分位
 
+默认的分割方式是基于百分位。在这种方法中，计算句子之间的所有差异，然后将任何大于 X 百分位的差异进行分割。
 
 ```python
 text_splitter = SemanticChunker(
     OpenAIEmbeddings(), breakpoint_threshold_type="percentile"
 )
 ```
-
 
 ```python
 docs = text_splitter.create_documents([state_of_the_union])
@@ -85,17 +81,16 @@ print(len(docs))
 ```output
 26
 ```
-### Standard Deviation
 
-In this method, any difference greater than X standard deviations is split.
+### 标准差
 
+在此方法中，任何大于 X 个标准差的差异都会被拆分。
 
 ```python
 text_splitter = SemanticChunker(
     OpenAIEmbeddings(), breakpoint_threshold_type="standard_deviation"
 )
 ```
-
 
 ```python
 docs = text_splitter.create_documents([state_of_the_union])
@@ -111,17 +106,16 @@ print(len(docs))
 ```output
 4
 ```
-### Interquartile
 
-In this method, the interquartile distance is used to split chunks.
+### 四分位数
 
+在这种方法中，使用四分位数距离来拆分块。
 
 ```python
 text_splitter = SemanticChunker(
     OpenAIEmbeddings(), breakpoint_threshold_type="interquartile"
 )
 ```
-
 
 ```python
 docs = text_splitter.create_documents([state_of_the_union])
@@ -137,18 +131,16 @@ print(len(docs))
 ```output
 25
 ```
-### Gradient
 
-In this method, the gradient of distance is used to split chunks along with the percentile method.
-This method is useful when chunks are highly correlated with each other or specific to a domain e.g. legal or medical. The idea is to apply anomaly detection on gradient array so that the distribution become wider and easy to identify boundaries in highly semantic data.
+### 梯度
 
+在此方法中，距离的梯度用于结合百分位数方法来分割数据块。当数据块之间高度相关或特定于某个领域（例如法律或医学）时，此方法非常有用。其思想是对梯度数组应用异常检测，以便在高度语义化的数据中使分布变得更广泛，从而更容易识别边界。
 
 ```python
 text_splitter = SemanticChunker(
     OpenAIEmbeddings(), breakpoint_threshold_type="gradient"
 )
 ```
-
 
 ```python
 docs = text_splitter.create_documents([state_of_the_union])

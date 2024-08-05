@@ -1,16 +1,16 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/providers/ragatouille.ipynb
 ---
+
 # RAGatouille
 
-[RAGatouille](https://github.com/bclavie/RAGatouille) makes it as simple as can be to use ColBERT! [ColBERT](https://github.com/stanford-futuredata/ColBERT) is a fast and accurate retrieval model, enabling scalable BERT-based search over large text collections in tens of milliseconds.
+[RAGatouille](https://github.com/bclavie/RAGatouille) 使得使用 ColBERT 变得简单易行！ [ColBERT](https://github.com/stanford-futuredata/ColBERT) 是一种快速而准确的检索模型，能够在数十毫秒内对大文本集合进行可扩展的基于 BERT 的搜索。
 
-There are multiple ways that we can use RAGatouille.
+我们可以通过多种方式使用 RAGatouille。
 
+## 设置
 
-## Setup
-
-The integration lives in the `ragatouille` package.
+集成位于 `ragatouille` 包中。
 
 ```bash
 pip install -U ragatouille
@@ -28,17 +28,18 @@ RAG = RAGPretrainedModel.from_pretrained("colbert-ir/colbertv2.0")
 /Users/harrisonchase/.pyenv/versions/3.10.1/envs/langchain/lib/python3.10/site-packages/torch/cuda/amp/grad_scaler.py:125: UserWarning: torch.cuda.amp.GradScaler is enabled, but CUDA is not available.  Disabling.
   warnings.warn(
 ```
+
 ## Retriever
 
-We can use RAGatouille as a retriever. For more information on this, see the [RAGatouille Retriever](/docs/integrations/retrievers/ragatouille)
+我们可以使用 RAGatouille 作为检索器。有关更多信息，请参见 [RAGatouille Retriever](/docs/integrations/retrievers/ragatouille)
 
-## Document Compressor
+## 文档压缩器
 
-We can also use RAGatouille off-the-shelf as a reranker. This will allow us to use ColBERT to rerank retrieved results from any generic retriever. The benefits of this are that we can do this on top of any existing index, so that we don't need to create a new idex. We can do this by using the [document compressor](/docs/how_to/contextual_compression) abstraction in LangChain.
+我们还可以将 RAGatouille 作为现成的重排序器使用。这将允许我们使用 ColBERT 对来自任何通用检索器的检索结果进行重排序。这样做的好处是我们可以在任何现有索引的基础上进行操作，因此我们不需要创建新的索引。我们可以通过使用 LangChain 中的 [document compressor](/docs/how_to/contextual_compression) 抽象来实现这一点。
 
-## Setup Vanilla Retriever
+## 设置基础检索器
 
-First, let's set up a vanilla retriever as an example.
+首先，让我们以一个示例来设置一个基础检索器。
 
 
 ```python
@@ -50,15 +51,15 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 def get_wikipedia_page(title: str):
     """
-    Retrieve the full text content of a Wikipedia page.
+    检索维基百科页面的完整文本内容。
 
-    :param title: str - Title of the Wikipedia page.
-    :return: str - Full text content of the page as raw string.
+    :param title: str - 维基百科页面的标题。
+    :return: str - 页面完整文本内容，作为原始字符串。
     """
-    # Wikipedia API endpoint
+    # 维基百科 API 端点
     URL = "https://en.wikipedia.org/w/api.php"
 
-    # Parameters for the API request
+    # API 请求的参数
     params = {
         "action": "query",
         "format": "json",
@@ -67,13 +68,13 @@ def get_wikipedia_page(title: str):
         "explaintext": True,
     }
 
-    # Custom User-Agent header to comply with Wikipedia's best practices
+    # 自定义 User-Agent 头以遵守维基百科的最佳实践
     headers = {"User-Agent": "RAGatouille_tutorial/0.0.1 (ben@clavie.eu)"}
 
     response = requests.get(URL, params=params, headers=headers)
     data = response.json()
 
-    # Extracting page content
+    # 提取页面内容
     page = next(iter(data["query"]["pages"].values()))
     return page["extract"] if "extract" in page else None
 
@@ -92,7 +93,7 @@ retriever = FAISS.from_documents(texts, OpenAIEmbeddings()).as_retriever(
 
 
 ```python
-docs = retriever.invoke("What animation studio did Miyazaki found")
+docs = retriever.invoke("Miyazaki 创立了哪个动画工作室")
 docs[0]
 ```
 
@@ -103,9 +104,9 @@ Document(page_content='collaborative projects. In April 1984, Miyazaki opened hi
 ```
 
 
-We can see that the result isn't super relevant to the question asked
+我们可以看到结果与所问的问题并不是非常相关。
 
-## Using ColBERT as a reranker
+## 使用 ColBERT 作为重排序器
 
 
 ```python
@@ -116,7 +117,7 @@ compression_retriever = ContextualCompressionRetriever(
 )
 
 compressed_docs = compression_retriever.invoke(
-    "What animation studio did Miyazaki found"
+    "宫崎骏创办了哪个动画工作室"
 )
 ```
 ```output
@@ -131,8 +132,8 @@ compressed_docs[0]
 
 
 ```output
-Document(page_content='In June 1985, Miyazaki, Takahata, Tokuma and Suzuki founded the animation production company Studio Ghibli, with funding from Tokuma Shoten. Studio Ghibli\'s first film, Laputa: Castle in the Sky (1986), employed the same production crew of Nausicaä. Miyazaki\'s designs for the film\'s setting were inspired by Greek architecture and "European urbanistic templates". Some of the architecture in the film was also inspired by a Welsh mining town; Miyazaki witnessed the mining strike upon his first', metadata={'relevance_score': 26.5194149017334})
+Document(page_content='在1985年6月，宫崎骏、高畑勋、德间书店和铃木敏夫共同创办了动画制作公司吉卜力工作室，资金来自德间书店。吉卜力工作室的第一部电影《天空之城》（1986）使用了《风之谷》的同一制作团队。宫崎骏为电影设置的设计灵感来自希腊建筑和“欧洲城市模板”。电影中的一些建筑也受到威尔士一个矿业小镇的启发；宫崎骏在第一次目睹矿工罢工时', metadata={'relevance_score': 26.5194149017334})
 ```
 
 
-This answer is much more relevant!
+这个答案相关性更高！

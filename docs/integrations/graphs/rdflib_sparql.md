@@ -1,39 +1,37 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/graphs/rdflib_sparql.ipynb
 ---
+
 # RDFLib
 
->[RDFLib](https://rdflib.readthedocs.io/) is a pure Python package for working with [RDF](https://en.wikipedia.org/wiki/Resource_Description_Framework). `RDFLib` contains most things you need to work with `RDF`, including:
->- parsers and serializers for RDF/XML, N3, NTriples, N-Quads, Turtle, TriX, Trig and JSON-LD
->- a Graph interface which can be backed by any one of a number of Store implementations
->- store implementations for in-memory, persistent on disk (Berkeley DB) and remote SPARQL endpoints
->- a SPARQL 1.1 implementation - supporting SPARQL 1.1 Queries and Update statements
->- SPARQL function extension mechanisms
+>[RDFLib](https://rdflib.readthedocs.io/) 是一个用于处理 [RDF](https://en.wikipedia.org/wiki/Resource_Description_Framework) 的纯 Python 包。`RDFLib` 包含了处理 `RDF` 所需的大部分内容，包括：
+>- RDF/XML、N3、NTriples、N-Quads、Turtle、TriX、Trig 和 JSON-LD 的解析器和序列化器
+>- 一个图形接口，可以由多种存储实现支持
+>- 内存存储、持久化存储（Berkeley DB）和远程 SPARQL 端点的存储实现
+>- SPARQL 1.1 实现 - 支持 SPARQL 1.1 查询和更新语句
+>- SPARQL 函数扩展机制
 
-Graph databases are an excellent choice for applications based on network-like models. To standardize the syntax and semantics of such graphs, the W3C recommends `Semantic Web Technologies`, cp. [Semantic Web](https://www.w3.org/standards/semanticweb/). 
+图形数据库是基于网络模型的应用程序的优秀选择。为了标准化这些图形的语法和语义，W3C 推荐 `语义网技术`，参见 [语义网](https://www.w3.org/standards/semanticweb/)。
 
-[SPARQL](https://www.w3.org/TR/sparql11-query/) serves as a query language analogously to `SQL` or `Cypher` for these graphs. This notebook demonstrates the application of LLMs as a natural language interface to a graph database by generating `SPARQL`.
+[SPARQL](https://www.w3.org/TR/sparql11-query/) 作为查询语言，与 `SQL` 或 `Cypher` 类似，适用于这些图形。此笔记本演示了 LLM 作为图形数据库的自然语言接口，通过生成 `SPARQL`。
 
-**Disclaimer:** To date, `SPARQL` query generation via LLMs is still a bit unstable. Be especially careful with `UPDATE` queries, which alter the graph.
+**免责声明：** 到目前为止，通过 LLM 生成 `SPARQL` 查询仍然有些不稳定。特别要小心 `UPDATE` 查询，因为它们会改变图形。
 
-## Setting up
+## 设置
 
-We have to install a python library:
-
+我们需要安装一个 Python 库：
 
 ```python
 !pip install rdflib
 ```
 
-There are several sources you can run queries against, including files on the web, files you have available locally, SPARQL endpoints, e.g., [Wikidata](https://www.wikidata.org/wiki/Wikidata:Main_Page), and [triple stores](https://www.w3.org/wiki/LargeTripleStores).
-
+您可以针对多个来源运行查询，包括网络上的文件、本地可用的文件、SPARQL 端点，例如 [Wikidata](https://www.wikidata.org/wiki/Wikidata:Main_Page) 和 [三元组存储](https://www.w3.org/wiki/LargeTripleStores)。
 
 ```python
 from langchain.chains import GraphSparqlQAChain
 from langchain_community.graphs import RdfGraph
 from langchain_openai import ChatOpenAI
 ```
-
 
 ```python
 graph = RdfGraph(
@@ -43,31 +41,29 @@ graph = RdfGraph(
 )
 ```
 
-Note that providing a `local_file` is necessary for storing changes locally if the source is read-only.
+请注意，如果源是只读的，提供 `local_file` 是必要的，以便在本地存储更改。
 
-## Refresh graph schema information
-If the schema of the database changes, you can refresh the schema information needed to generate SPARQL queries.
-
+## 刷新图谱架构信息
+如果数据库的架构发生变化，您可以刷新生成SPARQL查询所需的架构信息。
 
 ```python
 graph.load_schema()
 ```
 
-
 ```python
 graph.get_schema
 ```
 ```output
-In the following, each IRI is followed by the local name and optionally its description in parentheses. 
-The RDF graph supports the following node types:
+在下面，每个IRI后面跟着本地名称，括号内可选地包含其描述。 
+RDF图支持以下节点类型：
 <http://xmlns.com/foaf/0.1/PersonalProfileDocument> (PersonalProfileDocument, None), <http://www.w3.org/ns/auth/cert#RSAPublicKey> (RSAPublicKey, None), <http://www.w3.org/2000/10/swap/pim/contact#Male> (Male, None), <http://xmlns.com/foaf/0.1/Person> (Person, None), <http://www.w3.org/2006/vcard/ns#Work> (Work, None)
-The RDF graph supports the following relationships:
+RDF图支持以下关系：
 <http://www.w3.org/2000/01/rdf-schema#seeAlso> (seeAlso, None), <http://purl.org/dc/elements/1.1/title> (title, None), <http://xmlns.com/foaf/0.1/mbox_sha1sum> (mbox_sha1sum, None), <http://xmlns.com/foaf/0.1/maker> (maker, None), <http://www.w3.org/ns/solid/terms#oidcIssuer> (oidcIssuer, None), <http://www.w3.org/2000/10/swap/pim/contact#publicHomePage> (publicHomePage, None), <http://xmlns.com/foaf/0.1/openid> (openid, None), <http://www.w3.org/ns/pim/space#storage> (storage, None), <http://xmlns.com/foaf/0.1/name> (name, None), <http://www.w3.org/2000/10/swap/pim/contact#country> (country, None), <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> (type, None), <http://www.w3.org/ns/solid/terms#profileHighlightColor> (profileHighlightColor, None), <http://www.w3.org/ns/pim/space#preferencesFile> (preferencesFile, None), <http://www.w3.org/2000/01/rdf-schema#label> (label, None), <http://www.w3.org/ns/auth/cert#modulus> (modulus, None), <http://www.w3.org/2000/10/swap/pim/contact#participant> (participant, None), <http://www.w3.org/2000/10/swap/pim/contact#street2> (street2, None), <http://www.w3.org/2006/vcard/ns#locality> (locality, None), <http://xmlns.com/foaf/0.1/nick> (nick, None), <http://xmlns.com/foaf/0.1/homepage> (homepage, None), <http://creativecommons.org/ns#license> (license, None), <http://xmlns.com/foaf/0.1/givenname> (givenname, None), <http://www.w3.org/2006/vcard/ns#street-address> (street-address, None), <http://www.w3.org/2006/vcard/ns#postal-code> (postal-code, None), <http://www.w3.org/2000/10/swap/pim/contact#street> (street, None), <http://www.w3.org/2003/01/geo/wgs84_pos#lat> (lat, None), <http://xmlns.com/foaf/0.1/primaryTopic> (primaryTopic, None), <http://www.w3.org/2006/vcard/ns#fn> (fn, None), <http://www.w3.org/2003/01/geo/wgs84_pos#location> (location, None), <http://usefulinc.com/ns/doap#developer> (developer, None), <http://www.w3.org/2000/10/swap/pim/contact#city> (city, None), <http://www.w3.org/2006/vcard/ns#region> (region, None), <http://xmlns.com/foaf/0.1/member> (member, None), <http://www.w3.org/2003/01/geo/wgs84_pos#long> (long, None), <http://www.w3.org/2000/10/swap/pim/contact#address> (address, None), <http://xmlns.com/foaf/0.1/family_name> (family_name, None), <http://xmlns.com/foaf/0.1/account> (account, None), <http://xmlns.com/foaf/0.1/workplaceHomepage> (workplaceHomepage, None), <http://purl.org/dc/terms/title> (title, None), <http://www.w3.org/ns/solid/terms#publicTypeIndex> (publicTypeIndex, None), <http://www.w3.org/2000/10/swap/pim/contact#office> (office, None), <http://www.w3.org/2000/10/swap/pim/contact#homePage> (homePage, None), <http://xmlns.com/foaf/0.1/mbox> (mbox, None), <http://www.w3.org/2000/10/swap/pim/contact#preferredURI> (preferredURI, None), <http://www.w3.org/ns/solid/terms#profileBackgroundColor> (profileBackgroundColor, None), <http://schema.org/owns> (owns, None), <http://xmlns.com/foaf/0.1/based_near> (based_near, None), <http://www.w3.org/2006/vcard/ns#hasAddress> (hasAddress, None), <http://xmlns.com/foaf/0.1/img> (img, None), <http://www.w3.org/2000/10/swap/pim/contact#assistant> (assistant, None), <http://xmlns.com/foaf/0.1/title> (title, None), <http://www.w3.org/ns/auth/cert#key> (key, None), <http://www.w3.org/ns/ldp#inbox> (inbox, None), <http://www.w3.org/ns/solid/terms#editableProfile> (editableProfile, None), <http://www.w3.org/2000/10/swap/pim/contact#postalCode> (postalCode, None), <http://xmlns.com/foaf/0.1/weblog> (weblog, None), <http://www.w3.org/ns/auth/cert#exponent> (exponent, None), <http://rdfs.org/sioc/ns#avatar> (avatar, None)
 ```
-## Querying the graph
 
-Now, you can use the graph SPARQL QA chain to ask questions about the graph.
+## 查询图形
 
+现在，您可以使用图形 SPARQL QA 链来询问有关图形的问题。
 
 ```python
 chain = GraphSparqlQAChain.from_llm(
@@ -75,39 +71,35 @@ chain = GraphSparqlQAChain.from_llm(
 )
 ```
 
-
 ```python
-chain.run("What is Tim Berners-Lee's work homepage?")
+chain.run("Tim Berners-Lee 的工作主页是什么？")
 ```
 ```output
 
 
-[1m> Entering new GraphSparqlQAChain chain...[0m
-Identified intent:
+[1m> 进入新的 GraphSparqlQAChain 链...[0m
+识别意图：
 [32;1m[1;3mSELECT[0m
-Generated SPARQL:
+生成的 SPARQL：
 [32;1m[1;3mPREFIX foaf: <http://xmlns.com/foaf/0.1/>
 SELECT ?homepage
 WHERE {
     ?person foaf:name "Tim Berners-Lee" .
     ?person foaf:workplaceHomepage ?homepage .
 }[0m
-Full Context:
+完整上下文：
 [32;1m[1;3m[][0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 ```
-
 
 ```output
-"Tim Berners-Lee's work homepage is http://www.w3.org/People/Berners-Lee/."
+"Tim Berners-Lee 的工作主页是 http://www.w3.org/People/Berners-Lee/."
 ```
 
+## 更新图形
 
-## Updating the graph
-
-Analogously, you can update the graph, i.e., insert triples, using natural language.
-
+类似地，您可以使用自然语言更新图形，即插入三元组。
 
 ```python
 chain.run(
@@ -138,8 +130,7 @@ WHERE {
 ```
 
 
-Let's verify the results:
-
+让我们验证结果：
 
 ```python
 query = (
@@ -154,16 +145,13 @@ graph.query(query)
 ```
 
 
-
 ```output
 [(rdflib.term.URIRef('https://www.w3.org/'),),
  (rdflib.term.URIRef('http://www.w3.org/foo/bar/'),)]
 ```
 
-
-## Return SPARQL query
-You can return the SPARQL query step from the Sparql QA Chain using the `return_sparql_query` parameter
-
+## 返回 SPARQL 查询
+您可以使用 `return_sparql_query` 参数从 Sparql QA Chain 返回 SPARQL 查询步骤
 
 ```python
 chain = GraphSparqlQAChain.from_llm(
@@ -171,36 +159,35 @@ chain = GraphSparqlQAChain.from_llm(
 )
 ```
 
-
 ```python
-result = chain("What is Tim Berners-Lee's work homepage?")
-print(f"SPARQL query: {result['sparql_query']}")
-print(f"Final answer: {result['result']}")
+result = chain("Tim Berners-Lee 的工作主页是什么？")
+print(f"SPARQL 查询: {result['sparql_query']}")
+print(f"最终答案: {result['result']}")
 ```
 ```output
 
 
-[1m> Entering new GraphSparqlQAChain chain...[0m
-Identified intent:
+[1m> 进入新的 GraphSparqlQAChain 链...[0m
+识别意图：
 [32;1m[1;3mSELECT[0m
-Generated SPARQL:
+生成的 SPARQL：
 [32;1m[1;3mPREFIX foaf: <http://xmlns.com/foaf/0.1/>
 SELECT ?workHomepage
 WHERE {
     ?person foaf:name "Tim Berners-Lee" .
     ?person foaf:workplaceHomepage ?workHomepage .
 }[0m
-Full Context:
+完整上下文：
 [32;1m[1;3m[][0m
 
-[1m> Finished chain.[0m
-SPARQL query: PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+[1m> 完成链。[0m
+SPARQL 查询: PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 SELECT ?workHomepage
 WHERE {
     ?person foaf:name "Tim Berners-Lee" .
     ?person foaf:workplaceHomepage ?workHomepage .
 }
-Final answer: Tim Berners-Lee's work homepage is http://www.w3.org/People/Berners-Lee/.
+最终答案: Tim Berners-Lee 的工作主页是 http://www.w3.org/People/Berners-Lee/。
 ```
 
 ```python

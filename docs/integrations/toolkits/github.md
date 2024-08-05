@@ -5,21 +5,21 @@ sidebar_label: Github
 
 # GithubToolkit
 
-The `Github` toolkit contains tools that enable an LLM agent to interact with a github repository. 
-The tool is a wrapper for the [PyGitHub](https://github.com/PyGithub/PyGithub) library. 
+`Github` 工具包包含使 LLM 代理能够与 GitHub 存储库交互的工具。 
+该工具是 [PyGitHub](https://github.com/PyGithub/PyGithub) 库的封装。
 
-For detailed documentation of all GithubToolkit features and configurations head to the [API reference](https://api.python.langchain.com/en/latest/agent_toolkits/langchain_community.agent_toolkits.github.toolkit.GitHubToolkit.html).
+有关所有 GithubToolkit 功能和配置的详细文档，请访问 [API 参考](https://api.python.langchain.com/en/latest/agent_toolkits/langchain_community.agent_toolkits.github.toolkit.GitHubToolkit.html)。
 
-## Setup
+## 设置
 
-At a high-level, we will:
+在高层次上，我们将：
 
-1. Install the pygithub library
-2. Create a Github app
-3. Set your environmental variables
-4. Pass the tools to your agent with `toolkit.get_tools()`
+1. 安装 pygithub 库
+2. 创建一个 Github 应用
+3. 设置您的环境变量
+4. 使用 `toolkit.get_tools()` 将工具传递给您的代理
 
-If you want to get automated tracing from runs of individual tools, you can also set your [LangSmith](https://docs.smith.langchain.com/) API key by uncommenting below:
+如果您想从单个工具的运行中获取自动追踪，您还可以通过取消注释以下内容来设置您的 [LangSmith](https://docs.smith.langchain.com/) API 密钥：
 
 
 ```python
@@ -27,39 +27,38 @@ If you want to get automated tracing from runs of individual tools, you can also
 # os.environ["LANGSMITH_TRACING"] = "true"
 ```
 
-### Installation
+### 安装
 
-#### 1. Install dependencies
+#### 1. 安装依赖
 
-This integration is implemented in `langchain-community`. We will also need the `pygithub` dependency:
+此集成在 `langchain-community` 中实现。我们还需要 `pygithub` 依赖：
 
 
 ```python
 %pip install --upgrade --quiet  pygithub langchain-community
 ```
 
-#### 2. Create a Github App
+#### 2. 创建一个Github应用
 
-[Follow the instructions here](https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app) to create and register a Github app. Make sure your app has the following [repository permissions:](https://docs.github.com/en/rest/overview/permissions-required-for-github-apps?apiVersion=2022-11-28)
+[按照这里的说明](https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app) 创建并注册一个Github应用。确保您的应用具有以下[仓库权限：](https://docs.github.com/en/rest/overview/permissions-required-for-github-apps?apiVersion=2022-11-28)
 
-* Commit statuses (read only)
-* Contents (read and write)
-* Issues (read and write)
-* Metadata (read only)
-* Pull requests (read and write)
+* 提交状态（只读）
+* 内容（读写）
+* 问题（读写）
+* 元数据（只读）
+* 拉取请求（读写）
 
-Once the app has been registered, you must give your app permission to access each of the repositories you whish it to act upon. Use the App settings on [github.com here](https://github.com/settings/installations).
+应用注册后，您必须授予您的应用访问您希望其操作的每个仓库的权限。使用 [github.com 这里的应用设置](https://github.com/settings/installations)。
 
+#### 3. 设置环境变量
 
-#### 3. Set Environment Variables
+在初始化您的代理之前，需要设置以下环境变量：
 
-Before initializing your agent, the following environment variables need to be set:
-
-* **GITHUB_APP_ID**- A six digit number found in your app's general settings
-* **GITHUB_APP_PRIVATE_KEY**- The location of your app's private key .pem file, or the full text of that file as a string.
-* **GITHUB_REPOSITORY**- The name of the Github repository you want your bot to act upon. Must follow the format {username}/{repo-name}. *Make sure the app has been added to this repository first!*
-* Optional: **GITHUB_BRANCH**- The branch where the bot will make its commits. Defaults to `repo.default_branch`.
-* Optional: **GITHUB_BASE_BRANCH**- The base branch of your repo upon which PRs will based from. Defaults to `repo.default_branch`.
+* **GITHUB_APP_ID** - 在您的应用的一般设置中找到的六位数字
+* **GITHUB_APP_PRIVATE_KEY** - 您的应用私钥 .pem 文件的位置，或该文件的完整文本作为字符串。
+* **GITHUB_REPOSITORY** - 您希望机器人操作的Github仓库的名称。必须遵循格式 {username}/{repo-name}。*确保应用已首先添加到此仓库！*
+* 可选：**GITHUB_BRANCH** - 机器人将进行提交的分支。默认为 `repo.default_branch`。
+* 可选：**GITHUB_BASE_BRANCH** - PR 将基于的仓库的基础分支。默认为 `repo.default_branch`。
 
 
 ```python
@@ -75,9 +74,9 @@ for env_var in [
         os.environ[env_var] = getpass.getpass()
 ```
 
-## Instantiation
+## 实例化
 
-Now we can instantiate our toolkit:
+现在我们可以实例化我们的工具包：
 
 
 ```python
@@ -88,10 +87,9 @@ github = GitHubAPIWrapper()
 toolkit = GitHubToolkit.from_github_api_wrapper(github)
 ```
 
-## Tools
+## 工具
 
-View available tools:
-
+查看可用工具：
 
 ```python
 tools = toolkit.get_tools()
@@ -122,36 +120,35 @@ Search issues and pull requests
 Search code
 Create review request
 ```
-The purpose of these tools is as follows:
+这些工具的目的如下：
 
-Each of these steps will be explained in great detail below.
+以下每个步骤将详细解释。
 
-1. **Get Issues**- fetches issues from the repository.
+1. **Get Issues** - 从仓库中获取问题。
 
-2. **Get Issue**- fetches details about a specific issue.
+2. **Get Issue** - 获取特定问题的详细信息。
 
-3. **Comment on Issue**- posts a comment on a specific issue.
+3. **Comment on Issue** - 在特定问题上发布评论。
 
-4. **Create Pull Request**- creates a pull request from the bot's working branch to the base branch.
+4. **Create Pull Request** - 从机器人的工作分支创建一个拉取请求到基础分支。
 
-5. **Create File**- creates a new file in the repository.
+5. **Create File** - 在仓库中创建一个新文件。
 
-6. **Read File**- reads a file from the repository.
+6. **Read File** - 从仓库中读取一个文件。
 
-7. **Update File**- updates a file in the repository.
+7. **Update File** - 更新仓库中的文件。
 
-8. **Delete File**- deletes a file from the repository.
+8. **Delete File** - 从仓库中删除一个文件。
 
-## Use within an agent
+## 在代理内使用
 
-We will need a LLM or chat model:
+我们需要一个 LLM 或聊天模型：
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
 <ChatModelTabs customVarName="llm" />
 
-Initialize the agent with a subset of tools:
-
+使用工具的子集初始化代理：
 
 ```python
 from langgraph.prebuilt import create_react_agent
@@ -163,8 +160,7 @@ tools[0].name = "get_issue"
 agent_executor = create_react_agent(llm, tools)
 ```
 
-And issue it a query:
-
+并向其发出查询：
 
 ```python
 example_query = "What is the title of issue 24888?"
@@ -194,6 +190,7 @@ Name: get_issue
 
 The title of issue 24888 is "Standardize KV-Store Docs".
 ```
-## API reference
 
-For detailed documentation of all `GithubToolkit` features and configurations head to the [API reference](https://api.python.langchain.com/en/latest/agent_toolkits/langchain_community.agent_toolkits.github.toolkit.GitHubToolkit.html).
+## API 参考
+
+有关所有 `GithubToolkit` 功能和配置的详细文档，请访问 [API 参考](https://api.python.langchain.com/en/latest/agent_toolkits/langchain_community.agent_toolkits.github.toolkit.GitHubToolkit.html)。

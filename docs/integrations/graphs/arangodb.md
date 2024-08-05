@@ -1,25 +1,24 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/graphs/arangodb.ipynb
 ---
+
 # ArangoDB
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/arangodb/interactive_tutorials/blob/master/notebooks/Langchain.ipynb)
 
->[ArangoDB](https://github.com/arangodb/arangodb) is a scalable graph database system to drive value from
->connected data, faster. Native graphs, an integrated search engine, and JSON support, via
->a single query language. `ArangoDB` runs on-prem or in the cloud.
+>[ArangoDB](https://github.com/arangodb/arangodb) 是一个可扩展的图形数据库系统，可以更快地从连接数据中获取价值。原生图形、集成搜索引擎和 JSON 支持，通过单一查询语言。`ArangoDB` 可以在本地或云端运行。
 
-This notebook shows how to use LLMs to provide a natural language interface to an [ArangoDB](https://github.com/arangodb/arangodb#readme) database.
+本笔记本展示了如何使用 LLM 提供一个自然语言接口来访问 [ArangoDB](https://github.com/arangodb/arangodb#readme) 数据库。
 
-## Setting up
+## 设置
 
-You can get a local `ArangoDB` instance running via the [ArangoDB Docker image](https://hub.docker.com/_/arangodb):  
+您可以通过 [ArangoDB Docker 镜像](https://hub.docker.com/_/arangodb) 来运行本地 `ArangoDB` 实例：  
 
 ```
 docker run -p 8529:8529 -e ARANGO_ROOT_PASSWORD= arangodb/arangodb
 ```
 
-An alternative is to use the [ArangoDB Cloud Connector package](https://github.com/arangodb/adb-cloud-connector#readme) to get a temporary cloud instance running:
+另一种选择是使用 [ArangoDB Cloud Connector 包](https://github.com/arangodb/adb-cloud-connector#readme) 来运行临时云实例：
 
 
 ```python
@@ -32,7 +31,7 @@ An alternative is to use the [ArangoDB Cloud Connector package](https://github.c
 
 
 ```python
-# Instantiate ArangoDB Database
+# 实例化 ArangoDB 数据库
 import json
 
 from adb_cloud_connector import get_temp_credentials
@@ -60,15 +59,15 @@ Succcess: new credentials acquired
 ```
 
 ```python
-# Instantiate the ArangoDB-LangChain Graph
+# 实例化 ArangoDB-LangChain 图
 from langchain_community.graphs import ArangoGraph
 
 graph = ArangoGraph(db)
 ```
 
-## Populating database
+## 填充数据库
 
-We will rely on the `Python Driver` to import our [GameOfThrones](https://github.com/arangodb/example-datasets/tree/master/GameOfThrones) data into our database.
+我们将依赖 `Python Driver` 将我们的 [GameOfThrones](https://github.com/arangodb/example-datasets/tree/master/GameOfThrones) 数据导入到数据库中。
 
 
 ```python
@@ -144,15 +143,13 @@ db.collection("ChildOf").import_bulk(edges)
  'details': []}
 ```
 
+## 获取和设置 ArangoDB 模式
 
-## Getting and setting the ArangoDB schema
-
-An initial `ArangoDB Schema` is generated upon instantiating the `ArangoDBGraph` object. Below are the schema's getter & setter methods should you be interested in viewing or modifying the schema:
-
+在实例化 `ArangoDBGraph` 对象时，会生成初始的 `ArangoDB Schema`。以下是模式的获取和设置方法，如果您有兴趣查看或修改模式：
 
 ```python
-# The schema should be empty here,
-# since `graph` was initialized prior to ArangoDB Data ingestion (see above).
+# 此时模式应该是空的，
+# 因为 `graph` 在 ArangoDB 数据摄取之前已初始化（见上文）。
 
 import json
 
@@ -171,7 +168,7 @@ graph.set_schema()
 
 
 ```python
-# We can now view the generated schema
+# 现在我们可以查看生成的模式
 
 import json
 
@@ -280,9 +277,10 @@ print(json.dumps(graph.schema, indent=4))
     ]
 }
 ```
-## Querying the ArangoDB database
 
-We can now use the `ArangoDB Graph` QA Chain to inquire about our data
+## 查询 ArangoDB 数据库
+
+我们现在可以使用 `ArangoDB Graph` QA Chain 来查询我们的数据
 
 
 ```python
@@ -308,22 +306,22 @@ chain.run("Is Ned Stark alive?")
 ```output
 
 
-[1m> Entering new ArangoGraphQAChain chain...[0m
-AQL Query (1):[32;1m[1;3m
+[1m> 进入新的 ArangoGraphQAChain 链...[0m
+AQL 查询 (1):[32;1m[1;3m
 WITH Characters
 FOR character IN Characters
 FILTER character.name == "Ned" AND character.surname == "Stark"
 RETURN character.alive
 [0m
-AQL Result:
+AQL 结果:
 [32;1m[1;3m[True][0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 ```
 
 
 ```output
-'Yes, Ned Stark is alive.'
+'是的，奈德·史塔克还活着。'
 ```
 
 
@@ -334,22 +332,22 @@ chain.run("How old is Arya Stark?")
 ```output
 
 
-[1m> Entering new ArangoGraphQAChain chain...[0m
-AQL Query (1):[32;1m[1;3m
+[1m> 进入新的 ArangoGraphQAChain 链...[0m
+AQL 查询 (1):[32;1m[1;3m
 WITH Characters
 FOR character IN Characters
 FILTER character.name == "Arya" && character.surname == "Stark"
 RETURN character.age
 [0m
-AQL Result:
+AQL 结果:
 [32;1m[1;3m[11][0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 ```
 
 
 ```output
-'Arya Stark is 11 years old.'
+'艾莉亚·史塔克11岁。'
 ```
 
 
@@ -360,22 +358,22 @@ chain.run("Are Arya Stark and Ned Stark related?")
 ```output
 
 
-[1m> Entering new ArangoGraphQAChain chain...[0m
-AQL Query (1):[32;1m[1;3m
+[1m> 进入新的 ArangoGraphQAChain 链...[0m
+AQL 查询 (1):[32;1m[1;3m
 WITH Characters, ChildOf
 FOR v, e, p IN 1..1 OUTBOUND 'Characters/AryaStark' ChildOf
     FILTER p.vertices[-1]._key == 'NedStark'
     RETURN p
 [0m
-AQL Result:
+AQL 结果:
 [32;1m[1;3m[{'vertices': [{'_key': 'AryaStark', '_id': 'Characters/AryaStark', '_rev': '_gVPKGPi--B', 'name': 'Arya', 'surname': 'Stark', 'alive': True, 'age': 11, 'gender': 'female'}, {'_key': 'NedStark', '_id': 'Characters/NedStark', '_rev': '_gVPKGPi---', 'name': 'Ned', 'surname': 'Stark', 'alive': True, 'age': 41, 'gender': 'male'}], 'edges': [{'_key': '266218884025', '_id': 'ChildOf/266218884025', '_from': 'Characters/AryaStark', '_to': 'Characters/NedStark', '_rev': '_gVPKGSq---'}], 'weights': [0, 1]}][0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 ```
 
 
 ```output
-'Yes, Arya Stark and Ned Stark are related. According to the information retrieved from the database, there is a relationship between them. Arya Stark is the child of Ned Stark.'
+'是的，艾莉亚·史塔克和奈德·史塔克有亲属关系。根据从数据库检索到的信息，他们之间存在关系。艾莉亚·史塔克是奈德·史塔克的孩子。'
 ```
 
 
@@ -386,28 +384,27 @@ chain.run("Does Arya Stark have a dead parent?")
 ```output
 
 
-[1m> Entering new ArangoGraphQAChain chain...[0m
-AQL Query (1):[32;1m[1;3m
+[1m> 进入新的 ArangoGraphQAChain 链...[0m
+AQL 查询 (1):[32;1m[1;3m
 WITH Characters, ChildOf
 FOR v, e IN 1..1 OUTBOUND 'Characters/AryaStark' ChildOf
 FILTER v.alive == false
 RETURN e
 [0m
-AQL Result:
+AQL 结果:
 [32;1m[1;3m[{'_key': '266218884027', '_id': 'ChildOf/266218884027', '_from': 'Characters/AryaStark', '_to': 'Characters/CatelynStark', '_rev': '_gVPKGSu---'}][0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 ```
 
 
 ```output
-'Yes, Arya Stark has a dead parent. The parent is Catelyn Stark.'
+'是的，艾莉亚·史塔克有一个已故的父母。这个父母是凯特琳·史塔克。'
 ```
 
+## 链修饰符
 
-## Chain modifiers
-
-You can alter the values of the following `ArangoDBGraphQAChain` class variables to modify the behaviour of your chain results
+您可以更改以下 `ArangoDBGraphQAChain` 类变量的值，以修改链结果的行为
 
 
 
@@ -459,7 +456,7 @@ AQL Result:
 
 
 ```output
-'Yes, according to the information in the database, Ned Stark is alive.'
+'是的，根据数据库中的信息，奈德·史塔克是活着的。'
 ```
 
 
@@ -484,6 +481,5 @@ AQL Result:
 
 
 ```output
-'Yes, according to the information in the ArangoDB database, Bran Stark is indeed the child of Ned Stark.'
+'是的，根据 ArangoDB 数据库中的信息，布兰·史塔克确实是奈德·史塔克的孩子。'
 ```
-

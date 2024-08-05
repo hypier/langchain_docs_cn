@@ -1,39 +1,37 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/callbacks/promptlayer.ipynb
 ---
+
 # PromptLayer
 
->[PromptLayer](https://docs.promptlayer.com/introduction) is a platform for prompt engineering. It also helps with the LLM observability to visualize requests, version prompts, and track usage.
+>[PromptLayer](https://docs.promptlayer.com/introduction) 是一个用于提示工程的平台。它还帮助实现 LLM 的可观察性，以可视化请求、版本提示和跟踪使用情况。
 >
->While `PromptLayer` does have LLMs that integrate directly with LangChain (e.g. [`PromptLayerOpenAI`](/docs/integrations/llms/promptlayer_openai)), using a callback is the recommended way to integrate `PromptLayer` with LangChain.
+>虽然 `PromptLayer` 确实有与 LangChain 直接集成的 LLM（例如 [`PromptLayerOpenAI`](/docs/integrations/llms/promptlayer_openai)），但使用回调是将 `PromptLayer` 与 LangChain 集成的推荐方式。
 
-In this guide, we will go over how to setup the `PromptLayerCallbackHandler`. 
+在本指南中，我们将介绍如何设置 `PromptLayerCallbackHandler`。
 
-See [PromptLayer docs](https://docs.promptlayer.com/languages/langchain) for more information.
+有关更多信息，请参见 [PromptLayer 文档](https://docs.promptlayer.com/languages/langchain)。
 
-## Installation and Setup
+## 安装与设置
 
 
 ```python
 %pip install --upgrade --quiet  langchain-community promptlayer --upgrade
 ```
 
-### Getting API Credentials
+### 获取 API 凭据
 
-If you do not have a PromptLayer account, create one on [promptlayer.com](https://www.promptlayer.com). Then get an API key by clicking on the settings cog in the navbar and
-set it as an environment variabled called `PROMPTLAYER_API_KEY`
+如果您没有 PromptLayer 账户，请在 [promptlayer.com](https://www.promptlayer.com) 上创建一个。然后通过点击导航栏中的设置齿轮获取 API 密钥，并将其设置为名为 `PROMPTLAYER_API_KEY` 的环境变量。
 
+## 用法
 
-## Usage
+使用 `PromptLayerCallbackHandler` 非常简单，它接受两个可选参数：
+1. `pl_tags` - 一个可选字符串列表，将作为标签在 PromptLayer 上进行跟踪。
+2. `pl_id_callback` - 一个可选函数，将 `promptlayer_request_id` 作为参数传入。此 ID 可与 PromptLayer 的所有跟踪功能一起使用，以跟踪元数据、分数和提示使用情况。
 
-Getting started with `PromptLayerCallbackHandler` is fairly simple, it takes two optional arguments:
-1. `pl_tags` - an optional list of strings that will be tracked as tags on PromptLayer.
-2. `pl_id_callback` - an optional function that will take `promptlayer_request_id` as an argument. This ID can be used with all of PromptLayer's tracking features to track, metadata, scores, and prompt usage.
+## 简单的 OpenAI 示例
 
-## Simple OpenAI Example
-
-In this simple example we use `PromptLayerCallbackHandler` with `ChatOpenAI`. We add a PromptLayer tag named `chatopenai`
-
+在这个简单的示例中，我们使用 `PromptLayerCallbackHandler` 和 `ChatOpenAI`。我们添加了一个名为 `chatopenai` 的 PromptLayer 标签。
 
 ```python
 import promptlayer  # Don't forget this 🍰
@@ -41,7 +39,6 @@ from langchain_community.callbacks.promptlayer_callback import (
     PromptLayerCallbackHandler,
 )
 ```
-
 
 ```python
 from langchain_core.messages import HumanMessage
@@ -60,7 +57,7 @@ llm_results = chat_llm.invoke(
 print(llm_results)
 ```
 
-## GPT4All Example
+## GPT4All 示例
 
 
 ```python
@@ -75,14 +72,13 @@ response = model.invoke(
 )
 ```
 
-## Full Featured Example
+## 完整示例
 
-In this example, we unlock more of the power of `PromptLayer`.
+在这个示例中，我们解锁了 `PromptLayer` 的更多功能。
 
-PromptLayer allows you to visually create, version, and track prompt templates. Using the [Prompt Registry](https://docs.promptlayer.com/features/prompt-registry), we can programmatically fetch the prompt template called `example`.
+PromptLayer 允许您可视化创建、版本控制和跟踪提示模板。使用 [Prompt Registry](https://docs.promptlayer.com/features/prompt-registry)，我们可以以编程方式获取名为 `example` 的提示模板。
 
-We also define a `pl_id_callback` function which takes in the `promptlayer_request_id` and logs a score, metadata and links the prompt template used. Read more about tracking on [our docs](https://docs.promptlayer.com/features/prompt-history/request-id).
-
+我们还定义了一个 `pl_id_callback` 函数，该函数接收 `promptlayer_request_id` 并记录分数、元数据并链接所使用的提示模板。有关跟踪的更多信息，请参阅 [我们的文档](https://docs.promptlayer.com/features/prompt-history/request-id)。
 
 ```python
 from langchain_openai import OpenAI
@@ -113,5 +109,4 @@ example_prompt = promptlayer.prompts.get("example", version=1, langchain=True)
 openai_llm.invoke(example_prompt.format(product="toasters"))
 ```
 
-That is all it takes! After setup all your requests will show up on the PromptLayer dashboard.
-This callback also works with any LLM implemented on LangChain.
+这就是全部！设置完成后，您的所有请求将显示在 PromptLayer 仪表板上。此回调也适用于在 LangChain 上实现的任何 LLM。

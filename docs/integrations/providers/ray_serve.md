@@ -1,20 +1,20 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/providers/ray_serve.ipynb
 ---
+
 # Ray Serve
 
-[Ray Serve](https://docs.ray.io/en/latest/serve/index.html) is a scalable model serving library for building online inference APIs. Serve is particularly well suited for system composition, enabling you to build a complex inference service consisting of multiple chains and business logic all in Python code. 
+[Ray Serve](https://docs.ray.io/en/latest/serve/index.html) 是一个可扩展的模型服务库，用于构建在线推理 API。Serve 特别适合系统组合，使您能够使用 Python 代码构建由多个链和业务逻辑组成的复杂推理服务。
 
-## Goal of this notebook
-This notebook shows a simple example of how to deploy an OpenAI chain into production. You can extend it to deploy your own self-hosted models where you can easily define amount of hardware resources (GPUs and CPUs) needed to run your model in production efficiently. Read more about available options including autoscaling in the Ray Serve [documentation](https://docs.ray.io/en/latest/serve/getting_started.html).
+## 本笔记本的目标
+本笔记本展示了如何将 OpenAI 链部署到生产环境中的简单示例。您可以扩展它以部署您自己的自托管模型，在那里您可以轻松定义运行模型所需的硬件资源（GPU 和 CPU）数量，以便高效地在生产中运行。有关可用选项的更多信息，包括 Ray Serve [文档](https://docs.ray.io/en/latest/serve/getting_started.html) 中的自动扩展。
 
+## 设置 Ray Serve
+使用 `pip install ray[serve]` 安装 ray。
 
-## Setup Ray Serve
-Install ray with `pip install ray[serve]`. 
+## 一般框架
 
-## General Skeleton
-
-The general skeleton for deploying a service is the following:
+部署服务的一般框架如下：
 
 
 ```python
@@ -49,10 +49,9 @@ serve.api.run(deployment)
 serve.api.shutdown()
 ```
 
-## Example of deploying and OpenAI chain with custom prompts
+## 部署和 OpenAI 链的示例，使用自定义提示
 
-Get an OpenAI API key from [here](https://platform.openai.com/account/api-keys). By running the following code, you will be asked to provide your API key.
-
+从 [这里](https://platform.openai.com/account/api-keys) 获取 OpenAI API 密钥。通过运行以下代码，您将被要求提供您的 API 密钥。
 
 ```python
 from langchain.chains import LLMChain
@@ -60,13 +59,11 @@ from langchain_core.prompts import PromptTemplate
 from langchain_openai import OpenAI
 ```
 
-
 ```python
 from getpass import getpass
 
 OPENAI_API_KEY = getpass()
 ```
-
 
 ```python
 @serve.deployment
@@ -90,16 +87,14 @@ class DeployLLM:
         return resp["text"]
 ```
 
-Now we can bind the deployment.
-
+现在我们可以绑定部署。
 
 ```python
 # Bind the model to deployment
 deployment = DeployLLM.bind()
 ```
 
-We can assign the port number and host when we want to run the deployment. 
-
+当我们想要运行部署时，可以分配端口号和主机。
 
 ```python
 # Example port number
@@ -108,8 +103,7 @@ PORT_NUMBER = 8282
 serve.api.run(deployment, port=PORT_NUMBER)
 ```
 
-Now that service is deployed on port `localhost:8282` we can send a post request to get the results back.
-
+现在服务已部署在端口 `localhost:8282`，我们可以发送 POST 请求以获取结果。
 
 ```python
 import requests

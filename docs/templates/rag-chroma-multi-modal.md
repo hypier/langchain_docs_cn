@@ -1,45 +1,42 @@
-
 # rag-chroma-multi-modal
 
-Multi-modal LLMs enable visual assistants that can perform question-answering about images. 
+多模态 LLM 使得视觉助手能够对图像进行问答。
 
-This template create a visual assistant for slide decks, which often contain visuals such as graphs or figures.
+此模板创建一个用于幻灯片的视觉助手，幻灯片通常包含图表或图形等视觉元素。
 
-It uses OpenCLIP embeddings to embed all of the slide images and stores them in Chroma.
- 
-Given a question, relevant slides are retrieved and passed to GPT-4V for answer synthesis.
+它使用 OpenCLIP 嵌入将所有幻灯片图像嵌入并存储在 Chroma 中。
 
+给定一个问题，相关幻灯片会被检索并传递给 GPT-4V 进行答案合成。
 
+## 输入
 
-## Input
+在 `/docs` 目录中提供一个 PDF 格式的幻灯片文档。
 
-Supply a slide deck as pdf in the `/docs` directory. 
+默认情况下，此模板包含有关 DataDog（一家公共科技公司）第三季度收益的幻灯片文档。
 
-By default, this template has a slide deck about Q3 earnings from DataDog, a public technology company.
-
-Example questions to ask can be:
+可以询问的示例问题包括：
 ```
-How many customers does Datadog have?
-What is Datadog platform % Y/Y growth in FY20, FY21, and FY22?
+Datadog 有多少客户？
+Datadog 平台在 FY20、FY21 和 FY22 的同比增长百分比是多少？
 ```
 
-To create an index of the slide deck, run:
+要创建幻灯片文档的索引，请运行：
 ```
 poetry install
 python ingest.py
 ```
 
-## Storage
+## 存储
 
-This template will use [OpenCLIP](https://github.com/mlfoundations/open_clip) multi-modal embeddings to embed the images.
+该模板将使用 [OpenCLIP](https://github.com/mlfoundations/open_clip) 多模态嵌入来嵌入图像。
 
-You can select different embedding model options (see results [here](https://github.com/mlfoundations/open_clip/blob/main/docs/openclip_results.csv)).
+您可以选择不同的嵌入模型选项（请参见结果 [这里](https://github.com/mlfoundations/open_clip/blob/main/docs/openclip_results.csv)）。
 
-The first time you run the app, it will automatically download the multimodal embedding model.
+第一次运行应用程序时，它将自动下载多模态嵌入模型。
 
-By default, LangChain will use an embedding model with moderate performance but lower memory requirements, `ViT-H-14`.
+默认情况下，LangChain 将使用具有中等性能但内存需求较低的嵌入模型 `ViT-H-14`。
 
-You can choose alternative `OpenCLIPEmbeddings` models in `rag_chroma_multi_modal/ingest.py`:
+您可以在 `rag_chroma_multi_modal/ingest.py` 中选择其他 `OpenCLIPEmbeddings` 模型：
 ```
 vectorstore_mmembd = Chroma(
     collection_name="multi-modal-rag",
@@ -52,63 +49,63 @@ vectorstore_mmembd = Chroma(
 
 ## LLM
 
-The app will retrieve images based on similarity between the text input and the image, which are both mapped to multi-modal embedding space. It will then pass the images to GPT-4V.
+该应用将根据文本输入与图像之间的相似性检索图像，这两者都映射到多模态嵌入空间。然后，它将把图像传递给 GPT-4V。
 
-## Environment Setup
+## 环境设置
 
-Set the `OPENAI_API_KEY` environment variable to access the OpenAI GPT-4V.
+设置 `OPENAI_API_KEY` 环境变量以访问 OpenAI GPT-4V.
 
-## Usage
+## 使用方法
 
-To use this package, you should first have the LangChain CLI installed:
+要使用这个包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将其作为唯一的包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package rag-chroma-multi-modal
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，只需运行：
 
 ```shell
 langchain app add rag-chroma-multi-modal
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 ```python
 from rag_chroma_multi_modal import chain as rag_chroma_multi_modal_chain
 
 add_routes(app, rag_chroma_multi_modal_chain, path="/rag-chroma-multi-modal")
 ```
 
-(Optional) Let's now configure LangSmith. 
-LangSmith will help us trace, monitor and debug LangChain applications. 
-You can sign up for LangSmith [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
+（可选）现在让我们配置 LangSmith。 
+LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。 
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。 
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接通过以下命令启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server is running locally at 
+这将启动 FastAPI 应用程序，服务器在本地运行，地址为 
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/rag-chroma-multi-modal/playground](http://127.0.0.1:8000/rag-chroma-multi-modal/playground)  
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板。
+我们可以在 [http://127.0.0.1:8000/rag-chroma-multi-modal/playground](http://127.0.0.1:8000/rag-chroma-multi-modal/playground) 访问游乐场。
 
-We can access the template from code with:
+我们可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable

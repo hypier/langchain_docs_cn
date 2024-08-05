@@ -2,44 +2,43 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/yuan2.ipynb
 sidebar_label: Yuan2.0
 ---
+
 # Yuan2.0
 
-This notebook shows how to use [YUAN2 API](https://github.com/IEIT-Yuan/Yuan-2.0/blob/main/docs/inference_server.md) in LangChain with the langchain.chat_models.ChatYuan2.
+本笔记本展示了如何在 LangChain 中使用 [YUAN2 API](https://github.com/IEIT-Yuan/Yuan-2.0/blob/main/docs/inference_server.md) 和 langchain.chat_models.ChatYuan2。
 
-[*Yuan2.0*](https://github.com/IEIT-Yuan/Yuan-2.0/blob/main/README-EN.md) is a new generation Fundamental Large Language Model developed by IEIT System. We have published all three models, Yuan 2.0-102B, Yuan 2.0-51B, and Yuan 2.0-2B. And we provide relevant scripts for pretraining, fine-tuning, and inference services for other developers. Yuan2.0 is based on Yuan1.0, utilizing a wider range of high-quality pre training data and instruction fine-tuning datasets to enhance the model's understanding of semantics, mathematics, reasoning, code, knowledge, and other aspects.
+[*Yuan2.0*](https://github.com/IEIT-Yuan/Yuan-2.0/blob/main/README-EN.md) 是由 IEIT 系统开发的新一代基础大型语言模型。我们已发布三种模型，Yuan 2.0-102B、Yuan 2.0-51B 和 Yuan 2.0-2B。我们为其他开发者提供了相关的预训练、微调和推理服务脚本。Yuan2.0 基于 Yuan1.0，利用更广泛的高质量预训练数据和指令微调数据集，增强模型对语义、数学、推理、代码、知识等方面的理解。
 
-## Getting started
-### Installation
-First, Yuan2.0 provided an OpenAI compatible API, and we integrate ChatYuan2 into langchain chat model by using OpenAI client.
-Therefore, ensure the openai package is installed in your Python environment. Run the following command:
+## 开始使用
 
+### 安装
+首先，Yuan2.0 提供了一个兼容 OpenAI 的 API，我们通过使用 OpenAI 客户端将 ChatYuan2 集成到 langchain 聊天模型中。
+因此，请确保在您的 Python 环境中安装了 openai 包。运行以下命令：
 
 ```python
 %pip install --upgrade --quiet openai
 ```
 
-### Importing the Required Modules
-After installation, import the necessary modules to your Python script:
-
+### 导入所需模块
+安装后，将必要的模块导入到您的 Python 脚本中：
 
 ```python
 from langchain_community.chat_models import ChatYuan2
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 ```
 
-### Setting Up Your API server
-Setting up your OpenAI compatible API server following [yuan2 openai api server](https://github.com/IEIT-Yuan/Yuan-2.0/blob/main/docs/Yuan2_fastchat.md).
-If you deployed api server locally, you can simply set `yuan2_api_key="EMPTY"` or anything you want.
-Just make sure, the `yuan2_api_base` is set correctly.
-
+### 设置您的 API 服务器
+按照 [yuan2 openai api server](https://github.com/IEIT-Yuan/Yuan-2.0/blob/main/docs/Yuan2_fastchat.md) 设置您的 OpenAI 兼容 API 服务器。
+如果您在本地部署了 API 服务器，可以简单地将 `yuan2_api_key="EMPTY"` 或您想要的任何值设置为。
+只需确保 `yuan2_api_base` 设置正确。
 
 ```python
 yuan2_api_key = "your_api_key"
 yuan2_api_base = "http://127.0.0.1:8001/v1"
 ```
 
-### Initialize the ChatYuan2 Model
-Here's how to initialize the chat model:
+### 初始化 ChatYuan2 模型
+以下是初始化聊天模型的方法：
 
 
 ```python
@@ -52,9 +51,8 @@ chat = ChatYuan2(
 )
 ```
 
-### Basic Usage
-Invoke the model with system and human messages like this:
-
+### 基本用法
+使用系统和人类消息调用模型，如下所示：
 
 ```python
 messages = [
@@ -63,13 +61,12 @@ messages = [
 ]
 ```
 
-
 ```python
 print(chat.invoke(messages))
 ```
 
-### Basic Usage with streaming
-For continuous interaction, use the streaming feature:
+### 基本用法与流式传输
+要进行连续交互，请使用流式传输功能：
 
 
 ```python
@@ -94,11 +91,11 @@ messages = [
 chat.invoke(messages)
 ```
 
-## Advanced Features
-### Usage with async calls
+## 高级功能
 
-Invoke the model with non-blocking calls, like this:
+### 使用异步调用
 
+以非阻塞方式调用模型，如下所示：
 
 ```python
 async def basic_agenerate():
@@ -126,9 +123,9 @@ import asyncio
 asyncio.run(basic_agenerate())
 ```
 
-### Usage with prompt template
+### 使用提示模板
 
-Invoke the model with non-blocking calls and used chat template like this:
+以非阻塞调用方式调用模型，并使用聊天模板，如下所示：
 
 
 ```python
@@ -159,9 +156,8 @@ async def ainvoke_with_prompt_template():
 asyncio.run(ainvoke_with_prompt_template())
 ```
 
-### Usage with async calls in streaming
-For non-blocking calls with streaming output, use the astream method:
-
+### 使用异步调用进行流式传输
+对于具有流式输出的非阻塞调用，请使用 astream 方法：
 
 ```python
 async def basic_astream():
@@ -187,8 +183,7 @@ import asyncio
 asyncio.run(basic_astream())
 ```
 
+## 相关
 
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

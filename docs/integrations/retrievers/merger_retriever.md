@@ -1,12 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/merger_retriever.ipynb
 ---
-# LOTR (Merger Retriever)
 
->`Lord of the Retrievers (LOTR)`, also known as `MergerRetriever`, takes a list of retrievers as input and merges the results of their get_relevant_documents() methods into a single list. The merged results will be a list of documents that are relevant to the query and that have been ranked by the different retrievers.
+# LOTR (合并检索器)
 
-The `MergerRetriever` class can be used to improve the accuracy of document retrieval in a number of ways. First, it can combine the results of multiple retrievers, which can help to reduce the risk of bias in the results. Second, it can rank the results of the different retrievers, which can help to ensure that the most relevant documents are returned first.
+>`Lord of the Retrievers (LOTR)`，也称为`MergerRetriever`，接受一个检索器列表作为输入，并将它们的get_relevant_documents()方法的结果合并为一个单一的列表。合并后的结果将是与查询相关的文档列表，并且这些文档已由不同的检索器进行排名。
 
+`MergerRetriever`类可以通过多种方式提高文档检索的准确性。首先，它可以结合多个检索器的结果，这有助于减少结果中的偏差风险。其次，它可以对不同检索器的结果进行排名，这可以确保最相关的文档优先返回。
 
 ```python
 import os
@@ -65,7 +65,7 @@ retriever_multi_qa = db_multi_qa.as_retriever(
 lotr = MergerRetriever(retrievers=[retriever_all, retriever_multi_qa])
 ```
 
-## Remove redundant results from the merged retrievers.
+## 从合并的检索器中删除冗余结果。
 
 
 ```python
@@ -78,8 +78,7 @@ compression_retriever = ContextualCompressionRetriever(
 )
 ```
 
-## Pick a representative sample of documents from the merged retrievers.
-
+## 从合并的检索器中选择一个代表性文档样本。
 
 ```python
 # This filter will divide the documents vectors into clusters or "centers" of meaning.
@@ -106,10 +105,10 @@ compression_retriever = ContextualCompressionRetriever(
 )
 ```
 
-## Re-order results to avoid performance degradation.
-No matter the architecture of your model, there is a substantial performance degradation when you include 10+ retrieved documents.
-In brief: When models must access relevant information  in the middle of long contexts, then tend to ignore the provided documents.
-See: https://arxiv.org/abs//2307.03172
+## 重新排序结果以避免性能下降。
+无论您的模型架构如何，当您包含10个以上的检索文档时，性能都会显著下降。
+简而言之：当模型必须在长上下文中访问相关信息时，往往会忽略提供的文档。
+见：https://arxiv.org/abs//2307.03172
 
 
 ```python
@@ -124,8 +123,7 @@ compression_retriever_reordered = ContextualCompressionRetriever(
 )
 ```
 
+## 相关
 
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

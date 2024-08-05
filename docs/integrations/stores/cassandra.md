@@ -2,30 +2,30 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/stores/cassandra.ipynb
 sidebar_label: Cassandra
 ---
+
 # CassandraByteStore
 
-This will help you get started with Cassandra [key-value stores](/docs/concepts/#key-value-stores). For detailed documentation of all `CassandraByteStore` features and configurations head to the [API reference](https://api.python.langchain.com/en/latest/storage/langchain_community.storage.cassandra.CassandraByteStore.html).
+这将帮助您入门 Cassandra [键值存储](/docs/concepts/#key-value-stores)。有关所有 `CassandraByteStore` 功能和配置的详细文档，请访问 [API 参考](https://api.python.langchain.com/en/latest/storage/langchain_community.storage.cassandra.CassandraByteStore.html)。
 
-## Overview
+## 概述
 
-[Cassandra](https://cassandra.apache.org/) is a NoSQL, row-oriented, highly scalable and highly available database.
+[Cassandra](https://cassandra.apache.org/) 是一个 NoSQL、行导向、高度可扩展和高度可用的数据库。
 
-### Integration details
+### 集成细节
 
-| Class | Package | Local | [JS support](https://js.langchain.com/v0.2/docs/integrations/stores/cassandra_storage) | Package downloads | Package latest |
+| 类 | 包 | 本地 | [JS 支持](https://js.langchain.com/v0.2/docs/integrations/stores/cassandra_storage) | 包下载量 | 包最新版本 |
 | :--- | :--- | :---: | :---: |  :---: | :---: |
 | [CassandraByteStore](https://api.python.langchain.com/en/latest/storage/langchain_community.storage.cassandra.CassandraByteStore.html) | [langchain_community](https://api.python.langchain.com/en/latest/community_api_reference.html) | ✅ | ✅ | ![PyPI - Downloads](https://img.shields.io/pypi/dm/langchain_community?style=flat-square&label=%20) | ![PyPI - Version](https://img.shields.io/pypi/v/langchain_community?style=flat-square&label=%20) |
 
-## Setup
+## 设置
 
-The `CassandraByteStore` is an implementation of `ByteStore` that stores the data in your Cassandra instance.
-The store keys must be strings and will be mapped to the `row_id` column of the Cassandra table.
-The store `bytes` values are mapped to the `body_blob` column of the Cassandra table.
+`CassandraByteStore` 是 `ByteStore` 的一个实现，它将数据存储在您的 Cassandra 实例中。  
+存储键必须是字符串，并将映射到 Cassandra 表的 `row_id` 列。  
+存储的 `bytes` 值映射到 Cassandra 表的 `body_blob` 列。
 
-### Installation
+### 安装
 
-The LangChain `CassandraByteStore` integration lives in the `langchain_community` package. You'll also need to install the `cassio` package or the `cassandra-driver` package as a peer dependency depending on which initialization method you're using:
-
+LangChain `CassandraByteStore` 集成位于 `langchain_community` 包中。您还需要根据您使用的初始化方法安装 `cassio` 包或 `cassandra-driver` 包作为对等依赖：
 
 ```python
 %pip install -qU langchain_community
@@ -33,12 +33,11 @@ The LangChain `CassandraByteStore` integration lives in the `langchain_community
 %pip install -qU cassio
 ```
 
-You'll also need to create a `cassandra.cluster.Session` object, as described in the [Cassandra driver documentation](https://docs.datastax.com/en/developer/python-driver/latest/api/cassandra/cluster/#module-cassandra.cluster). The details vary (e.g. with network settings and authentication), but this might be something like:
+您还需要创建一个 `cassandra.cluster.Session` 对象，具体描述请参见 [Cassandra 驱动程序文档](https://docs.datastax.com/en/developer/python-driver/latest/api/cassandra/cluster/#module-cassandra.cluster)。具体细节可能有所不同（例如网络设置和身份验证），但这可能类似于：
 
-## Instantiation
+## 实例化
 
-You'll first need to create a `cassandra.cluster.Session` object, as described in the [Cassandra driver documentation](https://docs.datastax.com/en/developer/python-driver/latest/api/cassandra/cluster/#module-cassandra.cluster). The details vary (e.g. with network settings and authentication), but this might be something like:
-
+您首先需要创建一个 `cassandra.cluster.Session` 对象，如 [Cassandra 驱动程序文档](https://docs.datastax.com/en/developer/python-driver/latest/api/cassandra/cluster/#module-cassandra.cluster) 中所述。具体细节会有所不同（例如网络设置和身份验证），但这可能类似于：
 
 ```python
 from cassandra.cluster import Cluster
@@ -47,8 +46,7 @@ cluster = Cluster()
 session = cluster.connect()
 ```
 
-Then you can create your store! You'll also need to provide the name of an existing keyspace of the Cassandra instance:
-
+然后您可以创建您的存储！您还需要提供 Cassandra 实例中现有键空间的名称：
 
 ```python
 from langchain_community.storage import CassandraByteStore
@@ -60,9 +58,9 @@ kv_store = CassandraByteStore(
 )
 ```
 
-## Usage
+## 使用方法
 
-You can set data under keys like this using the `mset` method:
+您可以使用 `mset` 方法在键下设置数据，如下所示：
 
 
 ```python
@@ -81,7 +79,7 @@ kv_store.mget(
 )
 ```
 
-And you can delete data using the `mdelete` method:
+您可以使用 `mdelete` 方法删除数据：
 
 
 ```python
@@ -100,9 +98,9 @@ kv_store.mget(
 )
 ```
 
-## Init using `cassio`
+## 使用 `cassio` 初始化
 
-It's also possible to use cassio to configure the session and keyspace.
+也可以使用 cassio 配置会话和键空间。
 
 
 ```python
@@ -118,11 +116,10 @@ store.mset([("k1", b"v1"), ("k2", b"v2")])
 print(store.mget(["k1", "k2"]))
 ```
 
-## API reference
+## API 参考
 
-For detailed documentation of all `CassandraByteStore` features and configurations, head to the API reference: https://api.python.langchain.com/en/latest/storage/langchain_community.storage.cassandra.CassandraByteStore.html
+有关所有 `CassandraByteStore` 功能和配置的详细文档，请访问 API 参考： https://api.python.langchain.com/en/latest/storage/langchain_community.storage.cassandra.CassandraByteStore.html
 
+## 相关
 
-## Related
-
-- [Key-value store conceptual guide](/docs/concepts/#key-value-stores)
+- [键值存储概念指南](/docs/concepts/#key-value-stores)

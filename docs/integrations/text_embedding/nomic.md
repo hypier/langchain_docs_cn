@@ -2,11 +2,12 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/nomic.ipynb
 sidebar_label: Nomic
 ---
+
 # NomicEmbeddings
 
-This notebook covers how to get started with Nomic embedding models.
+本笔记本介绍如何开始使用 Nomic 嵌入模型。
 
-## Installation
+## 安装
 
 
 ```python
@@ -14,13 +15,13 @@ This notebook covers how to get started with Nomic embedding models.
 !pip install -U langchain-nomic
 ```
 
-## Environment Setup
+## 环境设置
 
-Make sure to set the following environment variables:
+确保设置以下环境变量：
 
 - `NOMIC_API_KEY`
 
-## Usage
+## 使用方法
 
 
 ```python
@@ -43,22 +44,21 @@ embeddings.embed_documents(
 
 
 ```python
-# async embed query
+# 异步嵌入查询
 await embeddings.aembed_query("My query to look up")
 ```
 
 
 ```python
-# async embed documents
+# 异步嵌入文档
 await embeddings.aembed_documents(
     ["This is a content of the document", "This is another document"]
 )
 ```
 
-### Custom Dimensionality
+### 自定义维度
 
-Nomic's `nomic-embed-text-v1.5` model was [trained with Matryoshka learning](https://blog.nomic.ai/posts/nomic-embed-matryoshka) to enable variable-length embeddings with a single model. This means that you can specify the dimensionality of the embeddings at inference time. The model supports dimensionality from 64 to 768.
-
+Nomic的 `nomic-embed-text-v1.5` 模型经过 [Matryoshka 学习](https://blog.nomic.ai/posts/nomic-embed-matryoshka) 训练，能够使用单一模型实现可变长度的嵌入。这意味着您可以在推理时指定嵌入的维度。该模型支持的维度范围为 64 到 768。
 
 ```python
 embeddings = NomicEmbeddings(model="nomic-embed-text-v1.5", dimensionality=256)
@@ -66,8 +66,7 @@ embeddings = NomicEmbeddings(model="nomic-embed-text-v1.5", dimensionality=256)
 embeddings.embed_query("My query to look up")
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

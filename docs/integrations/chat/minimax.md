@@ -2,11 +2,12 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/minimax.ipynb
 sidebar_label: MiniMax
 ---
+
 # MiniMaxChat
 
-[Minimax](https://api.minimax.chat) is a Chinese startup that provides LLM service for companies and individuals.
+[Minimax](https://api.minimax.chat) 是一家提供LLM服务的中国初创公司，面向企业和个人。
 
-This example goes over how to use LangChain to interact with MiniMax Inference for Chat.
+本示例介绍如何使用LangChain与MiniMax推理进行聊天交互。
 
 
 ```python
@@ -38,8 +39,7 @@ chat(
 )
 ```
 
+## 相关
 
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

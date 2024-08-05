@@ -1,15 +1,16 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/mastodon.ipynb
 ---
+
 # Mastodon
 
->[Mastodon](https://joinmastodon.org/) is a federated social media and social networking service.
+>[Mastodon](https://joinmastodon.org/) 是一个联邦社交媒体和社交网络服务。
 
-This loader fetches the text from the "toots" of a list of `Mastodon` accounts, using the `Mastodon.py` Python package.
+这个加载器使用 `Mastodon.py` Python 包从一系列 `Mastodon` 账户的 "toots" 中获取文本。
 
-Public accounts can the queried by default without any authentication. If non-public accounts or instances are queried, you have to register an application for your account which gets you an access token, and set that token and your account's API base URL.
+公共账户可以在没有任何身份验证的情况下进行查询。若要查询非公共账户或实例，您必须为您的账户注册一个应用程序，这样可以获得访问令牌，并设置该令牌和您账户的 API 基础 URL。
 
-Then you need to pass in the Mastodon account names you want to extract, in the `@account@instance` format.
+然后，您需要以 `@account@instance` 格式传入要提取的 Mastodon 账户名称。
 
 
 ```python
@@ -25,17 +26,17 @@ from langchain_community.document_loaders import MastodonTootsLoader
 ```python
 loader = MastodonTootsLoader(
     mastodon_accounts=["@Gargron@mastodon.social"],
-    number_toots=50,  # Default value is 100
+    number_toots=50,  # 默认值为 100
 )
 
-# Or set up access information to use a Mastodon app.
-# Note that the access token can either be passed into
-# constructor or you can set the environment "MASTODON_ACCESS_TOKEN".
+# 或设置访问信息以使用 Mastodon 应用程序。
+# 请注意，访问令牌可以传递给构造函数，
+# 或者您可以设置环境变量 "MASTODON_ACCESS_TOKEN"。
 # loader = MastodonTootsLoader(
-#     access_token="<ACCESS TOKEN OF MASTODON APP>",
-#     api_base_url="<API BASE URL OF MASTODON APP INSTANCE>",
+#     access_token="<Mastodon 应用的访问令牌>",
+#     api_base_url="<Mastodon 应用实例的 API 基础 URL>",
 #     mastodon_accounts=["@Gargron@mastodon.social"],
-#     number_toots=50,  # Default value is 100
+#     number_toots=50,  # 默认值为 100
 # )
 ```
 
@@ -54,10 +55,9 @@ for doc in documents[:3]:
 <p>Last day of the honeymoon. And it’s <a href="https://mastodon.social/tags/caturday" class="mention hashtag" rel="tag">#<span>caturday</span></a>! This cute tabby came to the restaurant to beg for food and got some chicken.</p>
 ================================================================================
 ```
-The toot texts (the documents' `page_content`) is by default HTML as returned by the Mastodon API.
+toot 文本（文档的 `page_content`）默认是以 Mastodon API 返回的 HTML 格式。
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

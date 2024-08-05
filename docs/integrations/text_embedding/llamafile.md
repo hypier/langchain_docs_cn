@@ -1,20 +1,20 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/llamafile.ipynb
 ---
+
 # llamafile
 
-Let's load the [llamafile](https://github.com/Mozilla-Ocho/llamafile) Embeddings class.
+让我们加载 [llamafile](https://github.com/Mozilla-Ocho/llamafile) Embeddings 类。
 
-## Setup
+## 设置
 
-First, the are 3 setup steps:
+首先，有 3 个设置步骤：
 
-1. Download a llamafile. In this notebook, we use `TinyLlama-1.1B-Chat-v1.0.Q5_K_M` but there are many others available on [HuggingFace](https://huggingface.co/models?other=llamafile).
-2. Make the llamafile executable.
-3. Start the llamafile in server mode.
+1. 下载一个 llamafile。在这个笔记本中，我们使用 `TinyLlama-1.1B-Chat-v1.0.Q5_K_M`，但在 [HuggingFace](https://huggingface.co/models?other=llamafile) 上还有许多其他可用的文件。
+2. 使 llamafile 可执行。
+3. 以服务器模式启动 llamafile。
 
-You can run the following bash script to do all this:
-
+您可以运行以下 bash 脚本来完成所有这些操作：
 
 ```bash
 %%bash
@@ -34,9 +34,9 @@ pid=$!
 echo "${pid}" > .llamafile_pid  # write the process pid to a file so we can terminate the server later
 ```
 
-## Embedding texts using LlamafileEmbeddings
+## 使用 LlamafileEmbeddings 嵌入文本
 
-Now, we can use the `LlamafileEmbeddings` class to interact with the llamafile server that's currently serving our TinyLlama model at http://localhost:8080.
+现在，我们可以使用 `LlamafileEmbeddings` 类与当前在 http://localhost:8080 上提供 TinyLlama 模型的 llamafile 服务器进行交互。
 
 
 ```python
@@ -53,7 +53,7 @@ embedder = LlamafileEmbeddings()
 text = "This is a test document."
 ```
 
-To generate embeddings, you can either query an invidivual text, or you can query a list of texts.
+要生成嵌入，您可以查询单个文本，也可以查询文本列表。
 
 
 ```python
@@ -75,8 +75,7 @@ kill $(cat .llamafile_pid)
 rm .llamafile_pid
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

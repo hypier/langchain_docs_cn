@@ -1,33 +1,28 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/activeloop.ipynb
 ---
+
 # Activeloop Deep Memory
 
->[Activeloop Deep Memory](https://docs.activeloop.ai/performance-features/deep-memory) is a suite of tools that enables you to optimize your Vector Store for your use-case and achieve higher accuracy in your LLM apps.
+>[Activeloop Deep Memory](https://docs.activeloop.ai/performance-features/deep-memory) 是一套工具，旨在帮助您优化您的 Vector Store，以满足您的用例，并在您的 LLM 应用中实现更高的准确性。
 
-`Retrieval-Augmented Generatation` (`RAG`) has recently gained significant attention. As advanced RAG techniques and agents emerge, they expand the potential of what RAGs can accomplish. However, several challenges may limit the integration of RAGs into production. The primary factors to consider when implementing RAGs in production settings are accuracy (recall), cost, and latency. For basic use cases, OpenAI's Ada model paired with a naive similarity search can produce satisfactory results. Yet, for higher accuracy or recall during searches, one might need to employ advanced retrieval techniques. These methods might involve varying data chunk sizes, rewriting queries multiple times, and more, potentially increasing latency and costs.  Activeloop's [Deep Memory](https://www.activeloop.ai/resources/use-deep-memory-to-boost-rag-apps-accuracy-by-up-to-22/) a feature available to `Activeloop Deep Lake` users, addresses these issuea by introducing a tiny neural network layer trained to match user queries with relevant data from a corpus. While this addition incurs minimal latency during search, it can boost retrieval accuracy by up to 27
-% and remains cost-effective and simple to use, without requiring any additional advanced rag techniques.
+`Retrieval-Augmented Generatation` (`RAG`) 最近引起了广泛关注。随着先进的 RAG 技术和代理的出现，它们扩展了 RAG 能够完成的潜力。然而，几个挑战可能限制 RAG 在生产中的集成。在生产环境中实施 RAG 时，主要考虑的因素是准确性（召回率）、成本和延迟。对于基本用例，OpenAI 的 Ada 模型与简单的相似性搜索结合使用可以产生令人满意的结果。然而，在搜索时要实现更高的准确性或召回率，可能需要采用先进的检索技术。这些方法可能涉及不同的数据块大小、多次重写查询等，可能会增加延迟和成本。Activeloop 的 [Deep Memory](https://www.activeloop.ai/resources/use-deep-memory-to-boost-rag-apps-accuracy-by-up-to-22/) 是 `Activeloop Deep Lake` 用户可用的一项功能，通过引入一个微小的神经网络层，训练以将用户查询与语料库中的相关数据匹配，从而解决了这些问题。尽管这一附加功能在搜索时引入的延迟极小，但可以将检索准确性提高多达 27%，且保持成本效益和易用性，无需任何额外的高级 RAG 技术。
 
+在本教程中，我们将解析 `DeepLake` 文档，并创建一个能够回答文档中问题的 RAG 系统。
 
-For this tutorial we will parse `DeepLake` documentation, and create a RAG system that could answer the question from the docs. 
+## 1. 数据集创建
 
-
-## 1. Dataset Creation
-
-We will parse activeloop's docs for this tutorial using `BeautifulSoup` library and LangChain's document parsers like `Html2TextTransformer`, `AsyncHtmlLoader`. So we will need to install the following libraries:
-
+我们将使用 `BeautifulSoup` 库和 LangChain 的文档解析器如 `Html2TextTransformer`、`AsyncHtmlLoader` 来解析 activeloop 的文档以进行本教程。因此，我们需要安装以下库：
 
 ```python
 %pip install --upgrade --quiet  tiktoken langchain-openai python-dotenv datasets langchain deeplake beautifulsoup4 html2text ragas
 ```
 
-Also you'll need to create a [Activeloop](https://activeloop.ai) account.
-
+此外，您还需要创建一个 [Activeloop](https://activeloop.ai) 账户。
 
 ```python
 ORG_ID = "..."
 ```
-
 
 ```python
 from langchain.chains import RetrievalQA
@@ -35,35 +30,32 @@ from langchain_community.vectorstores import DeepLake
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 ```
 
-
 ```python
 import getpass
 import os
 
-os.environ["OPENAI_API_KEY"] = getpass.getpass("Enter your OpenAI API token: ")
-# # activeloop token is needed if you are not signed in using CLI: `activeloop login -u <USERNAME> -p <PASSWORD>`
+os.environ["OPENAI_API_KEY"] = getpass.getpass("请输入您的 OpenAI API 令牌: ")
+# # 如果您没有使用 CLI 登录，则需要 activeloop 令牌: `activeloop login -u <USERNAME> -p <PASSWORD>`
 os.environ["ACTIVELOOP_TOKEN"] = getpass.getpass(
-    "Enter your ActiveLoop API token: "
-)  # Get your API token from https://app.activeloop.ai, click on your profile picture in the top right corner, and select "API Tokens"
+    "请输入您的 ActiveLoop API 令牌: "
+)  # 从 https://app.activeloop.ai 获取您的 API 令牌，点击右上角的个人资料图片，然后选择“API 令牌”
 
 token = os.getenv("ACTIVELOOP_TOKEN")
 openai_embeddings = OpenAIEmbeddings()
 ```
 
-
 ```python
 db = DeepLake(
-    dataset_path=f"hub://{ORG_ID}/deeplake-docs-deepmemory",  # org_id stands for your username or organization from activeloop
+    dataset_path=f"hub://{ORG_ID}/deeplake-docs-deepmemory",  # org_id 代表您的用户名或来自 activeloop 的组织
     embedding=openai_embeddings,
     runtime={"tensor_db": True},
     token=token,
-    # overwrite=True, # user overwrite flag if you want to overwrite the full dataset
+    # overwrite=True, # 如果您想覆盖整个数据集，请使用用户覆盖标志
     read_only=False,
 )
 ```
 
-parsing all links in the webpage using `BeautifulSoup`
-
+使用 `BeautifulSoup` 解析网页中的所有链接
 
 ```python
 from urllib.parse import urljoin
@@ -75,12 +67,12 @@ from bs4 import BeautifulSoup
 def get_all_links(url):
     response = requests.get(url)
     if response.status_code != 200:
-        print(f"Failed to retrieve the page: {url}")
+        print(f"无法检索页面: {url}")
         return []
 
     soup = BeautifulSoup(response.content, "html.parser")
 
-    # Finding all 'a' tags which typically contain href attribute for links
+    # 查找所有包含链接的 'a' 标签
     links = [
         urljoin(url, a["href"]) for a in soup.find_all("a", href=True) if a["href"]
     ]
@@ -92,8 +84,7 @@ base_url = "https://docs.deeplake.ai/en/latest/"
 all_links = get_all_links(base_url)
 ```
 
-Loading data:
-
+加载数据：
 
 ```python
 from langchain_community.document_loaders.async_html import AsyncHtmlLoader
@@ -102,8 +93,7 @@ loader = AsyncHtmlLoader(all_links)
 docs = loader.load()
 ```
 
-Converting data into user readable format:
-
+将数据转换为用户可读格式：
 
 ```python
 from langchain_community.document_transformers import Html2TextTransformer
@@ -112,8 +102,7 @@ html2text = Html2TextTransformer()
 docs_transformed = html2text.transform_documents(docs)
 ```
 
-Now, let us chunk further the documents as some of the contain too much text:
-
+现在，让我们进一步分块文档，因为其中一些包含过多文本：
 
 ```python
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -133,26 +122,24 @@ for doc in docs_transformed:
         docs_new.extend(docs)
 ```
 
-Populating VectorStore:
-
+填充 VectorStore：
 
 ```python
 docs = db.add_documents(docs_new)
 ```
 
-## 2. Generating synthetic queries and training Deep Memory 
+## 2. 生成合成查询并训练 Deep Memory
 
-Next step would be to train a deep_memory model that will align your users queries with the dataset that you already have. If you don't have any user queries yet, no worries, we will generate them using LLM!
+下一步是训练一个 deep_memory 模型，使其将用户查询与您已有的数据集对齐。如果您还没有用户查询，不用担心，我们将使用 LLM 生成它们！
 
-#### TODO: Add image
+#### TODO: 添加图片
 
-Here above we showed the overall schema how deep_memory works. So as you can see, in order to train it you need relevance, queries together with corpus data (data that we want to query). Corpus data was already populated in the previous section, here we will be generating questions and relevance. 
+上面展示了 deep_memory 的整体架构。如您所见，为了训练它，您需要相关性、查询以及语料库数据（我们想要查询的数据）。语料库数据在前一部分已经填充，这里我们将生成问题和相关性。
 
-1. `questions` - is a text of strings, where each string represents a query
-2. `relevance` - contains links to the ground truth for each question. There might be several docs that contain answer to the given question. Because of this relevenve is `List[List[tuple[str, float]]]`, where outer list represents queries and inner list relevant documents. Tuple contains str, float pair where string represent the id of the source doc (corresponds to the `id` tensor in the dataset), while float corresponds to how much current document is related to the question.  
+1. `questions` - 是一个字符串文本，其中每个字符串代表一个查询
+2. `relevance` - 包含每个问题的真实答案链接。可能有多个文档包含给定问题的答案。因此，relevance 是 `List[List[tuple[str, float]]]`，外部列表表示查询，内部列表表示相关文档。元组包含 str 和 float 对，其中字符串表示源文档的 ID（对应于数据集中的 `id` 张量），而 float 对应于当前文档与问题的相关性。
 
-Now, let us generate synthetic questions and relevance:
-
+现在，让我们生成合成问题和相关性：
 
 ```python
 from typing import List
@@ -166,13 +153,11 @@ from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 ```
 
-
 ```python
 # fetch dataset docs and ids if they exist (optional you can also ingest)
 docs = db.vectorstore.dataset.text.data(fetch_chunks=True, aslist=True)["value"]
 ids = db.vectorstore.dataset.id.data(fetch_chunks=True, aslist=True)["value"]
 ```
-
 
 ```python
 # If we pass in a model explicitly, we need to make sure it supports the OpenAI function-calling API.
@@ -202,7 +187,6 @@ text = "# Understanding Hallucinations and Bias ## **Introduction** In this less
 questions = chain.run(input=text)
 print(questions)
 ```
-
 
 ```python
 import random
@@ -237,8 +221,7 @@ train_questions, train_relevances = questions[:100], relevances[:100]
 test_questions, test_relevances = questions[100:], relevances[100:]
 ```
 
-Now we created 100 training queries as well as 100 queries for testing. Now let us train the deep_memory:
-
+现在我们创建了 100 个训练查询以及 100 个测试查询。现在让我们训练 deep_memory：
 
 ```python
 job_id = db.vectorstore.deep_memory.train(
@@ -247,8 +230,7 @@ job_id = db.vectorstore.deep_memory.train(
 )
 ```
 
-Let us track the training progress:
-
+让我们跟踪训练进度：
 
 ```python
 db.vectorstore.deep_memory.status("6538939ca0b69a9ca45c528c")
@@ -266,16 +248,16 @@ db.vectorstore.deep_memory.status("6538939ca0b69a9ca45c528c")
 | results                    | recall@10: 79.00% (+34.00%)   |
 --------------------------------------------------------------
 ```
-## 3. Evaluating Deep Memory performance
 
-Great we've trained the model! It's showing some substantial improvement in recall, but how can we use it now and evaluate on unseen new data? In this section we will delve into model evaluation and inference part and see how it can be used with LangChain in order to increase retrieval accuracy
+## 3. 评估深度记忆性能
 
-### 3.1 Deep Memory evaluation
+太好了，我们已经训练了模型！它在召回率上显示出显著的改善，但我们现在如何使用它并在未见过的新数据上进行评估呢？在本节中，我们将深入探讨模型评估和推理部分，看看它如何与 LangChain 一起使用，以提高检索准确性。
 
-For the beginning we can use deep_memory's builtin evaluation method. 
-It calculates several `recall` metrics.
-It can be done easily in a few lines of code.
+### 3.1 深度记忆评估
 
+一开始我们可以使用 deep_memory 的内置评估方法。  
+它计算多个 `recall` 指标。  
+这可以通过几行代码轻松完成。
 
 ```python
 recall = db.vectorstore.deep_memory.evaluate(
@@ -301,9 +283,9 @@ Recall@10:	  69.0%
 Recall@50:	  97.0%
 Recall@100:	  97.0%
 ```
-It is showing quite substatntial improvement on an unseen test dataset too!!!
+它在未见过的测试数据集上也显示出相当显著的改进！！！
 
-### 3.2 Deep Memory + RAGas
+### 3.2 深度记忆 + RAGas
 
 
 ```python
@@ -313,7 +295,7 @@ from ragas.metrics import (
 )
 ```
 
-Let us convert recall into ground truths:
+让我们将召回转换为真实情况：
 
 
 ```python
@@ -376,11 +358,12 @@ Evaluating with deep_memory = True
 context_recall_score = 0.5634545323
 ===================================
 ```
-### 3.3 Deep Memory Inference
 
-#### TODO: Add image
+### 3.3 深度记忆推理
 
-with deep_memory
+#### TODO: 添加图片
+
+使用 deep_memory
 
 
 ```python
@@ -397,7 +380,7 @@ print(qa.run(query))
 ```output
 The base htype of the 'video_seq' tensor is 'video'.
 ```
-without deep_memory
+不使用 deep_memory
 
 
 ```python
@@ -414,12 +397,12 @@ qa.run(query)
 ```output
 The text does not provide information on the base htype of the 'video_seq' tensor.
 ```
-### 3.4 Deep Memory cost savings
 
-Deep Memory increases retrieval accuracy without altering your existing workflow. Additionally, by reducing the top_k input into the LLM, you can significantly cut inference costs via lower token usage.
+### 3.4 深度记忆成本节约
 
+深度记忆提高了检索准确性，而不改变您现有的工作流程。此外，通过减少输入到 LLM 的 top_k 值，您可以通过降低令牌使用量显著降低推理成本。
 
-## Related
+## 相关
 
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

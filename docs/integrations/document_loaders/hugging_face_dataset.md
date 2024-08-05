@@ -1,39 +1,31 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/hugging_face_dataset.ipynb
 ---
-# HuggingFace dataset
 
->The [Hugging Face Hub](https://huggingface.co/docs/hub/index) is home to over 5,000 [datasets](https://huggingface.co/docs/hub/index#datasets) in more than 100 languages that can be used for a broad range of tasks across NLP, Computer Vision, and Audio. They used for a diverse range of tasks such as translation,
-automatic speech recognition, and image classification.
+# HuggingFace 数据集
 
+> [Hugging Face Hub](https://huggingface.co/docs/hub/index) 拥有超过 5,000 个 [数据集](https://huggingface.co/docs/hub/index#datasets)，涵盖 100 多种语言，可用于广泛的任务，包括自然语言处理、计算机视觉和音频处理。它们被用于多种任务，例如翻译、自动语音识别和图像分类。
 
-This notebook shows how to load `Hugging Face Hub` datasets to LangChain.
-
+本笔记本展示了如何将 `Hugging Face Hub` 数据集加载到 LangChain 中。
 
 ```python
 from langchain_community.document_loaders import HuggingFaceDatasetLoader
 ```
 
-
 ```python
 dataset_name = "imdb"
 page_content_column = "text"
 
-
 loader = HuggingFaceDatasetLoader(dataset_name, page_content_column)
 ```
-
 
 ```python
 data = loader.load()
 ```
 
-
 ```python
 data[:15]
 ```
-
-
 
 ```output
 [Document(page_content='I rented I AM CURIOUS-YELLOW from my video store because of all the controversy that surrounded it when it was first released in 1967. I also heard that at first it was seized by U.S. customs if it ever tried to enter this country, therefore being a fan of films considered "controversial" I really had to see this for myself.<br /><br />The plot is centered around a young Swedish drama student named Lena who wants to learn everything she can about life. In particular she wants to focus her attentions to making some sort of documentary on what the average Swede thought about certain political issues such as the Vietnam War and race issues in the United States. In between asking politicians and ordinary denizens of Stockholm about their opinions on politics, she has sex with her drama teacher, classmates, and married men.<br /><br />What kills me about I AM CURIOUS-YELLOW is that 40 years ago, this was considered pornographic. Really, the sex and nudity scenes are few and far between, even then it\'s not shot like some cheaply made porno. While my countrymen mind find it shocking, in reality sex and nudity are a major staple in Swedish cinema. Even Ingmar Bergman, arguably their answer to good old boy John Ford, had sex scenes in his films.<br /><br />I do commend the filmmakers for the fact that any sex shown in the film is shown for artistic purposes rather than just to shock people and make money to be shown in pornographic theaters in America. I AM CURIOUS-YELLOW is a good film for anyone wanting to study the meat and potatoes (no pun intended) of Swedish cinema. But really, this film doesn\'t have much of a plot.', metadata={'label': 0}),
@@ -54,9 +46,9 @@ data[:15]
 ```
 
 
-### Example 
-In this example, we use data from a dataset to answer a question
 
+### 示例
+在此示例中，我们使用数据集中的数据来回答一个问题
 
 ```python
 from langchain.indexes import VectorstoreIndexCreator
@@ -65,28 +57,25 @@ from langchain_community.document_loaders.hugging_face_dataset import (
 )
 ```
 
-
 ```python
 dataset_name = "tweet_eval"
 page_content_column = "text"
 name = "stance_climate"
 
-
 loader = HuggingFaceDatasetLoader(dataset_name, page_content_column, name)
 ```
-
 
 ```python
 index = VectorstoreIndexCreator().from_loaders([loader])
 ```
 ```output
-Found cached dataset tweet_eval
+找到缓存的数据集 tweet_eval
 ```
 ```output
   0%|          | 0/3 [00:00<?, ?it/s]
 ```
 ```output
-Using embedded DuckDB without persistence: data will be transient
+使用无持久性的嵌入式 DuckDB：数据将是短暂的
 ```
 
 ```python
@@ -94,20 +83,15 @@ query = "What are the most used hashtag?"
 result = index.query(query)
 ```
 
-
 ```python
 result
 ```
 
-
-
 ```output
-' The most used hashtags in this context are #UKClimate2015, #Sustainability, #TakeDownTheFlag, #LoveWins, #CSOTA, #ClimateSummitoftheAmericas, #SM, and #SocialMedia.'
+' 在此上下文中使用最多的标签是 #UKClimate2015, #Sustainability, #TakeDownTheFlag, #LoveWins, #CSOTA, #ClimateSummitoftheAmericas, #SM, 和 #SocialMedia.'
 ```
 
+## 相关
 
-
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

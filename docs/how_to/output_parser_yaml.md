@@ -1,25 +1,26 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/output_parser_yaml.ipynb
 ---
-# How to parse YAML output
 
-:::info Prerequisites
+# 如何解析 YAML 输出
 
-This guide assumes familiarity with the following concepts:
-- [Chat models](/docs/concepts/#chat-models)
-- [Output parsers](/docs/concepts/#output-parsers)
-- [Prompt templates](/docs/concepts/#prompt-templates)
-- [Structured output](/docs/how_to/structured_output)
-- [Chaining runnables together](/docs/how_to/sequence/)
+:::info 前提条件
+
+本指南假设您熟悉以下概念：
+- [聊天模型](/docs/concepts/#chat-models)
+- [输出解析器](/docs/concepts/#output-parsers)
+- [提示模板](/docs/concepts/#prompt-templates)
+- [结构化输出](/docs/how_to/structured_output)
+- [将可运行对象串联在一起](/docs/how_to/sequence/)
 
 :::
 
-LLMs from different providers often have different strengths depending on the specific data they are trianed on. This also means that some may be "better" and more reliable at generating output in formats other than JSON.
+不同提供商的 LLM 可能在特定数据的训练上具有不同的优势。这也意味着某些模型在生成 JSON 以外格式的输出时可能“更好”且更可靠。
 
-This output parser allows users to specify an arbitrary schema and query LLMs for outputs that conform to that schema, using YAML to format their response.
+此输出解析器允许用户指定任意模式，并查询 LLM 以获取符合该模式的输出，使用 YAML 格式化其响应。
 
 :::note
-Keep in mind that large language models are leaky abstractions! You'll have to use an LLM with sufficient capacity to generate well-formed YAML.
+请记住，大型语言模型是泄漏的抽象！您必须使用具有足够容量的 LLM 来生成格式良好的 YAML。
 :::
 
 
@@ -33,7 +34,7 @@ from getpass import getpass
 os.environ["OPENAI_API_KEY"] = getpass()
 ```
 
-We use [Pydantic](https://docs.pydantic.dev) with the [`YamlOutputParser`](https://api.python.langchain.com/en/latest/output_parsers/langchain.output_parsers.yaml.YamlOutputParser.html#langchain.output_parsers.yaml.YamlOutputParser) to declare our data model and give the model more context as to what type of YAML it should generate:
+我们使用 [Pydantic](https://docs.pydantic.dev) 和 [`YamlOutputParser`](https://api.python.langchain.com/en/latest/output_parsers/langchain.output_parsers.yaml.YamlOutputParser.html#langchain.output_parsers.yaml.YamlOutputParser) 来声明我们的数据模型，并为模型提供更多上下文，以便它知道应该生成什么类型的 YAML：
 
 
 ```python
@@ -43,22 +44,22 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_openai import ChatOpenAI
 
 
-# Define your desired data structure.
+# 定义您所需的数据结构。
 class Joke(BaseModel):
-    setup: str = Field(description="question to set up a joke")
-    punchline: str = Field(description="answer to resolve the joke")
+    setup: str = Field(description="设置笑话的问题")
+    punchline: str = Field(description="解决笑话的答案")
 
 
 model = ChatOpenAI(temperature=0)
 
-# And a query intented to prompt a language model to populate the data structure.
-joke_query = "Tell me a joke."
+# 以及一个旨在提示语言模型填充数据结构的查询。
+joke_query = "给我讲个笑话。"
 
-# Set up a parser + inject instructions into the prompt template.
+# 设置一个解析器 + 将指令注入到提示模板中。
 parser = YamlOutputParser(pydantic_object=Joke)
 
 prompt = PromptTemplate(
-    template="Answer the user query.\n{format_instructions}\n{query}\n",
+    template="回答用户查询。\n{format_instructions}\n{query}\n",
     input_variables=["query"],
     partial_variables={"format_instructions": parser.get_format_instructions()},
 )
@@ -71,11 +72,11 @@ chain.invoke({"query": joke_query})
 
 
 ```output
-Joke(setup="Why couldn't the bicycle find its way home?", punchline='Because it lost its bearings!')
+Joke(setup="为什么自行车找不到回家的路？", punchline='因为它失去了方向感！')
 ```
 
 
-The parser will automatically parse the output YAML and create a Pydantic model with the data. We can see the parser's `format_instructions`, which get added to the prompt:
+解析器将自动解析输出 YAML 并创建一个包含数据的 Pydantic 模型。我们可以看到解析器的 `format_instructions`，这些指令会被添加到提示中：
 
 
 ```python
@@ -85,12 +86,12 @@ parser.get_format_instructions()
 
 
 ```output
-'The output should be formatted as a YAML instance that conforms to the given JSON schema below.\n\n# Examples\n## Schema\n```\n{"title": "Players", "description": "A list of players", "type": "array", "items": {"$ref": "#/definitions/Player"}, "definitions": {"Player": {"title": "Player", "type": "object", "properties": {"name": {"title": "Name", "description": "Player name", "type": "string"}, "avg": {"title": "Avg", "description": "Batting average", "type": "number"}}, "required": ["name", "avg"]}}}\n```\n## Well formatted instance\n```\n- name: John Doe\n  avg: 0.3\n- name: Jane Maxfield\n  avg: 1.4\n```\n\n## Schema\n```\n{"properties": {"habit": { "description": "A common daily habit", "type": "string" }, "sustainable_alternative": { "description": "An environmentally friendly alternative to the habit", "type": "string"}}, "required": ["habit", "sustainable_alternative"]}\n```\n## Well formatted instance\n```\nhabit: Using disposable water bottles for daily hydration.\nsustainable_alternative: Switch to a reusable water bottle to reduce plastic waste and decrease your environmental footprint.\n``` \n\nPlease follow the standard YAML formatting conventions with an indent of 2 spaces and make sure that the data types adhere strictly to the following JSON schema: \n```\n{"properties": {"setup": {"title": "Setup", "description": "question to set up a joke", "type": "string"}, "punchline": {"title": "Punchline", "description": "answer to resolve the joke", "type": "string"}}, "required": ["setup", "punchline"]}\n```\n\nMake sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!'
+'输出应格式化为符合以下给定 JSON 模式的 YAML 实例。\n\n# 示例\n## 模式\n```\n{"title": "Players", "description": "一组玩家", "type": "array", "items": {"$ref": "#/definitions/Player"}, "definitions": {"Player": {"title": "Player", "type": "object", "properties": {"name": {"title": "Name", "description": "玩家姓名", "type": "string"}, "avg": {"title": "Avg", "description": "击球平均值", "type": "number"}}, "required": ["name", "avg"]}}}\n```\n## 格式良好的实例\n```\n- name: John Doe\n  avg: 0.3\n- name: Jane Maxfield\n  avg: 1.4\n```\n\n## 模式\n```\n{"properties": {"habit": { "description": "一种常见的日常习惯", "type": "string" }, "sustainable_alternative": { "description": "对该习惯的环保替代品", "type": "string"}}, "required": ["habit", "sustainable_alternative"]}\n```\n## 格式良好的实例\n```\nhabit: 使用一次性水瓶进行日常补水。\nsustainable_alternative: 切换到可重复使用的水瓶，以减少塑料废物并降低您的环境足迹。\n``` \n\n请遵循标准的 YAML 格式约定，缩进为 2 个空格，并确保数据类型严格遵循以下 JSON 模式： \n```\n{"properties": {"setup": {"title": "Setup", "description": "设置笑话的问题", "type": "string"}, "punchline": {"title": "Punchline", "description": "解决笑话的答案", "type": "string"}}, "required": ["setup", "punchline"]}\n```\n\n请确保始终将 YAML 输出用三个反引号（```）括起来。请不要添加任何其他内容，除了有效的 YAML 输出！'
 ```
 
 
-You can and should experiment with adding your own formatting hints in the other parts of your prompt to either augment or replace the default instructions.
+您可以并且应该尝试在提示的其他部分添加自己的格式提示，以增强或替换默认指令。
 
-## Next steps
+## 下一步
 
-You've now learned how to prompt a model to return XML. Next, check out the [broader guide on obtaining structured output](/docs/how_to/structured_output) for other related techniques.
+您现在已经学习了如何提示模型返回 XML。接下来，请查看 [获取结构化输出的更广泛指南](/docs/how_to/structured_output)，以获取其他相关技术。

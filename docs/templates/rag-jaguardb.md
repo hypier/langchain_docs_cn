@@ -1,71 +1,68 @@
-
 # rag-jaguardb
 
-This template performs RAG using JaguarDB and OpenAI.
+此模板使用 JaguarDB 和 OpenAI 执行 RAG。
 
-## Environment Setup
+## 环境设置
 
-You should export two environment variables, one being your Jaguar URI, the other being your OpenAI API KEY.
-If you do not have JaguarDB set up, see the `Setup Jaguar` section at the bottom for instructions on how to do so.
+您应该导出两个环境变量，一个是您的 Jaguar URI，另一个是您的 OpenAI API KEY。
+如果您尚未设置 JaguarDB，请参阅底部的 `设置 Jaguar` 部分以获取相关说明。
 
 ```shell
 export JAGUAR_API_KEY=...
 export OPENAI_API_KEY=...
 ```
 
-## Usage
+## 使用方法
 
-To use this package, you should first have the LangChain CLI installed:
+要使用此包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将其作为唯一的包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package rag-jaguardb
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，只需运行：
 
 ```shell
 langchain app add rag-jagaurdb
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 ```python
 from rag_jaguardb import chain as rag_jaguardb
 
 add_routes(app, rag_jaguardb_chain, path="/rag-jaguardb")
 ```
 
-(Optional) Let's now configure LangSmith. 
-LangSmith will help us trace, monitor and debug LangChain applications. 
-You can sign up for LangSmith [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
-
+（可选）现在让我们配置 LangSmith。
+LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server is running locally at 
+这将启动 FastAPI 应用程序，服务器在本地运行，地址为 
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/rag-jaguardb/playground](http://127.0.0.1:8000/rag-jaguardb/playground)  
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板
+我们可以在 [http://127.0.0.1:8000/rag-jaguardb/playground](http://127.0.0.1:8000/rag-jaguardb/playground) 访问游乐场
 
-We can access the template from code with:
+我们可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable
@@ -73,19 +70,19 @@ from langserve.client import RemoteRunnable
 runnable = RemoteRunnable("http://localhost:8000/rag-jaguardb")
 ```
 
-## JaguarDB Setup
+## JaguarDB 设置
 
-To utilize JaguarDB, you can use docker pull and docker run commands to quickly setup JaguarDB. 
+要使用 JaguarDB，您可以使用 docker pull 和 docker run 命令快速设置 JaguarDB。
 
 ```shell
 docker pull jaguardb/jaguardb 
 docker run -d -p 8888:8888 --name jaguardb jaguardb/jaguardb
 ```
 
-To launch the JaguarDB client terminal to interact with JaguarDB server: 
+要启动 JaguarDB 客户端终端与 JaguarDB 服务器进行交互：
 
 ```shell 
 docker exec -it jaguardb /home/jaguar/jaguar/bin/jag
 ```
 
-Another option is to download an already-built binary package of JaguarDB on Linux, and deploy the database on a single node or in a cluster of nodes. The streamlined process enables you to quickly start using JaguarDB and leverage its powerful features and functionalities. [here](http://www.jaguardb.com/download.html).   
+另一种选择是在 Linux 上下载已构建的 JaguarDB 二进制包，并在单个节点或节点集群中部署数据库。这个简化的过程使您能够快速开始使用 JaguarDB，并利用其强大的功能和特性。[这里](http://www.jaguardb.com/download.html)。

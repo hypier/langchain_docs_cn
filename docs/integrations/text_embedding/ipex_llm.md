@@ -1,20 +1,21 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/ipex_llm.ipynb
 ---
-# Local BGE Embeddings with IPEX-LLM on Intel CPU
 
-> [IPEX-LLM](https://github.com/intel-analytics/ipex-llm) is a PyTorch library for running LLM on Intel CPU and GPU (e.g., local PC with iGPU, discrete GPU such as Arc, Flex and Max) with very low latency.
+# 在Intel CPU上使用IPEX-LLM的本地BGE嵌入
 
-This example goes over how to use LangChain to conduct embedding tasks with `ipex-llm` optimizations on Intel CPU. This would be helpful in applications such as RAG, document QA, etc.
+> [IPEX-LLM](https://github.com/intel-analytics/ipex-llm) 是一个用于在Intel CPU和GPU（例如，带有iGPU的本地PC、离散GPU如Arc、Flex和Max）上以极低延迟运行LLM的PyTorch库。
 
-## Setup
+本示例介绍了如何使用LangChain在Intel CPU上进行嵌入任务，并利用`ipex-llm`优化。这在RAG、文档问答等应用中将非常有帮助。
+
+## 设置
 
 
 ```python
 %pip install -qU langchain langchain-community
 ```
 
-Install IPEX-LLM for optimizations on Intel CPU, as well as `sentence-transformers`.
+安装 IPEX-LLM 以优化 Intel CPU，以及 `sentence-transformers`。
 
 
 ```python
@@ -22,11 +23,11 @@ Install IPEX-LLM for optimizations on Intel CPU, as well as `sentence-transforme
 %pip install sentence-transformers
 ```
 
-> **Note**
+> **注意**
 >
-> For Windows users, `--extra-index-url https://download.pytorch.org/whl/cpu` when install `ipex-llm` is not required.
+> 对于 Windows 用户，安装 `ipex-llm` 时不需要 `--extra-index-url https://download.pytorch.org/whl/cpu`。
 
-## Basic Usage
+## 基本用法
 
 
 ```python
@@ -39,7 +40,7 @@ embedding_model = IpexLLMBgeEmbeddings(
 )
 ```
 
-API Reference
+API 参考
 - [IpexLLMBgeEmbeddings](https://api.python.langchain.com/en/latest/embeddings/langchain_community.embeddings.ipex_llm.IpexLLMBgeEmbeddings.html)
 
 
@@ -55,8 +56,7 @@ query_embedding = embedding_model.embed_query(query)
 print(f"query_embedding[:10]: {query_embedding[:10]}")
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

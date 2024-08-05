@@ -1,19 +1,18 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/google_search.ipynb
 ---
-# Google Search
 
-This notebook goes over how to use the google search component.
+# Google搜索
 
-First, you need to set up the proper API keys and environment variables. To set it up, create the GOOGLE_API_KEY in the Google Cloud credential console (https://console.cloud.google.com/apis/credentials) and a GOOGLE_CSE_ID using the Programmable Search Engine (https://programmablesearchengine.google.com/controlpanel/create). Next, it is good to follow the instructions found [here](https://stackoverflow.com/questions/37083058/programmatically-searching-google-in-python-using-custom-search).
+此笔记本介绍了如何使用Google搜索组件。
 
-Then we will need to set some environment variables.
+首先，您需要设置正确的API密钥和环境变量。要进行设置，请在Google Cloud凭据控制台中创建GOOGLE_API_KEY（https://console.cloud.google.com/apis/credentials）和使用可编程搜索引擎创建GOOGLE_CSE_ID（https://programmablesearchengine.google.com/controlpanel/create）。接下来，建议遵循[这里](https://stackoverflow.com/questions/37083058/programmatically-searching-google-in-python-using-custom-search)的说明。
 
+然后，我们需要设置一些环境变量。
 
 ```python
 %pip install --upgrade --quiet  langchain-community
 ```
-
 
 ```python
 import os
@@ -21,7 +20,6 @@ import os
 os.environ["GOOGLE_CSE_ID"] = ""
 os.environ["GOOGLE_API_KEY"] = ""
 ```
-
 
 ```python
 from langchain_community.utilities import GoogleSearchAPIWrapper
@@ -31,25 +29,21 @@ search = GoogleSearchAPIWrapper()
 
 tool = Tool(
     name="google_search",
-    description="Search Google for recent results.",
+    description="搜索Google以获取最新结果。",
     func=search.run,
 )
 ```
-
 
 ```python
 tool.run("Obama's first name?")
 ```
 
-
-
 ```output
 "STATE OF HAWAII. 1 Child's First Name. (Type or print). 2. Sex. BARACK. 3. This Birth. CERTIFICATE OF LIVE BIRTH. FILE. NUMBER 151 le. lb. Middle Name. Barack Hussein Obama II is an American former politician who served as the 44th president of the United States from 2009 to 2017. A member of the Democratic\xa0... When Barack Obama was elected president in 2008, he became the first African American to hold ... The Middle East remained a key foreign policy challenge. Jan 19, 2017 ... Jordan Barack Treasure, New York City, born in 2008 ... Jordan Barack Treasure made national news when he was the focus of a New York newspaper\xa0... Portrait of George Washington, the 1st President of the United States ... Portrait of Barack Obama, the 44th President of the United States\xa0... His full name is Barack Hussein Obama II. Since the “II” is simply because he was named for his father, his last name is Obama. Mar 22, 2008 ... Barry Obama decided that he didn't like his nickname. A few of his friends at Occidental College had already begun to call him Barack (his\xa0... Aug 18, 2017 ... It took him several seconds and multiple clues to remember former President Barack Obama's first name. Miller knew that every answer had to\xa0... Feb 9, 2015 ... Michael Jordan misspelled Barack Obama's first name on 50th-birthday gift ... Knowing Obama is a Chicagoan and huge basketball fan,\xa0... 4 days ago ... Barack Obama, in full Barack Hussein Obama II, (born August 4, 1961, Honolulu, Hawaii, U.S.), 44th president of the United States (2009–17) and\xa0..."
 ```
 
-
-## Number of Results
-You can use the `k` parameter to set the number of results
+## 结果数量
+您可以使用 `k` 参数来设置结果数量
 
 
 ```python
@@ -76,13 +70,13 @@ tool.run("python")
 
 'The official home of the Python Programming Language.'
 
-## Metadata Results
+## 元数据结果
 
-Run query through GoogleSearch and return snippet, title, and link metadata.
+通过 GoogleSearch 运行查询并返回片段、标题和链接元数据。
 
-- Snippet: The description of the result.
-- Title: The title of the result.
-- Link: The link to the result.
+- 片段：结果的描述。
+- 标题：结果的标题。
+- 链接：结果的链接。
 
 
 ```python
@@ -100,8 +94,7 @@ tool = Tool(
 )
 ```
 
+## 相关
 
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

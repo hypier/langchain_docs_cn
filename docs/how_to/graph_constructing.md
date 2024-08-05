@@ -2,36 +2,34 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/graph_constructing.ipynb
 sidebar_position: 4
 ---
-# How to construct knowledge graphs
 
-In this guide we'll go over the basic ways of constructing a knowledge graph based on unstructured text. The constructured graph can then be used as knowledge base in a RAG application.
+# 如何构建知识图谱
 
-## ⚠️ Security note ⚠️
+在本指南中，我们将介绍基于非结构化文本构建知识图谱的基本方法。构建的图谱可以作为RAG应用中的知识库使用。
 
-Constructing knowledge graphs requires executing write access to the database. There are inherent risks in doing this. Make sure that you verify and validate data before importing it. For more on general security best practices, [see here](/docs/security).
+## ⚠️ 安全提示 ⚠️
 
+构建知识图谱需要对数据库执行写入访问。这其中存在固有的风险。确保在导入数据之前验证和确认数据的准确性。有关一般安全最佳实践的更多信息，请[查看这里](/docs/security)。
 
-## Architecture
+## 架构
 
-At a high-level, the steps of constructing a knowledge are from text are:
+从高层次来看，从文本构建知识的步骤如下：
 
-1. **Extracting structured information from text**: Model is used to extract structured graph information from text.
-2. **Storing into graph database**: Storing the extracted structured graph information into a graph database enables downstream RAG applications
+1. **从文本中提取结构化信息**：模型用于从文本中提取结构化图信息。
+2. **存储到图数据库**：将提取的结构化图信息存储到图数据库中，以便支持下游 RAG 应用。
 
-## Setup
+## 设置
 
-First, get required packages and set environment variables.
-In this example, we will be using Neo4j graph database.
-
+首先，获取所需的包并设置环境变量。
+在这个例子中，我们将使用 Neo4j 图形数据库。
 
 ```python
 %pip install --upgrade --quiet  langchain langchain-community langchain-openai langchain-experimental neo4j
 ```
 ```output
-Note: you may need to restart the kernel to use updated packages.
+注意：您可能需要重启内核以使用更新的包。
 ```
-We default to OpenAI models in this guide.
-
+在本指南中，我们默认使用 OpenAI 模型。
 
 ```python
 import getpass
@@ -39,16 +37,15 @@ import os
 
 os.environ["OPENAI_API_KEY"] = getpass.getpass()
 
-# Uncomment the below to use LangSmith. Not required.
+# 如果需要使用 LangSmith，请取消注释以下内容。不是必需的。
 # os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 # os.environ["LANGCHAIN_TRACING_V2"] = "true"
 ```
 ```output
  ········
 ```
-Next, we need to define Neo4j credentials and connection.
-Follow [these installation steps](https://neo4j.com/docs/operations-manual/current/installation/) to set up a Neo4j database.
-
+接下来，我们需要定义 Neo4j 的凭据和连接。
+请按照 [这些安装步骤](https://neo4j.com/docs/operations-manual/current/installation/) 设置 Neo4j 数据库。
 
 ```python
 import os
@@ -62,11 +59,9 @@ os.environ["NEO4J_PASSWORD"] = "password"
 graph = Neo4jGraph()
 ```
 
-## LLM Graph Transformer
+## LLM 图形变换器
 
-Extracting graph data from text enables the transformation of unstructured information into structured formats, facilitating deeper insights and more efficient navigation through complex relationships and patterns. The `LLMGraphTransformer` converts text documents into structured graph documents by leveraging a LLM to parse and categorize entities and their relationships. The selection of the LLM model significantly influences the output by determining the accuracy and nuance of the extracted graph data.
-
-
+从文本中提取图形数据使得将非结构化信息转化为结构化格式成为可能，从而促进更深入的洞察和更高效地导航复杂的关系和模式。`LLMGraphTransformer`通过利用 LLM 解析和分类实体及其关系，将文本文档转换为结构化的图形文档。LLM 模型的选择对输出有显著影响，因为它决定了提取的图形数据的准确性和细微差别。
 
 ```python
 import os
@@ -79,8 +74,7 @@ llm = ChatOpenAI(temperature=0, model_name="gpt-4-turbo")
 llm_transformer = LLMGraphTransformer(llm=llm)
 ```
 
-Now we can pass in example text and examine the results.
-
+现在我们可以传入示例文本并检查结果。
 
 ```python
 from langchain_core.documents import Document
@@ -100,14 +94,13 @@ print(f"Relationships:{graph_documents[0].relationships}")
 Nodes:[Node(id='Marie Curie', type='Person'), Node(id='Pierre Curie', type='Person'), Node(id='University Of Paris', type='Organization')]
 Relationships:[Relationship(source=Node(id='Marie Curie', type='Person'), target=Node(id='Pierre Curie', type='Person'), type='MARRIED'), Relationship(source=Node(id='Marie Curie', type='Person'), target=Node(id='University Of Paris', type='Organization'), type='PROFESSOR')]
 ```
-Examine the following image to better grasp the structure of the generated knowledge graph. 
+查看以下图像以更好地理解生成的知识图谱的结构。
 
 ![graph_construction1.png](../../static/img/graph_construction1.png)
 
-Note that the graph construction process is non-deterministic since we are using LLM. Therefore, you might get slightly different results on each execution.
+请注意，图形构建过程是非确定性的，因为我们使用了 LLM。因此，您可能会在每次执行时获得略有不同的结果。
 
-Additionally, you have the flexibility to define specific types of nodes and relationships for extraction according to your requirements.
-
+此外，您可以根据要求灵活定义特定类型的节点和关系进行提取。
 
 ```python
 llm_transformer_filtered = LLMGraphTransformer(
@@ -125,14 +118,13 @@ print(f"Relationships:{graph_documents_filtered[0].relationships}")
 Nodes:[Node(id='Marie Curie', type='Person'), Node(id='Pierre Curie', type='Person'), Node(id='University Of Paris', type='Organization')]
 Relationships:[Relationship(source=Node(id='Marie Curie', type='Person'), target=Node(id='Pierre Curie', type='Person'), type='SPOUSE'), Relationship(source=Node(id='Marie Curie', type='Person'), target=Node(id='University Of Paris', type='Organization'), type='WORKED_AT')]
 ```
-For a better understanding of the generated graph, we can again visualize it.
+为了更好地理解生成的图形，我们可以再次可视化它。
 
 ![graph_construction2.png](../../static/img/graph_construction2.png)
 
-The `node_properties` parameter enables the extraction of node properties, allowing the creation of a more detailed graph.
-When set to `True`, LLM autonomously identifies and extracts relevant node properties.
-Conversely, if `node_properties` is defined as a list of strings, the LLM selectively retrieves only the specified properties from the text.
-
+`node_properties` 参数使得节点属性的提取成为可能，从而创建更详细的图形。
+当设置为 `True` 时，LLM 会自主识别和提取相关的节点属性。
+相反，如果 `node_properties` 被定义为字符串列表，LLM 将只从文本中选择性地检索指定的属性。
 
 ```python
 llm_transformer_props = LLMGraphTransformer(
@@ -149,10 +141,10 @@ print(f"Relationships:{graph_documents_props[0].relationships}")
 Nodes:[Node(id='Marie Curie', type='Person', properties={'born_year': '1867'}), Node(id='Pierre Curie', type='Person'), Node(id='University Of Paris', type='Organization')]
 Relationships:[Relationship(source=Node(id='Marie Curie', type='Person'), target=Node(id='Pierre Curie', type='Person'), type='SPOUSE'), Relationship(source=Node(id='Marie Curie', type='Person'), target=Node(id='University Of Paris', type='Organization'), type='WORKED_AT')]
 ```
-## Storing to graph database
 
-The generated graph documents can be stored to a graph database using the `add_graph_documents` method.
+## 存储到图数据库
 
+生成的图文档可以使用 `add_graph_documents` 方法存储到图数据库中。
 
 ```python
 graph.add_graph_documents(graph_documents_props)

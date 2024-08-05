@@ -1,16 +1,16 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/tair.ipynb
 ---
+
 # Tair
 
->[Tair](https://www.alibabacloud.com/help/en/tair/latest/what-is-tair) is a cloud native in-memory database service developed by `Alibaba Cloud`. 
-It provides rich data models and enterprise-grade capabilities to support your real-time online scenarios while maintaining full compatibility with open-source `Redis`. `Tair` also introduces persistent memory-optimized instances that are based on the new non-volatile memory (NVM) storage medium.
+>[Tair](https://www.alibabacloud.com/help/en/tair/latest/what-is-tair) 是由 `Alibaba Cloud` 开发的云原生内存数据库服务。它提供丰富的数据模型和企业级功能，以支持您的实时在线场景，同时与开源 `Redis` 完全兼容。`Tair` 还引入了基于新型非易失性存储介质 (NVM) 的持久内存优化实例。
 
-This notebook shows how to use functionality related to the `Tair` vector database.
+本笔记本展示了如何使用与 `Tair` 向量数据库相关的功能。
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
+您需要通过 `pip install -qU langchain-community` 安装 `langchain-community` 以使用此集成。
 
-To run, you should have a `Tair` instance up and running.
+要运行，您应该有一个正在运行的 `Tair` 实例。
 
 
 ```python
@@ -31,26 +31,26 @@ docs = text_splitter.split_documents(documents)
 embeddings = FakeEmbeddings(size=128)
 ```
 
-Connect to Tair using the `TAIR_URL` environment variable 
+使用 `TAIR_URL` 环境变量连接到 Tair 
 ```
 export TAIR_URL="redis://{username}:{password}@{tair_address}:{tair_port}"
 ```
 
-or the keyword argument `tair_url`.
+或使用关键字参数 `tair_url`。
 
-Then store documents and embeddings into Tair.
+然后将文档和嵌入存储到 Tair 中。
 
 
 ```python
 tair_url = "redis://localhost:6379"
 
-# drop first if index already exists
+# 如果索引已存在则先删除
 Tair.drop_index(tair_url=tair_url)
 
 vector_store = Tair.from_documents(docs, embeddings, tair_url=tair_url)
 ```
 
-Query similar documents.
+查询相似文档。
 
 
 ```python
@@ -59,11 +59,11 @@ docs = vector_store.similarity_search(query)
 docs[0]
 ```
 
-Tair Hybrid Search Index build
+Tair 混合搜索索引构建
 
 
 ```python
-# drop first if index already exists
+# 如果索引已存在则先删除
 Tair.drop_index(tair_url=tair_url)
 
 vector_store = Tair.from_documents(
@@ -71,19 +71,18 @@ vector_store = Tair.from_documents(
 )
 ```
 
-Tair Hybrid Search
+Tair 混合搜索
 
 
 ```python
 query = "What did the president say about Ketanji Brown Jackson"
-# hybrid_ratio: 0.5 hybrid search, 0.9999 vector search, 0.0001 text search
+# hybrid_ratio: 0.5 混合搜索, 0.9999 向量搜索, 0.0001 文本搜索
 kwargs = {"TEXT": query, "hybrid_ratio": 0.5}
 docs = vector_store.similarity_search(query, **kwargs)
 docs[0]
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

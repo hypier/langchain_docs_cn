@@ -1,27 +1,26 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/sagemaker-endpoint.ipynb
 ---
+
 # SageMaker
 
-Let's load the `SageMaker Endpoints Embeddings` class. The class can be used if you host, e.g. your own Hugging Face model on SageMaker.
+让我们加载 `SageMaker Endpoints Embeddings` 类。如果您在 SageMaker 上托管，例如自己的 Hugging Face 模型，则可以使用该类。
 
-For instructions on how to do this, please see [here](https://www.philschmid.de/custom-inference-huggingface-sagemaker). 
+有关如何执行此操作的说明，请参见 [这里](https://www.philschmid.de/custom-inference-huggingface-sagemaker)。
 
-**Note**: In order to handle batched requests, you will need to adjust the return line in the `predict_fn()` function within the custom `inference.py` script:
+**注意**：为了处理批量请求，您需要调整自定义 `inference.py` 脚本中 `predict_fn()` 函数的返回行：
 
-Change from
+将
 
 `return {"vectors": sentence_embeddings[0].tolist()}`
 
-to:
+更改为：
 
-`return {"vectors": sentence_embeddings.tolist()}`.
-
+`return {"vectors": sentence_embeddings.tolist()}`。
 
 ```python
 !pip3 install langchain boto3
 ```
-
 
 ```python
 import json
@@ -87,23 +86,19 @@ embeddings = SagemakerEndpointEmbeddings(
 # )
 ```
 
-
 ```python
 query_result = embeddings.embed_query("foo")
 ```
-
 
 ```python
 doc_results = embeddings.embed_documents(["foo"])
 ```
 
-
 ```python
 doc_results
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

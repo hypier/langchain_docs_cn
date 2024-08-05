@@ -1,27 +1,27 @@
-# Gradient
+# 梯度
 
->[Gradient](https://gradient.ai/) allows to fine tune and get completions on LLMs with a simple web API.
+>[Gradient](https://gradient.ai/) 允许通过简单的 Web API 对 LLM 进行微调和获取补全。
 
-## Installation and Setup
-- Install the Python SDK :
+## 安装与设置
+- 安装 Python SDK :
 ```bash
 pip install gradientai
 ```
-Get a [Gradient access token and workspace](https://gradient.ai/) and set it as an environment variable (`Gradient_ACCESS_TOKEN`) and (`GRADIENT_WORKSPACE_ID`)
+获取 [Gradient 访问令牌和工作区](https://gradient.ai/) 并将其设置为环境变量 (`Gradient_ACCESS_TOKEN`) 和 (`GRADIENT_WORKSPACE_ID`)
 
 ## LLM
 
-There exists an Gradient LLM wrapper, which you can access with 
-See a [usage example](/docs/integrations/llms/gradient).
+存在一个 Gradient LLM 包装器，您可以通过访问  
+查看 [使用示例](/docs/integrations/llms/gradient)。
 
 ```python
 from langchain_community.llms import GradientLLM
 ```
 
-## Text Embedding Model
+## 文本嵌入模型
 
-There exists an Gradient Embedding model, which you can access with 
+存在一个梯度嵌入模型，您可以通过以下方式访问它：
 ```python
 from langchain_community.embeddings import GradientEmbeddings
 ```
-For a more detailed walkthrough of this, see [this notebook](/docs/integrations/text_embedding/gradient)
+有关此内容的更详细说明，请参见[此笔记本](/docs/integrations/text_embedding/gradient)

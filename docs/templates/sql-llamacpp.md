@@ -1,13 +1,12 @@
-
 # sql-llamacpp
 
-This template enables a user to interact with a SQL database using natural language. 
+该模板使用户能够使用自然语言与 SQL 数据库进行交互。
 
-It uses [Mistral-7b](https://mistral.ai/news/announcing-mistral-7b/) via [llama.cpp](https://github.com/ggerganov/llama.cpp) to run inference locally on a Mac laptop.
+它通过 [llama.cpp](https://github.com/ggerganov/llama.cpp) 使用 [Mistral-7b](https://mistral.ai/news/announcing-mistral-7b/) 在 Mac 笔记本电脑上本地运行推理。
 
-## Environment Setup
+## 环境设置
 
-To set up the environment, use the following steps:
+要设置环境，请按照以下步骤操作：
 
 ```shell
 wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-MacOSX-arm64.sh
@@ -17,58 +16,58 @@ conda activate /Users/rlm/miniforge3/envs/llama
 CMAKE_ARGS="-DLLAMA_METAL=on" FORCE_CMAKE=1 pip install -U llama-cpp-python --no-cache-dir
 ```
 
-## Usage
+## 用法
 
-To use this package, you should first have the LangChain CLI installed:
+要使用此软件包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将此软件包作为唯一包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package sql-llamacpp
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，可以直接运行：
 
 ```shell
 langchain app add sql-llamacpp
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 ```python
 from sql_llamacpp import chain as sql_llamacpp_chain
 
 add_routes(app, sql_llamacpp_chain, path="/sql-llamacpp")
 ```
 
-The package will download the Mistral-7b model from [here](https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.1-GGUF). You can select other files and specify their download path (browse [here](https://huggingface.co/TheBloke)).
+该软件包将从 [here](https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.1-GGUF) 下载 Mistral-7b 模型。您可以选择其他文件并指定其下载路径（浏览 [here](https://huggingface.co/TheBloke)）。
 
-This package includes an example DB of 2023 NBA rosters. You can see instructions to build this DB [here](https://github.com/facebookresearch/llama-recipes/blob/main/demo_apps/StructuredLlama.ipynb).
+此软件包包含 2023 年 NBA 阵容的示例数据库。您可以在 [here](https://github.com/facebookresearch/llama-recipes/blob/main/demo_apps/StructuredLlama.ipynb) 查看构建此数据库的说明。
 
-(Optional) Configure LangSmith for tracing, monitoring and debugging LangChain applications. You can sign up for LangSmith [here](https://smith.langchain.com/). If you don't have access, you can skip this section
+（可选）配置 LangSmith 以跟踪、监控和调试 LangChain 应用程序。您可以在 [here](https://smith.langchain.com/) 注册 LangSmith。如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接通过以下方式启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server running locally at 
+这将启动 FastAPI 应用程序，服务器在本地运行于 
 [http://localhost:8000](http://localhost:8000)
 
-You can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-You can access the playground at [http://127.0.0.1:8000/sql-llamacpp/playground](http://127.0.0.1:8000/sql-llamacpp/playground)  
+您可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板
+您可以在 [http://127.0.0.1:8000/sql-llamacpp/playground](http://127.0.0.1:8000/sql-llamacpp/playground) 访问游乐场  
 
-You can access the template from code with:
+您可以通过以下代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable

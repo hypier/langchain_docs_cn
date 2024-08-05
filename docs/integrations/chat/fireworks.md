@@ -1,32 +1,34 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/fireworks.ipynb
-sidebar_label: Fireworks
+sidebar_label: 烟花
 ---
+
 # ChatFireworks
 
-This doc help you get started with Fireworks AI [chat models](/docs/concepts/#chat-models). For detailed documentation of all ChatFireworks features and configurations head to the [API reference](https://api.python.langchain.com/en/latest/chat_models/langchain_fireworks.chat_models.ChatFireworks.html).
+本文件帮助您开始使用 Fireworks AI [聊天模型](/docs/concepts/#chat-models)。有关所有 ChatFireworks 功能和配置的详细文档，请访问 [API 参考](https://api.python.langchain.com/en/latest/chat_models/langchain_fireworks.chat_models.ChatFireworks.html)。
 
-Fireworks AI is an AI inference platform to run and customize models. For a list of all models served by Fireworks see the [Fireworks docs](https://fireworks.ai/models).
+Fireworks AI 是一个用于运行和自定义模型的 AI 推理平台。有关 Fireworks 提供的所有模型的列表，请参见 [Fireworks 文档](https://fireworks.ai/models)。
 
-## Overview
-### Integration details
+## 概述
 
-| Class | Package | Local | Serializable | [JS support](https://js.langchain.com/v0.2/docs/integrations/chat/fireworks) | Package downloads | Package latest |
+### 集成细节
+
+| 类 | 包 | 本地 | 可序列化 | [JS 支持](https://js.langchain.com/v0.2/docs/integrations/chat/fireworks) | 包下载 | 包最新 |
 | :--- | :--- | :---: | :---: |  :---: | :---: | :---: |
 | [ChatFireworks](https://api.python.langchain.com/en/latest/chat_models/langchain_fireworks.chat_models.ChatFireworks.html) | [langchain-fireworks](https://api.python.langchain.com/en/latest/fireworks_api_reference.html) | ❌ | beta | ✅ | ![PyPI - Downloads](https://img.shields.io/pypi/dm/langchain-fireworks?style=flat-square&label=%20) | ![PyPI - Version](https://img.shields.io/pypi/v/langchain-fireworks?style=flat-square&label=%20) |
 
-### Model features
-| [Tool calling](/docs/how_to/tool_calling) | [Structured output](/docs/how_to/structured_output/) | JSON mode | [Image input](/docs/how_to/multimodal_inputs/) | Audio input | Video input | [Token-level streaming](/docs/how_to/chat_streaming/) | Native async | [Token usage](/docs/how_to/chat_token_usage_tracking/) | [Logprobs](/docs/how_to/logprobs/) |
+### 模型特性
+| [工具调用](/docs/how_to/tool_calling) | [结构化输出](/docs/how_to/structured_output/) | JSON 模式 | [图像输入](/docs/how_to/multimodal_inputs/) | 音频输入 | 视频输入 | [令牌级流式传输](/docs/how_to/chat_streaming/) | 原生异步 | [令牌使用](/docs/how_to/chat_token_usage_tracking/) | [对数概率](/docs/how_to/logprobs/) |
 | :---: | :---: | :---: | :---: |  :---: | :---: | :---: | :---: | :---: | :---: |
-| ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ | 
+| ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ |
 
-## Setup
+## 设置
 
-To access Fireworks models you'll need to create a Fireworks account, get an API key, and install the `langchain-fireworks` integration package.
+要访问 Fireworks 模型，您需要创建一个 Fireworks 账户，获取 API 密钥，并安装 `langchain-fireworks` 集成包。
 
-### Credentials
+### 凭证
 
-Head to (ttps://fireworks.ai/login to sign up to Fireworks and generate an API key. Once you've done this set the FIREWORKS_API_KEY environment variable:
+前往 (ttps://fireworks.ai/login 注册 Fireworks 并生成 API 密钥。完成后设置 FIREWORKS_API_KEY 环境变量：
 
 
 ```python
@@ -36,7 +38,7 @@ import os
 os.environ["FIREWORKS_API_KEY"] = getpass.getpass("Enter your Fireworks API key: ")
 ```
 
-If you want to get automated tracing of your model calls you can also set your [LangSmith](https://docs.smith.langchain.com/) API key by uncommenting below:
+如果您希望自动跟踪模型调用，您还可以通过取消注释下面的内容来设置您的 [LangSmith](https://docs.smith.langchain.com/) API 密钥：
 
 
 ```python
@@ -44,21 +46,19 @@ If you want to get automated tracing of your model calls you can also set your [
 # os.environ["LANGSMITH_TRACING"] = "true"
 ```
 
-### Installation
+### 安装
 
-The LangChain Fireworks integration lives in the `langchain-fireworks` package:
-
+LangChain Fireworks 集成位于 `langchain-fireworks` 包中：
 
 ```python
 %pip install -qU langchain-fireworks
 ```
 
-## Instantiation
+## 实例化
 
-Now we can instantiate our model object and generate chat completions:
+现在我们可以实例化我们的模型对象并生成聊天补全：
 
-- TODO: Update model instantiation with relevant params.
-
+- TODO: 使用相关参数更新模型实例化。
 
 ```python
 from langchain_fireworks import ChatFireworks
@@ -73,7 +73,7 @@ llm = ChatFireworks(
 )
 ```
 
-## Invocation
+## 调用
 
 
 ```python
@@ -102,10 +102,10 @@ print(ai_msg.content)
 ```output
 J'adore la programmation.
 ```
-## Chaining
 
-We can [chain](/docs/how_to/sequence/) our model with a prompt template like so:
+## 链接
 
+我们可以使用提示模板来[链接](/docs/how_to/sequence/)我们的模型，如下所示：
 
 ```python
 from langchain_core.prompts import ChatPromptTemplate
@@ -136,13 +136,11 @@ chain.invoke(
 AIMessage(content='Ich liebe das Programmieren.', response_metadata={'token_usage': {'prompt_tokens': 30, 'total_tokens': 37, 'completion_tokens': 7}, 'model_name': 'accounts/fireworks/models/llama-v3-70b-instruct', 'system_fingerprint': '', 'finish_reason': 'stop', 'logprobs': None}, id='run-ff3f91ad-ed81-4acf-9f59-7490dc8d8f48-0', usage_metadata={'input_tokens': 30, 'output_tokens': 7, 'total_tokens': 37})
 ```
 
+## API 参考
 
-## API reference
+有关所有 ChatFireworks 功能和配置的详细文档，请访问 API 参考： https://api.python.langchain.com/en/latest/chat_models/langchain_fireworks.chat_models.ChatFireworks.html
 
-For detailed documentation of all ChatFireworks features and configurations head to the API reference: https://api.python.langchain.com/en/latest/chat_models/langchain_fireworks.chat_models.ChatFireworks.html
+## 相关
 
-
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

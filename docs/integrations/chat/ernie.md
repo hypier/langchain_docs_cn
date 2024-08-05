@@ -1,31 +1,30 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/ernie.ipynb
-sidebar_label: Ernie Bot Chat
+sidebar_label: Ernie Bot 聊天
 ---
+
 # ErnieBotChat
 
-[ERNIE-Bot](https://cloud.baidu.com/doc/WENXINWORKSHOP/s/jlil56u11) is a large language model developed by Baidu, covering a huge amount of Chinese data.
-This notebook covers how to get started with ErnieBot chat models.
+[ERNIE-Bot](https://cloud.baidu.com/doc/WENXINWORKSHOP/s/jlil56u11) 是由百度开发的大型语言模型，涵盖了大量中文数据。 本笔记本介绍如何开始使用 ErnieBot 聊天模型。
 
-**Deprecated Warning**
+**弃用警告**
 
-We recommend users using `langchain_community.chat_models.ErnieBotChat` 
-to use `langchain_community.chat_models.QianfanChatEndpoint` instead.
+我们建议用户使用 `langchain_community.chat_models.ErnieBotChat` 的用户改用 `langchain_community.chat_models.QianfanChatEndpoint`。
 
-documentation for `QianfanChatEndpoint` is [here](/docs/integrations/chat/baidu_qianfan_endpoint/).
+`QianfanChatEndpoint` 的文档在 [这里](/docs/integrations/chat/baidu_qianfan_endpoint/)。
 
-they are 4 why we recommend users to use `QianfanChatEndpoint`:
+我们推荐用户使用 `QianfanChatEndpoint` 的原因有四个：
 
-1. `QianfanChatEndpoint` support more LLM in the Qianfan platform.
-2. `QianfanChatEndpoint` support streaming mode.
-3. `QianfanChatEndpoint` support function calling usgage.
-4. `ErnieBotChat` is lack of maintenance and deprecated.
+1. `QianfanChatEndpoint` 支持更多的 Qianfan 平台上的 LLM。
+2. `QianfanChatEndpoint` 支持流式模式。
+3. `QianfanChatEndpoint` 支持功能调用使用。
+4. `ErnieBotChat` 缺乏维护且已弃用。
 
-Some tips for migration:
+迁移的一些提示：
 
-- change `ernie_client_id` to `qianfan_ak`, also change `ernie_client_secret` to `qianfan_sk`.
-- install `qianfan` package. like `pip install qianfan`
-- change `ErnieBotChat` to `QianfanChatEndpoint`.
+- 将 `ernie_client_id` 更改为 `qianfan_ak`，同时将 `ernie_client_secret` 更改为 `qianfan_sk`。
+- 安装 `qianfan` 包，例如 `pip install qianfan`
+- 将 `ErnieBotChat` 更改为 `QianfanChatEndpoint`。
 
 
 ```python
@@ -37,7 +36,7 @@ chat = QianfanChatEndpoint(
 )
 ```
 
-## Usage
+## 使用方法
 
 
 ```python
@@ -49,7 +48,7 @@ chat = ErnieBotChat(
 )
 ```
 
-or you can set `client_id` and `client_secret` in your environment variables
+或者你可以在环境变量中设置 `client_id` 和 `client_secret`
 ```bash
 export ERNIE_CLIENT_ID=YOUR_CLIENT_ID
 export ERNIE_CLIENT_SECRET=YOUR_CLIENT_SECRET
@@ -66,9 +65,7 @@ chat([HumanMessage(content="hello there, who are you?")])
 AIMessage(content='Hello, I am an artificial intelligence language model. My purpose is to help users answer questions or provide information. What can I do for you?', additional_kwargs={}, example=False)
 ```
 
+## 相关
 
-
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

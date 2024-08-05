@@ -1,32 +1,33 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/blockchain.ipynb
 ---
-# Blockchain
 
-## Overview
+# 区块链
 
-The intention of this notebook is to provide a means of testing functionality in the Langchain Document Loader for Blockchain.
+## 概述
 
-Initially this Loader supports:
+本笔记本的目的是提供一种测试 Langchain Document Loader 在区块链上功能的方法。
 
-*   Loading NFTs as Documents from NFT Smart Contracts (ERC721 and ERC1155)
-*   Ethereum Mainnnet, Ethereum Testnet, Polygon Mainnet, Polygon Testnet (default is eth-mainnet)
-*   Alchemy's getNFTsForCollection API
+最初，此加载器支持：
 
-It can be extended if the community finds value in this loader.  Specifically:
+*   从 NFT 智能合约（ERC721 和 ERC1155）加载 NFTs 作为文档
+*   以太坊主网、以太坊测试网、Polygon 主网、Polygon 测试网（默认是 eth-mainnet）
+*   Alchemy 的 getNFTsForCollection API
 
-*   Additional APIs can be added (e.g. Tranction-related APIs)
+如果社区认为此加载器有价值，可以进行扩展。具体来说：
 
-This Document Loader Requires:
+*   可以添加额外的 API（例如，与交易相关的 API）
 
-*   A free [Alchemy API Key](https://www.alchemy.com/)
+此文档加载器需要：
 
-The output takes the following format:
+*   一个免费的 [Alchemy API 密钥](https://www.alchemy.com/)
+
+输出格式如下：
 
 - pageContent= Individual NFT
 - metadata={'source': '0x1a92f7381b9f03921564a437210bb9396471050c', 'blockchain': 'eth-mainnet', 'tokenId': '0x15'})
 
-## Load NFTs into Document Loader
+## 将NFT加载到文档加载器中
 
 
 ```python
@@ -35,7 +36,7 @@ The output takes the following format:
 alchemyApiKey = "..."
 ```
 
-### Option 1: Ethereum Mainnet (default BlockchainType)
+### 选项 1：以太坊主网（默认 BlockchainType）
 
 
 ```python
@@ -44,9 +45,9 @@ from langchain_community.document_loaders.blockchain import (
     BlockchainType,
 )
 
-contractAddress = "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d"  # Bored Ape Yacht Club contract address
+contractAddress = "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d"  # Bored Ape Yacht Club 合约地址
 
-blockchainType = BlockchainType.ETH_MAINNET  # default value, optional parameter
+blockchainType = BlockchainType.ETH_MAINNET  # 默认值，可选参数
 
 blockchainLoader = BlockchainDocumentLoader(
     contract_address=contractAddress, api_key=alchemyApiKey
@@ -57,7 +58,7 @@ nfts = blockchainLoader.load()
 nfts[:2]
 ```
 
-### Option 2: Polygon Mainnet
+### 选项 2：Polygon 主网
 
 
 ```python
@@ -78,8 +79,7 @@ nfts = blockchainLoader.load()
 nfts[:2]
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

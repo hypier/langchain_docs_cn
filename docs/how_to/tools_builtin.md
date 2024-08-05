@@ -3,31 +3,29 @@ custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs
 sidebar_position: 4
 sidebar_class_name: hidden
 ---
-# How to use built-in tools and toolkits
 
-:::info Prerequisites
+# 如何使用内置工具和工具包
 
-This guide assumes familiarity with the following concepts:
+:::info 先决条件
+
+本指南假设您熟悉以下概念：
 
 - [LangChain Tools](/docs/concepts/#tools)
 - [LangChain Toolkits](/docs/concepts/#tools)
 
 :::
 
-## Tools
+## 工具
 
-LangChain has a large collection of 3rd party tools. Please visit [Tool Integrations](/docs/integrations/tools/) for a list of the available tools.
+LangChain 有大量的第三方工具。请访问 [工具集成](/docs/integrations/tools/) 查看可用工具的列表。
 
-:::important
+:::重要
 
-When using 3rd party tools, make sure that you understand how the tool works, what permissions
-it has. Read over its documentation and check if anything is required from you
-from a security point of view. Please see our [security](https://python.langchain.com/v0.2/docs/security/) 
-guidelines for more information.
+使用第三方工具时，请确保您了解该工具的工作原理及其权限。请仔细阅读其文档，并检查从安全角度来看是否需要您提供任何信息。有关更多信息，请参见我们的 [安全](https://python.langchain.com/v0.2/docs/security/) 指南。
 
 :::
 
-Let's try out the [Wikipedia integration](/docs/integrations/tools/wikipedia/).
+让我们试一下 [维基百科集成](/docs/integrations/tools/wikipedia/)。
 
 
 ```python
@@ -48,7 +46,7 @@ print(tool.invoke({"query": "langchain"}))
 Page: LangChain
 Summary: LangChain is a framework designed to simplify the creation of applications
 ```
-The tool has the following defaults associated with it:
+该工具具有以下默认设置：
 
 
 ```python
@@ -63,10 +61,11 @@ Description: look up things in wikipedia
 args schema: {'query': {'title': 'Query', 'description': 'query to look up in Wikipedia, should be 3 or less words', 'type': 'string'}}
 returns directly?: True
 ```
-## Customizing Default Tools
-We can also modify the built in name, description, and JSON schema of the arguments.
 
-When defining the JSON schema of the arguments, it is important that the inputs remain the same as the function, so you shouldn't change that. But you can define custom descriptions for each input easily.
+## 自定义默认工具
+我们还可以修改内置参数的名称、描述和 JSON 架构。
+
+在定义参数的 JSON 架构时，重要的是输入保持与函数相同，因此不应更改。但您可以轻松为每个输入定义自定义描述。
 
 
 ```python
@@ -110,15 +109,16 @@ Description: look up things in wikipedia
 args schema: {'query': {'title': 'Query', 'description': 'query to look up in Wikipedia, should be 3 or less words', 'type': 'string'}}
 returns directly?: True
 ```
-## How to use built-in toolkits
 
-Toolkits are collections of tools that are designed to be used together for specific tasks. They have convenient loading methods.
+## 如何使用内置工具包
 
-For a complete list of available ready-made toolkits, visit [Integrations](/docs/integrations/toolkits/).
+工具包是为特定任务设计的一组工具集合。它们具有便捷的加载方式。
 
-All Toolkits expose a `get_tools` method which returns a list of tools.
+要查看可用的现成工具包的完整列表，请访问 [Integrations](/docs/integrations/toolkits/)。
 
-You're usually meant to use them this way:
+所有工具包都公开一个 `get_tools` 方法，该方法返回工具列表。
+
+通常你应该这样使用它们：
 
 ```python
 # Initialize a toolkit

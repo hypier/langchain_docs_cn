@@ -1,13 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/email.ipynb
 ---
-# Email
 
-This notebook shows how to load email (`.eml`) or `Microsoft Outlook` (`.msg`) files.
+# 电子邮件
 
-Please see [this guide](/docs/integrations/providers/unstructured/) for more instructions on setting up Unstructured locally, including setting up required system dependencies.
+本笔记本展示了如何加载电子邮件（`.eml`）或 `Microsoft Outlook`（`.msg`）文件。
 
-## Using Unstructured
+请参阅 [本指南](/docs/integrations/providers/unstructured/) 以获取有关在本地设置 Unstructured 的更多说明，包括设置所需的系统依赖项。
+
+## 使用 Unstructured
 
 
 ```python
@@ -31,11 +32,9 @@ data
 [Document(page_content='This is a test email to use for unit tests.\n\nImportant points:\n\nRoses are red\n\nViolets are blue', metadata={'source': './example_data/fake-email.eml'})]
 ```
 
+### 保留元素
 
-### Retain Elements
-
-Under the hood, Unstructured creates different "elements" for different chunks of text. By default we combine those together, but you can easily keep that separation by specifying `mode="elements"`.
-
+在底层，Unstructured 为不同的文本块创建不同的“元素”。默认情况下，我们将这些元素组合在一起，但您可以通过指定 `mode="elements"` 来轻松保持这种分离。
 
 ```python
 loader = UnstructuredEmailLoader("example_data/fake-email.eml", mode="elements")
@@ -45,17 +44,13 @@ data = loader.load()
 data[0]
 ```
 
-
-
 ```output
 Document(page_content='This is a test email to use for unit tests.', metadata={'source': 'example_data/fake-email.eml', 'file_directory': 'example_data', 'filename': 'fake-email.eml', 'last_modified': '2022-12-16T17:04:16-05:00', 'sent_from': ['Matthew Robinson <mrobinson@unstructured.io>'], 'sent_to': ['Matthew Robinson <mrobinson@unstructured.io>'], 'subject': 'Test Email', 'languages': ['eng'], 'filetype': 'message/rfc822', 'category': 'NarrativeText'})
 ```
 
+### 处理附件
 
-### Processing Attachments
-
-You can process attachments with `UnstructuredEmailLoader` by setting `process_attachments=True` in the constructor. By default, attachments will be partitioned using the `partition` function from `unstructured`. You can use a different partitioning function by passing the function to the `attachment_partitioner` kwarg.
-
+您可以通过在构造函数中设置 `process_attachments=True` 来使用 `UnstructuredEmailLoader` 处理附件。默认情况下，附件将使用 `unstructured` 中的 `partition` 函数进行分区。您可以通过将函数传递给 `attachment_partitioner` 关键字参数来使用不同的分区函数。
 
 ```python
 loader = UnstructuredEmailLoader(
@@ -69,14 +64,11 @@ data = loader.load()
 data[0]
 ```
 
-
-
 ```output
 Document(page_content='This is a test email to use for unit tests.', metadata={'source': 'example_data/fake-email.eml', 'file_directory': 'example_data', 'filename': 'fake-email.eml', 'last_modified': '2022-12-16T17:04:16-05:00', 'sent_from': ['Matthew Robinson <mrobinson@unstructured.io>'], 'sent_to': ['Matthew Robinson <mrobinson@unstructured.io>'], 'subject': 'Test Email', 'languages': ['eng'], 'filetype': 'message/rfc822', 'category': 'NarrativeText'})
 ```
 
-
-## Using OutlookMessageLoader
+## 使用 OutlookMessageLoader
 
 
 ```python
@@ -100,9 +92,7 @@ data[0]
 Document(page_content='This is a test email to experiment with the MS Outlook MSG Extractor\r\n\r\n\r\n-- \r\n\r\n\r\nKind regards\r\n\r\n\r\n\r\n\r\nBrian Zhou\r\n\r\n', metadata={'source': 'example_data/fake-email.msg', 'subject': 'Test for TIF files', 'sender': 'Brian Zhou <brizhou@gmail.com>', 'date': datetime.datetime(2013, 11, 18, 0, 26, 24, tzinfo=zoneinfo.ZoneInfo(key='America/Los_Angeles'))})
 ```
 
+## 相关
 
-
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

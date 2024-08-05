@@ -1,14 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/github.ipynb
 ---
+
 # GitHub
 
-This notebooks shows how you can load issues and pull requests (PRs) for a given repository on [GitHub](https://github.com/). Also shows how you can load github files for a given repository on [GitHub](https://github.com/). We will use the LangChain Python repository as an example.
+这个笔记本展示了如何加载给定仓库在 [GitHub](https://github.com/) 上的问题和拉取请求（PR）。还展示了如何加载给定仓库在 [GitHub](https://github.com/) 上的文件。我们将使用 LangChain Python 仓库作为示例。
 
-## Setup access token
+## 设置访问令牌
 
-To access the GitHub API, you need a personal access token - you can set up yours here: https://github.com/settings/tokens?type=beta. You can either set this token as the environment variable ``GITHUB_PERSONAL_ACCESS_TOKEN`` and it will be automatically pulled in, or you can pass it in directly at initialization as the ``access_token`` named parameter.
-
+要访问 GitHub API，您需要一个个人访问令牌 - 您可以在这里设置您的令牌： https://github.com/settings/tokens?type=beta。您可以将此令牌设置为环境变量 ``GITHUB_PERSONAL_ACCESS_TOKEN``，它将被自动提取，或者您可以在初始化时直接作为 ``access_token`` 命名参数传递。
 
 ```python
 # If you haven't set your access token as an environment variable, pass it in here.
@@ -17,7 +17,7 @@ from getpass import getpass
 ACCESS_TOKEN = getpass()
 ```
 
-## Load Issues and PRs
+## 加载问题和PR
 
 
 ```python
@@ -28,14 +28,14 @@ from langchain_community.document_loaders import GitHubIssuesLoader
 ```python
 loader = GitHubIssuesLoader(
     repo="langchain-ai/langchain",
-    access_token=ACCESS_TOKEN,  # delete/comment out this argument if you've set the access token as an env var.
+    access_token=ACCESS_TOKEN,  # 如果您已将访问令牌设置为环境变量，请删除/注释掉此参数。
     creator="UmerHA",
 )
 ```
 
-Let's load all issues and PRs created by "UmerHA".
+让我们加载由“UmerHA”创建的所有问题和PR。
 
-Here's a list of all filters you can use:
+以下是您可以使用的所有过滤器列表：
 - include_prs
 - milestone
 - state
@@ -47,7 +47,7 @@ Here's a list of all filters you can use:
 - direction
 - since
 
-For more info, see https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#list-repository-issues.
+有关更多信息，请参见 https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#list-repository-issues。
 
 
 ```python
@@ -60,9 +60,9 @@ print(docs[0].page_content)
 print(docs[0].metadata)
 ```
 
-## Only load issues
+## 仅加载问题
 
-By default, the GitHub API returns considers pull requests to also be issues. To only get 'pure' issues (i.e., no pull requests), use `include_prs=False`
+默认情况下，GitHub API 将拉取请求视为问题。要仅获取“纯”问题（即，无拉取请求），请使用 `include_prs=False`
 
 
 ```python
@@ -81,9 +81,9 @@ print(docs[0].page_content)
 print(docs[0].metadata)
 ```
 
-## Load Github File Content
+## 加载 Github 文件内容
 
-For below code, loads all markdown file in rpeo `langchain-ai/langchain`
+以下代码加载 `langchain-ai/langchain` 仓库中的所有 Markdown 文件
 
 
 ```python
@@ -93,17 +93,17 @@ from langchain.document_loaders import GithubFileLoader
 
 ```python
 loader = GithubFileLoader(
-    repo="langchain-ai/langchain",  # the repo name
+    repo="langchain-ai/langchain",  # 仓库名称
     access_token=ACCESS_TOKEN,
     github_api_url="https://api.github.com",
     file_filter=lambda file_path: file_path.endswith(
         ".md"
-    ),  # load all markdowns files.
+    ),  # 加载所有 Markdown 文件。
 )
 documents = loader.load()
 ```
 
-example output of one of document: 
+一个文档的示例输出： 
 
 ```json
 documents.metadata: 
@@ -116,8 +116,7 @@ documents.content:
     mock content
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

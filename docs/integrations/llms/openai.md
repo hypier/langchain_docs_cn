@@ -1,17 +1,18 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/openai.ipynb
 ---
+
 # OpenAI
 
 :::caution
-You are currently on a page documenting the use of OpenAI [text completion models](/docs/concepts/#llms). The latest and most popular OpenAI models are [chat completion models](/docs/concepts/#chat-models).
+您当前正在查看有关使用 OpenAI [文本补全模型](/docs/concepts/#llms) 的文档。最新和最受欢迎的 OpenAI 模型是 [聊天补全模型](/docs/concepts/#chat-models)。
 
-Unless you are specifically using `gpt-3.5-turbo-instruct`, you are probably looking for [this page instead](/docs/integrations/chat/openai/).
+除非您正在使用 `gpt-3.5-turbo-instruct`，否则您可能想要查看 [此页面](/docs/integrations/chat/openai/)。
 :::
 
-[OpenAI](https://platform.openai.com/docs/introduction) offers a spectrum of models with different levels of power suitable for different tasks.
+[OpenAI](https://platform.openai.com/docs/introduction) 提供了一系列适用于不同任务的不同能力模型。
 
-This example goes over how to use LangChain to interact with `OpenAI` [models](https://platform.openai.com/docs/models)
+此示例介绍了如何使用 LangChain 与 `OpenAI` [模型](https://platform.openai.com/docs/models) 进行交互。
 
 
 ```python
@@ -29,9 +30,9 @@ import os
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 ```
 
-Should you need to specify your organization ID, you can use the following cell. However, it is not required if you are only part of a single organization or intend to use your default organization. You can check your default organization [here](https://platform.openai.com/account/api-keys).
+如果您需要指定您的组织 ID，可以使用以下单元格。然而，如果您仅属于一个组织或打算使用默认组织，则不需要此操作。您可以在 [这里](https://platform.openai.com/account/api-keys) 检查您的默认组织。
 
-To specify your organization, you can use this:
+要指定您的组织，您可以使用以下代码：
 ```python
 OPENAI_ORGANIZATION = getpass()
 
@@ -58,11 +59,11 @@ prompt = PromptTemplate.from_template(template)
 llm = OpenAI()
 ```
 
-If you manually want to specify your OpenAI API key and/or organization ID, you can use the following:
+如果您想手动指定您的 OpenAI API 密钥和/或组织 ID，可以使用以下代码：
 ```python
 llm = OpenAI(openai_api_key="YOUR_API_KEY", openai_organization="YOUR_ORGANIZATION_ID")
 ```
-Remove the openai_organization parameter should it not apply to you.
+如果不适用，请删除 openai_organization 参数。
 
 
 ```python
@@ -83,7 +84,7 @@ llm_chain.invoke(question)
 ```
 
 
-If you are behind an explicit proxy, you can specify the http_client to pass through
+如果您处于显式代理后面，可以指定 http_client 进行传递。
 
 
 ```python
@@ -94,8 +95,7 @@ import httpx
 openai = OpenAI(model_name="gpt-3.5-turbo-instruct", http_client=httpx.Client(proxies="http://proxy.yourcompany.com:8080"))
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

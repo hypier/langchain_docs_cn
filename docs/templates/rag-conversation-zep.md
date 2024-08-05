@@ -1,90 +1,88 @@
 # rag-conversation-zep
 
-This template demonstrates building a RAG conversation app using Zep. 
+此模板演示了如何使用 Zep 构建 RAG 对话应用程序。
 
-Included in this template:
-- Populating a [Zep Document Collection](https://docs.getzep.com/sdk/documents/) with a set of documents (a Collection is analogous to an index in other Vector Databases).
-- Using Zep's [integrated embedding](https://docs.getzep.com/deployment/embeddings/) functionality to embed the documents as vectors.
-- Configuring a LangChain [ZepVectorStore Retriever](https://docs.getzep.com/sdk/documents/) to retrieve documents using Zep's built, hardware accelerated in [Maximal Marginal Relevance](https://docs.getzep.com/sdk/search_query/) (MMR) re-ranking.
-- Prompts, a simple chat history data structure, and other components required to build a RAG conversation app.
-- The RAG conversation chain.
+此模板中包含：
+- 使用一组文档填充 [Zep 文档集合](https://docs.getzep.com/sdk/documents/)（集合类似于其他向量数据库中的索引）。
+- 使用 Zep 的 [集成嵌入](https://docs.getzep.com/deployment/embeddings/) 功能将文档嵌入为向量。
+- 配置 LangChain [ZepVectorStore 检索器](https://docs.getzep.com/sdk/documents/)，使用 Zep 内置的、硬件加速的 [最大边际相关性](https://docs.getzep.com/sdk/search_query/) (MMR) 重新排名来检索文档。
+- 提示、简单的聊天历史数据结构以及构建 RAG 对话应用程序所需的其他组件。
+- RAG 对话链。
 
-## About [Zep - Fast, scalable building blocks for LLM Apps](https://www.getzep.com/)
-Zep is an open source platform for productionizing LLM apps. Go from a prototype built in LangChain or LlamaIndex, or a custom app, to production in minutes without rewriting code.
+## 关于 [Zep - 快速、可扩展的 LLM 应用构建模块](https://www.getzep.com/)
+Zep 是一个用于生产化 LLM 应用的开源平台。您可以在几分钟内将基于 LangChain 或 LlamaIndex 构建的原型或自定义应用程序投入生产，而无需重写代码。
 
-Key Features:
+主要特点：
 
-- Fast! Zep’s async extractors operate independently of the your chat loop, ensuring a snappy user experience.
-- Long-term memory persistence, with access to historical messages irrespective of your summarization strategy.
-- Auto-summarization of memory messages based on a configurable message window. A series of summaries are stored, providing flexibility for future summarization strategies.
-- Hybrid search over memories and metadata, with messages automatically embedded on creation.
-- Entity Extractor that automatically extracts named entities from messages and stores them in the message metadata.
-- Auto-token counting of memories and summaries, allowing finer-grained control over prompt assembly.
-- Python and JavaScript SDKs.
+- 快速！Zep 的异步提取器独立于您的聊天循环操作，确保用户体验流畅。
+- 长期记忆持久性，无论您的摘要策略如何，都可以访问历史消息。
+- 基于可配置消息窗口的记忆消息自动摘要。一系列摘要被存储，为未来的摘要策略提供灵活性。
+- 对记忆和元数据的混合搜索，消息在创建时自动嵌入。
+- 实体提取器自动从消息中提取命名实体并将其存储在消息元数据中。
+- 记忆和摘要的自动令牌计数，允许对提示组装进行更细粒度的控制。
+- Python 和 JavaScript SDK。
 
-Zep project: https://github.com/getzep/zep | Docs: https://docs.getzep.com/
+Zep 项目： https://github.com/getzep/zep | 文档： https://docs.getzep.com/
 
-## Environment Setup
+## 环境设置
 
-Set up a Zep service by following the [Quick Start Guide](https://docs.getzep.com/deployment/quickstart/).
+通过遵循 [快速入门指南](https://docs.getzep.com/deployment/quickstart/) 来设置 Zep 服务。
 
-## Ingesting Documents into a Zep Collection
+## 将文档导入 Zep 集合
 
-Run `python ingest.py` to ingest the test documents into a Zep Collection. Review the file to modify the Collection name and document source.
+运行 `python ingest.py` 将测试文档导入 Zep 集合。查看文件以修改集合名称和文档来源。
 
+## 使用方法
 
-## Usage
-
-To use this package, you should first have the LangChain CLI installed:
+要使用此包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U "langchain-cli[serve]"
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将此作为唯一的包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package rag-conversation-zep
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，可以直接运行：
 
 ```shell
 langchain app add rag-conversation-zep
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 ```python
 from rag_conversation_zep import chain as rag_conversation_zep_chain
 
 add_routes(app, rag_conversation_zep_chain, path="/rag-conversation-zep")
 ```
 
-(Optional) Let's now configure LangSmith. 
-LangSmith will help us trace, monitor and debug LangChain applications. 
-You can sign up for LangSmith [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
-
+（可选）现在让我们配置 LangSmith。 
+LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。 
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。 
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录内，则可以直接通过以下方式启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server is running locally at 
+这将启动 FastAPI 应用，服务器在本地运行，地址为 
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/rag-conversation-zep/playground](http://127.0.0.1:8000/rag-conversation-zep/playground)  
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板
+我们可以在 [http://127.0.0.1:8000/rag-conversation-zep/playground](http://127.0.0.1:8000/rag-conversation-zep/playground) 访问游乐场  
 
-We can access the template from code with:
+我们可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable

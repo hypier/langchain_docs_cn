@@ -1,31 +1,29 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/memorydb.ipynb
 ---
+
 # Amazon MemoryDB
 
->[Vector Search](https://docs.aws.amazon.com/memorydb/latest/devguide/vector-search.html/) introduction and langchain integration guide.
+>[Vector Search](https://docs.aws.amazon.com/memorydb/latest/devguide/vector-search.html/) 介绍及 langchain 集成指南。
 
-## What is Amazon MemoryDB?
+## 什么是 Amazon MemoryDB？
 
-MemoryDB is compatible with Redis OSS, a popular open source data store, enabling you to quickly build applications using the same flexible and friendly Redis OSS data structures, APIs, and commands that they already use today. With MemoryDB, all of your data is stored in memory, which enables you to achieve microsecond read and single-digit millisecond write latency and high throughput. MemoryDB also stores data durably across multiple Availability Zones (AZs) using a Multi-AZ transactional log to enable fast failover, database recovery, and node restarts.
+MemoryDB 与 Redis OSS 兼容，这是一个流行的开源数据存储，使您能够快速构建应用程序，使用您今天已经使用的相同灵活且友好的 Redis OSS 数据结构、API 和命令。使用 MemoryDB，您的所有数据都存储在内存中，这使您能够实现微秒级的读取和单毫秒级的写入延迟以及高吞吐量。MemoryDB 还通过使用多可用区（AZ）的多可用区事务日志来持久存储数据，以实现快速故障转移、数据库恢复和节点重启。
 
+## MemoryDB 的向量搜索
 
-## Vector search for MemoryDB 
+MemoryDB 的向量搜索扩展了 MemoryDB 的功能。向量搜索可以与现有的 MemoryDB 功能结合使用。未使用向量搜索的应用程序不会受到其存在的影响。向量搜索在所有 MemoryDB 可用的区域中均可用。您可以使用现有的 MemoryDB 数据或 Redis OSS API 来构建机器学习和生成式 AI 用例，例如检索增强生成、异常检测、文档检索和实时推荐。
 
-Vector search for MemoryDB extends the functionality of MemoryDB. Vector search can be used in conjunction with existing MemoryDB functionality. Applications that do not use vector search are unaffected by its presence. Vector search is available in all Regions that MemoryDB is available. You can use your existing MemoryDB data or Redis OSS API to build machine learning and generative AI use cases, such as retrieval-augmented generation, anomaly detection, document retrieval, and real-time recommendations.
+* Redis 哈希和 `JSON` 中多个字段的索引
+* 向量相似度搜索（使用 `HNSW`（近似最近邻）或 `FLAT`（K最近邻））
+* 向量范围搜索（例如，查找查询向量半径内的所有向量）
+* 增量索引而不影响性能
 
-* Indexing of multiple fields in Redis hashes and `JSON`
-* Vector similarity search (with `HNSW` (ANN) or `FLAT` (KNN))
-* Vector Range Search (e.g. find all vectors within a radius of a query vector)
-* Incremental indexing without performance loss
+## 设置
 
+### 安装 Redis Python 客户端
 
-## Setting up
-
-
-### Install Redis Python client
-
-`Redis-py` is a python  client that can be used to connect to MemoryDB
+`Redis-py` 是一个可以用来连接 MemoryDB 的 Python 客户端
 
 
 ```python
@@ -39,18 +37,17 @@ from langchain_aws.embeddings import BedrockEmbeddings
 embeddings = BedrockEmbeddings()
 ```
 
-### MemoryDB Connection
+### MemoryDB 连接
 
-Valid Redis Url schemas are:
-1. `redis://`  - Connection to Redis cluster, unencrypted
-2. `rediss://` - Connection to Redis cluster, with TLS encryption
+有效的 Redis Url 方案有：
+1. `redis://`  - 连接到 Redis 集群，未加密
+2. `rediss://` - 连接到 Redis 集群，使用 TLS 加密
 
-More information about additional connection parameters can be found in the [redis-py documentation](https://redis-py.readthedocs.io/en/stable/connections.html).
+有关其他连接参数的更多信息，请参阅 [redis-py 文档](https://redis-py.readthedocs.io/en/stable/connections.html)。
 
-### Sample data
+### 示例数据
 
-First we will describe some sample data so that the various attributes of the Redis vector store can be demonstrated.
-
+首先，我们将描述一些示例数据，以便演示 Redis 向量存储的各种属性。
 
 ```python
 metadata = [
@@ -89,13 +86,13 @@ texts = ["foo", "foo", "foo", "bar", "bar"]
 index_name = "users"
 ```
 
-### Create MemoryDB vector store
+### 创建 MemoryDB 向量存储
 
-The InMemoryVectorStore instance can be initialized using the below methods 
-- ``InMemoryVectorStore.__init__`` - Initialize directly
-- ``InMemoryVectorStore.from_documents`` - Initialize from a list of ``Langchain.docstore.Document`` objects
-- ``InMemoryVectorStore.from_texts`` - Initialize from a list of texts (optionally with metadata)
-- ``InMemoryVectorStore.from_existing_index`` - Initialize from an existing MemoryDB index
+InMemoryVectorStore 实例可以通过以下方法初始化
+- ``InMemoryVectorStore.__init__`` - 直接初始化
+- ``InMemoryVectorStore.from_documents`` - 从一系列 ``Langchain.docstore.Document`` 对象初始化
+- ``InMemoryVectorStore.from_texts`` - 从文本列表初始化（可选地带有元数据）
+- ``InMemoryVectorStore.from_existing_index`` - 从现有的 MemoryDB 索引初始化
 
 
 
@@ -119,16 +116,15 @@ vds.index_name
 'users'
 ```
 
+## 查询
 
-## Querying
+根据您的用例，有多种方法可以查询 ``InMemoryVectorStore`` 实现：
 
-There are multiple ways to query the ``InMemoryVectorStore``  implementation based on what use case you have:
-
-- ``similarity_search``: Find the most similar vectors to a given vector.
-- ``similarity_search_with_score``: Find the most similar vectors to a given vector and return the vector distance
-- ``similarity_search_limit_score``: Find the most similar vectors to a given vector and limit the number of results to the ``score_threshold``
-- ``similarity_search_with_relevance_scores``: Find the most similar vectors to a given vector and return the vector similarities
-- ``max_marginal_relevance_search``: Find the most similar vectors to a given vector while also optimizing for diversity
+- ``similarity_search``: 查找与给定向量最相似的向量。
+- ``similarity_search_with_score``: 查找与给定向量最相似的向量并返回向量距离
+- ``similarity_search_limit_score``: 查找与给定向量最相似的向量，并将结果数量限制为 ``score_threshold``
+- ``similarity_search_with_relevance_scores``: 查找与给定向量最相似的向量并返回向量相似度
+- ``max_marginal_relevance_search``: 查找与给定向量最相似的向量，同时优化多样性
 
 
 ```python
@@ -140,7 +136,7 @@ foo
 ```
 
 ```python
-# with scores (distances)
+# 带分数（距离）
 results = vds.similarity_search_with_score("foo", k=5)
 for result in results:
     print(f"Content: {result[0].page_content} --- Score: {result[1]}")
@@ -154,7 +150,7 @@ Content: bar --- Score: 0.1566
 ```
 
 ```python
-# limit the vector distance that can be returned
+# 限制可以返回的向量距离
 results = vds.similarity_search_with_score("foo", k=5, distance_threshold=0.1)
 for result in results:
     print(f"Content: {result[0].page_content} --- Score: {result[1]}")
@@ -166,7 +162,7 @@ Content: foo --- Score: 0.0
 ```
 
 ```python
-# with scores
+# 带分数
 results = vds.similarity_search_with_relevance_scores("foo", k=5)
 for result in results:
     print(f"Content: {result[0].page_content} --- Similiarity: {result[1]}")
@@ -180,10 +176,10 @@ Content: bar --- Similiarity: 0.8434
 ```
 
 ```python
-# you can also add new documents as follows
+# 您也可以按如下方式添加新文档
 new_document = ["baz"]
 new_metadata = [{"user": "sam", "age": 50, "job": "janitor", "credit_score": "high"}]
-# both the document and metadata must be lists
+# 文档和元数据都必须是列表
 vds.add_texts(new_document, new_metadata)
 ```
 
@@ -193,13 +189,11 @@ vds.add_texts(new_document, new_metadata)
 ['doc:users:b9c71d62a0a34241a37950b448dafd38']
 ```
 
+## MemoryDB 作为检索器
 
-## MemoryDB as Retriever
+在这里，我们将讨论使用向量存储作为检索器的不同选项。
 
-Here we go over different options for using the vector store as a retriever.
-
-There are three different search methods we can use to do retrieval. By default, it will use semantic similarity.
-
+我们可以使用三种不同的搜索方法进行检索。默认情况下，它将使用语义相似性。
 
 ```python
 query = "foo"
@@ -234,8 +228,7 @@ docs
 ```
 
 
-There is also the `similarity_distance_threshold` retriever which allows the user to specify the vector distance
-
+还有 `similarity_distance_threshold` 检索器，它允许用户指定向量距离。
 
 ```python
 retriever = vds.as_retriever(
@@ -259,8 +252,7 @@ docs
 ```
 
 
-Lastly, the ``similarity_score_threshold`` allows the user to define the minimum score for similar documents
-
+最后，`similarity_score_threshold` 允许用户定义相似文档的最低得分。
 
 ```python
 retriever = vds.as_retriever(
@@ -297,10 +289,9 @@ retriever.invoke("foo")
  Document(page_content='foo', metadata={'id': 'doc:users:d6200ab3764c466082fde3eaab972a2a', 'user': 'derrick', 'job': 'doctor', 'credit_score': 'low', 'age': '45'})]
 ```
 
+## 删除索引
 
-## Delete  index
-
-To delete your entries you have to address them by their keys.
+要删除您的条目，您必须通过它们的键来访问它们。
 
 
 ```python
@@ -321,9 +312,7 @@ InMemoryVectorStore.drop_index(
 True
 ```
 
+## 相关
 
-
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

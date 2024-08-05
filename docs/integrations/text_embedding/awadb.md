@@ -1,18 +1,19 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/awadb.ipynb
 ---
+
 # AwaDB
 
->[AwaDB](https://github.com/awa-ai/awadb) is an AI Native database for the search and storage of embedding vectors used by LLM Applications.
+>[AwaDB](https://github.com/awa-ai/awadb) 是一个用于 LLM 应用程序的嵌入向量搜索和存储的 AI 原生数据库。
 
-This notebook explains how to use `AwaEmbeddings` in LangChain.
+本笔记本解释了如何在 LangChain 中使用 `AwaEmbeddings`。
 
 
 ```python
 # pip install awadb
 ```
 
-## import the library
+## 导入库
 
 
 ```python
@@ -24,12 +25,12 @@ from langchain_community.embeddings import AwaEmbeddings
 Embedding = AwaEmbeddings()
 ```
 
-# Set embedding model
-Users can use `Embedding.set_model()` to specify the embedding model. \
-The input of this function is a string which represents the model's name. \
-The list of currently supported models can be obtained [here](https://github.com/awa-ai/awadb) \ \ 
+# 设置嵌入模型
+用户可以使用 `Embedding.set_model()` 来指定嵌入模型。 \
+该函数的输入是一个表示模型名称的字符串。 \
+当前支持的模型列表可以在 [这里](https://github.com/awa-ai/awadb) 获取。 \ \ 
 
-The **default model** is `all-mpnet-base-v2`, it can be used without setting.
+**默认模型**是 `all-mpnet-base-v2`，可以在不设置的情况下使用。
 
 
 ```python
@@ -44,8 +45,7 @@ res_query = Embedding.embed_query("The test information")
 res_document = Embedding.embed_documents(["test1", "another test"])
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

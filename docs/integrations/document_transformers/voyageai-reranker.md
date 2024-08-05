@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_transformers/voyageai-reranker.ipynb
 ---
+
 # VoyageAI Reranker
 
->[Voyage AI](https://www.voyageai.com/) provides cutting-edge embedding/vectorizations models.
+>[Voyage AI](https://www.voyageai.com/) 提供尖端的嵌入/向量化模型。
 
-This notebook shows how to use [Voyage AI's rerank endpoint](https://api.voyageai.com/v1/rerank) in a retriever. This builds on top of ideas in the [ContextualCompressionRetriever](/docs/how_to/contextual_compression).
+本笔记本展示如何在检索器中使用 [Voyage AI 的重排序端点](https://api.voyageai.com/v1/rerank)。这建立在 [ContextualCompressionRetriever](/docs/how_to/contextual_compression) 的概念之上。
 
 
 ```python
@@ -45,10 +46,10 @@ def pretty_print_docs(docs):
     )
 ```
 
-## Set up the base vector store retriever
-Let's start by initializing a simple vector store retriever and storing the 2023 State of the Union speech (in chunks). We can set up the retriever to retrieve a high number (20) of docs. You can use any of the following Embeddings models: ([source](https://docs.voyageai.com/docs/embeddings)):
+## 设置基础向量存储检索器
+让我们开始初始化一个简单的向量存储检索器，并存储2023年国情咨文（分块）。我们可以设置检索器以检索大量（20）文档。您可以使用以下任一嵌入模型: ([source](https://docs.voyageai.com/docs/embeddings)):
 
-- `voyage-large-2` (default)
+- `voyage-large-2`（默认）
 - `voyage-code-2`
 - `voyage-2`
 - `voyage-law-2`
@@ -282,8 +283,9 @@ And we will, as one people.
 
 One America.
 ```
-## Doing reranking with VoyageAIRerank
-Now let's wrap our base retriever with a `ContextualCompressionRetriever`. We'll use the Voyage AI reranker to rerank the returned results. You can use any of the following Reranking models: ([source](https://docs.voyageai.com/docs/reranker)):
+
+## 使用 VoyageAIRerank 进行重新排序
+现在让我们用 `ContextualCompressionRetriever` 包装我们的基础检索器。我们将使用 Voyage AI 重新排序器对返回的结果进行重新排序。您可以使用以下任一重新排序模型: ([source](https://docs.voyageai.com/docs/reranker)):
 
 - `rerank-1`
 - `rerank-lite-1`
@@ -303,7 +305,7 @@ compression_retriever = ContextualCompressionRetriever(
 )
 
 compressed_docs = compression_retriever.invoke(
-    "What did the president say about Ketanji Jackson Brown"
+    "总统对 Ketanji Jackson Brown 说了什么"
 )
 pretty_print_docs(compressed_docs)
 ```
@@ -332,7 +334,7 @@ I know what works: Investing in crime prevention and community police officers w
 
 So let’s not abandon our streets. Or choose between safety and equal justice.
 ```
-You can of course use this retriever within a QA pipeline
+您当然可以在 QA 管道中使用这个检索器
 
 
 ```python
@@ -354,7 +356,6 @@ chain({"query": query})
 
 
 ```output
-{'query': 'What did the president say about Ketanji Brown Jackson',
- 'result': " The president nominated Ketanji Brown Jackson to serve on the United States Supreme Court. "}
+{'query': '总统对 Ketanji Brown Jackson 说了什么',
+ 'result': " 总统提名 Ketanji Brown Jackson 担任美国最高法院法官。 "}
 ```
-

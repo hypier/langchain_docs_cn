@@ -1,15 +1,16 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/marqo.ipynb
 ---
+
 # Marqo
 
-This notebook shows how to use functionality related to the Marqo vectorstore.
+本笔记本展示了如何使用与 Marqo 向量存储相关的功能。
 
->[Marqo](https://www.marqo.ai/) is an open-source vector search engine. Marqo allows you to store and query multi-modal data such as text and images. Marqo creates the vectors for you using a huge selection of open-source models, you can also provide your own fine-tuned models and Marqo will handle the loading and inference for you.
+>[Marqo](https://www.marqo.ai/) 是一个开源向量搜索引擎。Marqo 允许您存储和查询多模态数据，例如文本和图像。Marqo 使用大量开源模型为您创建向量，您还可以提供自己微调的模型，Marqo 将为您处理加载和推理。
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
+您需要使用 `pip install -qU langchain-community` 安装 `langchain-community` 才能使用此集成。
 
-To run this notebook with our docker image please run the following commands first to get Marqo:
+要使用我们的 Docker 镜像运行此笔记本，请先运行以下命令以获取 Marqo：
 
 ```
 docker pull marqoai/marqo:latest
@@ -44,8 +45,8 @@ docs = text_splitter.split_documents(documents)
 import marqo
 
 # initialize marqo
-marqo_url = "http://localhost:8882"  # if using marqo cloud replace with your endpoint (console.marqo.ai)
-marqo_api_key = ""  # if using marqo cloud replace with your api key (console.marqo.ai)
+marqo_url = "http://localhost:8882"  # 如果使用 Marqo 云，请替换为您的端点 (console.marqo.ai)
+marqo_api_key = ""  # 如果使用 Marqo 云，请替换为您的 API 密钥 (console.marqo.ai)
 
 client = marqo.Client(url=marqo_url, api_key=marqo_api_key)
 
@@ -53,7 +54,7 @@ index_name = "langchain-demo"
 
 docsearch = Marqo.from_documents(docs, index_name=index_name)
 
-query = "What did the president say about Ketanji Brown Jackson"
+query = "总统对 Ketanji Brown Jackson 说了什么"
 result_docs = docsearch.similarity_search(query)
 ```
 ```output
@@ -87,18 +88,18 @@ One of the most serious constitutional responsibilities a President has is nomin
 And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
 0.68647254
 ```
-## Additional features
 
-One of the powerful features of Marqo as a vectorstore is that you can use indexes created externally. For example:
+## 附加功能
 
-+ If you had a database of image and text pairs from another application, you can simply just use it in langchain with the Marqo vectorstore. Note that bringing your own multimodal indexes will disable the `add_texts` method.
+Marqo 作为一个向量存储的强大功能之一是可以使用外部创建的索引。例如：
 
-+ If you had a database of text documents, you can bring it into the langchain framework and add more texts through `add_texts`.
++ 如果您有来自其他应用程序的图像和文本对的数据库，您可以简单地在 langchain 中与 Marqo 向量存储一起使用。请注意，使用您自己的多模态索引将禁用 `add_texts` 方法。
 
-The documents that are returned are customised by passing your own function to the `page_content_builder` callback in the search methods.
++ 如果您有文本文档的数据库，您可以将其引入 langchain 框架，并通过 `add_texts` 添加更多文本。
 
-#### Multimodal Example
+返回的文档是通过将您自己的函数传递给搜索方法中的 `page_content_builder` 回调来定制的。
 
+#### 多模态示例
 
 ```python
 # use a new index
@@ -129,8 +130,6 @@ client.index(index_name).add_documents(
 )
 ```
 
-
-
 ```output
 {'errors': False,
  'processingTimeMs': 2090.2822139996715,
@@ -142,8 +141,6 @@ client.index(index_name).add_documents(
    'result': 'created',
    'status': 201}]}
 ```
-
-
 
 ```python
 def get_content(res):
@@ -158,7 +155,6 @@ query = "vehicles that fly"
 doc_results = docsearch.similarity_search(query)
 ```
 
-
 ```python
 for doc in doc_results:
     print(doc.page_content)
@@ -167,8 +163,7 @@ for doc in doc_results:
 Plane: https://raw.githubusercontent.com/marqo-ai/marqo/mainline/examples/ImageSearchGuide/data/image2.jpg
 Bus: https://raw.githubusercontent.com/marqo-ai/marqo/mainline/examples/ImageSearchGuide/data/image4.jpg
 ```
-#### Text only example
-
+#### 仅文本示例
 
 ```python
 # use a new index
@@ -198,8 +193,6 @@ client.index(index_name).add_documents(
 )
 ```
 
-
-
 ```output
 {'errors': False,
  'processingTimeMs': 139.2144540004665,
@@ -212,12 +205,9 @@ client.index(index_name).add_documents(
    'status': 201}]}
 ```
 
-
-
 ```python
 # Note text indexes retain the ability to use add_texts despite different field names in documents
 # this is because the page_content_builder callback lets you handle these document fields as required
-
 
 def get_content(res):
     """Helper to format Marqo's documents into text to be used as page_content"""
@@ -225,19 +215,14 @@ def get_content(res):
         return res["text"]
     return res["Description"]
 
-
 docsearch = Marqo(client, index_name, page_content_builder=get_content)
 
 docsearch.add_texts(["This is a document that is about elephants"])
 ```
 
-
-
 ```output
 ['9986cc72-adcd-4080-9d74-265c173a9ec3']
 ```
-
-
 
 ```python
 query = "modern communications devices"
@@ -258,10 +243,10 @@ print(doc_results[0].page_content)
 ```output
 This is a document that is about elephants
 ```
-## Weighted Queries
 
-We also expose marqos weighted queries which are a powerful way to compose complex semantic searches.
+## 加权查询
 
+我们还提供 marqos 加权查询，这是一种强大的方式来组合复杂的语义搜索。
 
 ```python
 query = {"communications devices": 1.0}
@@ -280,10 +265,10 @@ print(doc_results[0].page_content)
 ```output
 A telephone is a telecommunications device that permits two or more users toconduct a conversation when they are too far apart to be easily heard directly.
 ```
-# Question Answering with Sources
 
-This section shows how to use Marqo as part of a `RetrievalQAWithSourcesChain`. Marqo will perform the searches for information in the sources.
+# 带有来源的问答
 
+本节展示如何将 Marqo 作为 `RetrievalQAWithSourcesChain` 的一部分使用。Marqo 将在来源中执行信息搜索。
 
 ```python
 import getpass
@@ -335,9 +320,7 @@ chain(
  'sources': '../../../state_of_the_union.txt'}
 ```
 
+## 相关
 
-
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

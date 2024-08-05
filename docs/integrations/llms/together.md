@@ -1,33 +1,32 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/together.ipynb
 ---
+
 # Together AI
 
 :::caution
-You are currently on a page documenting the use of Together AI models as [text completion models](/docs/concepts/#llms). Many popular Together AI models are [chat completion models](/docs/concepts/#chat-models).
+您当前正在查看关于使用 Together AI 模型作为 [文本补全模型](/docs/concepts/#llms) 的文档。许多流行的 Together AI 模型是 [聊天补全模型](/docs/concepts/#chat-models)。
 
-You may be looking for [this page instead](/docs/integrations/chat/together/).
+您可能想查看 [此页面](/docs/integrations/chat/together/)。
 :::
 
-[Together AI](https://www.together.ai/) offers an API to query [50+ leading open-source models](https://docs.together.ai/docs/inference-models) in a couple lines of code.
+[Together AI](https://www.together.ai/) 提供一个 API，可以用几行代码查询 [50+ 领先的开源模型](https://docs.together.ai/docs/inference-models)。
 
-This example goes over how to use LangChain to interact with Together AI models.
+本示例介绍了如何使用 LangChain 与 Together AI 模型进行交互。
 
-## Installation
+## 安装
 
 
 ```python
 %pip install --upgrade langchain-together
 ```
 
-## Environment
+## 环境
 
-To use Together AI, you'll need an API key which you can find here:
-https://api.together.ai/settings/api-keys. This can be passed in as an init param
-``together_api_key`` or set as environment variable ``TOGETHER_API_KEY``.
+要使用 Together AI，您需要一个 API 密钥，可以在此处找到：
+https://api.together.ai/settings/api-keys。可以将其作为初始化参数 ``together_api_key`` 传递或设置为环境变量 ``TOGETHER_API_KEY``。
 
-
-## Example
+## 示例
 
 
 ```python
@@ -63,8 +62,7 @@ llm = Together(
 print(llm.invoke("def bubble_sort(): "))
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

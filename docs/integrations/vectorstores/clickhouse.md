@@ -1,31 +1,32 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/clickhouse.ipynb
 ---
+
 # ClickHouse
 
-> [ClickHouse](https://clickhouse.com/) is the fastest and most resource efficient open-source database for real-time apps and analytics with full SQL support and a wide range of functions to assist users in writing analytical queries. Lately added data structures and distance search functions (like `L2Distance`) as well as [approximate nearest neighbor search indexes](https://clickhouse.com/docs/en/engines/table-engines/mergetree-family/annindexes) enable ClickHouse to be used as a high performance and scalable vector database to store and search vectors with SQL.
+> [ClickHouse](https://clickhouse.com/) 是最快、资源效率最高的开源数据库，适用于实时应用和分析，支持完整的 SQL 及多种功能，帮助用户编写分析查询。最近添加的数据结构和距离搜索功能（如 `L2Distance`）以及 [近似最近邻搜索索引](https://clickhouse.com/docs/en/engines/table-engines/mergetree-family/annindexes) 使 ClickHouse 能够作为高性能和可扩展的向量数据库，用于存储和搜索带有 SQL 的向量。
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
+您需要使用 `pip install -qU langchain-community` 安装 `langchain-community` 以使用此集成。
 
-This notebook shows how to use functionality related to the `ClickHouse` vector search.
+本笔记本展示了如何使用与 `ClickHouse` 向量搜索相关的功能。
 
-## Setting up environments
+## 设置环境
 
-Setting up local clickhouse server with docker (optional)
+使用 Docker 设置本地 ClickHouse 服务器（可选）
 
 
 ```python
 ! docker run -d -p 8123:8123 -p9000:9000 --name langchain-clickhouse-server --ulimit nofile=262144:262144 clickhouse/clickhouse-server:23.4.2.11
 ```
 
-Setup up clickhouse client driver
+设置 ClickHouse 客户端驱动
 
 
 ```python
 %pip install --upgrade --quiet  clickhouse-connect
 ```
 
-We want to use OpenAIEmbeddings so we have to get the OpenAI API Key.
+我们希望使用 OpenAIEmbeddings，因此我们需要获取 OpenAI API 密钥。
 
 
 ```python
@@ -81,7 +82,8 @@ One of the most serious constitutional responsibilities a President has is nomin
 
 And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
 ```
-## Get connection info and data schema
+
+## 获取连接信息和数据模式
 
 
 ```python
@@ -101,10 +103,10 @@ Table Schema:
 |[94muuid                    [0m|[96mUUID                    [0m|
 ---------------------------------------------------
 ```
-### Clickhouse table schema
 
-> Clickhouse table will be automatically created if not exist by default. Advanced users could pre-create the table with optimized settings. For distributed Clickhouse cluster with sharding, table engine should be configured as `Distributed`.
+### Clickhouse 表结构
 
+> 如果 Clickhouse 表不存在，将默认自动创建。高级用户可以预先创建具有优化设置的表。对于具有分片的分布式 Clickhouse 集群，表引擎应配置为 `Distributed`。
 
 ```python
 print(f"Clickhouse Table DDL:\n\n{docsearch.schema}")
@@ -122,13 +124,14 @@ CREATE TABLE IF NOT EXISTS default.clickhouse_vector_search_example(
     INDEX vec_idx embedding TYPE annoy(100,'L2Distance') GRANULARITY 1000
 ) ENGINE = MergeTree ORDER BY uuid SETTINGS index_granularity = 8192
 ```
-## Filtering
 
-You can have direct access to ClickHouse SQL where statement. You can write `WHERE` clause following standard SQL.
+## 过滤
 
-**NOTE**: Please be aware of SQL injection, this interface must not be directly called by end-user.
+您可以直接访问 ClickHouse SQL 的 where 子句。您可以按照标准 SQL 编写 `WHERE` 子句。
 
-If you custimized your `column_map` under your setting, you search with filter like this:
+**注意**：请注意 SQL 注入，此接口不得直接由最终用户调用。
+
+如果您在设置中自定义了 `column_map`，您可以使用以下方式进行过滤搜索：
 
 
 ```python
@@ -167,15 +170,15 @@ for d, dist in output:
 0.7044504914336727 {'doc_id': 1} Groups of citizens b...
 0.7053558702165094 {'doc_id': 6} And I’m taking robus...
 ```
-## Deleting your data
+
+## 删除您的数据
 
 
 ```python
 docsearch.drop()
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

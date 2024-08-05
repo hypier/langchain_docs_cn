@@ -1,18 +1,19 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/google_generative_ai.ipynb
 ---
-# Google Generative AI Embeddings
 
-Connect to Google's generative AI embeddings service using the `GoogleGenerativeAIEmbeddings` class, found in the [langchain-google-genai](https://pypi.org/project/langchain-google-genai/) package.
+# Google 生成式 AI 嵌入
 
-## Installation
+使用 `GoogleGenerativeAIEmbeddings` 类连接到 Google 的生成式 AI 嵌入服务，该类位于 [langchain-google-genai](https://pypi.org/project/langchain-google-genai/) 包中。
+
+## 安装
 
 
 ```python
 %pip install --upgrade --quiet  langchain-google-genai
 ```
 
-## Credentials
+## 凭证
 
 
 ```python
@@ -23,7 +24,7 @@ if "GOOGLE_API_KEY" not in os.environ:
     os.environ["GOOGLE_API_KEY"] = getpass("Provide your Google API key here")
 ```
 
-## Usage
+## 使用方法
 
 
 ```python
@@ -40,11 +41,9 @@ vector[:5]
 [0.05636945, 0.0048285457, -0.0762591, -0.023642512, 0.05329321]
 ```
 
+## 批处理
 
-## Batch
-
-You can also embed multiple strings at once for a processing speedup:
-
+您还可以一次嵌入多个字符串，以提高处理速度：
 
 ```python
 vectors = embeddings.embed_documents(
@@ -63,9 +62,8 @@ len(vectors), len(vectors[0])
 (3, 768)
 ```
 
-
-## Task type
-`GoogleGenerativeAIEmbeddings` optionally support a `task_type`, which currently must be one of:
+## 任务类型
+`GoogleGenerativeAIEmbeddings` 可选支持 `task_type`，目前必须是以下之一：
 
 - task_type_unspecified
 - retrieval_query
@@ -74,14 +72,13 @@ len(vectors), len(vectors[0])
 - classification
 - clustering
 
-By default, we use `retrieval_document` in the `embed_documents` method and `retrieval_query` in the `embed_query` method. If you provide a task type, we will use that for all methods.
-
+默认情况下，我们在 `embed_documents` 方法中使用 `retrieval_document`，在 `embed_query` 方法中使用 `retrieval_query`。如果您提供了任务类型，我们将对所有方法使用该类型。
 
 ```python
 %pip install --upgrade --quiet  matplotlib scikit-learn
 ```
 ```output
-Note: you may need to restart the kernel to use updated packages.
+注意：您可能需要重启内核以使用更新的包。
 ```
 
 ```python
@@ -93,26 +90,25 @@ doc_embeddings = GoogleGenerativeAIEmbeddings(
 )
 ```
 
-All of these will be embedded with the 'retrieval_query' task set
+所有这些将使用 'retrieval_query' 任务集进行嵌入
 ```python
 query_vecs = [query_embeddings.embed_query(q) for q in [query, query_2, answer_1]]
 ```
-All of these will be embedded with the 'retrieval_document' task set
+所有这些将使用 'retrieval_document' 任务集进行嵌入
 ```python
 doc_vecs = [doc_embeddings.embed_query(q) for q in [query, query_2, answer_1]]
 ```
 
-In retrieval, relative distance matters. In the image above, you can see the difference in similarity scores between the "relevant doc" and "simil stronger delta between the similar query and relevant doc on the latter case.
+在检索中，相对距离很重要。在上面的图像中，您可以看到“相关文档”和“相似查询”之间的相似性得分差异，后者在此情况下显示了更强的差异。
 
-## Additional Configuration
+## 附加配置
 
-You can pass the following parameters to ChatGoogleGenerativeAI in order to customize the SDK's behavior:
+您可以将以下参数传递给 ChatGoogleGenerativeAI，以自定义 SDK 的行为：
 
-- `client_options`: [Client Options](https://googleapis.dev/python/google-api-core/latest/client_options.html#module-google.api_core.client_options) to pass to the Google API Client, such as a custom `client_options["api_endpoint"]`
-- `transport`: The transport method to use, such as `rest`, `grpc`, or `grpc_asyncio`.
+- `client_options`: [客户端选项](https://googleapis.dev/python/google-api-core/latest/client_options.html#module-google.api_core.client_options) 传递给 Google API 客户端，例如自定义 `client_options["api_endpoint"]`
+- `transport`: 要使用的传输方法，例如 `rest`、`grpc` 或 `grpc_asyncio`。
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

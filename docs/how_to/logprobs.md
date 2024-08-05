@@ -1,20 +1,21 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/logprobs.ipynb
 ---
-# How to get log probabilities
 
-:::info Prerequisites
+# 如何获取日志概率
 
-This guide assumes familiarity with the following concepts:
-- [Chat models](/docs/concepts/#chat-models)
+:::info 先决条件
+
+本指南假设您对以下概念有所了解：
+- [聊天模型](/docs/concepts/#chat-models)
 
 :::
 
-Certain chat models can be configured to return token-level log probabilities representing the likelihood of a given token. This guide walks through how to get this information in LangChain.
+某些聊天模型可以配置为返回表示给定 token 可能性的 token 级日志概率。本指南将介绍如何在 LangChain 中获取此信息。
 
 ## OpenAI
 
-Install the LangChain x OpenAI package and set your API key
+安装 LangChain x OpenAI 包并设置您的 API 密钥
 
 
 ```python
@@ -29,7 +30,7 @@ import os
 os.environ["OPENAI_API_KEY"] = getpass.getpass()
 ```
 
-For the OpenAI API to return log probabilities we need to configure the `logprobs=True` param. Then, the logprobs are included on each output [`AIMessage`](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessage.html) as part of the `response_metadata`:
+为了让 OpenAI API 返回日志概率，我们需要配置 `logprobs=True` 参数。然后，logprobs 将作为 `response_metadata` 的一部分包含在每个输出的 [`AIMessage`](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessage.html) 中：
 
 
 ```python
@@ -65,7 +66,7 @@ msg.response_metadata["logprobs"]["content"][:5]
 ```
 
 
-And are part of streamed Message chunks as well:
+并且也是流式消息块的一部分：
 
 
 ```python
@@ -87,8 +88,9 @@ for chunk in llm.stream(("human", "how are you today")):
 [{'token': 'I', 'bytes': [73], 'logprob': -0.26593843, 'top_logprobs': []}, {'token': "'m", 'bytes': [39, 109], 'logprob': -0.3238896, 'top_logprobs': []}, {'token': ' just', 'bytes': [32, 106, 117, 115, 116], 'logprob': -0.23778509, 'top_logprobs': []}]
 [{'token': 'I', 'bytes': [73], 'logprob': -0.26593843, 'top_logprobs': []}, {'token': "'m", 'bytes': [39, 109], 'logprob': -0.3238896, 'top_logprobs': []}, {'token': ' just', 'bytes': [32, 106, 117, 115, 116], 'logprob': -0.23778509, 'top_logprobs': []}, {'token': ' a', 'bytes': [32, 97], 'logprob': -0.0022134194, 'top_logprobs': []}]
 ```
-## Next steps
 
-You've now learned how to get logprobs from OpenAI models in LangChain.
+## 下一步
 
-Next, check out the other how-to guides chat models in this section, like [how to get a model to return structured output](/docs/how_to/structured_output) or [how to track token usage](/docs/how_to/chat_token_usage_tracking).
+您现在已经学习了如何在 LangChain 中从 OpenAI 模型获取 logprobs。
+
+接下来，请查看本节中其他关于聊天模型的操作指南，例如 [如何获取模型返回结构化输出](/docs/how_to/structured_output) 或 [如何跟踪令牌使用情况](/docs/how_to/chat_token_usage_tracking)。

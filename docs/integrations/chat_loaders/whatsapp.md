@@ -1,25 +1,25 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat_loaders/whatsapp.ipynb
 ---
+
 # WhatsApp
 
-This notebook shows how to use the WhatsApp chat loader. This class helps map exported WhatsApp conversations to LangChain chat messages.
+此笔记本展示了如何使用 WhatsApp 聊天加载器。此类帮助将导出的 WhatsApp 对话映射到 LangChain 聊天消息。
 
-The process has three steps:
-1. Export the chat conversations to computer
-2. Create the `WhatsAppChatLoader` with the file path pointed to the json file or directory of JSON files
-3. Call `loader.load()` (or `loader.lazy_load()`) to perform the conversion.
+该过程分为三个步骤：
+1. 将聊天对话导出到计算机
+2. 创建指向 json 文件或 JSON 文件目录的文件路径的 `WhatsAppChatLoader`
+3. 调用 `loader.load()`（或 `loader.lazy_load()`）以执行转换。
 
-## 1. Create message dump
+## 1. 创建消息转储
 
-To make the export of your WhatsApp conversation(s), complete the following steps:
+要导出您的 WhatsApp 对话，请完成以下步骤：
 
-1. Open the target conversation
-2. Click the three dots in the top right corner and select "More".
-3. Then select "Export chat" and choose "Without media".
+1. 打开目标对话
+2. 点击右上角的三个点，然后选择“更多”。
+3. 然后选择“导出聊天”，并选择“无媒体”。
 
-An example of the data format for each conversation is below: 
-
+每个对话的数据格式示例如下： 
 
 ```python
 %%writefile whatsapp_chat.txt
@@ -39,11 +39,12 @@ An example of the data format for each conversation is below:
 ```output
 Writing whatsapp_chat.txt
 ```
-## 2. Create the Chat Loader
 
-The WhatsAppChatLoader accepts the resulting zip file, unzipped directory, or the path to any of the chat `.txt` files therein.
+## 2. 创建聊天加载器
 
-Provide that as well as the user name you want to take on the role of "AI" when fine-tuning.
+WhatsAppChatLoader 接受生成的 zip 文件、解压后的目录或其中任何聊天 `.txt` 文件的路径。
+
+提供这些信息以及您希望在微调时扮演“AI”角色的用户名。
 
 
 ```python
@@ -57,9 +58,9 @@ loader = WhatsAppChatLoader(
 )
 ```
 
-## 3. Load messages
+## 3. 加载消息
 
-The `load()` (or `lazy_load`) methods return a list of "ChatSessions" that currently store the list of messages per loaded conversation.
+`load()`（或 `lazy_load`）方法返回一个“ChatSessions”列表，该列表当前存储每个已加载会话的消息列表。
 
 
 ```python
@@ -93,11 +94,9 @@ messages: List[ChatSession] = list(
    HumanMessage(content='Looking forward to it! Keep up the great work.', additional_kwargs={'sender': 'Jungle Jane', 'events': [{'message_time': '8/15/23, 9:25:16 PM'}]}, example=False)]}]
 ```
 
+### 下一步
 
-### Next Steps
-
-You can then use these messages how you see fit, such as fine-tuning a model, few-shot example selection, or directly make predictions for the next message.
-
+您可以根据自己的需要使用这些消息，例如微调模型、选择少量示例，或直接为下一条消息进行预测。
 
 ```python
 from langchain_openai import ChatOpenAI

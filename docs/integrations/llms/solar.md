@@ -1,9 +1,10 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/solar.ipynb
 ---
-# Solar
 
-*This community integration is deprecated. You should use [`ChatUpstage`](../../chat/upstage) instead to access Solar LLM via the chat model connector.*
+# 太阳能
+
+*此社区集成已被弃用。您应该使用 [`ChatUpstage`](../../chat/upstage) 来通过聊天模型连接器访问太阳能 LLM。*
 
 
 ```python
@@ -36,8 +37,7 @@ question = "What NFL team won the Super Bowl in the year Justin Beiber was born?
 llm_chain.run(question)
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

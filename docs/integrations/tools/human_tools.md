@@ -1,16 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/human_tools.ipynb
 ---
-# Human as a tool
 
-Human are AGI so they can certainly be used as a tool to help out AI agent 
-when it is confused.
+# 人类作为工具
 
+人类是AGI，因此他们当然可以作为工具来帮助AI代理在困惑时提供帮助。
 
 ```python
 %pip install --upgrade --quiet  langchain-community
 ```
-
 
 ```python
 from langchain.agents import AgentType, initialize_agent, load_tools
@@ -31,9 +29,7 @@ agent_chain = initialize_agent(
 )
 ```
 
-In the above code you can see the tool takes input directly from command line.
-You can customize `prompt_func` and `input_func` according to your need (as shown below).
-
+在上面的代码中，你可以看到工具直接从命令行获取输入。你可以根据需要自定义 `prompt_func` 和 `input_func`（如下所示）。
 
 ```python
 agent_chain.run("What's my friend Eric's surname?")
@@ -64,17 +60,16 @@ Final Answer: Eric's surname is Zhu.[0m
 "Eric's surname is Zhu."
 ```
 
+## 配置输入函数
 
-## Configuring the Input Function
-
-By default, the `HumanInputRun` tool uses the python `input` function to get input from the user.
-You can customize the input_func to be anything you'd like.
-For instance, if you want to accept multi-line input, you could do the following:
+默认情况下，`HumanInputRun` 工具使用 Python 的 `input` 函数从用户获取输入。  
+您可以将 input_func 自定义为您想要的任何内容。  
+例如，如果您想接受多行输入，可以执行以下操作：
 
 
 ```python
 def get_input() -> str:
-    print("Insert your text. Enter 'q' or press Ctrl-D (or Ctrl-Z on Windows) to end.")
+    print("插入您的文本。输入 'q' 或按 Ctrl-D（在 Windows 上为 Ctrl-Z）以结束。")
     contents = []
     while True:
         try:
@@ -87,13 +82,13 @@ def get_input() -> str:
     return "\n".join(contents)
 
 
-# You can modify the tool when loading
+# 您可以在加载时修改工具
 tools = load_tools(["human", "ddg-search"], llm=math_llm, input_func=get_input)
 ```
 
 
 ```python
-# Or you can directly instantiate the tool
+# 或者您可以直接实例化工具
 from langchain_community.tools import HumanInputRun
 
 tool = HumanInputRun(input_func=get_input)
@@ -111,18 +106,18 @@ agent_chain = initialize_agent(
 
 
 ```python
-agent_chain.run("I need help attributing a quote")
+agent_chain.run("我需要帮助归属一个引用")
 ```
 ```output
 
 
-[1m> Entering new AgentExecutor chain...[0m
-[32;1m[1;3mI should ask a human for guidance
+[1m> 进入新的 AgentExecutor 链...[0m
+[32;1m[1;3m我应该向人类寻求指导
 Action: Human
-Action Input: "Can you help me attribute a quote?"[0m
+Action Input: "你能帮我归属一个引用吗？"[0m
 
-Can you help me attribute a quote?
-Insert your text. Enter 'q' or press Ctrl-D (or Ctrl-Z on Windows) to end.
+你能帮我归属一个引用吗？
+插入您的文本。输入 'q' 或按 Ctrl-D（在 Windows 上为 Ctrl-Z）以结束。
 ``````output
  vini
  vidi
@@ -130,39 +125,37 @@ Insert your text. Enter 'q' or press Ctrl-D (or Ctrl-Z on Windows) to end.
  q
 ``````output
 
-Observation: [36;1m[1;3mvini
+观察: [36;1m[1;3mvini
 vidi
 vici[0m
-Thought:[32;1m[1;3mI need to provide more context about the quote
+思考: [32;1m[1;3m我需要提供更多关于引用的上下文
 Action: Human
-Action Input: "The quote is 'Veni, vidi, vici'"[0m
+Action Input: "这个引用是 'Veni, vidi, vici'"[0m
 
-The quote is 'Veni, vidi, vici'
-Insert your text. Enter 'q' or press Ctrl-D (or Ctrl-Z on Windows) to end.
+这个引用是 'Veni, vidi, vici'
+插入您的文本。输入 'q' 或按 Ctrl-D（在 Windows 上为 Ctrl-Z）以结束。
 ``````output
- oh who said it 
+ oh 谁说的 
  q
 ``````output
 
-Observation: [36;1m[1;3moh who said it [0m
-Thought:[32;1m[1;3mI can use DuckDuckGo Search to find out who said the quote
+观察: [36;1m[1;3m哦，谁说的 [0m
+思考: [32;1m[1;3m我可以使用 DuckDuckGo 搜索来找出是谁说的这个引用
 Action: DuckDuckGo Search
-Action Input: "Who said 'Veni, vidi, vici'?"[0m
-Observation: [33;1m[1;3mUpdated on September 06, 2019. "Veni, vidi, vici" is a famous phrase said to have been spoken by the Roman Emperor Julius Caesar (100-44 BCE) in a bit of stylish bragging that impressed many of the writers of his day and beyond. The phrase means roughly "I came, I saw, I conquered" and it could be pronounced approximately Vehnee, Veedee ... Veni, vidi, vici (Classical Latin: [weːniː wiːdiː wiːkiː], Ecclesiastical Latin: [ˈveni ˈvidi ˈvitʃi]; "I came; I saw; I conquered") is a Latin phrase used to refer to a swift, conclusive victory.The phrase is popularly attributed to Julius Caesar who, according to Appian, used the phrase in a letter to the Roman Senate around 47 BC after he had achieved a quick victory in his short ... veni, vidi, vici Latin quotation from Julius Caesar ve· ni, vi· di, vi· ci ˌwā-nē ˌwē-dē ˈwē-kē ˌvā-nē ˌvē-dē ˈvē-chē : I came, I saw, I conquered Articles Related to veni, vidi, vici 'In Vino Veritas' and Other Latin... Dictionary Entries Near veni, vidi, vici Venite veni, vidi, vici Venizélos See More Nearby Entries Cite this Entry Style The simplest explanation for why veni, vidi, vici is a popular saying is that it comes from Julius Caesar, one of history's most famous figures, and has a simple, strong meaning: I'm powerful and fast. But it's not just the meaning that makes the phrase so powerful. Caesar was a gifted writer, and the phrase makes use of Latin grammar to ... One of the best known and most frequently quoted Latin expression, veni, vidi, vici may be found hundreds of times throughout the centuries used as an expression of triumph. The words are said to have been used by Caesar as he was enjoying a triumph.[0m
-Thought:[32;1m[1;3mI now know the final answer
-Final Answer: Julius Caesar said the quote "Veni, vidi, vici" which means "I came, I saw, I conquered".[0m
+Action Input: "谁说过 'Veni, vidi, vici'?"[0m
+观察: [33;1m[1;3m更新于 2019 年 9 月 06 日。"Veni, vidi, vici" 是一个著名的短语，传说是罗马皇帝尤利乌斯·凯撒（公元前100-44年）在夸耀时说的，这让他那个时代及以后的许多作家印象深刻。这个短语大致意味着 "我来了，我看见了，我征服了"，可以发音为大约 Vehnee, Veedee ... Veni, vidi, vici（古典拉丁语：[weːniː wiːdiː wiːkiː]，教会拉丁语：[ˈveni ˈvidi ˈvitʃi]；"我来了；我看见了；我征服了"）是一个拉丁短语，用于指代迅速、决定性的胜利。这个短语通常归因于尤利乌斯·凯撒，根据阿皮安的说法，他在公元前47年以快速胜利后向罗马参议院写信时使用了这个短语 ... veni, vidi, vici 是尤利乌斯·凯撒的拉丁名言 ve· ni, vi· di, vi· ci ˌwā-nē ˌwē-dē ˈwē-kē ˌvā-nē ˌvē-dē ˈvē-chē : 我来了，我看见了，我征服了 与 'Veni, vidi, vici' 相关的文章 'In Vino Veritas' 和其他拉丁语... 词典条目靠近 veni, vidi, vici Venite veni, vidi, vici Venizélos 查看更多附近条目 引用此条目 风格 对于为什么 veni, vidi, vici 是一个流行说法，最简单的解释是它来自于历史上最著名的人物之一尤利乌斯·凯撒，并且有一个简单而强大的含义：我强大而迅速。但不仅仅是意义使这个短语如此强大。凯撒是一位天才作家，这个短语利用了拉丁语法 ... 作为最著名和最常被引用的拉丁表达之一，veni, vidi, vici 在几个世纪以来的数百次使用中作为胜利的表达。传说凯撒在享受胜利时使用了这些话。[0m
+思考: [32;1m[1;3m我现在知道最终答案
+最终答案: 尤利乌斯·凯撒说过 "Veni, vidi, vici" 这个引用，意思是 "我来了，我看见了，我征服了"。[0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 ```
 
 
 ```output
-'Julius Caesar said the quote "Veni, vidi, vici" which means "I came, I saw, I conquered".'
+'尤利乌斯·凯撒说过 "Veni, vidi, vici" 这个引用，意思是 "我来了，我看见了，我征服了"。'
 ```
 
+## 相关
 
-
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

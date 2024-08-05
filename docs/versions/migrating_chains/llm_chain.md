@@ -1,15 +1,15 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/versions/migrating_chains/llm_chain.ipynb
-title: Migrating from LLMChain
+title: 从 LLMChain 迁移
 ---
 
-[`LLMChain`](https://api.python.langchain.com/en/latest/chains/langchain.chains.llm.LLMChain.html) combined a prompt template, LLM, and output parser into a class.
+[`LLMChain`](https://api.python.langchain.com/en/latest/chains/langchain.chains.llm.LLMChain.html) 将提示模板、LLM 和输出解析器结合成一个类。
 
-Some advantages of switching to the LCEL implementation are:
+切换到 LCEL 实现的一些优势包括：
 
-- Clarity around contents and parameters. The legacy `LLMChain` contains a default output parser and other options.
-- Easier streaming. `LLMChain` only supports streaming via callbacks.
-- Easier access to raw message outputs if desired. `LLMChain` only exposes these via a parameter or via callback.
+- 对内容和参数的清晰理解。遗留的 `LLMChain` 包含默认的输出解析器和其他选项。
+- 更容易的流式处理。`LLMChain` 仅通过回调支持流式处理。
+- 更容易访问原始消息输出（如果需要）。`LLMChain` 仅通过参数或回调暴露这些内容。
 
 
 ```python
@@ -30,7 +30,7 @@ import { ColumnContainer, Column } from "@theme/Columns";
 
 <Column>
 
-#### Legacy
+#### 遗留
 
 
 
@@ -91,7 +91,7 @@ chain.invoke({"adjective": "funny"})
 </Column>
 </ColumnContainer>
 
-Note that `LLMChain` by default returns a `dict` containing both the input and the output. If this behavior is desired, we can replicate it using another LCEL primitive, [`RunnablePassthrough`](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.passthrough.RunnablePassthrough.html):
+请注意，`LLMChain` 默认返回一个包含输入和输出的 `dict`。如果需要这种行为，我们可以使用另一个 LCEL 原语 [`RunnablePassthrough`](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.passthrough.RunnablePassthrough.html) 来复制它：
 
 
 ```python
@@ -109,9 +109,8 @@ outer_chain.invoke({"adjective": "funny"})
  'text': 'Why did the scarecrow win an award? Because he was outstanding in his field!'}
 ```
 
+## 下一步
 
-## Next steps
+查看 [本教程](/docs/tutorials/llm_chain) 以获取有关使用提示模板、LLMs 和输出解析器的更多详细信息。
 
-See [this tutorial](/docs/tutorials/llm_chain) for more detail on building with prompt templates, LLMs, and output parsers.
-
-Check out the [LCEL conceptual docs](/docs/concepts/#langchain-expression-language-lcel) for more background information.
+查看 [LCEL 概念文档](/docs/concepts/#langchain-expression-language-lcel) 以获取更多背景信息。

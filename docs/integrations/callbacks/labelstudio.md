@@ -1,34 +1,32 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/callbacks/labelstudio.ipynb
 ---
+
 # Label Studio
 
+>[Label Studio](https://labelstud.io/guide/get_started) 是一个开源数据标注平台，为 LangChain 提供了在标注数据以微调大型语言模型 (LLMs) 时的灵活性。它还支持准备自定义训练数据以及通过人类反馈收集和评估响应。
 
->[Label Studio](https://labelstud.io/guide/get_started) is an open-source data labeling platform that provides LangChain with flexibility when it comes to labeling data for fine-tuning large language models (LLMs). It also enables the preparation of custom training data and the collection and evaluation of responses through human feedback.
+在本指南中，您将学习如何将 LangChain 管道连接到 `Label Studio` 以：
 
-In this guide, you will learn how to connect a LangChain pipeline to `Label Studio` to:
+- 在单个 `Label Studio` 项目中聚合所有输入提示、对话和响应。这将所有数据集中在一个地方，以便于标注和分析。
+- 精炼提示和响应，以创建用于监督微调 (SFT) 和人类反馈强化学习 (RLHF) 场景的数据集。标注的数据可以用来进一步训练 LLM，以提高其性能。
+- 通过人类反馈评估模型响应。`Label Studio` 提供了一个接口，供人类审查并对模型响应提供反馈，从而实现评估和迭代。
 
-- Aggregate all input prompts, conversations, and responses in a single `Label Studio` project. This consolidates all the data in one place for easier labeling and analysis.
-- Refine prompts and responses to create a dataset for supervised fine-tuning (SFT) and reinforcement learning with human feedback (RLHF) scenarios. The labeled data can be used to further train the LLM to improve its performance.
-- Evaluate model responses through human feedback. `Label Studio` provides an interface for humans to review and provide feedback on model responses, allowing evaluation and iteration.
+## 安装和设置
 
-## Installation and setup
-
-First install latest versions of Label Studio and Label Studio API client:
-
+首先安装最新版本的 Label Studio 和 Label Studio API 客户端：
 
 ```python
 %pip install --upgrade --quiet langchain label-studio label-studio-sdk langchain-openai langchain-community
 ```
 
-Next, run `label-studio` on the command line to start the local LabelStudio instance at `http://localhost:8080`. See the [Label Studio installation guide](https://labelstud.io/guide/install) for more options.
+接下来，在命令行中运行 `label-studio`，以在 `http://localhost:8080` 启动本地 LabelStudio 实例。有关更多选项，请参见 [Label Studio 安装指南](https://labelstud.io/guide/install)。
 
-You'll need a token to make API calls.
+您需要一个令牌来进行 API 调用。
 
-Open your LabelStudio instance in your browser, go to `Account & Settings > Access Token` and copy the key.
+在浏览器中打开您的 LabelStudio 实例，转到 `Account & Settings > Access Token` 并复制密钥。
 
-Set environment variables with your LabelStudio URL, API key and OpenAI API key:
-
+使用您的 LabelStudio URL、API 密钥和 OpenAI API 密钥设置环境变量：
 
 ```python
 import os
@@ -38,11 +36,11 @@ os.environ["LABEL_STUDIO_API_KEY"] = "<YOUR-LABEL-STUDIO-API-KEY>"
 os.environ["OPENAI_API_KEY"] = "<YOUR-OPENAI-API-KEY>"
 ```
 
-## Collecting LLMs prompts and responses
+## 收集LLM的提示和响应
 
-The data used for labeling is stored in projects within Label Studio. Every project is identified by an XML configuration that details the specifications for input and output data. 
+用于标记的数据存储在Label Studio中的项目内。每个项目由一个XML配置文件标识，该文件详细说明了输入和输出数据的规格。
 
-Create a project that takes human input in text format and outputs an editable LLM response in a text area:
+创建一个项目，接受文本格式的人类输入，并在文本区域输出可编辑的LLM响应：
 
 ```xml
 <View>
@@ -62,24 +60,22 @@ Create a project that takes human input in text format and outputs an editable L
               maxSubmissions="1" editable="true"
               required="true"/>
 </View>
-<Header value="Rate the response:"/>
+<Header value="评价响应:"/>
 <Rating name="rating" toName="prompt"/>
 </View>
 ```
 
-1. To create a project in Label Studio, click on the "Create" button. 
-2. Enter a name for your project in the "Project Name" field, such as `My Project`.
-3. Navigate to `Labeling Setup > Custom Template` and paste the XML configuration provided above.
+1. 要在Label Studio中创建项目，请点击“创建”按钮。
+2. 在“项目名称”字段中输入项目名称，例如`My Project`。
+3. 导航到`标注设置 > 自定义模板`，并粘贴上面的XML配置。
 
-You can collect input LLM prompts and output responses in a LabelStudio project, connecting it via `LabelStudioCallbackHandler`:
-
+您可以在LabelStudio项目中收集输入LLM提示和输出响应，通过`LabelStudioCallbackHandler`进行连接：
 
 ```python
 from langchain_community.callbacks.labelstudio_callback import (
     LabelStudioCallbackHandler,
 )
 ```
-
 
 ```python
 from langchain_openai import OpenAI
@@ -90,15 +86,15 @@ llm = OpenAI(
 print(llm.invoke("Tell me a joke"))
 ```
 
-In the Label Studio, open `My Project`. You will see the prompts, responses, and metadata like the model name. 
+在Label Studio中，打开`My Project`。您将看到提示、响应和模型名称等元数据。
 
-## Collecting Chat model Dialogues
+## 收集聊天模型对话
 
-You can also track and display full chat dialogues in LabelStudio, with the ability to rate and modify the last response:
+您还可以在 LabelStudio 中跟踪和显示完整的聊天对话，并能够对最后的回复进行评分和修改：
 
-1. Open Label Studio and click on the "Create" button.
-2. Enter a name for your project in the "Project Name" field, such as `New Project with Chat`.
-3. Navigate to Labeling Setup > Custom Template and paste the following XML configuration:
+1. 打开 Label Studio 并点击“创建”按钮。
+2. 在“项目名称”字段中输入您的项目名称，例如 `New Project with Chat`。
+3. 导航到标注设置 > 自定义模板，并粘贴以下 XML 配置：
 
 ```xml
 <View>
@@ -109,12 +105,12 @@ You can also track and display full chat dialogues in LabelStudio, with the abil
                textKey="content"
                nameKey="role"
                granularity="sentence"/>
-  <Header value="Final response:"/>
+  <Header value="最终回复:"/>
     <TextArea name="response" toName="dialogue"
               maxSubmissions="1" editable="true"
               required="true"/>
 </View>
-<Header value="Rate the response:"/>
+<Header value="对回复进行评分:"/>
 <Rating name="rating" toName="dialogue"/>
 </View>
 ```
@@ -140,16 +136,15 @@ llm_results = chat_llm.invoke(
 )
 ```
 
-In Label Studio, open "New Project with Chat". Click on a created task to view dialog history and edit/annotate responses.
+在 Label Studio 中，打开“New Project with Chat”。点击创建的任务以查看对话历史并编辑/注释回复。
 
-## Custom Labeling Configuration
+## 自定义标签配置
 
-You can modify the default labeling configuration in LabelStudio to add more target labels like response sentiment, relevance, and many [other types annotator's feedback](https://labelstud.io/tags/).
+您可以在 LabelStudio 中修改默认标签配置，以添加更多目标标签，例如响应情感、相关性以及其他类型的[注释者反馈](https://labelstud.io/tags/)。
 
-New labeling configuration can be added from UI: go to `Settings > Labeling Interface` and set up a custom configuration with additional tags like `Choices` for sentiment or `Rating` for relevance. Keep in mind that [`TextArea` tag](https://labelstud.io/tags/textarea) should be presented in any configuration to display the LLM responses.
+新的标签配置可以通过 UI 添加：前往 `Settings > Labeling Interface` 并设置一个包含额外标签的自定义配置，例如用于情感的 `Choices` 或用于相关性的 `Rating`。请记住，任何配置中都应包含 [`TextArea` 标签](https://labelstud.io/tags/textarea)，以显示 LLM 的响应。
 
-Alternatively, you can specify the labeling configuration on the initial call before project creation:
-
+或者，您可以在项目创建之前的初始调用中指定标签配置：
 
 ```python
 ls = LabelStudioCallbackHandler(
@@ -168,19 +163,17 @@ ls = LabelStudioCallbackHandler(
 )
 ```
 
-Note that if the project doesn't exist, it will be created with the specified labeling configuration.
+请注意，如果项目不存在，它将使用指定的标签配置创建。
 
-## Other parameters
+## 其他参数
 
-The `LabelStudioCallbackHandler` accepts several optional parameters:
+`LabelStudioCallbackHandler` 接受几个可选参数：
 
-- **api_key** - Label Studio API key. Overrides environmental variable `LABEL_STUDIO_API_KEY`.
-- **url** - Label Studio URL. Overrides `LABEL_STUDIO_URL`, default `http://localhost:8080`.
-- **project_id** - Existing Label Studio project ID. Overrides `LABEL_STUDIO_PROJECT_ID`. Stores data in this project.
-- **project_name** - Project name if project ID not specified. Creates a new project. Default is `"LangChain-%Y-%m-%d"` formatted with the current date.
-- **project_config** - [custom labeling configuration](#custom-labeling-configuration)
-- **mode**: use this shortcut to create target configuration from scratch:
-   - `"prompt"` - Single prompt, single response. Default.
-   - `"chat"` - Multi-turn chat mode.
-
-
+- **api_key** - Label Studio API 密钥。覆盖环境变量 `LABEL_STUDIO_API_KEY`。
+- **url** - Label Studio URL。覆盖 `LABEL_STUDIO_URL`，默认值为 `http://localhost:8080`。
+- **project_id** - 已存在的 Label Studio 项目 ID。覆盖 `LABEL_STUDIO_PROJECT_ID`。在此项目中存储数据。
+- **project_name** - 如果未指定项目 ID，则为项目名称。创建一个新项目。默认值为 `"LangChain-%Y-%m-%d"`，格式化为当前日期。
+- **project_config** - [自定义标记配置](#custom-labeling-configuration)
+- **mode**: 使用此快捷方式从头创建目标配置：
+   - `"prompt"` - 单个提示，单个响应。默认。
+   - `"chat"` - 多轮聊天模式。

@@ -1,49 +1,46 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/toolkits/connery.ipynb
 ---
-# Connery Toolkit
 
-Using this toolkit, you can integrate Connery Actions into your LangChain agent.
+# Connery 工具包
 
-If you want to use only one particular Connery Action in your agent,
-check out the [Connery Action Tool](/docs/integrations/tools/connery) documentation.
+使用此工具包，您可以将 Connery Actions 集成到您的 LangChain 代理中。
 
-## What is Connery?
+如果您只想在代理中使用特定的 Connery Action，请查看 [Connery Action Tool](/docs/integrations/tools/connery) 文档。
 
-Connery is an open-source plugin infrastructure for AI.
+## 什么是 Connery？
 
-With Connery, you can easily create a custom plugin with a set of actions and seamlessly integrate them into your LangChain agent.
-Connery will take care of critical aspects such as runtime, authorization, secret management, access management, audit logs, and other vital features.
+Connery 是一个用于 AI 的开源插件基础设施。
 
-Furthermore, Connery, supported by our community, provides a diverse collection of ready-to-use open-source plugins for added convenience.
+使用 Connery，您可以轻松创建具有一组操作的自定义插件，并将其无缝集成到您的 LangChain 代理中。Connery 将处理关键方面，如运行时、授权、秘密管理、访问管理、审计日志和其他重要功能。
 
-Learn more about Connery:
+此外，Connery 在我们社区的支持下，提供了一系列现成的开源插件，以便于使用。
+
+了解有关 Connery 的更多信息：
 
 - GitHub: https://github.com/connery-io/connery
 - Documentation: https://docs.connery.io
 
-## Prerequisites
+## 前提条件
 
-To use Connery Actions in your LangChain agent, you need to do some preparation:
+要在您的 LangChain 代理中使用 Connery Actions，您需要进行一些准备：
 
-1. Set up the Connery runner using the [Quickstart](https://docs.connery.io/docs/runner/quick-start/) guide.
-2. Install all the plugins with the actions you want to use in your agent.
-3. Set environment variables `CONNERY_RUNNER_URL` and `CONNERY_RUNNER_API_KEY` so the toolkit can communicate with the Connery Runner.
+1. 使用 [快速入门](https://docs.connery.io/docs/runner/quick-start/) 指南设置 Connery 运行器。
+2. 安装您希望在代理中使用的所有插件和操作。
+3. 设置环境变量 `CONNERY_RUNNER_URL` 和 `CONNERY_RUNNER_API_KEY`，以便工具包能够与 Connery 运行器进行通信。
 
-## Example of using Connery Toolkit
+## 使用 Connery Toolkit 的示例
 
-In the example below, we create an agent that uses two Connery Actions to summarize a public webpage and send the summary by email:
+在下面的示例中，我们创建了一个代理，使用两个 Connery 动作来总结一个公共网页并通过电子邮件发送摘要：
 
-1. **Summarize public webpage** action from the [Summarization](https://github.com/connery-io/summarization-plugin) plugin.
-2. **Send email** action from the [Gmail](https://github.com/connery-io/gmail) plugin.
+1. 来自 [Summarization](https://github.com/connery-io/summarization-plugin) 插件的 **总结公共网页** 动作。
+2. 来自 [Gmail](https://github.com/connery-io/gmail) 插件的 **发送电子邮件** 动作。
 
-You can see a LangSmith trace of this example [here](https://smith.langchain.com/public/4af5385a-afe9-46f6-8a53-57fe2d63c5bc/r).
-
+您可以在 [这里](https://smith.langchain.com/public/4af5385a-afe9-46f6-8a53-57fe2d63c5bc/r) 查看此示例的 LangSmith 跟踪。
 
 ```python
 %pip install -qU langchain-community
 ```
-
 
 ```python
 import os
@@ -86,13 +83,13 @@ print(result)
 Invoking: `CA72DFB0AB4DF6C830B43E14B0782F70` with `{'publicWebpageUrl': 'http://www.paulgraham.com/vb.html'}`
 
 
-[0m[33;1m[1;3m{'summary': 'The author reflects on the concept of life being short and how having children made them realize the true brevity of life. They discuss how time can be converted into discrete quantities and how limited certain experiences are. The author emphasizes the importance of prioritizing and eliminating unnecessary things in life, as well as actively pursuing meaningful experiences. They also discuss the negative impact of getting caught up in online arguments and the need to be aware of how time is being spent. The author suggests pruning unnecessary activities, not waiting to do things that matter, and savoring the time one has.'}[0m[32;1m[1;3m
-Invoking: `CABC80BB79C15067CA983495324AE709` with `{'recipient': 'test@example.com', 'subject': 'Summary of the webpage', 'body': 'Here is a short summary of the webpage http://www.paulgraham.com/vb.html:\n\nThe author reflects on the concept of life being short and how having children made them realize the true brevity of life. They discuss how time can be converted into discrete quantities and how limited certain experiences are. The author emphasizes the importance of prioritizing and eliminating unnecessary things in life, as well as actively pursuing meaningful experiences. They also discuss the negative impact of getting caught up in online arguments and the need to be aware of how time is being spent. The author suggests pruning unnecessary activities, not waiting to do things that matter, and savoring the time one has.\n\nYou can find the full webpage [here](http://www.paulgraham.com/vb.html).'}`
+[0m[33;1m[1;3m{'summary': '作者反思了生命短暂的概念，以及拥有孩子让他们意识到生命的真正短暂。他们讨论了时间如何可以转化为离散的量，以及某些经历是多么有限。作者强调了在生活中优先考虑和消除不必要事物的重要性，以及积极追求有意义的经历。他们还讨论了卷入网络争论的负面影响，以及意识到时间如何被使用的必要性。作者建议修剪不必要的活动，不要等待去做重要的事情，并珍惜自己拥有的时间。'}[0m[32;1m[1;3m
+Invoking: `CABC80BB79C15067CA983495324AE709` with `{'recipient': 'test@example.com', 'subject': 'Summary of the webpage', 'body': 'Here is a short summary of the webpage http://www.paulgraham.com/vb.html:\n\n作者反思了生命短暂的概念，以及拥有孩子让他们意识到生命的真正短暂。他们讨论了时间如何可以转化为离散的量，以及某些经历是多么有限。作者强调了在生活中优先考虑和消除不必要事物的重要性，以及积极追求有意义的经历。他们还讨论了卷入网络争论的负面影响，以及意识到时间如何被使用的必要性。作者建议修剪不必要的活动，不要等待去做重要的事情，并珍惜自己拥有的时间。\n\n您可以在此处找到完整网页 [here](http://www.paulgraham.com/vb.html).'}`
 
 
-[0m[33;1m[1;3m{'messageId': '<2f04b00e-122d-c7de-c91e-e78e0c3276d6@gmail.com>'}[0m[32;1m[1;3mI have sent the email with the summary of the webpage to test@example.com. Please check your inbox.[0m
+[0m[33;1m[1;3m{'messageId': '<2f04b00e-122d-c7de-c91e-e78e0c3276d6@gmail.com>'}[0m[32;1m[1;3m我已将网页摘要的电子邮件发送至 test@example.com。请检查您的收件箱。[0m
 
 [1m> Finished chain.[0m
-I have sent the email with the summary of the webpage to test@example.com. Please check your inbox.
+我已将网页摘要的电子邮件发送至 test@example.com。请检查您的收件箱。
 ```
-NOTE: Connery Action is a structured tool, so you can only use it in the agents supporting structured tools.
+注意：Connery 动作是结构化工具，因此您只能在支持结构化工具的代理中使用它。

@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/weather.ipynb
 ---
-# Weather
 
->[OpenWeatherMap](https://openweathermap.org/) is an open-source weather service provider
+# 天气
 
-This loader fetches the weather data from the OpenWeatherMap's OneCall API, using the pyowm Python package. You must initialize the loader with your OpenWeatherMap API token and the names of the cities you want the weather data for.
+>[OpenWeatherMap](https://openweathermap.org/) 是一个开源天气服务提供商
+
+该加载器使用 pyowm Python 包从 OpenWeatherMap 的 OneCall API 获取天气数据。您必须使用您的 OpenWeatherMap API 令牌和您想要获取天气数据的城市名称来初始化加载器。
 
 
 ```python
@@ -19,8 +20,7 @@ from langchain_community.document_loaders import WeatherDataLoader
 
 
 ```python
-# Set API key either by passing it in to constructor directly
-# or by setting the environment variable "OPENWEATHERMAP_API_KEY".
+# 通过直接传递给构造函数或设置环境变量 "OPENWEATHERMAP_API_KEY" 来设置 API 密钥。
 
 from getpass import getpass
 
@@ -40,8 +40,7 @@ documents = loader.load()
 documents
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

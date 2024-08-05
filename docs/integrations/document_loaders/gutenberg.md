@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/gutenberg.ipynb
 ---
-# Gutenberg
 
->[Project Gutenberg](https://www.gutenberg.org/about/) is an online library of free eBooks.
+# 古腾堡
 
-This notebook covers how to load links to `Gutenberg` e-books into a document format that we can use downstream.
+>[Project Gutenberg](https://www.gutenberg.org/about/) 是一个免费的电子书在线图书馆。
+
+本笔记本涵盖了如何将 `Gutenberg` 电子书的链接加载到我们可以在后续使用的文档格式中。
 
 
 ```python
@@ -45,9 +46,7 @@ data[0].metadata
 {'source': 'https://www.gutenberg.org/cache/epub/69972/pg69972.txt'}
 ```
 
+## 相关
 
-
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

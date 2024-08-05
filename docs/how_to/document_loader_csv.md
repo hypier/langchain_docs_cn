@@ -1,12 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/document_loader_csv.ipynb
 ---
-# How to load CSVs
 
-A [comma-separated values (CSV)](https://en.wikipedia.org/wiki/Comma-separated_values) file is a delimited text file that uses a comma to separate values. Each line of the file is a data record. Each record consists of one or more fields, separated by commas.
+# 如何加载CSV文件
 
-LangChain implements a [CSV Loader](https://api.python.langchain.com/en/latest/document_loaders/langchain_community.document_loaders.csv_loader.CSVLoader.html) that will load CSV files into a sequence of [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html#langchain_core.documents.base.Document) objects. Each row of the CSV file is translated to one document.
+[逗号分隔值 (CSV)](https://en.wikipedia.org/wiki/Comma-separated_values) 文件是一种使用逗号分隔值的分隔文本文件。文件的每一行都是一个数据记录。每个记录由一个或多个字段组成，字段之间用逗号分隔。
 
+LangChain 实现了一个 [CSV Loader](https://api.python.langchain.com/en/latest/document_loaders/langchain_community.document_loaders.csv_loader.CSVLoader.html)，可以将 CSV 文件加载为一系列 [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html#langchain_core.documents.base.Document) 对象。CSV 文件的每一行对应一个文档。
 
 ```python
 from langchain_community.document_loaders.csv_loader import CSVLoader
@@ -25,10 +25,10 @@ for record in data[:2]:
 page_content='Team: Nationals\n"Payroll (millions)": 81.34\n"Wins": 98' metadata={'source': '../../../docs/integrations/document_loaders/example_data/mlb_teams_2012.csv', 'row': 0}
 page_content='Team: Reds\n"Payroll (millions)": 82.20\n"Wins": 97' metadata={'source': '../../../docs/integrations/document_loaders/example_data/mlb_teams_2012.csv', 'row': 1}
 ```
-## Customizing the CSV parsing and loading
 
-`CSVLoader` will accept a `csv_args` kwarg that supports customization of arguments passed to Python's `csv.DictReader`. See the [csv module](https://docs.python.org/3/library/csv.html) documentation for more information of what csv args are supported.
+## 自定义 CSV 解析和加载
 
+`CSVLoader` 将接受一个 `csv_args` 关键字参数，支持自定义传递给 Python 的 `csv.DictReader` 的参数。有关支持的 csv 参数的更多信息，请参见 [csv 模块](https://docs.python.org/3/library/csv.html) 文档。
 
 ```python
 loader = CSVLoader(
@@ -48,12 +48,12 @@ for record in data[:2]:
 page_content='MLB Team: Team\nPayroll in millions: "Payroll (millions)"\nWins: "Wins"' metadata={'source': '../../../docs/integrations/document_loaders/example_data/mlb_teams_2012.csv', 'row': 0}
 page_content='MLB Team: Nationals\nPayroll in millions: 81.34\nWins: 98' metadata={'source': '../../../docs/integrations/document_loaders/example_data/mlb_teams_2012.csv', 'row': 1}
 ```
-## Specify a column to identify the document source
 
-The `"source"` key on [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html#langchain_core.documents.base.Document) metadata can be set using a column of the CSV. Use the `source_column` argument to specify a source for the document created from each row. Otherwise `file_path` will be used as the source for all documents created from the CSV file.
+## 指定一个列以识别文档来源
 
-This is useful when using documents loaded from CSV files for chains that answer questions using sources.
+可以使用 CSV 的一列设置 [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html#langchain_core.documents.base.Document) 元数据中的 `"source"` 键。使用 `source_column` 参数指定从每一行创建的文档的来源。否则，`file_path` 将作为从 CSV 文件创建的所有文档的来源。
 
+当使用从 CSV 文件加载的文档进行回答问题的链时，这非常有用。
 
 ```python
 loader = CSVLoader(file_path=file_path, source_column="Team")
@@ -66,10 +66,10 @@ for record in data[:2]:
 page_content='Team: Nationals\n"Payroll (millions)": 81.34\n"Wins": 98' metadata={'source': 'Nationals', 'row': 0}
 page_content='Team: Reds\n"Payroll (millions)": 82.20\n"Wins": 97' metadata={'source': 'Reds', 'row': 1}
 ```
-## Load from a string
 
-Python's `tempfile` can be used when working with CSV strings directly.
+## 从字符串加载
 
+Python 的 `tempfile` 可用于直接处理 CSV 字符串。
 
 ```python
 import tempfile

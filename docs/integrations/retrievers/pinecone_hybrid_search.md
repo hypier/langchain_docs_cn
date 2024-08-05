@@ -1,25 +1,24 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/pinecone_hybrid_search.ipynb
 ---
-# Pinecone Hybrid Search
 
->[Pinecone](https://docs.pinecone.io/docs/overview) is a vector database with broad functionality.
+# Pinecone 混合搜索
 
-This notebook goes over how to use a retriever that under the hood uses Pinecone and Hybrid Search.
+>[Pinecone](https://docs.pinecone.io/docs/overview) 是一个功能广泛的向量数据库。
 
-The logic of this retriever is taken from [this documentation](https://docs.pinecone.io/docs/hybrid-search)
+本笔记本介绍如何使用一个底层使用 Pinecone 和混合搜索的检索器。
 
-To use Pinecone, you must have an API key and an Environment. 
-Here are the [installation instructions](https://docs.pinecone.io/docs/quickstart).
+该检索器的逻辑来自于 [此文档](https://docs.pinecone.io/docs/hybrid-search)
 
+要使用 Pinecone，您必须拥有一个 API 密钥和一个环境。 
+以下是 [安装说明](https://docs.pinecone.io/docs/quickstart)。
 
 ```python
 %pip install --upgrade --quiet  pinecone-client pinecone-text pinecone-notebooks
 ```
 
-
 ```python
-# Connect to Pinecone and get an API key.
+# 连接到 Pinecone 并获取 API 密钥。
 from pinecone_notebooks.colab import Authenticate
 
 Authenticate()
@@ -29,15 +28,13 @@ import os
 api_key = os.environ["PINECONE_API_KEY"]
 ```
 
-
 ```python
 from langchain_community.retrievers import (
     PineconeHybridSearchRetriever,
 )
 ```
 
-We want to use `OpenAIEmbeddings` so we have to get the OpenAI API Key.
-
+我们想使用 `OpenAIEmbeddings`，所以我们需要获取 OpenAI API 密钥。
 
 ```python
 import getpass
@@ -45,9 +42,9 @@ import getpass
 os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API Key:")
 ```
 
-## Setup Pinecone
+## 设置 Pinecone
 
-You should only have to do this part once.
+您只需执行此部分一次。
 
 
 ```python
@@ -77,17 +74,16 @@ WhoAmIResponse(username='load', user_label='label', projectname='load-test')
 ```
 
 
-Now that the index is created, we can use it.
+现在索引已经创建，我们可以使用它。
 
 
 ```python
 index = pc.Index(index_name)
 ```
 
-## Get embeddings and sparse encoders
+## 获取嵌入和稀疏编码器
 
-Embeddings are used for the dense vectors, tokenizer is used for the sparse vector
-
+嵌入用于密集向量，分词器用于稀疏向量
 
 ```python
 from langchain_openai import OpenAIEmbeddings
@@ -95,38 +91,37 @@ from langchain_openai import OpenAIEmbeddings
 embeddings = OpenAIEmbeddings()
 ```
 
-To encode the text to sparse values you can either choose SPLADE or BM25. For out of domain tasks we recommend using BM25.
+要将文本编码为稀疏值，您可以选择 SPLADE 或 BM25。对于超出领域的任务，我们建议使用 BM25。
 
-For more information about the sparse encoders you can checkout pinecone-text library [docs](https://pinecone-io.github.io/pinecone-text/pinecone_text.html).
-
+有关稀疏编码器的更多信息，您可以查看 pinecone-text 库的 [文档](https://pinecone-io.github.io/pinecone-text/pinecone_text.html)。
 
 ```python
 from pinecone_text.sparse import BM25Encoder
 
-# or from pinecone_text.sparse import SpladeEncoder if you wish to work with SPLADE
+# 或者从 pinecone_text.sparse 导入 SpladeEncoder，如果您希望使用 SPLADE
 
-# use default tf-idf values
+# 使用默认的 tf-idf 值
 bm25_encoder = BM25Encoder().default()
 ```
 
-The above code is using default tfids values. It's highly recommended to fit the tf-idf values to your own corpus. You can do it as follow:
+上述代码使用默认的 tf-idf 值。强烈建议将 tf-idf 值拟合到您自己的语料库。您可以按照以下方式进行：
 
 ```python
 corpus = ["foo", "bar", "world", "hello"]
 
-# fit tf-idf values on your corpus
+# 在您的语料库上拟合 tf-idf 值
 bm25_encoder.fit(corpus)
 
-# store the values to a json file
+# 将值存储到 json 文件
 bm25_encoder.dump("bm25_values.json")
 
-# load to your BM25Encoder object
+# 加载到您的 BM25Encoder 对象
 bm25_encoder = BM25Encoder().load("bm25_values.json")
 ```
 
-## Load Retriever
+## 加载检索器
 
-We can now construct the retriever!
+我们现在可以构建检索器！
 
 
 ```python
@@ -135,9 +130,9 @@ retriever = PineconeHybridSearchRetriever(
 )
 ```
 
-## Add texts (if necessary)
+## 添加文本（如有必要）
 
-We can optionally add texts to the retriever (if they aren't already in there)
+我们可以选择性地将文本添加到检索器中（如果它们尚未存在的话）
 
 
 ```python
@@ -146,9 +141,10 @@ retriever.add_texts(["foo", "bar", "world", "hello"])
 ```output
 100%|██████████| 1/1 [00:02<00:00,  2.27s/it]
 ```
-## Use Retriever
 
-We can now use the retriever!
+## 使用检索器
+
+我们现在可以使用检索器了！
 
 
 ```python
@@ -166,9 +162,7 @@ result[0]
 Document(page_content='foo', metadata={})
 ```
 
+## 相关
 
-
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

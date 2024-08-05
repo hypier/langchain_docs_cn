@@ -1,20 +1,20 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/sambanova.ipynb
 ---
+
 # SambaNova
 
-**[SambaNova](https://sambanova.ai/)'s** [Sambastudio](https://sambanova.ai/technology/full-stack-ai-platform) is a platform for running your own open-source models
+**[SambaNova](https://sambanova.ai/)** 的 [Sambastudio](https://sambanova.ai/technology/full-stack-ai-platform) 是一个运行您自己的开源模型的平台
 
-This example goes over how to use LangChain to interact with SambaNova embedding models
+此示例介绍如何使用 LangChain 与 SambaNova 嵌入模型进行交互
 
 ## SambaStudio
 
-**SambaStudio** allows you to train, run batch inference jobs, and deploy online inference endpoints to run open source models that you fine tuned yourself.
+**SambaStudio** 允许您训练、运行批量推断作业，并部署在线推断端点，以运行您自己微调的开源模型。
 
-A SambaStudio environment is required to deploy a model. Get more information at [sambanova.ai/products/enterprise-ai-platform-sambanova-suite](https://sambanova.ai/products/enterprise-ai-platform-sambanova-suite)
+部署模型需要一个 SambaStudio 环境。有关更多信息，请访问 [sambanova.ai/products/enterprise-ai-platform-sambanova-suite](https://sambanova.ai/products/enterprise-ai-platform-sambanova-suite)
 
-Register your environment variables:
-
+注册您的环境变量：
 
 ```python
 import os
@@ -33,8 +33,7 @@ os.environ["SAMBASTUDIO_EMBEDDINGS_ENDPOINT_ID"] = sambastudio_endpoint_id
 os.environ["SAMBASTUDIO_EMBEDDINGS_API_KEY"] = sambastudio_api_key
 ```
 
-Call SambaStudio hosted embeddings directly from LangChain!
-
+直接从 LangChain 调用 SambaStudio 托管的嵌入！
 
 ```python
 from langchain_community.embeddings.sambanova import SambaStudioEmbeddings
@@ -50,8 +49,7 @@ results = embeddings.embed_documents(texts)
 print(results)
 ```
 
-You can manually pass the endpoint parameters and manually set the batch size you have in your SambaStudio embeddings endpoint
-
+您可以手动传递端点参数，并手动设置您在 SambaStudio 嵌入端点中的批量大小。
 
 ```python
 embeddings = SambaStudioEmbeddings(
@@ -64,8 +62,7 @@ embeddings = SambaStudioEmbeddings(
 )
 ```
 
-Or You can use an embedding model expert included in your deployed CoE
-
+或者，您可以使用包含在您部署的 CoE 中的嵌入模型专家。
 
 ```python
 embeddings = SambaStudioEmbeddings(
@@ -76,8 +73,7 @@ embeddings = SambaStudioEmbeddings(
 )
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

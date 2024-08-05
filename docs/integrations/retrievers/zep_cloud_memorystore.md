@@ -1,33 +1,32 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/zep_cloud_memorystore.ipynb
 ---
+
 # Zep Cloud
-## Retriever Example for [Zep Cloud](https://docs.getzep.com/)
 
-> Recall, understand, and extract data from chat histories. Power personalized AI experiences.
+## Retriever 示例用于 [Zep Cloud](https://docs.getzep.com/)
 
-> [Zep](https://www.getzep.com) is a long-term memory service for AI Assistant apps.
-> With Zep, you can provide AI assistants with the ability to recall past conversations, no matter how distant,
-> while also reducing hallucinations, latency, and cost.
+> 回忆、理解并提取聊天记录中的数据。增强个性化的 AI 体验。
 
-> See [Zep Cloud Installation Guide](https://help.getzep.com/sdks) and more [Zep Cloud Langchain Examples](https://github.com/getzep/zep-python/tree/main/examples)
+> [Zep](https://www.getzep.com) 是一个用于 AI 助手应用的长期记忆服务。
+> 借助 Zep，您可以为 AI 助手提供回忆过去对话的能力，无论时间多么久远，
+> 同时减少幻觉、延迟和成本。
 
-## Retriever Example
+> 请参见 [Zep Cloud 安装指南](https://help.getzep.com/sdks) 和更多 [Zep Cloud Langchain 示例](https://github.com/getzep/zep-python/tree/main/examples)
 
-This notebook demonstrates how to search historical chat message histories using the [Zep Long-term Memory Store](https://www.getzep.com/).
+## 检索示例
 
-We'll demonstrate:
+本笔记本演示如何使用 [Zep 长期记忆存储](https://www.getzep.com/) 搜索历史聊天消息记录。
 
-1. Adding conversation history to the Zep memory store.
-2. Vector search over the conversation history: 
-    1. With a similarity search over chat messages
-    2. Using maximal marginal relevance re-ranking of a chat message search
-    3. Filtering a search using metadata filters
-    4. A similarity search over summaries of the chat messages
-    5. Using maximal marginal relevance re-ranking of a summary search
+我们将演示：
 
-
-
+1. 将对话历史添加到 Zep 记忆存储中。
+2. 对对话历史进行向量搜索：
+    1. 对聊天消息进行相似性搜索
+    2. 使用最大边际相关性重新排序聊天消息搜索结果
+    3. 使用元数据过滤器过滤搜索
+    4. 对聊天消息摘要进行相似性搜索
+    5. 使用最大边际相关性重新排序摘要搜索结果
 
 ```python
 import getpass
@@ -42,10 +41,9 @@ from langchain_core.messages import AIMessage, HumanMessage
 zep_api_key = getpass.getpass()
 ```
 
-### Initialize the Zep Chat Message History Class and add a chat message history to the memory store
+### 初始化 Zep 聊天消息历史类并将聊天消息历史添加到内存存储
 
-**NOTE:** Unlike other Retrievers, the content returned by the Zep Retriever is session/user specific. A `session_id` is required when instantiating the Retriever.
-
+**注意：** 与其他检索器不同，Zep 检索器返回的内容是会话/用户特定的。在实例化检索器时需要提供 `session_id`。
 
 ```python
 session_id = str(uuid4())  # This is a unique identifier for the user/session
@@ -53,7 +51,6 @@ session_id = str(uuid4())  # This is a unique identifier for the user/session
 # Initialize the Zep Memory Class
 zep_memory = ZepCloudMemory(session_id=session_id, api_key=zep_api_key)
 ```
-
 
 ```python
 # Preload some messages into the memory. The default message window is 4 messages. We want to push beyond this to demonstrate auto-summarization.
@@ -219,24 +216,21 @@ time.sleep(
 )  # Wait for the messages to be embedded and summarized, this happens asynchronously.
 ```
 
-### Use the Zep Retriever to vector search over the Zep memory
+### 使用 Zep 检索器对 Zep 记忆进行向量搜索
 
-Zep provides native vector search over historical conversation memory. Embedding happens automatically.
+Zep 提供对历史对话记忆的原生向量搜索。嵌入过程是自动进行的。
 
-NOTE: Embedding of messages occurs asynchronously, so the first query may not return results. Subsequent queries will return results as the embeddings are generated.
-
+注意：消息的嵌入是异步发生的，因此第一次查询可能不会返回结果。后续查询将在嵌入生成后返回结果。
 
 ```python
 zep_retriever = ZepCloudRetriever(
     api_key=zep_api_key,
-    session_id=session_id,  # Ensure that you provide the session_id when instantiating the Retriever
+    session_id=session_id,  # 确保在实例化检索器时提供 session_id
     top_k=5,
 )
 
 await zep_retriever.ainvoke("Who wrote Parable of the Sower?")
 ```
-
-
 
 ```output
 [Document(page_content="What is the 'Parable of the Sower'?", metadata={'score': 0.9333381652832031, 'uuid': 'bebc441c-a32d-44a1-ae61-968e7b3d4956', 'created_at': '2024-05-10T05:02:01.857627Z', 'token_count': 11, 'role': 'human'}),
@@ -246,25 +240,19 @@ await zep_retriever.ainvoke("Who wrote Parable of the Sower?")
  Document(page_content="In addition to 'Parable of the Sower', Butler has written several other notable works, including 'Kindred', 'Dawn', and 'Parable of the Talents'.", metadata={'score': 0.8076582252979279, 'uuid': 'e3994519-9a90-410c-b14c-2c652f6d184f', 'created_at': '2024-05-10T05:02:02.401682Z', 'token_count': 37, 'role': 'ai'})]
 ```
 
-
-We can also use the Zep sync API to retrieve results:
-
+我们还可以使用 Zep 同步 API 来检索结果：
 
 ```python
 zep_retriever.invoke("Who wrote Parable of the Sower?")
 ```
 
-
-
 ```output
 [Document(page_content='Parable of the Sower is a science fiction novel by Octavia Butler set in a dystopian future in the 2020s. The story follows Lauren Olamina, a young woman living in a society that has collapsed due to environmental disasters, poverty, and violence. The novel explores themes of societal breakdown, the struggle for survival, and the search for a better future.', metadata={'score': 0.8473024368286133, 'uuid': 'e4689f8e-33be-4a59-a9c2-e5ef5dd70f74', 'created_at': '2024-05-10T05:02:02.713123Z', 'token_count': 76})]
 ```
 
+### 使用MMR（最大边际相关性）进行重排序
 
-### Reranking using MMR (Maximal Marginal Relevance)
-
-Zep has native, SIMD-accelerated support for reranking results using MMR. This is useful for removing redundancy in results.
-
+Zep原生支持使用MMR进行结果的重排序，且支持SIMD加速。这对于去除结果中的冗余非常有用。
 
 ```python
 zep_retriever = ZepCloudRetriever(
@@ -278,11 +266,11 @@ zep_retriever = ZepCloudRetriever(
 await zep_retriever.ainvoke("Who wrote Parable of the Sower?")
 ```
 
-### Using metadata filters to refine search results
+### 使用元数据过滤器来优化搜索结果
 
-Zep supports filtering results by metadata. This is useful for filtering results by entity type, or other metadata.
+Zep 支持通过元数据过滤结果。这对于按实体类型或其他元数据过滤结果非常有用。
 
-More information here: https://help.getzep.com/document-collections#searching-a-collection-with-hybrid-vector-search
+更多信息请参见： https://help.getzep.com/document-collections#searching-a-collection-with-hybrid-vector-search
 
 
 ```python
@@ -293,13 +281,12 @@ await zep_retriever.ainvoke(
 )
 ```
 
-### Searching over Summaries with MMR Reranking
+### 使用MMR重排序进行摘要搜索
 
-Zep automatically generates summaries of chat messages. These summaries can be searched over using the Zep Retriever. Since a summary is a distillation of a conversation, they're more likely to match your search query and offer rich, succinct context to the LLM.
+Zep自动生成聊天消息的摘要。这些摘要可以通过Zep Retriever进行搜索。由于摘要是对对话的提炼，它们更可能与您的搜索查询匹配，并为LLM提供丰富而简洁的上下文。
 
-Successive summaries may include similar content, with Zep's similarity search returning the highest matching results but with little diversity.
-MMR re-ranks the results to ensure that the summaries you populate into your prompt are both relevant and each offers additional information to the LLM.
-
+连续的摘要可能包含相似的内容，Zep的相似性搜索返回匹配度最高的结果，但多样性较少。
+MMR重新排序结果，以确保您填充到提示中的摘要既相关且每个摘要都为LLM提供额外信息。
 
 ```python
 zep_retriever = ZepCloudRetriever(
@@ -314,17 +301,13 @@ zep_retriever = ZepCloudRetriever(
 await zep_retriever.ainvoke("Who wrote Parable of the Sower?")
 ```
 
-
-
 ```output
 [Document(page_content='Parable of the Sower is a science fiction novel by Octavia Butler set in a dystopian future in the 2020s. The story follows Lauren Olamina, a young woman living in a society that has collapsed due to environmental disasters, poverty, and violence. The novel explores themes of societal breakdown, the struggle for survival, and the search for a better future.', metadata={'score': 0.8473024368286133, 'uuid': 'e4689f8e-33be-4a59-a9c2-e5ef5dd70f74', 'created_at': '2024-05-10T05:02:02.713123Z', 'token_count': 76}),
  Document(page_content='The \'Parable of the Sower\' refers to a new religious belief system that the protagonist, Lauren Olamina, develops over the course of the novel. As her community disintegrates due to climate change, economic collapse, and social unrest, Lauren comes to believe that humanity must adapt and "shape God" in order to survive. The \'Parable of the Sower\' is the foundational text of this new religion, which Lauren calls "Earthseed", that emphasizes the inevitability of change and the need for humanity to take an active role in shaping its own future. This parable is a central thematic element of the novel, representing the protagonist\'s search for meaning and purpose in the face of societal upheaval.', metadata={'score': 0.8466987311840057, 'uuid': '1f1a44eb-ebd8-4617-ac14-0281099bd770', 'created_at': '2024-05-10T05:02:07.541073Z', 'token_count': 146}),
  Document(page_content='The dialog discusses the central themes of Octavia Butler\'s acclaimed science fiction novel "Parable of the Sower." The main theme is survival in the face of drastic societal collapse, and the importance of adaptability, community, and the human capacity for change. The "Parable of the Sower," a biblical parable, serves as a metaphorical framework for the novel, illustrating the need for receptivity and preparedness when confronting transformative upheaval.', metadata={'score': 0.8283970355987549, 'uuid': '4158a750-3ccd-45ce-ab88-fed5ba68b755', 'created_at': '2024-05-10T05:02:06.510068Z', 'token_count': 91})]
 ```
 
+## 相关
 
-
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

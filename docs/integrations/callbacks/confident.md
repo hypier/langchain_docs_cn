@@ -1,50 +1,49 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/callbacks/confident.ipynb
 ---
+
 # Confident
 
->[DeepEval](https://confident-ai.com) package for unit testing LLMs.
-> Using Confident, everyone can build robust language models through faster iterations
-> using both unit testing and integration testing. We provide support for each step in the iteration
-> from synthetic data creation to testing.
+>[DeepEval](https://confident-ai.com) 包用于 LLM 的单元测试。
+> 使用 Confident，任何人都可以通过更快的迭代构建稳健的语言模型，
+> 采用单元测试和集成测试。我们为每个迭代步骤提供支持，
+> 从合成数据创建到测试。
 
+在本指南中，我们将演示如何测试和衡量 LLM 的性能。我们展示了如何使用我们的回调来衡量性能，以及如何定义自己的指标并将其记录到我们的仪表板中。
 
-In this guide we will demonstrate how to test and measure LLMs in performance. We show how you can use our callback to measure performance and how you can define your own metric and log them into our dashboard.
+DeepEval 还提供：
+- 如何生成合成数据
+- 如何衡量性能
+- 一个仪表板，用于监控和审查结果随时间的变化
 
-DeepEval also offers:
-- How to generate synthetic data
-- How to measure performance
-- A dashboard to monitor and review results over time
-
-## Installation and Setup
+## 安装与设置
 
 
 ```python
 %pip install --upgrade --quiet  langchain langchain-openai langchain-community deepeval langchain-chroma
 ```
 
-### Getting API Credentials
+### 获取 API 凭证
 
-To get the DeepEval API credentials, follow the next steps:
+要获取 DeepEval API 凭证，请按照以下步骤操作：
 
-1. Go to https://app.confident-ai.com
-2. Click on "Organization"
-3. Copy the API Key.
+1. 访问 https://app.confident-ai.com
+2. 点击“组织”
+3. 复制 API 密钥。
 
-
-When you log in, you will also be asked to set the `implementation` name. The implementation name is required to describe the type of implementation. (Think of what you want to call your project. We recommend making it descriptive.)
+登录时，系统还会要求您设置 `implementation` 名称。实现名称用于描述实现的类型。（考虑一下您想为项目命名什么。我们建议使用描述性名称。）
 
 
 ```python
 !deepeval login
 ```
 
-### Setup DeepEval
+### 设置 DeepEval
 
-You can, by default, use the `DeepEvalCallbackHandler` to set up the metrics you want to track. However, this has limited support for metrics at the moment (more to be added soon). It currently supports:
-- [Answer Relevancy](https://docs.confident-ai.com/docs/measuring_llm_performance/answer_relevancy)
-- [Bias](https://docs.confident-ai.com/docs/measuring_llm_performance/debias)
-- [Toxicness](https://docs.confident-ai.com/docs/measuring_llm_performance/non_toxic)
+默认情况下，您可以使用 `DeepEvalCallbackHandler` 来设置您想要跟踪的指标。然而，目前对指标的支持有限（将很快添加更多）。目前支持：
+- [答案相关性](https://docs.confident-ai.com/docs/measuring_llm_performance/answer_relevancy)
+- [偏见](https://docs.confident-ai.com/docs/measuring_llm_performance/debias)
+- [有毒性](https://docs.confident-ai.com/docs/measuring_llm_performance/non_toxic)
 
 
 ```python
@@ -54,10 +53,9 @@ from deepeval.metrics.answer_relevancy import AnswerRelevancy
 answer_relevancy_metric = AnswerRelevancy(minimum_score=0.5)
 ```
 
-## Get Started
+## 开始使用
 
-To use the `DeepEvalCallbackHandler`, we need the `implementation_name`. 
-
+要使用 `DeepEvalCallbackHandler`，我们需要 `implementation_name`。 
 
 ```python
 from langchain_community.callbacks.confident_callback import DeepEvalCallbackHandler
@@ -67,10 +65,9 @@ deepeval_callback = DeepEvalCallbackHandler(
 )
 ```
 
-### Scenario 1: Feeding into LLM
+### 场景 1：输入 LLM
 
-You can then feed it into your LLM with OpenAI.
-
+然后您可以将其输入到您的 LLM 中，使用 OpenAI。
 
 ```python
 from langchain_openai import OpenAI
@@ -88,30 +85,26 @@ output = llm.generate(
 )
 ```
 
-
-
 ```output
 LLMResult(generations=[[Generation(text='\n\nQ: What did the fish say when he hit the wall? \nA: Dam.', generation_info={'finish_reason': 'stop', 'logprobs': None})], [Generation(text='\n\nThe Moon \n\nThe moon is high in the midnight sky,\nSparkling like a star above.\nThe night so peaceful, so serene,\nFilling up the air with love.\n\nEver changing and renewing,\nA never-ending light of grace.\nThe moon remains a constant view,\nA reminder of life’s gentle pace.\n\nThrough time and space it guides us on,\nA never-fading beacon of hope.\nThe moon shines down on us all,\nAs it continues to rise and elope.', generation_info={'finish_reason': 'stop', 'logprobs': None})], [Generation(text='\n\nQ. What did one magnet say to the other magnet?\nA. "I find you very attractive!"', generation_info={'finish_reason': 'stop', 'logprobs': None})], [Generation(text="\n\nThe world is charged with the grandeur of God.\nIt will flame out, like shining from shook foil;\nIt gathers to a greatness, like the ooze of oil\nCrushed. Why do men then now not reck his rod?\n\nGenerations have trod, have trod, have trod;\nAnd all is seared with trade; bleared, smeared with toil;\nAnd wears man's smudge and shares man's smell: the soil\nIs bare now, nor can foot feel, being shod.\n\nAnd for all this, nature is never spent;\nThere lives the dearest freshness deep down things;\nAnd though the last lights off the black West went\nOh, morning, at the brown brink eastward, springs —\n\nBecause the Holy Ghost over the bent\nWorld broods with warm breast and with ah! bright wings.\n\n~Gerard Manley Hopkins", generation_info={'finish_reason': 'stop', 'logprobs': None})], [Generation(text='\n\nQ: What did one ocean say to the other ocean?\nA: Nothing, they just waved.', generation_info={'finish_reason': 'stop', 'logprobs': None})], [Generation(text="\n\nA poem for you\n\nOn a field of green\n\nThe sky so blue\n\nA gentle breeze, the sun above\n\nA beautiful world, for us to love\n\nLife is a journey, full of surprise\n\nFull of joy and full of surprise\n\nBe brave and take small steps\n\nThe future will be revealed with depth\n\nIn the morning, when dawn arrives\n\nA fresh start, no reason to hide\n\nSomewhere down the road, there's a heart that beats\n\nBelieve in yourself, you'll always succeed.", generation_info={'finish_reason': 'stop', 'logprobs': None})]], llm_output={'token_usage': {'completion_tokens': 504, 'total_tokens': 528, 'prompt_tokens': 24}, 'model_name': 'text-davinci-003'})
 ```
 
-
-You can then check the metric if it was successful by calling the `is_successful()` method.
-
+您可以通过调用 `is_successful()` 方法来检查指标是否成功。
 
 ```python
 answer_relevancy_metric.is_successful()
 # returns True/False
 ```
 
-Once you have ran that, you should be able to see our dashboard below. 
+一旦您运行了该代码，您应该能够看到下面的仪表板。
 
 ![Dashboard](https://docs.confident-ai.com/assets/images/dashboard-screenshot-b02db73008213a211b1158ff052d969e.png)
 
-### Scenario 2: Tracking an LLM in a chain without callbacks
+### 场景 2：在没有回调的情况下跟踪 LLM 链
 
-To track an LLM in a chain without callbacks, you can plug into it at the end.
+要在没有回调的情况下跟踪 LLM 链，可以在链的末尾插入它。
 
-We can start by defining a simple chain as shown below.
+我们可以通过下面的示例定义一个简单的链。
 
 
 ```python
@@ -144,12 +137,12 @@ qa = RetrievalQA.from_chain_type(
     retriever=docsearch.as_retriever(),
 )
 
-# Providing a new question-answering pipeline
+# 提供一个新的问答管道
 query = "Who is the president?"
 result = qa.run(query)
 ```
 
-After defining a chain, you can then manually check for answer similarity.
+定义链后，您可以手动检查答案的相关性。
 
 
 ```python
@@ -157,10 +150,10 @@ answer_relevancy_metric.measure(result, query)
 answer_relevancy_metric.is_successful()
 ```
 
-### What's next?
+### 接下来是什么？
 
-You can create your own custom metrics [here](https://docs.confident-ai.com/docs/quickstart/custom-metrics). 
+您可以在 [这里](https://docs.confident-ai.com/docs/quickstart/custom-metrics) 创建您自己的自定义指标。
 
-DeepEval also offers other features such as being able to [automatically create unit tests](https://docs.confident-ai.com/docs/quickstart/synthetic-data-creation), [tests for hallucination](https://docs.confident-ai.com/docs/measuring_llm_performance/factual_consistency).
+DeepEval 还提供其他功能，例如能够 [自动创建单元测试](https://docs.confident-ai.com/docs/quickstart/synthetic-data-creation) 和 [幻觉测试](https://docs.confident-ai.com/docs/measuring_llm_performance/factual_consistency)。
 
-If you are interested, check out our Github repository here [https://github.com/confident-ai/deepeval](https://github.com/confident-ai/deepeval). We welcome any PRs and discussions on how to improve LLM performance.
+如果您感兴趣，请查看我们的 GitHub 仓库 [https://github.com/confident-ai/deepeval](https://github.com/confident-ai/deepeval)。我们欢迎任何 PR 和关于如何提高 LLM 性能的讨论。

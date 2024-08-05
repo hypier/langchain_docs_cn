@@ -1,14 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/output_parser_fixing.ipynb
 ---
-# How to use the output-fixing parser
 
-This output parser wraps another output parser, and in the event that the first one fails it calls out to another LLM to fix any errors.
+# 如何使用输出修复解析器
 
-But we can do other things besides throw errors. Specifically, we can pass the misformatted output, along with the formatted instructions, to the model and ask it to fix it.
+这个输出解析器包装了另一个输出解析器，如果第一个解析器失败，它会调用另一个 LLM 来修复任何错误。
 
-For this example, we'll use the above Pydantic output parser. Here's what happens if we pass it a result that does not comply with the schema:
+但我们可以做其他事情，而不仅仅是抛出错误。具体来说，我们可以将格式错误的输出以及格式化的指令传递给模型，并请求它进行修复。
 
+在这个例子中，我们将使用上述 Pydantic 输出解析器。如果我们传递一个不符合模式的结果，会发生以下情况：
 
 ```python
 from typing import List
@@ -18,23 +18,20 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_openai import ChatOpenAI
 ```
 
-
 ```python
 class Actor(BaseModel):
-    name: str = Field(description="name of an actor")
-    film_names: List[str] = Field(description="list of names of films they starred in")
+    name: str = Field(description="演员的名字")
+    film_names: List[str] = Field(description="他们参演的电影名称列表")
 
 
-actor_query = "Generate the filmography for a random actor."
+actor_query = "生成一位随机演员的电影作品列表。"
 
 parser = PydanticOutputParser(pydantic_object=Actor)
 ```
 
-
 ```python
 misformatted = "{'name': 'Tom Hanks', 'film_names': ['Forrest Gump']}"
 ```
-
 
 ```python
 parser.parse(misformatted)
@@ -55,8 +52,8 @@ File ~/.pyenv/versions/3.10.1/lib/python3.10/json/__init__.py:359, in loads(s, c
 --> 359 return cls(**kw).decode(s)
 ``````output
 File ~/.pyenv/versions/3.10.1/lib/python3.10/json/decoder.py:337, in JSONDecoder.decode(self, s, _w)
-    333 """Return the Python representation of ``s`` (a ``str`` instance
-    334 containing a JSON document).
+    333 """返回 ``s`` 的 Python 表示（一个 ``str`` 实例
+    334 包含一个 JSON 文档）。
     335 
     336 """
 --> 337 obj, end = self.raw_decode(s, idx=_w(s, 0).end())
@@ -70,7 +67,7 @@ File ~/.pyenv/versions/3.10.1/lib/python3.10/json/decoder.py:353, in JSONDecoder
 JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
 ``````output
 
-During handling of the above exception, another exception occurred:
+在处理上述异常期间，发生了另一个异常：
 ``````output
 OutputParserException                     Traceback (most recent call last)
 ``````output
@@ -79,14 +76,13 @@ Cell In[4], line 1
 ``````output
 File ~/workplace/langchain/libs/langchain/langchain/output_parsers/pydantic.py:35, in PydanticOutputParser.parse(self, text)
      33 name = self.pydantic_object.__name__
-     34 msg = f"Failed to parse {name} from completion {text}. Got: {e}"
+     34 msg = f"无法从完成 {text} 中解析 {name}。得到：{e}"
 ---> 35 raise OutputParserException(msg, llm_output=text)
 ``````output
-OutputParserException: Failed to parse Actor from completion {'name': 'Tom Hanks', 'film_names': ['Forrest Gump']}. Got: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+OutputParserException: 无法从完成 {'name': 'Tom Hanks', 'film_names': ['Forrest Gump']} 中解析 Actor。得到：期待属性名称用双引号括起来：第 1 行 第 2 列（字符 1）
 ```
 
-Now we can construct and use a `OutputFixingParser`. This output parser takes as an argument another output parser but also an LLM with which to try to correct any formatting mistakes.
-
+现在我们可以构建并使用 `OutputFixingParser`。这个输出解析器将另一个输出解析器作为参数，同时也将一个 LLM 用于尝试修正任何格式错误。
 
 ```python
 from langchain.output_parsers import OutputFixingParser
@@ -94,16 +90,12 @@ from langchain.output_parsers import OutputFixingParser
 new_parser = OutputFixingParser.from_llm(parser=parser, llm=ChatOpenAI())
 ```
 
-
 ```python
 new_parser.parse(misformatted)
 ```
-
-
 
 ```output
 Actor(name='Tom Hanks', film_names=['Forrest Gump'])
 ```
 
-
-Find out api documentation for [OutputFixingParser](https://api.python.langchain.com/en/latest/output_parsers/langchain.output_parsers.fix.OutputFixingParser.html#langchain.output_parsers.fix.OutputFixingParser).
+查找 [OutputFixingParser](https://api.python.langchain.com/en/latest/output_parsers/langchain.output_parsers.fix.OutputFixingParser.html#langchain.output_parsers.fix.OutputFixingParser) 的 API 文档。

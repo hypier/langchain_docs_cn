@@ -1,6 +1,7 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/airtable.ipynb
 ---
+
 # Airtable
 
 
@@ -13,9 +14,9 @@ custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs
 from langchain_community.document_loaders import AirtableLoader
 ```
 
-* Get your API key [here](https://support.airtable.com/docs/creating-and-using-api-keys-and-access-tokens).
-* Get ID of your base [here](https://airtable.com/developers/web/api/introduction).
-* Get your table ID from the table url as shown [here](https://www.highviewapps.com/kb/where-can-i-find-the-airtable-base-id-and-table-id/#:~:text=Both%20the%20Airtable%20Base%20ID,URL%20that%20begins%20with%20tbl).
+* 在[这里](https://support.airtable.com/docs/creating-and-using-api-keys-and-access-tokens)获取您的API密钥。
+* 在[这里](https://airtable.com/developers/web/api/introduction)获取您的基础ID。
+* 从表的URL中获取您的表ID，如[这里](https://www.highviewapps.com/kb/where-can-i-find-the-airtable-base-id-and-table-id/#:~:text=Both%20the%20Airtable%20Base%20ID,URL%20that%20begins%20with%20tbl)所示。
 
 
 ```python
@@ -31,7 +32,7 @@ loader = AirtableLoader(api_key, table_id, base_id, view=view)
 docs = loader.load()
 ```
 
-Returns each table row as `dict`.
+返回每个表行作为 `dict`。
 
 
 ```python
@@ -60,9 +61,7 @@ eval(docs[0].page_content)
   'Name': 'Document Splitters'}}
 ```
 
+## 相关
 
-
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

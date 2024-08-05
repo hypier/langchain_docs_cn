@@ -1,14 +1,15 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/titan_takeoff.ipynb
 ---
+
 # Titan Takeoff
 
-`TitanML` helps businesses build and deploy better, smaller, cheaper, and faster NLP models through our training, compression, and inference optimization platform.
+`TitanML` 帮助企业通过我们的训练、压缩和推理优化平台构建和部署更好、更小、更便宜和更快的 NLP 模型。
 
-Our inference server, [Titan Takeoff](https://docs.titanml.co/docs/intro) enables deployment of LLMs locally on your hardware in a single command. Most generative model architectures are supported, such as Falcon, Llama 2, GPT2, T5 and many more. If you experience trouble with a specific model, please let us know at hello@titanml.co.
+我们的推理服务器 [Titan Takeoff](https://docs.titanml.co/docs/intro) 使您能够通过单个命令在本地硬件上部署 LLM。大多数生成模型架构都得到支持，如 Falcon、Llama 2、GPT2、T5 等。如果您在使用特定模型时遇到问题，请通过 hello@titanml.co 告诉我们。
 
-## Example usage
-Here are some helpful examples to get started using Titan Takeoff Server. You need to make sure Takeoff Server has been started in the background before running these commands. For more information see [docs page for launching Takeoff](https://docs.titanml.co/docs/Docs/launching/).
+## 示例用法
+以下是一些有用的示例，可以帮助您开始使用 Titan Takeoff Server。在运行这些命令之前，您需要确保 Takeoff Server 已在后台启动。有关更多信息，请参见 [启动 Takeoff 的文档页面](https://docs.titanml.co/docs/Docs/launching/)。
 
 
 ```python
@@ -20,11 +21,9 @@ from langchain_core.callbacks import CallbackManager, StreamingStdOutCallbackHan
 from langchain_core.prompts import PromptTemplate
 ```
 
-### Example 1
+### 示例 1
 
-Basic use assuming Takeoff is running on your machine using its default ports (ie localhost:3000).
-
-
+基本用法，假设 Takeoff 在您的机器上运行，并使用默认端口（即 localhost:3000）。
 
 ```python
 llm = TitanTakeoff()
@@ -32,9 +31,9 @@ output = llm.invoke("What is the weather in London in August?")
 print(output)
 ```
 
-### Example 2
+### 示例 2
 
-Specifying a port and other generation parameters
+指定端口和其他生成参数
 
 
 ```python
@@ -56,9 +55,9 @@ output = llm.invoke(
 print(output)
 ```
 
-### Example 3
+### 示例 3
 
-Using generate for multiple inputs
+使用 generate 处理多个输入
 
 
 ```python
@@ -67,9 +66,9 @@ rich_output = llm.generate(["What is Deep Learning?", "What is Machine Learning?
 print(rich_output.generations)
 ```
 
-### Example 4
+### 示例 4
 
-Streaming output
+流式输出
 
 
 ```python
@@ -81,9 +80,9 @@ output = llm.invoke(prompt)
 print(output)
 ```
 
-### Example 5
+### 示例 5
 
-Using LCEL
+使用 LCEL
 
 
 ```python
@@ -94,10 +93,9 @@ output = chain.invoke({"topic": "the universe"})
 print(output)
 ```
 
-### Example 6
+### 示例 6
 
-Starting readers using TitanTakeoff Python Wrapper. If you haven't created any readers with first launching Takeoff, or you want to add another you can do so when you initialize the TitanTakeoff object. Just pass a list of model configs you want to start as the `models` parameter.
-
+使用 TitanTakeoff Python Wrapper 启动读取器。如果您在首次启动 Takeoff 时尚未创建任何读取器，或者您想添加另一个读取器，可以在初始化 TitanTakeoff 对象时进行。只需将您想要启动的模型配置列表作为 `models` 参数传递即可。
 
 ```python
 # Model config for the llama model, where you can specify the following parameters:
@@ -122,8 +120,7 @@ output = llm.invoke(prompt, consumer_group="llama")
 print(output)
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

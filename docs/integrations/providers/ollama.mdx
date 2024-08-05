@@ -1,19 +1,16 @@
 # Ollama
 
->[Ollama](https://ollama.com/) allows you to run open-source large language models, 
-> such as LLaMA2, locally.
+>[Ollama](https://ollama.com/) 允许您在本地运行开源的大型语言模型，例如 LLaMA2。
 >
->`Ollama` bundles model weights, configuration, and data into a single package, defined by a Modelfile. 
->It optimizes setup and configuration details, including GPU usage.
->For a complete list of supported models and model variants, see the [Ollama model library](https://ollama.ai/library).
+>`Ollama` 将模型权重、配置和数据打包成一个由 Modelfile 定义的单一包。 
+>它优化了设置和配置细节，包括 GPU 使用。
+>有关支持的模型和模型变体的完整列表，请参见 [Ollama 模型库](https://ollama.ai/library)。
 
-See [this guide](/docs/how_to/local_llms) for more details
-on how to use `Ollama` with LangChain.
+有关如何将 `Ollama` 与 LangChain 一起使用的更多详细信息，请参见 [本指南](/docs/how_to/local_llms)。
 
-## Installation and Setup
+## 安装和设置
 
-Follow [these instructions](https://github.com/ollama/ollama?tab=readme-ov-file#ollama)
-to set up and run a local Ollama instance.
+按照 [这些说明](https://github.com/ollama/ollama?tab=readme-ov-file#ollama) 设置并运行本地 Ollama 实例。
 
 ## LLM
 
@@ -21,9 +18,9 @@ to set up and run a local Ollama instance.
 from langchain_community.llms import Ollama
 ```
 
-See the notebook example [here](/docs/integrations/llms/ollama).
+查看笔记本示例 [这里](/docs/integrations/llms/ollama)。
 
-## Chat Models
+## 聊天模型
 
 ### Chat Ollama
 
@@ -31,22 +28,20 @@ See the notebook example [here](/docs/integrations/llms/ollama).
 from langchain_community.chat_models import ChatOllama
 ```
 
-See the notebook example [here](/docs/integrations/chat/ollama).
+请查看笔记本示例 [这里](/docs/integrations/chat/ollama)。
 
-### Ollama functions
+### Ollama 函数
 
 ```python
 from langchain_experimental.llms.ollama_functions import OllamaFunctions
 ```
 
-See the notebook example [here](/docs/integrations/chat/ollama_functions).
+请参阅笔记本示例 [这里](/docs/integrations/chat/ollama_functions)。
 
-## Embedding models
+## 嵌入模型
 
 ```python
 from langchain_community.embeddings import OllamaEmbeddings
 ```
 
-See the notebook example [here](/docs/integrations/text_embedding/ollama).
-
-
+请参阅笔记本示例 [这里](/docs/integrations/text_embedding/ollama)。

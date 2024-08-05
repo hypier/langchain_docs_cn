@@ -1,19 +1,19 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/yi.ipynb
 ---
-# Yi
-[01.AI](https://www.lingyiwanwu.com/en), founded by Dr. Kai-Fu Lee, is a global company at the forefront of AI 2.0. They offer cutting-edge large language models, including the Yi series, which range from 6B to hundreds of billions of parameters. 01.AI also provides multimodal models, an open API platform, and open-source options like Yi-34B/9B/6B and Yi-VL.
 
+# Yi
+[01.AI](https://www.lingyiwanwu.com/en)由李开复博士创立，是一家处于AI 2.0前沿的全球公司。他们提供尖端的大型语言模型，包括Yi系列，参数范围从6B到数百亿。01.AI还提供多模态模型、开放API平台以及开源选项，如Yi-34B/9B/6B和Yi-VL。
 
 ```python
 ## Installing the langchain packages needed to use the integration
 %pip install -qU langchain-community
 ```
 
-## Prerequisite
-An API key is required to access Yi LLM API. Visit https://www.lingyiwanwu.com/ to get your API key. When applying for the API key, you need to specify whether it's for domestic (China) or international use.
+## 前提条件
+访问 Yi LLM API 需要一个 API 密钥。请访问 https://www.lingyiwanwu.com/ 获取您的 API 密钥。在申请 API 密钥时，您需要指定是用于国内（中国）还是国际使用。
 
-## Use Yi LLM
+## 使用 Yi LLM
 
 
 ```python
@@ -23,24 +23,24 @@ os.environ["YI_API_KEY"] = "YOUR_API_KEY"
 
 from langchain_community.llms import YiLLM
 
-# Load the model
+# 加载模型
 llm = YiLLM(model="yi-large")
 
-# You can specify the region if needed (default is "auto")
-# llm = YiLLM(model="yi-large", region="domestic")  # or "international"
+# 如有需要可以指定区域（默认是 "auto"）
+# llm = YiLLM(model="yi-large", region="domestic")  # 或 "international"
 
-# Basic usage
-res = llm.invoke("What's your name?")
+# 基本用法
+res = llm.invoke("你叫什么名字？")
 print(res)
 ```
 
 
 ```python
-# Generate method
+# 生成方法
 res = llm.generate(
     prompts=[
-        "Explain the concept of large language models.",
-        "What are the potential applications of AI in healthcare?",
+        "解释大语言模型的概念。",
+        "人工智能在医疗保健中的潜在应用是什么？",
     ]
 )
 print(res)
@@ -48,20 +48,20 @@ print(res)
 
 
 ```python
-# Streaming
-for chunk in llm.stream("Describe the key features of the Yi language model series."):
+# 流式传输
+for chunk in llm.stream("描述 Yi 语言模型系列的关键特性。"):
     print(chunk, end="", flush=True)
 ```
 
 
 ```python
-# Asynchronous streaming
+# 异步流式传输
 import asyncio
 
 
 async def run_aio_stream():
     async for chunk in llm.astream(
-        "Write a brief on the future of AI according to Dr. Kai-Fu Lee's vision."
+        "根据李开复博士的愿景，写一篇关于人工智能未来的简报。"
     ):
         print(chunk, end="", flush=True)
 
@@ -71,7 +71,7 @@ asyncio.run(run_aio_stream())
 
 
 ```python
-# Adjusting parameters
+# 调整参数
 llm_with_params = YiLLM(
     model="yi-large",
     temperature=0.7,
@@ -79,13 +79,12 @@ llm_with_params = YiLLM(
 )
 
 res = llm_with_params(
-    "Propose an innovative AI application that could benefit society."
+    "提出一个可以惠及社会的创新 AI 应用。"
 )
 print(res)
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

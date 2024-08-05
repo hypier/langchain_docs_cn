@@ -1,15 +1,16 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/sap_hanavector.ipynb
 ---
+
 # SAP HANA Cloud Vector Engine
 
->[SAP HANA Cloud Vector Engine](https://www.sap.com/events/teched/news-guide/ai.html#article8) is a vector store fully integrated into the `SAP HANA Cloud` database.
+>[SAP HANA Cloud Vector Engine](https://www.sap.com/events/teched/news-guide/ai.html#article8) 是一个完全集成到 `SAP HANA Cloud` 数据库中的向量存储。
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
+您需要使用 `pip install -qU langchain-community` 安装 `langchain-community` 以使用此集成。
 
-## Setting up
+## 设置
 
-Installation of the HANA database driver.
+安装 HANA 数据库驱动程序。
 
 
 ```python
@@ -17,7 +18,7 @@ Installation of the HANA database driver.
 %pip install --upgrade --quiet  hdbcli
 ```
 
-For `OpenAIEmbeddings` we use the OpenAI API key from the environment.
+对于 `OpenAIEmbeddings`，我们使用来自环境的 OpenAI API 密钥。
 
 
 ```python
@@ -26,7 +27,7 @@ import os
 # os.environ["OPENAI_API_KEY"] = "Your OpenAI API key"
 ```
 
-Create a database connection to a HANA Cloud instance.
+创建到 HANA Cloud 实例的数据库连接。
 
 
 ```python
@@ -43,10 +44,9 @@ connection = dbapi.connect(
 )
 ```
 
-## Example
+## 示例
 
-Load the sample document "state_of_the_union.txt" and create chunks from it.
-
+加载示例文档 "state_of_the_union.txt" 并从中创建块。
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -58,13 +58,12 @@ from langchain_text_splitters import CharacterTextSplitter
 text_documents = TextLoader("../../how_to/state_of_the_union.txt").load()
 text_splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=0)
 text_chunks = text_splitter.split_documents(text_documents)
-print(f"Number of document chunks: {len(text_chunks)}")
+print(f"文档块的数量: {len(text_chunks)}")
 
 embeddings = OpenAIEmbeddings()
 ```
 
-Create a LangChain VectorStore interface for the HANA database and specify the table (collection) to use for accessing the vector embeddings
-
+为 HANA 数据库创建一个 LangChain VectorStore 接口，并指定用于访问向量嵌入的表（集合）。
 
 ```python
 db = HanaDB(
@@ -72,23 +71,20 @@ db = HanaDB(
 )
 ```
 
-Add the loaded document chunks to the table. For this example, we delete any previous content from the table which might exist from previous runs.
-
+将加载的文档块添加到表中。对于此示例，我们删除表中可能存在的任何先前内容。
 
 ```python
-# Delete already existing documents from the table
+# 删除表中已存在的文档
 db.delete(filter={})
 
-# add the loaded document chunks
+# 添加加载的文档块
 db.add_documents(text_chunks)
 ```
 
-Perform a query to get the two best-matching document chunks from the ones that were added in the previous step.
-By default "Cosine Similarity" is used for the search.
-
+执行查询以获取在上一步中添加的两个最佳匹配文档块。默认情况下，搜索使用 "余弦相似度"。
 
 ```python
-query = "What did the president say about Ketanji Brown Jackson"
+query = "总统对 Ketanji Brown Jackson 说了什么"
 docs = db.similarity_search(query, k=2)
 
 for doc in docs:
@@ -96,8 +92,7 @@ for doc in docs:
     print(doc.page_content)
 ```
 
-Query the same content with "Euclidian Distance". The results shoud be the same as with "Cosine Similarity".
-
+使用 "欧几里得距离" 查询相同的内容。结果应与 "余弦相似度" 相同。
 
 ```python
 from langchain_community.vectorstores.utils import DistanceStrategy
@@ -109,17 +104,16 @@ db = HanaDB(
     table_name="STATE_OF_THE_UNION",
 )
 
-query = "What did the president say about Ketanji Brown Jackson"
+query = "总统对 Ketanji Brown Jackson 说了什么"
 docs = db.similarity_search(query, k=2)
 for doc in docs:
     print("-" * 80)
     print(doc.page_content)
 ```
 
-## Maximal Marginal Relevance Search (MMR)
+## 最大边际相关性搜索 (MMR)
 
-`Maximal marginal relevance` optimizes for similarity to query AND diversity among selected documents. The first 20 (fetch_k) items will be retrieved from the DB. The MMR algorithm will then find the best 2 (k) matches.
-
+`最大边际相关性` 在优化查询相似性和所选文档的多样性之间进行平衡。将从数据库中检索前 20 (fetch_k) 项。然后，MMR 算法将找到最佳的 2 (k) 个匹配项。
 
 ```python
 docs = db.max_marginal_relevance_search(query, k=2, fetch_k=20)
@@ -128,7 +122,7 @@ for doc in docs:
     print(doc.page_content)
 ```
 
-## Basic Vectorstore Operations
+## 基本向量存储操作
 
 
 ```python
@@ -136,11 +130,11 @@ db = HanaDB(
     connection=connection, embedding=embeddings, table_name="LANGCHAIN_DEMO_BASIC"
 )
 
-# Delete already existing documents from the table
+# 从表中删除已经存在的文档
 db.delete(filter={})
 ```
 
-We can add simple text documents to the existing table.
+我们可以将简单的文本文档添加到现有表中。
 
 
 ```python
@@ -148,7 +142,7 @@ docs = [Document(page_content="Some text"), Document(page_content="Other docs")]
 db.add_documents(docs)
 ```
 
-Add documents with metadata.
+添加带有元数据的文档。
 
 
 ```python
@@ -165,47 +159,47 @@ docs = [
 db.add_documents(docs)
 ```
 
-Query documents with specific metadata.
+查询具有特定元数据的文档。
 
 
 ```python
 docs = db.similarity_search("foobar", k=2, filter={"quality": "bad"})
-# With filtering on "quality"=="bad", only one document should be returned
+# 通过过滤“quality”==“bad”，应该只返回一个文档
 for doc in docs:
     print("-" * 80)
     print(doc.page_content)
     print(doc.metadata)
 ```
 
-Delete documents with specific metadata.
+删除具有特定元数据的文档。
 
 
 ```python
 db.delete(filter={"quality": "bad"})
 
-# Now the similarity search with the same filter will return no results
+# 现在使用相同过滤条件的相似性搜索将返回零结果
 docs = db.similarity_search("foobar", k=2, filter={"quality": "bad"})
 print(len(docs))
 ```
 
-## Advanced filtering
-In addition to the basic value-based filtering capabilities, it is possible to use more advanced filtering.
-The table below shows the available filter operators.
+## 高级过滤
+除了基本的基于值的过滤功能外，还可以使用更高级的过滤。
+下表显示了可用的过滤运算符。
 
-| Operator | Semantic                 |
+| 运算符   | 语义                     |
 |----------|-------------------------|
-| `$eq`    | Equality (==)           |
-| `$ne`    | Inequality (!=)         |
-| `$lt`    | Less than (<)           |
-| `$lte`   | Less than or equal (<=) |
-| `$gt`    | Greater than (>)        |
-| `$gte`   | Greater than or equal (>=) |
-| `$in`    | Contained in a set of given values  (in)    |
-| `$nin`   | Not contained in a set of given values  (not in)  |
-| `$between` | Between the range of two boundary values |
-| `$like`  | Text equality based on the "LIKE" semantics in SQL (using "%" as wildcard)  |
-| `$and`   | Logical "and", supporting 2 or more operands |
-| `$or`    | Logical "or", supporting 2 or more operands |
+| `$eq`    | 等于 (==)               |
+| `$ne`    | 不等于 (!=)             |
+| `$lt`    | 小于 (<)                 |
+| `$lte`   | 小于或等于 (<=)         |
+| `$gt`    | 大于 (>)                |
+| `$gte`   | 大于或等于 (>=)         |
+| `$in`    | 包含在给定值的集合中 (in) |
+| `$nin`   | 不包含在给定值的集合中 (not in) |
+| `$between` | 在两个边界值的范围内   |
+| `$like`  | 基于 SQL 中 "LIKE" 语义的文本相等 (使用 "%" 作为通配符) |
+| `$and`   | 逻辑 "与"，支持 2 个或更多操作数 |
+| `$or`    | 逻辑 "或"，支持 2 个或更多操作数 |
 
 
 ```python
@@ -244,7 +238,7 @@ def print_filter_result(result):
         print(doc.metadata)
 ```
 
-Filtering with `$ne`, `$gt`, `$gte`, `$lt`, `$lte`
+使用 `$ne`、`$gt`、`$gte`、`$lt`、`$lte` 进行过滤
 
 
 ```python
@@ -269,7 +263,7 @@ print(f"Filter: {advanced_filter}")
 print_filter_result(db.similarity_search("just testing", k=5, filter=advanced_filter))
 ```
 
-Filtering with `$between`, `$in`, `$nin`
+使用 `$between`、`$in`、`$nin` 进行过滤
 
 
 ```python
@@ -286,7 +280,7 @@ print(f"Filter: {advanced_filter}")
 print_filter_result(db.similarity_search("just testing", k=5, filter=advanced_filter))
 ```
 
-Text filtering with `$like`
+使用 `$like` 进行文本过滤
 
 
 ```python
@@ -299,7 +293,7 @@ print(f"Filter: {advanced_filter}")
 print_filter_result(db.similarity_search("just testing", k=5, filter=advanced_filter))
 ```
 
-Combined filtering with `$and`, `$or`
+使用 `$and`、`$or` 进行组合过滤
 
 
 ```python
@@ -316,45 +310,43 @@ print(f"Filter: {advanced_filter}")
 print_filter_result(db.similarity_search("just testing", k=5, filter=advanced_filter))
 ```
 
-## Using a VectorStore as a retriever in chains for retrieval augmented generation (RAG)
-
+## 使用 VectorStore 作为链中的检索器进行检索增强生成 (RAG)
 
 ```python
 from langchain.memory import ConversationBufferMemory
 from langchain_openai import ChatOpenAI
 
-# Access the vector DB with a new table
+# 通过新表访问向量数据库
 db = HanaDB(
     connection=connection,
     embedding=embeddings,
     table_name="LANGCHAIN_DEMO_RETRIEVAL_CHAIN",
 )
 
-# Delete already existing entries from the table
+# 删除表中已存在的条目
 db.delete(filter={})
 
-# add the loaded document chunks from the "State Of The Union" file
+# 从“国情咨文”文件中添加加载的文档片段
 db.add_documents(text_chunks)
 
-# Create a retriever instance of the vector store
+# 创建向量存储的检索器实例
 retriever = db.as_retriever()
 ```
 
-Define the prompt.
-
+定义提示。
 
 ```python
 from langchain_core.prompts import PromptTemplate
 
 prompt_template = """
-You are an expert in state of the union topics. You are provided multiple context items that are related to the prompt you have to answer.
-Use the following pieces of context to answer the question at the end.
+您是国情咨文主题的专家。您将获得多个与您必须回答的提示相关的上下文项目。
+使用以下上下文内容回答最后的问题。
 
 '''
 {context}
 '''
 
-Question: {question}
+问题: {question}
 """
 
 PROMPT = PromptTemplate(
@@ -363,8 +355,7 @@ PROMPT = PromptTemplate(
 chain_type_kwargs = {"prompt": PROMPT}
 ```
 
-Create the ConversationalRetrievalChain, which handles the chat history and the retrieval of similar document chunks to be added to the prompt.
-
+创建 ConversationalRetrievalChain，它处理聊天历史和检索类似的文档片段以添加到提示中。
 
 ```python
 from langchain.chains import ConversationalRetrievalChain
@@ -383,24 +374,22 @@ qa_chain = ConversationalRetrievalChain.from_llm(
 )
 ```
 
-Ask the first question (and verify how many text chunks have been used).
-
+提出第一个问题（并验证使用了多少文本片段）。
 
 ```python
-question = "What about Mexico and Guatemala?"
+question = "关于墨西哥和危地马拉怎么样？"
 
 result = qa_chain.invoke({"question": question})
-print("Answer from LLM:")
+print("来自 LLM 的回答:")
 print("================")
 print(result["answer"])
 
 source_docs = result["source_documents"]
 print("================")
-print(f"Number of used source document chunks: {len(source_docs)}")
+print(f"使用的源文档片段数量: {len(source_docs)}")
 ```
 
-Examine the used chunks of the chain in detail. Check if the best ranked chunk contains info about "Mexico and Guatemala" as mentioned in the question.
-
+详细检查链中使用的片段。检查排名最高的片段是否包含关于“墨西哥和危地马拉”的信息，如问题中提到的。
 
 ```python
 for doc in source_docs:
@@ -409,25 +398,24 @@ for doc in source_docs:
     print(doc.metadata)
 ```
 
-Ask another question on the same conversational chain. The answer should relate to the previous answer given.
-
+在同一对话链上提出另一个问题。答案应与先前给出的答案相关。
 
 ```python
-question = "What about other countries?"
+question = "其他国家怎么样？"
 
 result = qa_chain.invoke({"question": question})
-print("Answer from LLM:")
+print("来自 LLM 的回答:")
 print("================")
 print(result["answer"])
 ```
 
-## Standard tables vs. "custom" tables with vector data
+## 标准表与带有向量数据的“自定义”表
 
-As default behaviour, the table for the embeddings is created with 3 columns:
+默认情况下，嵌入的表创建了3列：
 
-- A column `VEC_TEXT`, which contains the text of the Document
-- A column `VEC_META`, which contains the metadata of the Document
-- A column `VEC_VECTOR`, which contains the embeddings-vector of the Document's text
+- 一列 `VEC_TEXT`，包含文档的文本
+- 一列 `VEC_META`，包含文档的元数据
+- 一列 `VEC_VECTOR`，包含文档文本的嵌入向量
 
 
 ```python
@@ -449,7 +437,7 @@ docs = [
 db.add_documents(docs)
 ```
 
-Show the columns in table "LANGCHAIN_DEMO_NEW_TABLE"
+显示表“LANGCHAIN_DEMO_NEW_TABLE”中的列
 
 
 ```python
@@ -463,7 +451,7 @@ for row in rows:
 cur.close()
 ```
 
-Show the value of the inserted document in the three columns 
+显示插入文档在三列中的值
 
 
 ```python
@@ -478,13 +466,13 @@ print(rows[0][2])  # The vector
 cur.close()
 ```
 
-Custom tables must have at least three columns that match the semantics of a standard table
+自定义表必须至少有三列，与标准表的语义匹配
 
-- A column with type `NCLOB` or `NVARCHAR` for the text/context of the embeddings
-- A column with type `NCLOB` or `NVARCHAR` for the metadata 
-- A column with type `REAL_VECTOR` for the embedding vector
+- 一列类型为 `NCLOB` 或 `NVARCHAR` 的嵌入文本/上下文
+- 一列类型为 `NCLOB` 或 `NVARCHAR` 的元数据
+- 一列类型为 `REAL_VECTOR` 的嵌入向量
 
-The table can contain additional columns. When new Documents are inserted into the table, these additional columns must allow NULL values.
+该表可以包含其他列。当新文档插入表中时，这些附加列必须允许 NULL 值。
 
 
 ```python
@@ -531,7 +519,7 @@ print(rows[0][3])  # The vector
 cur.close()
 ```
 
-Add another document and perform a similarity search on the custom table.
+添加另一个文档并在自定义表上执行相似性搜索。
 
 
 ```python
@@ -550,10 +538,9 @@ for doc in docs:
     print(doc.page_content)
 ```
 
-### Filter Performance Optimization with Custom Columns
+### 自定义列的过滤性能优化
 
-To allow flexible metadata values, all metadata is stored as JSON in the metadata column by default. If some of the used metadata keys and value types are known, they can be stored in additional columns instead by creating the target table with the key names as column names and passing them to the HanaDB constructor via the specific_metadata_columns list. Metadata keys that match those values are copied into the special column during insert. Filters use the special columns instead of the metadata JSON column for keys in the specific_metadata_columns list.
-
+为了允许灵活的元数据值，所有元数据默认存储为 JSON 格式在元数据列中。如果已知某些使用的元数据键和类型，可以通过创建目标表并将键名作为列名，将它们存储在额外的列中，并通过 specific_metadata_columns 列表将它们传递给 HanaDB 构造函数。在插入时，匹配这些值的元数据键会被复制到特殊列中。过滤器使用特殊列而不是元数据 JSON 列来获取 specific_metadata_columns 列表中的键。
 
 ```python
 # Create a new table "PERFORMANT_CUSTOMTEXT_FILTER" with three "standard" columns and one additional column
@@ -609,8 +596,7 @@ print(rows[0][3])  # The vector
 cur.close()
 ```
 
-The special columns are completely transparent to the rest of the langchain interface. Everything works as it did before, just more performant.
-
+特殊列对 langchain 接口的其余部分是完全透明的。一切都像以前一样工作，只是性能更高。
 
 ```python
 docs = [
@@ -634,8 +620,7 @@ for doc in docs:
     print(doc.page_content)
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

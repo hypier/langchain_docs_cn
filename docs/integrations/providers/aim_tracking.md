@@ -1,26 +1,26 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/providers/aim_tracking.ipynb
 ---
-# Aim
 
-Aim makes it super easy to visualize and debug LangChain executions. Aim tracks inputs and outputs of LLMs and tools, as well as actions of agents. 
+# 目标
 
-With Aim, you can easily debug and examine an individual execution:
+Aim 使可视化和调试 LangChain 执行变得非常简单。Aim 跟踪 LLM 和工具的输入和输出，以及代理的操作。
+
+使用 Aim，您可以轻松调试和检查单个执行：
 
 ![](https://user-images.githubusercontent.com/13848158/227784778-06b806c7-74a1-4d15-ab85-9ece09b458aa.png)
 
-Additionally, you have the option to compare multiple executions side by side:
+此外，您还可以选择并排比较多个执行：
 
 ![](https://user-images.githubusercontent.com/13848158/227784994-699b24b7-e69b-48f9-9ffa-e6a6142fd719.png)
 
-Aim is fully open source, [learn more](https://github.com/aimhubio/aim) about Aim on GitHub.
+Aim 是完全开源的，[了解更多](https://github.com/aimhubio/aim)关于 Aim 的信息。
 
-Let's move forward and see how to enable and configure Aim callback.
+让我们继续，看看如何启用和配置 Aim 回调。
 
-<h3>Tracking LangChain Executions with Aim</h3>
+<h3>使用 Aim 跟踪 LangChain 执行</h3>
 
-In this notebook we will explore three usage scenarios. To start off, we will install the necessary packages and import certain modules. Subsequently, we will configure two environment variables that can be established either within the Python script or through the terminal.
-
+在这个笔记本中，我们将探索三种使用场景。首先，我们将安装必要的包并导入某些模块。随后，我们将配置两个环境变量，这些变量可以在 Python 脚本内或通过终端建立。
 
 ```python
 %pip install --upgrade --quiet  aim
@@ -28,7 +28,6 @@ In this notebook we will explore three usage scenarios. To start off, we will in
 %pip install --upgrade --quiet  langchain-openai
 %pip install --upgrade --quiet  google-search-results
 ```
-
 
 ```python
 import os
@@ -39,84 +38,77 @@ from langchain_core.callbacks import StdOutCallbackHandler
 from langchain_openai import OpenAI
 ```
 
-Our examples use a GPT model as the LLM, and OpenAI offers an API for this purpose. You can obtain the key from the following link: https://platform.openai.com/account/api-keys .
+我们的示例使用 GPT 模型作为 LLM，OpenAI 为此提供 API。您可以从以下链接获取密钥：https://platform.openai.com/account/api-keys 。
 
-We will use the SerpApi to retrieve search results from Google. To acquire the SerpApi key, please go to https://serpapi.com/manage-api-key .
-
+我们将使用 SerpApi 从 Google 检索搜索结果。要获取 SerpApi 密钥，请访问 https://serpapi.com/manage-api-key 。
 
 ```python
 os.environ["OPENAI_API_KEY"] = "..."
 os.environ["SERPAPI_API_KEY"] = "..."
 ```
 
-The event methods of `AimCallbackHandler` accept the LangChain module or agent as input and log at least the prompts and generated results, as well as the serialized version of the LangChain module, to the designated Aim run.
-
+`AimCallbackHandler` 的事件方法接受 LangChain 模块或代理作为输入，并记录至少提示和生成的结果，以及 LangChain 模块的序列化版本，以便记录到指定的 Aim 运行中。
 
 ```python
 session_group = datetime.now().strftime("%m.%d.%Y_%H.%M.%S")
 aim_callback = AimCallbackHandler(
     repo=".",
-    experiment_name="scenario 1: OpenAI LLM",
+    experiment_name="场景 1：OpenAI LLM",
 )
 
 callbacks = [StdOutCallbackHandler(), aim_callback]
 llm = OpenAI(temperature=0, callbacks=callbacks)
 ```
 
-The `flush_tracker` function is used to record LangChain assets on Aim. By default, the session is reset rather than being terminated outright.
+`flush_tracker` 函数用于在 Aim 上记录 LangChain 资产。默认情况下，会议会被重置，而不是完全终止。
 
-<h3>Scenario 1</h3> In the first scenario, we will use OpenAI LLM.
-
+<h3>场景 1</h3> 在第一个场景中，我们将使用 OpenAI LLM。
 
 ```python
-# scenario 1 - LLM
-llm_result = llm.generate(["Tell me a joke", "Tell me a poem"] * 3)
+# 场景 1 - LLM
+llm_result = llm.generate(["告诉我一个笑话", "给我讲一首诗"] * 3)
 aim_callback.flush_tracker(
     langchain_asset=llm,
-    experiment_name="scenario 2: Chain with multiple SubChains on multiple generations",
+    experiment_name="场景 2：多个子链的链与多个生成",
 )
 ```
 
-<h3>Scenario 2</h3> Scenario two involves chaining with multiple SubChains across multiple generations.
-
+<h3>场景 2</h3> 场景二涉及多个生成中多个子链的链。
 
 ```python
 from langchain.chains import LLMChain
 from langchain_core.prompts import PromptTemplate
 ```
 
-
 ```python
-# scenario 2 - Chain
-template = """You are a playwright. Given the title of play, it is your job to write a synopsis for that title.
-Title: {title}
-Playwright: This is a synopsis for the above play:"""
+# 场景 2 - 链
+template = """你是一位剧作家。根据剧本的标题，你的工作是为该标题撰写概要。
+标题：{title}
+剧作家：这是上述剧本的概要："""
 prompt_template = PromptTemplate(input_variables=["title"], template=template)
 synopsis_chain = LLMChain(llm=llm, prompt=prompt_template, callbacks=callbacks)
 
 test_prompts = [
     {
-        "title": "documentary about good video games that push the boundary of game design"
+        "title": "关于推动游戏设计边界的优秀视频游戏的纪录片"
     },
-    {"title": "the phenomenon behind the remarkable speed of cheetahs"},
-    {"title": "the best in class mlops tooling"},
+    {"title": "猎豹惊人速度背后的现象"},
+    {"title": "一流的 MLOps 工具"},
 ]
 synopsis_chain.apply(test_prompts)
 aim_callback.flush_tracker(
-    langchain_asset=synopsis_chain, experiment_name="scenario 3: Agent with Tools"
+    langchain_asset=synopsis_chain, experiment_name="场景 3：带工具的代理"
 )
 ```
 
-<h3>Scenario 3</h3> The third scenario involves an agent with tools.
-
+<h3>场景 3</h3> 第三个场景涉及带工具的代理。
 
 ```python
 from langchain.agents import AgentType, initialize_agent, load_tools
 ```
 
-
 ```python
-# scenario 3 - Agent with Tools
+# 场景 3 - 带工具的代理
 tools = load_tools(["serpapi", "llm-math"], llm=llm, callbacks=callbacks)
 agent = initialize_agent(
     tools,
@@ -125,29 +117,29 @@ agent = initialize_agent(
     callbacks=callbacks,
 )
 agent.run(
-    "Who is Leo DiCaprio's girlfriend? What is her current age raised to the 0.43 power?"
+    "莱昂纳多·迪卡普里奥的女朋友是谁？她目前的年龄的 0.43 次方是多少？"
 )
 aim_callback.flush_tracker(langchain_asset=agent, reset=False, finish=True)
 ```
 ```output
 
 
-[1m> Entering new AgentExecutor chain...[0m
-[32;1m[1;3m I need to find out who Leo DiCaprio's girlfriend is and then calculate her age raised to the 0.43 power.
-Action: Search
-Action Input: "Leo DiCaprio girlfriend"[0m
-Observation: [36;1m[1;3mLeonardo DiCaprio seemed to prove a long-held theory about his love life right after splitting from girlfriend Camila Morrone just months ...[0m
-Thought:[32;1m[1;3m I need to find out Camila Morrone's age
-Action: Search
-Action Input: "Camila Morrone age"[0m
-Observation: [36;1m[1;3m25 years[0m
-Thought:[32;1m[1;3m I need to calculate 25 raised to the 0.43 power
-Action: Calculator
-Action Input: 25^0.43[0m
-Observation: [33;1m[1;3mAnswer: 3.991298452658078
+[1m> 进入新的 AgentExecutor 链...[0m
+[32;1m[1;3m 我需要找出莱昂纳多·迪卡普里奥的女朋友是谁，然后计算她的年龄的 0.43 次方。
+行动：搜索
+行动输入：“莱昂纳多·迪卡普里奥女朋友”[0m
+观察：[36;1m[1;3m莱昂纳多·迪卡普里奥似乎在与女友卡米拉·莫罗内分手后证实了他长期以来的爱情生活理论...[0m
+思考：[32;1m[1;3m 我需要找出卡米拉·莫罗内的年龄
+行动：搜索
+行动输入：“卡米拉·莫罗内年龄”[0m
+观察：[36;1m[1;3m25岁[0m
+思考：[32;1m[1;3m 我需要计算 25 的 0.43 次方
+行动：计算器
+行动输入：25^0.43[0m
+观察：[33;1m[1;3m答案：3.991298452658078
 [0m
-Thought:[32;1m[1;3m I now know the final answer
-Final Answer: Camila Morrone is Leo DiCaprio's girlfriend and her current age raised to the 0.43 power is 3.991298452658078.[0m
+思考：[32;1m[1;3m 我现在知道最终答案了
+最终答案：卡米拉·莫罗内是莱昂纳多·迪卡普里奥的女朋友，她目前的年龄的 0.43 次方是 3.991298452658078。[0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 ```

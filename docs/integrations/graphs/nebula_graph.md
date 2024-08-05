@@ -1,49 +1,46 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/graphs/nebula_graph.ipynb
 ---
+
 # NebulaGraph
 
->[NebulaGraph](https://www.nebula-graph.io/) is an open-source, distributed, scalable, lightning-fast
-> graph database built for super large-scale graphs with milliseconds of latency. It uses the `nGQL` graph query language.
+>[NebulaGraph](https://www.nebula-graph.io/) 是一个开源的、分布式的、可扩展的、快速的图数据库，专为超大规模图形构建，延迟为毫秒级。它使用 `nGQL` 图查询语言。
 >
->[nGQL](https://docs.nebula-graph.io/3.0.0/3.ngql-guide/1.nGQL-overview/1.overview/) is a declarative graph query language for `NebulaGraph`. It allows expressive and efficient graph patterns. `nGQL` is designed for both developers and operations professionals. `nGQL` is an SQL-like query language.
+>[nGQL](https://docs.nebula-graph.io/3.0.0/3.ngql-guide/1.nGQL-overview/1.overview/) 是用于 `NebulaGraph` 的声明式图查询语言。它允许表达丰富且高效的图模式。`nGQL` 旨在服务于开发人员和运维专业人员。`nGQL` 是一种类似 SQL 的查询语言。
 
-This notebook shows how to use LLMs to provide a natural language interface to `NebulaGraph` database.
+本笔记本展示了如何使用 LLM 提供自然语言接口来访问 `NebulaGraph` 数据库。
 
-## Setting up
+## 设置
 
-You can start the `NebulaGraph` cluster as a Docker container by running the following script:
+您可以通过运行以下脚本以 Docker 容器的形式启动 `NebulaGraph` 集群：
 
 ```bash
 curl -fsSL nebula-up.siwei.io/install.sh | bash
 ```
 
-Other options are:
-- Install as a [Docker Desktop Extension](https://www.docker.com/blog/distributed-cloud-native-graph-database-nebulagraph-docker-extension/). See [here](https://docs.nebula-graph.io/3.5.0/2.quick-start/1.quick-start-workflow/)
-- NebulaGraph Cloud Service. See [here](https://www.nebula-graph.io/cloud)
-- Deploy from package, source code, or via Kubernetes. See [here](https://docs.nebula-graph.io/)
+其他选项包括：
+- 作为 [Docker Desktop 扩展](https://www.docker.com/blog/distributed-cloud-native-graph-database-nebulagraph-docker-extension/) 安装。请参见 [这里](https://docs.nebula-graph.io/3.5.0/2.quick-start/1.quick-start-workflow/)
+- NebulaGraph 云服务。请参见 [这里](https://www.nebula-graph.io/cloud)
+- 从包、源代码或通过 Kubernetes 部署。请参见 [这里](https://docs.nebula-graph.io/)
 
-Once the cluster is running, we could create the `SPACE` and `SCHEMA` for the database.
-
+一旦集群运行，我们可以为数据库创建 `SPACE` 和 `SCHEMA`。
 
 ```python
 %pip install --upgrade --quiet  ipython-ngql
 %load_ext ngql
 
-# connect ngql jupyter extension to nebulagraph
+# 连接 ngql jupyter 扩展到 nebulagraph
 %ngql --address 127.0.0.1 --port 9669 --user root --password nebula
-# create a new space
+# 创建一个新空间
 %ngql CREATE SPACE IF NOT EXISTS langchain(partition_num=1, replica_factor=1, vid_type=fixed_string(128));
 ```
 
-
 ```python
-# Wait for a few seconds for the space to be created.
+# 等待几秒钟以创建空间。
 %ngql USE langchain;
 ```
 
-Create the schema, for full dataset, refer [here](https://www.siwei.io/en/nebulagraph-etl-dbt/).
-
+创建模式，完整数据集请参考 [这里](https://www.siwei.io/en/nebulagraph-etl-dbt/)。
 
 ```python
 %%ngql
@@ -54,8 +51,7 @@ CREATE TAG INDEX IF NOT EXISTS person_index ON person(name(128));
 CREATE TAG INDEX IF NOT EXISTS movie_index ON movie(name(128));
 ```
 
-Wait for schema creation to complete, then we can insert some data.
-
+等待模式创建完成，然后我们可以插入一些数据。
 
 ```python
 %%ngql
@@ -66,13 +62,11 @@ INSERT EDGE acted_in() VALUES "Al Pacino"->"The Godfather II":();
 INSERT EDGE acted_in() VALUES "Al Pacino"->"The Godfather Coda: The Death of Michael Corleone":();
 ```
 
-
 ```python
 from langchain.chains import NebulaGraphQAChain
 from langchain_community.graphs import NebulaGraph
 from langchain_openai import ChatOpenAI
 ```
-
 
 ```python
 graph = NebulaGraph(
@@ -85,15 +79,13 @@ graph = NebulaGraph(
 )
 ```
 
-## Refresh graph schema information
+## 刷新图形模式信息
 
-If the schema of database changes, you can refresh the schema information needed to generate nGQL statements.
-
+如果数据库的模式发生变化，您可以刷新生成 nGQL 语句所需的模式信息。
 
 ```python
 # graph.refresh_schema()
 ```
-
 
 ```python
 print(graph.get_schema)
@@ -103,10 +95,10 @@ Node properties: [{'tag': 'movie', 'properties': [('name', 'string')]}, {'tag': 
 Edge properties: [{'edge': 'acted_in', 'properties': []}]
 Relationships: ['(:person)-[:acted_in]->(:movie)']
 ```
-## Querying the graph
 
-We can now use the graph cypher QA chain to ask question of the graph
+## 查询图形
 
+我们现在可以使用图形 cypher QA 链来询问图形
 
 ```python
 chain = NebulaGraphQAChain.from_llm(
@@ -114,25 +106,22 @@ chain = NebulaGraphQAChain.from_llm(
 )
 ```
 
-
 ```python
 chain.run("Who played in The Godfather II?")
 ```
 ```output
 
 
-[1m> Entering new NebulaGraphQAChain chain...[0m
-Generated nGQL:
+[1m> 进入新的 NebulaGraphQAChain 链...[0m
+生成的 nGQL:
 [32;1m[1;3mMATCH (p:`person`)-[:acted_in]->(m:`movie`) WHERE m.`movie`.`name` == 'The Godfather II'
 RETURN p.`person`.`name`[0m
-Full Context:
+完整上下文:
 [32;1m[1;3m{'p.person.name': ['Al Pacino']}[0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 ```
-
 
 ```output
 'Al Pacino played in The Godfather II.'
 ```
-

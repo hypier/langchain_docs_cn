@@ -1,22 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/rockset.ipynb
 ---
+
 # Rockset
 
->[Rockset](https://rockset.com/) is a real-time search and analytics database built for the cloud. Rockset uses a [Converged Index™](https://rockset.com/blog/converged-indexing-the-secret-sauce-behind-rocksets-fast-queries/) with an efficient store for vector embeddings to serve low latency, high concurrency search queries at scale. Rockset has full support for metadata filtering and  handles real-time ingestion for constantly updating, streaming data.
+>[Rockset](https://rockset.com/) 是一个为云而构建的实时搜索和分析数据库。Rockset 使用 [Converged Index™](https://rockset.com/blog/converged-indexing-the-secret-sauce-behind-rocksets-fast-queries/) 和高效的向量嵌入存储，以支持低延迟、高并发的搜索查询。Rockset 完全支持元数据过滤，并处理实时摄取以应对不断更新的流数据。
 
-This notebook demonstrates how to use `Rockset` as a vector store in LangChain. Before getting started, make sure you have access to a `Rockset` account and an API key available. [Start your free trial today.](https://rockset.com/create/)
+本笔记本演示如何在 LangChain 中使用 `Rockset` 作为向量存储。在开始之前，请确保您拥有 `Rockset` 帐户和可用的 API 密钥。[立即开始您的免费试用。](https://rockset.com/create/)
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
+您需要通过 `pip install -qU langchain-community` 安装 `langchain-community` 以使用此集成。
 
-## Setting Up Your Environment
+## 设置您的环境
 
-1. Leverage the `Rockset` console to create a [collection](https://rockset.com/docs/collections/) with the Write API as your source. In this walkthrough, we create a collection named `langchain_demo`. 
-    
-    Configure the following [ingest transformation](https://rockset.com/docs/ingest-transformation/) to mark your embeddings field and take advantage of performance and storage optimizations:
+1. 利用 `Rockset` 控制台创建一个 [collection](https://rockset.com/docs/collections/) ，以 Write API 作为您的数据源。在本教程中，我们创建一个名为 `langchain_demo` 的 collection。
 
+    配置以下 [ingest transformation](https://rockset.com/docs/ingest-transformation/) 以标记您的 embeddings 字段，并利用性能和存储优化：
 
-   (We used OpenAI `text-embedding-ada-002` for this examples, where #length_of_vector_embedding = 1536)
+   (我们在这个示例中使用了 OpenAI `text-embedding-ada-002`，其中 #length_of_vector_embedding = 1536)
 
 ```
 SELECT _input.* EXCEPT(_meta), 
@@ -24,21 +24,20 @@ VECTOR_ENFORCE(_input.description_embedding, #length_of_vector_embedding, 'float
 FROM _input
 ```
 
-2. After creating your collection, use the console to retrieve an [API key](https://rockset.com/docs/iam/#users-api-keys-and-roles). For the purpose of this notebook, we assume you are using the `Oregon(us-west-2)` region.
+2. 创建 collection 后，使用控制台检索 [API key](https://rockset.com/docs/iam/#users-api-keys-and-roles)。在本笔记本中，我们假设您使用的是 `Oregon(us-west-2)` 区域。
 
-3. Install the [rockset-python-client](https://github.com/rockset/rockset-python-client) to enable LangChain to communicate directly with `Rockset`.
+3. 安装 [rockset-python-client](https://github.com/rockset/rockset-python-client) 以使 LangChain 能够直接与 `Rockset` 通信。
 
 
 ```python
 %pip install --upgrade --quiet  rockset
 ```
 
-## LangChain Tutorial
+## LangChain 教程
 
-Follow along in your own Python notebook to generate and store vector embeddings in Rockset.
-Start using Rockset to search for documents similar to your search queries.
+在您自己的 Python 笔记本中跟随操作，以在 Rockset 中生成和存储向量嵌入。开始使用 Rockset 搜索与您的搜索查询相似的文档。
 
-### 1. Define Key Variables
+### 1. 定义关键变量
 
 
 ```python
@@ -57,7 +56,7 @@ TEXT_KEY = "description"
 EMBEDDING_KEY = "description_embedding"
 ```
 
-### 2. Prepare Documents
+### 2. 准备文档
 
 
 ```python
@@ -72,7 +71,7 @@ text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
 docs = text_splitter.split_documents(documents)
 ```
 
-### 3. Insert Documents
+### 3. 插入文档
 
 
 ```python
@@ -92,7 +91,7 @@ ids = docsearch.add_texts(
 )
 ```
 
-### 4. Search for Similar Documents
+### 4. 搜索相似文档
 
 
 ```python
@@ -112,7 +111,7 @@ for d, dist in output:
 # 0.7436231261419488 {'source': '../../../state_of_the_union.txt'} Groups of citizens b...
 ```
 
-### 5. Search for Similar Documents with Filtering
+### 5. 过滤条件下搜索相似文档
 
 
 ```python
@@ -134,26 +133,24 @@ for d, dist in output:
 # 0.7344177777547739 {'source': '../../../state_of_the_union.txt'} We see the unity amo...
 ```
 
-### 6. [Optional] Delete Inserted Documents
+### 6. [可选] 删除插入的文档
 
-You must have the unique ID associated with each document to delete them from your collection.
-Define IDs when inserting documents with `Rockset.add_texts()`. Rockset will otherwise generate a unique ID for each document. Regardless, `Rockset.add_texts()` returns the IDs of inserted documents.
+您必须拥有与每个文档关联的唯一 ID 才能将其从您的集合中删除。在使用 `Rockset.add_texts()` 插入文档时定义 ID。否则，Rockset 将为每个文档生成一个唯一 ID。无论如何，`Rockset.add_texts()` 会返回插入文档的 ID。
 
-To delete these docs, simply use the `Rockset.delete_texts()` function.
+要删除这些文档，只需使用 `Rockset.delete_texts()` 函数。
 
 
 ```python
 docsearch.delete_texts(ids)
 ```
 
-## Summary
+## 摘要
 
-In this tutorial, we successfully created a `Rockset` collection, `inserted` documents with  OpenAI embeddings, and searched for similar documents with and without metadata filters.
+在本教程中，我们成功创建了一个 `Rockset` 集合，使用 OpenAI 嵌入 `插入` 文档，并在有无元数据过滤器的情况下搜索相似文档。
 
-Keep an eye on https://rockset.com/ for future updates in this space.
+请关注 https://rockset.com/ 以获取该领域的未来更新。
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

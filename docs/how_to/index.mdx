@@ -3,349 +3,338 @@ sidebar_position: 0
 sidebar_class_name: hidden
 ---
 
-# How-to guides
+# 使用指南
 
-Here you’ll find answers to “How do I….?” types of questions.
-These guides are *goal-oriented* and *concrete*; they're meant to help you complete a specific task.
-For conceptual explanations see the [Conceptual guide](/docs/concepts/).
-For end-to-end walkthroughs see [Tutorials](/docs/tutorials).
-For comprehensive descriptions of every class and function see the [API Reference](https://api.python.langchain.com/en/latest/).
+在这里，您将找到“我该如何……？”类型问题的答案。这些指南是*目标导向*和*具体*的；它们旨在帮助您完成特定任务。有关概念性解释，请参见[概念指南](/docs/concepts/)。有关端到端的操作步骤，请参见[教程](/docs/tutorials)。有关每个类和函数的全面描述，请参见[API 参考](https://api.python.langchain.com/en/latest/)。
 
-## Installation
+## 安装
 
-- [How to: install LangChain packages](/docs/how_to/installation/)
-- [How to: use LangChain with different Pydantic versions](/docs/how_to/pydantic_compatibility)
+- [如何安装 LangChain 包](/docs/how_to/installation/)
+- [如何在不同的 Pydantic 版本中使用 LangChain](/docs/how_to/pydantic_compatibility)
 
-## Key features
+## 关键特性
 
-This highlights functionality that is core to using LangChain.
+这突出了使用 LangChain 的核心功能。
 
-- [How to: return structured data from a model](/docs/how_to/structured_output/)
-- [How to: use a model to call tools](/docs/how_to/tool_calling)
-- [How to: stream runnables](/docs/how_to/streaming)
-- [How to: debug your LLM apps](/docs/how_to/debugging/)
+- [如何：从模型返回结构化数据](/docs/how_to/structured_output/)
+- [如何：使用模型调用工具](/docs/how_to/tool_calling)
+- [如何：流式运行](/docs/how_to/streaming)
+- [如何：调试你的 LLM 应用](/docs/how_to/debugging/)
 
-## LangChain Expression Language (LCEL)
+## LangChain 表达式语言 (LCEL)
 
-[LangChain Expression Language](/docs/concepts/#langchain-expression-language-lcel) is a way to create arbitrary custom chains. It is built on the [Runnable](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html) protocol.
+[LangChain 表达式语言](/docs/concepts/#langchain-expression-language-lcel) 是创建任意自定义链的一种方式。它基于 [Runnable](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html) 协议构建。
 
-[**LCEL cheatsheet**](/docs/how_to/lcel_cheatsheet/): For a quick overview of how to use the main LCEL primitives.
+[**LCEL 速查表**](/docs/how_to/lcel_cheatsheet/): 快速了解如何使用主要的 LCEL 原语。
 
-[**Migration guide**](/docs/versions/migrating_chains): For migrating legacy chain abstractions to LCEL.
+[**迁移指南**](/docs/versions/migrating_chains): 将遗留链抽象迁移到 LCEL。
 
-- [How to: chain runnables](/docs/how_to/sequence)
-- [How to: stream runnables](/docs/how_to/streaming)
-- [How to: invoke runnables in parallel](/docs/how_to/parallel/)
-- [How to: add default invocation args to runnables](/docs/how_to/binding/)
-- [How to: turn any function into a runnable](/docs/how_to/functions)
-- [How to: pass through inputs from one chain step to the next](/docs/how_to/passthrough)
-- [How to: configure runnable behavior at runtime](/docs/how_to/configure)
-- [How to: add message history (memory) to a chain](/docs/how_to/message_history)
-- [How to: route between sub-chains](/docs/how_to/routing)
-- [How to: create a dynamic (self-constructing) chain](/docs/how_to/dynamic_chain/)
-- [How to: inspect runnables](/docs/how_to/inspect)
-- [How to: add fallbacks to a runnable](/docs/how_to/fallbacks)
-- [How to: pass runtime secrets to a runnable](/docs/how_to/runnable_runtime_secrets)
+- [如何：链式运行 runnable](/docs/how_to/sequence)
+- [如何：流式运行 runnable](/docs/how_to/streaming)
+- [如何：并行调用 runnable](/docs/how_to/parallel/)
+- [如何：为 runnable 添加默认调用参数](/docs/how_to/binding/)
+- [如何：将任何函数转换为 runnable](/docs/how_to/functions)
+- [如何：将输入从一个链步骤传递到下一个](/docs/how_to/passthrough)
+- [如何：在运行时配置 runnable 行为](/docs/how_to/configure)
+- [如何：为链添加消息历史（记忆）](/docs/how_to/message_history)
+- [如何：在子链之间路由](/docs/how_to/routing)
+- [如何：创建动态（自构建）链](/docs/how_to/dynamic_chain/)
+- [如何：检查 runnable](/docs/how_to/inspect)
+- [如何：为 runnable 添加后备选项](/docs/how_to/fallbacks)
+- [如何：将运行时秘密传递给 runnable](/docs/how_to/runnable_runtime_secrets)
 
-## Components
+## 组件
 
-These are the core building blocks you can use when building applications.
+这些是您在构建应用程序时可以使用的核心构建模块。
 
-### Prompt templates
+### 提示模板
 
-[Prompt Templates](/docs/concepts/#prompt-templates) are responsible for formatting user input into a format that can be passed to a language model.
+[提示模板](/docs/concepts/#prompt-templates) 负责将用户输入格式化为可以传递给语言模型的格式。
 
-- [How to: use few shot examples](/docs/how_to/few_shot_examples)
-- [How to: use few shot examples in chat models](/docs/how_to/few_shot_examples_chat/)
-- [How to: partially format prompt templates](/docs/how_to/prompts_partial)
-- [How to: compose prompts together](/docs/how_to/prompts_composition)
+- [如何：使用少量示例](/docs/how_to/few_shot_examples)
+- [如何：在聊天模型中使用少量示例](/docs/how_to/few_shot_examples_chat/)
+- [如何：部分格式化提示模板](/docs/how_to/prompts_partial)
+- [如何：组合提示](/docs/how_to/prompts_composition)
 
-### Example selectors
+### 示例选择器
 
-[Example Selectors](/docs/concepts/#example-selectors) are responsible for selecting the correct few shot examples to pass to the prompt.
+[示例选择器](/docs/concepts/#example-selectors) 负责选择正确的少量示例以传递给提示。
 
-- [How to: use example selectors](/docs/how_to/example_selectors)
-- [How to: select examples by length](/docs/how_to/example_selectors_length_based)
-- [How to: select examples by semantic similarity](/docs/how_to/example_selectors_similarity)
-- [How to: select examples by semantic ngram overlap](/docs/how_to/example_selectors_ngram)
-- [How to: select examples by maximal marginal relevance](/docs/how_to/example_selectors_mmr)
+- [如何使用示例选择器](/docs/how_to/example_selectors)
+- [如何按长度选择示例](/docs/how_to/example_selectors_length_based)
+- [如何按语义相似性选择示例](/docs/how_to/example_selectors_similarity)
+- [如何按语义n-gram重叠选择示例](/docs/how_to/example_selectors_ngram)
+- [如何按最大边际相关性选择示例](/docs/how_to/example_selectors_mmr)
 
-### Chat models
+### 聊天模型
 
-[Chat Models](/docs/concepts/#chat-models) are newer forms of language models that take messages in and output a message.
+[聊天模型](/docs/concepts/#chat-models) 是一种新型的语言模型，能够接收消息并输出消息。
 
-- [How to: do function/tool calling](/docs/how_to/tool_calling)
-- [How to: get models to return structured output](/docs/how_to/structured_output)
-- [How to: cache model responses](/docs/how_to/chat_model_caching)
-- [How to: get log probabilities](/docs/how_to/logprobs)
-- [How to: create a custom chat model class](/docs/how_to/custom_chat_model)
-- [How to: stream a response back](/docs/how_to/chat_streaming)
-- [How to: track token usage](/docs/how_to/chat_token_usage_tracking)
-- [How to: track response metadata across providers](/docs/how_to/response_metadata)
-- [How to: use chat model to call tools](/docs/how_to/tool_calling)
-- [How to: stream tool calls](/docs/how_to/tool_streaming)
-- [How to: handle rate limits](/docs/how_to/chat_model_rate_limiting)
-- [How to: few shot prompt tool behavior](/docs/how_to/tools_few_shot)
-- [How to: bind model-specific formatted tools](/docs/how_to/tools_model_specific)
-- [How to: force a specific tool call](/docs/how_to/tool_choice)
-- [How to: work with local models](/docs/how_to/local_llms)
-- [How to: init any model in one line](/docs/how_to/chat_models_universal_init/)
+- [如何：进行函数/工具调用](/docs/how_to/tool_calling)
+- [如何：获取模型返回结构化输出](/docs/how_to/structured_output)
+- [如何：缓存模型响应](/docs/how_to/chat_model_caching)
+- [如何：获取日志概率](/docs/how_to/logprobs)
+- [如何：创建自定义聊天模型类](/docs/how_to/custom_chat_model)
+- [如何：流式返回响应](/docs/how_to/chat_streaming)
+- [如何：跟踪令牌使用情况](/docs/how_to/chat_token_usage_tracking)
+- [如何：跨提供者跟踪响应元数据](/docs/how_to/response_metadata)
+- [如何：使用聊天模型调用工具](/docs/how_to/tool_calling)
+- [如何：流式工具调用](/docs/how_to/tool_streaming)
+- [如何：处理速率限制](/docs/how_to/chat_model_rate_limiting)
+- [如何：少量示例提示工具行为](/docs/how_to/tools_few_shot)
+- [如何：绑定模型特定格式的工具](/docs/how_to/tools_model_specific)
+- [如何：强制调用特定工具](/docs/how_to/tool_choice)
+- [如何：使用本地模型](/docs/how_to/local_llms)
+- [如何：一行初始化任何模型](/docs/how_to/chat_models_universal_init/)
 
-### Messages
+### 消息
 
-[Messages](/docs/concepts/#messages) are the input and output of chat models. They have some `content` and a `role`, which describes the source of the message.
+[消息](/docs/concepts/#messages) 是聊天模型的输入和输出。它们包含一些 `content` 和一个 `role`，用于描述消息的来源。
 
-- [How to: trim messages](/docs/how_to/trim_messages/)
-- [How to: filter messages](/docs/how_to/filter_messages/)
-- [How to: merge consecutive messages of the same type](/docs/how_to/merge_message_runs/)
+- [如何：修剪消息](/docs/how_to/trim_messages/)
+- [如何：过滤消息](/docs/how_to/filter_messages/)
+- [如何：合并连续的相同类型消息](/docs/how_to/merge_message_runs/)
 
 ### LLMs
 
-What LangChain calls [LLMs](/docs/concepts/#llms) are older forms of language models that take a string in and output a string.
+LangChain所称的[LLMs](/docs/concepts/#llms)是较早的语言模型形式，它们接收一个字符串并输出一个字符串。
 
-- [How to: cache model responses](/docs/how_to/llm_caching)
-- [How to: create a custom LLM class](/docs/how_to/custom_llm)
-- [How to: stream a response back](/docs/how_to/streaming_llm)
-- [How to: track token usage](/docs/how_to/llm_token_usage_tracking)
-- [How to: work with local models](/docs/how_to/local_llms)
+- [如何：缓存模型响应](/docs/how_to/llm_caching)
+- [如何：创建自定义LLM类](/docs/how_to/custom_llm)
+- [如何：流式返回响应](/docs/how_to/streaming_llm)
+- [如何：跟踪令牌使用情况](/docs/how_to/llm_token_usage_tracking)
+- [如何：使用本地模型](/docs/how_to/local_llms)
 
-### Output parsers
+### 输出解析器
 
-[Output Parsers](/docs/concepts/#output-parsers) are responsible for taking the output of an LLM and parsing into more structured format.
+[输出解析器](/docs/concepts/#output-parsers) 负责将 LLM 的输出解析为更结构化的格式。
 
-- [How to: use output parsers to parse an LLM response into structured format](/docs/how_to/output_parser_structured)
-- [How to: parse JSON output](/docs/how_to/output_parser_json)
-- [How to: parse XML output](/docs/how_to/output_parser_xml)
-- [How to: parse YAML output](/docs/how_to/output_parser_yaml)
-- [How to: retry when output parsing errors occur](/docs/how_to/output_parser_retry)
-- [How to: try to fix errors in output parsing](/docs/how_to/output_parser_fixing)
-- [How to: write a custom output parser class](/docs/how_to/output_parser_custom)
+- [如何：使用输出解析器将 LLM 响应解析为结构化格式](/docs/how_to/output_parser_structured)
+- [如何：解析 JSON 输出](/docs/how_to/output_parser_json)
+- [如何：解析 XML 输出](/docs/how_to/output_parser_xml)
+- [如何：解析 YAML 输出](/docs/how_to/output_parser_yaml)
+- [如何：在输出解析错误发生时重试](/docs/how_to/output_parser_retry)
+- [如何：尝试修复输出解析中的错误](/docs/how_to/output_parser_fixing)
+- [如何：编写自定义输出解析器类](/docs/how_to/output_parser_custom)
 
-### Document loaders
+### 文档加载器
 
-[Document Loaders](/docs/concepts/#document-loaders) are responsible for loading documents from a variety of sources.
+[文档加载器](/docs/concepts/#document-loaders) 负责从各种来源加载文档。
 
-- [How to: load CSV data](/docs/how_to/document_loader_csv)
-- [How to: load data from a directory](/docs/how_to/document_loader_directory)
-- [How to: load HTML data](/docs/how_to/document_loader_html)
-- [How to: load JSON data](/docs/how_to/document_loader_json)
-- [How to: load Markdown data](/docs/how_to/document_loader_markdown)
-- [How to: load Microsoft Office data](/docs/how_to/document_loader_office_file)
-- [How to: load PDF files](/docs/how_to/document_loader_pdf)
-- [How to: write a custom document loader](/docs/how_to/document_loader_custom)
+- [如何：加载 CSV 数据](/docs/how_to/document_loader_csv)
+- [如何：从目录加载数据](/docs/how_to/document_loader_directory)
+- [如何：加载 HTML 数据](/docs/how_to/document_loader_html)
+- [如何：加载 JSON 数据](/docs/how_to/document_loader_json)
+- [如何：加载 Markdown 数据](/docs/how_to/document_loader_markdown)
+- [如何：加载 Microsoft Office 数据](/docs/how_to/document_loader_office_file)
+- [如何：加载 PDF 文件](/docs/how_to/document_loader_pdf)
+- [如何：编写自定义文档加载器](/docs/how_to/document_loader_custom)
 
-### Text splitters
+### 文本拆分器
 
-[Text Splitters](/docs/concepts/#text-splitters) take a document and split into chunks that can be used for retrieval.
+[文本拆分器](/docs/concepts/#text-splitters) 将文档拆分为可用于检索的块。
 
-- [How to: recursively split text](/docs/how_to/recursive_text_splitter)
-- [How to: split by HTML headers](/docs/how_to/HTML_header_metadata_splitter)
-- [How to: split by HTML sections](/docs/how_to/HTML_section_aware_splitter)
-- [How to: split by character](/docs/how_to/character_text_splitter)
-- [How to: split code](/docs/how_to/code_splitter)
-- [How to: split Markdown by headers](/docs/how_to/markdown_header_metadata_splitter)
-- [How to: recursively split JSON](/docs/how_to/recursive_json_splitter)
-- [How to: split text into semantic chunks](/docs/how_to/semantic-chunker)
-- [How to: split by tokens](/docs/how_to/split_by_token)
+- [如何：递归拆分文本](/docs/how_to/recursive_text_splitter)
+- [如何：按 HTML 头部拆分](/docs/how_to/HTML_header_metadata_splitter)
+- [如何：按 HTML 区段拆分](/docs/how_to/HTML_section_aware_splitter)
+- [如何：按字符拆分](/docs/how_to/character_text_splitter)
+- [如何：拆分代码](/docs/how_to/code_splitter)
+- [如何：按头部拆分 Markdown](/docs/how_to/markdown_header_metadata_splitter)
+- [如何：递归拆分 JSON](/docs/how_to/recursive_json_splitter)
+- [如何：将文本拆分为语义块](/docs/how_to/semantic-chunker)
+- [如何：按标记拆分](/docs/how_to/split_by_token)
 
-### Embedding models
+### 嵌入模型
 
-[Embedding Models](/docs/concepts/#embedding-models) take a piece of text and create a numerical representation of it.
+[嵌入模型](/docs/concepts/#embedding-models) 将一段文本转换为其数值表示。
 
-- [How to: embed text data](/docs/how_to/embed_text)
-- [How to: cache embedding results](/docs/how_to/caching_embeddings)
+- [如何：嵌入文本数据](/docs/how_to/embed_text)
+- [如何：缓存嵌入结果](/docs/how_to/caching_embeddings)
 
-### Vector stores
+### 向量存储
 
-[Vector stores](/docs/concepts/#vector-stores) are databases that can efficiently store and retrieve embeddings.
+[向量存储](/docs/concepts/#vector-stores) 是能够高效存储和检索嵌入的数据库。
 
-- [How to: use a vector store to retrieve data](/docs/how_to/vectorstores)
+- [如何：使用向量存储检索数据](/docs/how_to/vectorstores)
 
-### Retrievers
+### 检索器
 
-[Retrievers](/docs/concepts/#retrievers) are responsible for taking a query and returning relevant documents.
+[检索器](/docs/concepts/#retrievers) 负责接收查询并返回相关文档。
 
-- [How to: use a vector store to retrieve data](/docs/how_to/vectorstore_retriever)
-- [How to: generate multiple queries to retrieve data for](/docs/how_to/MultiQueryRetriever)
-- [How to: use contextual compression to compress the data retrieved](/docs/how_to/contextual_compression)
-- [How to: write a custom retriever class](/docs/how_to/custom_retriever)
-- [How to: add similarity scores to retriever results](/docs/how_to/add_scores_retriever)
-- [How to: combine the results from multiple retrievers](/docs/how_to/ensemble_retriever)
-- [How to: reorder retrieved results to mitigate the "lost in the middle" effect](/docs/how_to/long_context_reorder)
-- [How to: generate multiple embeddings per document](/docs/how_to/multi_vector)
-- [How to: retrieve the whole document for a chunk](/docs/how_to/parent_document_retriever)
-- [How to: generate metadata filters](/docs/how_to/self_query)
-- [How to: create a time-weighted retriever](/docs/how_to/time_weighted_vectorstore)
-- [How to: use hybrid vector and keyword retrieval](/docs/how_to/hybrid)
+- [如何：使用向量存储检索数据](/docs/how_to/vectorstore_retriever)
+- [如何：生成多个查询以检索数据](/docs/how_to/MultiQueryRetriever)
+- [如何：使用上下文压缩来压缩检索到的数据](/docs/how_to/contextual_compression)
+- [如何：编写自定义检索器类](/docs/how_to/custom_retriever)
+- [如何：向检索器结果添加相似性评分](/docs/how_to/add_scores_retriever)
+- [如何：组合多个检索器的结果](/docs/how_to/ensemble_retriever)
+- [如何：重新排序检索结果以减轻“中间丢失”效应](/docs/how_to/long_context_reorder)
+- [如何：为每个文档生成多个嵌入](/docs/how_to/multi_vector)
+- [如何：为一个块检索整个文档](/docs/how_to/parent_document_retriever)
+- [如何：生成元数据过滤器](/docs/how_to/self_query)
+- [如何：创建时间加权检索器](/docs/how_to/time_weighted_vectorstore)
+- [如何：使用混合向量和关键字检索](/docs/how_to/hybrid)
 
-### Indexing
+### 索引
 
-Indexing is the process of keeping your vectorstore in-sync with the underlying data source.
+索引是保持您的向量存储与底层数据源同步的过程。
 
-- [How to: reindex data to keep your vectorstore in-sync with the underlying data source](/docs/how_to/indexing)
+- [如何：重新索引数据以保持您的向量存储与底层数据源同步](/docs/how_to/indexing)
 
-### Tools
+### 工具
 
-LangChain [Tools](/docs/concepts/#tools) contain a description of the tool (to pass to the language model) as well as the implementation of the function to call. Refer [here](/docs/integrations/tools/) for a list of pre-buit tools. 
+LangChain [工具](/docs/concepts/#tools) 包含工具的描述（传递给语言模型）以及调用的函数实现。有关预构建工具的列表，请参阅 [此处](/docs/integrations/tools/)。
 
-- [How to: create tools](/docs/how_to/custom_tools)
-- [How to: use built-in tools and toolkits](/docs/how_to/tools_builtin)
-- [How to: use chat models to call tools](/docs/how_to/tool_calling)
-- [How to: pass tool outputs to chat models](/docs/how_to/tool_results_pass_to_model)
-- [How to: pass run time values to tools](/docs/how_to/tool_runtime)
-- [How to: add a human-in-the-loop for tools](/docs/how_to/tools_human)
-- [How to: handle tool errors](/docs/how_to/tools_error)
-- [How to: force models to call a tool](/docs/how_to/tool_choice)
-- [How to: disable parallel tool calling](/docs/how_to/tool_calling_parallel)
-- [How to: access the `RunnableConfig` from a tool](/docs/how_to/tool_configure)
-- [How to: stream events from a tool](/docs/how_to/tool_stream_events)
-- [How to: return artifacts from a tool](/docs/how_to/tool_artifacts/)
-- [How to: convert Runnables to tools](/docs/how_to/convert_runnable_to_tool)
-- [How to: add ad-hoc tool calling capability to models](/docs/how_to/tools_prompting)
-- [How to: pass in runtime secrets](/docs/how_to/runnable_runtime_secrets)
+- [如何：创建工具](/docs/how_to/custom_tools)
+- [如何：使用内置工具和工具包](/docs/how_to/tools_builtin)
+- [如何：使用聊天模型调用工具](/docs/how_to/tool_calling)
+- [如何：将工具输出传递给聊天模型](/docs/how_to/tool_results_pass_to_model)
+- [如何：将运行时值传递给工具](/docs/how_to/tool_runtime)
+- [如何：为工具添加人机协作](/docs/how_to/tools_human)
+- [如何：处理工具错误](/docs/how_to/tools_error)
+- [如何：强制模型调用工具](/docs/how_to/tool_choice)
+- [如何：禁用并行工具调用](/docs/how_to/tool_calling_parallel)
+- [如何：从工具访问 `RunnableConfig` ](/docs/how_to/tool_configure)
+- [如何：从工具流式传输事件](/docs/how_to/tool_stream_events)
+- [如何：从工具返回工件](/docs/how_to/tool_artifacts/)
+- [如何：将可运行对象转换为工具](/docs/how_to/convert_runnable_to_tool)
+- [如何：为模型添加临时工具调用能力](/docs/how_to/tools_prompting)
+- [如何：传入运行时秘密](/docs/how_to/runnable_runtime_secrets)
 
-### Multimodal
+### 多模态
 
-- [How to: pass multimodal data directly to models](/docs/how_to/multimodal_inputs/)
-- [How to: use multimodal prompts](/docs/how_to/multimodal_prompts/)
+- [如何：直接将多模态数据传递给模型](/docs/how_to/multimodal_inputs/)
+- [如何：使用多模态提示](/docs/how_to/multimodal_prompts/)
 
-
-### Agents
+### 代理
 
 :::note
 
-For in depth how-to guides for agents, please check out [LangGraph](https://langchain-ai.github.io/langgraph/) documentation.
+有关代理的详细操作指南，请查看 [LangGraph](https://langchain-ai.github.io/langgraph/) 文档。
 
 :::
 
-- [How to: use legacy LangChain Agents (AgentExecutor)](/docs/how_to/agent_executor)
-- [How to: migrate from legacy LangChain agents to LangGraph](/docs/how_to/migrate_agent)
+- [如何：使用旧版 LangChain 代理 (AgentExecutor)](/docs/how_to/agent_executor)
+- [如何：从旧版 LangChain 代理迁移到 LangGraph](/docs/how_to/migrate_agent)
 
-### Callbacks
+### 回调
 
-[Callbacks](/docs/concepts/#callbacks) allow you to hook into the various stages of your LLM application's execution.
+[回调](/docs/concepts/#callbacks) 允许您在 LLM 应用程序执行的各个阶段进行挂钩。
 
-- [How to: pass in callbacks at runtime](/docs/how_to/callbacks_runtime)
-- [How to: attach callbacks to a module](/docs/how_to/callbacks_attach)
-- [How to: pass callbacks into a module constructor](/docs/how_to/callbacks_constructor)
-- [How to: create custom callback handlers](/docs/how_to/custom_callbacks)
-- [How to: use callbacks in async environments](/docs/how_to/callbacks_async)
-- [How to: dispatch custom callback events](/docs/how_to/callbacks_custom_events)
+- [如何：在运行时传入回调](/docs/how_to/callbacks_runtime)
+- [如何：将回调附加到模块](/docs/how_to/callbacks_attach)
+- [如何：将回调传入模块构造函数](/docs/how_to/callbacks_constructor)
+- [如何：创建自定义回调处理程序](/docs/how_to/custom_callbacks)
+- [如何：在异步环境中使用回调](/docs/how_to/callbacks_async)
+- [如何：分发自定义回调事件](/docs/how_to/callbacks_custom_events)
 
-### Custom
+### 自定义
 
-All of LangChain components can easily be extended to support your own versions.
+所有 LangChain 组件都可以轻松扩展以支持您自己的版本。
 
-- [How to: create a custom chat model class](/docs/how_to/custom_chat_model)
-- [How to: create a custom LLM class](/docs/how_to/custom_llm)
-- [How to: write a custom retriever class](/docs/how_to/custom_retriever)
-- [How to: write a custom document loader](/docs/how_to/document_loader_custom)
-- [How to: write a custom output parser class](/docs/how_to/output_parser_custom)
-- [How to: create custom callback handlers](/docs/how_to/custom_callbacks)
-- [How to: define a custom tool](/docs/how_to/custom_tools)
-- [How to: dispatch custom callback events](/docs/how_to/callbacks_custom_events)
+- [如何：创建自定义聊天模型类](/docs/how_to/custom_chat_model)
+- [如何：创建自定义 LLM 类](/docs/how_to/custom_llm)
+- [如何：编写自定义检索器类](/docs/how_to/custom_retriever)
+- [如何：编写自定义文档加载器](/docs/how_to/document_loader_custom)
+- [如何：编写自定义输出解析器类](/docs/how_to/output_parser_custom)
+- [如何：创建自定义回调处理程序](/docs/how_to/custom_callbacks)
+- [如何：定义自定义工具](/docs/how_to/custom_tools)
+- [如何：分发自定义回调事件](/docs/how_to/callbacks_custom_events)
 
-### Serialization
-- [How to: save and load LangChain objects](/docs/how_to/serialization)
+### 序列化
+- [如何：保存和加载 LangChain 对象](/docs/how_to/serialization)
 
-## Use cases
+## 使用案例
 
-These guides cover use-case specific details.
+这些指南涵盖了特定用例的详细信息。
 
 ### Q&A with RAG
 
-Retrieval Augmented Generation (RAG) is a way to connect LLMs to external sources of data.
-For a high-level tutorial on RAG, check out [this guide](/docs/tutorials/rag/).
+检索增强生成（RAG）是一种将大型语言模型（LLMs）与外部数据源连接的方法。
+有关 RAG 的高级教程，请查看 [本指南](/docs/tutorials/rag/)。
 
-- [How to: add chat history](/docs/how_to/qa_chat_history_how_to/)
-- [How to: stream](/docs/how_to/qa_streaming/)
-- [How to: return sources](/docs/how_to/qa_sources/)
-- [How to: return citations](/docs/how_to/qa_citations/)
-- [How to: do per-user retrieval](/docs/how_to/qa_per_user/)
+- [如何：添加聊天记录](/docs/how_to/qa_chat_history_how_to/)
+- [如何：流式传输](/docs/how_to/qa_streaming/)
+- [如何：返回来源](/docs/how_to/qa_sources/)
+- [如何：返回引用](/docs/how_to/qa_citations/)
+- [如何：按用户检索](/docs/how_to/qa_per_user/)
 
+### 提取
 
-### Extraction
+提取是指使用LLMs从非结构化文本中提取结构化信息。
+有关提取的高级教程，请查看[本指南](/docs/tutorials/extraction/)。
 
-Extraction is when you use LLMs to extract structured information from unstructured text.
-For a high level tutorial on extraction, check out [this guide](/docs/tutorials/extraction/).
+- [如何：使用参考示例](/docs/how_to/extraction_examples/)
+- [如何：处理长文本](/docs/how_to/extraction_long_text/)
+- [如何：在不使用函数调用的情况下进行提取](/docs/how_to/extraction_parse)
 
-- [How to: use reference examples](/docs/how_to/extraction_examples/)
-- [How to: handle long text](/docs/how_to/extraction_long_text/)
-- [How to: do extraction without using function calling](/docs/how_to/extraction_parse)
+### 聊天机器人
 
-### Chatbots
+聊天机器人涉及使用 LLM 进行对话。
+有关构建聊天机器人的高级教程，请查看 [此指南](/docs/tutorials/chatbot/)。
 
-Chatbots involve using an LLM to have a conversation.
-For a high-level tutorial on building chatbots, check out [this guide](/docs/tutorials/chatbot/).
+- [如何：管理内存](/docs/how_to/chatbots_memory)
+- [如何：进行检索](/docs/how_to/chatbots_retrieval)
+- [如何：使用工具](/docs/how_to/chatbots_tools)
+- [如何：管理大量聊天记录](/docs/how_to/trim_messages/)
 
-- [How to: manage memory](/docs/how_to/chatbots_memory)
-- [How to: do retrieval](/docs/how_to/chatbots_retrieval)
-- [How to: use tools](/docs/how_to/chatbots_tools)
-- [How to: manage large chat history](/docs/how_to/trim_messages/)
+### 查询分析
 
-### Query analysis
+查询分析是使用 LLM 生成要发送给检索器的查询的任务。有关查询分析的高级教程，请查看 [此指南](/docs/tutorials/query_analysis/)。
 
-Query Analysis is the task of using an LLM to generate a query to send to a retriever.
-For a high-level tutorial on query analysis, check out [this guide](/docs/tutorials/query_analysis/).
+- [如何：向提示中添加示例](/docs/how_to/query_few_shot)
+- [如何：处理未生成查询的情况](/docs/how_to/query_no_queries)
+- [如何：处理多个查询](/docs/how_to/query_multiple_queries)
+- [如何：处理多个检索器](/docs/how_to/query_multiple_retrievers)
+- [如何：构造过滤器](/docs/how_to/query_constructing_filters)
+- [如何：处理高基数分类变量](/docs/how_to/query_high_cardinality)
 
-- [How to: add examples to the prompt](/docs/how_to/query_few_shot)
-- [How to: handle cases where no queries are generated](/docs/how_to/query_no_queries)
-- [How to: handle multiple queries](/docs/how_to/query_multiple_queries)
-- [How to: handle multiple retrievers](/docs/how_to/query_multiple_retrievers)
-- [How to: construct filters](/docs/how_to/query_constructing_filters)
-- [How to: deal with high cardinality categorical variables](/docs/how_to/query_high_cardinality)
+### SQL + CSV 的问答
 
-### Q&A over SQL + CSV
+您可以使用 LLMs 对表格数据进行问答。
+有关高级教程，请查看 [此指南](/docs/tutorials/sql_qa/)。
 
-You can use LLMs to do question answering over tabular data.
-For a high-level tutorial, check out [this guide](/docs/tutorials/sql_qa/).
+- [如何：使用提示改善结果](/docs/how_to/sql_prompting)
+- [如何：进行查询验证](/docs/how_to/sql_query_checking)
+- [如何：处理大型数据库](/docs/how_to/sql_large_db)
+- [如何：处理 CSV 文件](/docs/how_to/sql_csv)
 
-- [How to: use prompting to improve results](/docs/how_to/sql_prompting)
-- [How to: do query validation](/docs/how_to/sql_query_checking)
-- [How to: deal with large databases](/docs/how_to/sql_large_db)
-- [How to: deal with CSV files](/docs/how_to/sql_csv)
+### 关于图数据库的问答
 
-### Q&A over graph databases
+您可以使用 LLM 在图数据库上进行问答。
+有关高级教程，请查看 [本指南](/docs/tutorials/graph/)。
 
-You can use an LLM to do question answering over graph databases.
-For a high-level tutorial, check out [this guide](/docs/tutorials/graph/).
-
-- [How to: map values to a database](/docs/how_to/graph_mapping)
-- [How to: add a semantic layer over the database](/docs/how_to/graph_semantic)
-- [How to: improve results with prompting](/docs/how_to/graph_prompting)
-- [How to: construct knowledge graphs](/docs/how_to/graph_constructing)
+- [如何：将值映射到数据库](/docs/how_to/graph_mapping)
+- [如何：在数据库上添加语义层](/docs/how_to/graph_semantic)
+- [如何：通过提示改善结果](/docs/how_to/graph_prompting)
+- [如何：构建知识图谱](/docs/how_to/graph_constructing)
 
 ## [LangGraph](https://langchain-ai.github.io/langgraph)
 
-LangGraph is an extension of LangChain aimed at
-building robust and stateful multi-actor applications with LLMs by modeling steps as edges and nodes in a graph.
+LangGraph 是 LangChain 的一个扩展，旨在通过将步骤建模为图中的边和节点，构建强大且有状态的多参与者应用程序。
 
-LangGraph documentation is currently hosted on a separate site.
-You can peruse [LangGraph how-to guides here](https://langchain-ai.github.io/langgraph/how-tos/).
+LangGraph 文档目前托管在一个单独的网站上。您可以在此处查看 [LangGraph 使用指南](https://langchain-ai.github.io/langgraph/how-tos/)。
 
 ## [LangSmith](https://docs.smith.langchain.com/)
 
-LangSmith allows you to closely trace, monitor and evaluate your LLM application.
-It seamlessly integrates with LangChain and LangGraph, and you can use it to inspect and debug individual steps of your chains and agents as you build.
+LangSmith 允许您紧密跟踪、监控和评估您的 LLM 应用程序。
+它与 LangChain 和 LangGraph 无缝集成，您可以在构建时使用它检查和调试链和代理的各个步骤。
 
-LangSmith documentation is hosted on a separate site.
-You can peruse [LangSmith how-to guides here](https://docs.smith.langchain.com/how_to_guides/), but we'll highlight a few sections that are particularly
-relevant to LangChain below:
+LangSmith 文档托管在一个单独的网站上。
+您可以在这里浏览 [LangSmith 使用指南](https://docs.smith.langchain.com/how_to_guides/)，但我们将突出一些与 LangChain 特别相关的部分：
 
-### Evaluation
+### 评估
 <span data-heading-keywords="evaluation,evaluate"></span>
 
-Evaluating performance is a vital part of building LLM-powered applications.
-LangSmith helps with every step of the process from creating a dataset to defining metrics to running evaluators.
+评估性能是构建基于LLM的应用程序的重要环节。 LangSmith在从创建数据集到定义指标再到运行评估器的每一步中提供帮助。
 
-To learn more, check out the [LangSmith evaluation how-to guides](https://docs.smith.langchain.com/how_to_guides#evaluation).
+要了解更多信息，请查看[LangSmith评估操作指南](https://docs.smith.langchain.com/how_to_guides#evaluation).
 
-### Tracing
+### 跟踪
 <span data-heading-keywords="trace,tracing"></span>
 
-Tracing gives you observability inside your chains and agents, and is vital in diagnosing issues.
+跟踪可以让您在链和代理内部获得可观察性，并在诊断问题时至关重要。
 
-- [How to: trace with LangChain](https://docs.smith.langchain.com/how_to_guides/tracing/trace_with_langchain)
-- [How to: add metadata and tags to traces](https://docs.smith.langchain.com/how_to_guides/tracing/trace_with_langchain#add-metadata-and-tags-to-traces)
+- [如何：使用 LangChain 进行跟踪](https://docs.smith.langchain.com/how_to_guides/tracing/trace_with_langchain)
+- [如何：向跟踪添加元数据和标签](https://docs.smith.langchain.com/how_to_guides/tracing/trace_with_langchain#add-metadata-and-tags-to-traces)
 
-You can see general tracing-related how-tos [in this section of the LangSmith docs](https://docs.smith.langchain.com/how_to_guides/tracing).
+您可以在 [LangSmith 文档的此部分](https://docs.smith.langchain.com/how_to_guides/tracing) 查看与跟踪相关的一般操作指南。

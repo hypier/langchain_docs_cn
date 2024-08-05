@@ -1,13 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/stochasticai.ipynb
 ---
+
 # StochasticAI
 
->[Stochastic Acceleration Platform](https://docs.stochastic.ai/docs/introduction/) aims to simplify the life cycle of a Deep Learning model. From uploading and versioning the model, through training, compression and acceleration to putting it into production.
+>[Stochastic Acceleration Platform](https://docs.stochastic.ai/docs/introduction/) 旨在简化深度学习模型的生命周期。从上传和版本控制模型，到训练、压缩和加速，再到投入生产。
 
-This example goes over how to use LangChain to interact with `StochasticAI` models.
+这个示例讲解了如何使用 LangChain 与 `StochasticAI` 模型进行交互。
 
-You have to get the API_KEY and the API_URL [here](https://app.stochastic.ai/workspace/profile/settings?tab=profile).
+您需要在 [这里](https://app.stochastic.ai/workspace/profile/settings?tab=profile) 获取 API_KEY 和 API_URL。
 
 
 ```python
@@ -71,9 +72,7 @@ llm_chain.run(question)
 "\n\nStep 1: In 1999, the St. Louis Rams won the Super Bowl.\n\nStep 2: In 1999, Beiber was born.\n\nStep 3: The Rams were in Los Angeles at the time.\n\nStep 4: So they didn't play in the Super Bowl that year.\n"
 ```
 
+## 相关
 
-
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

@@ -1,31 +1,30 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/self_query/myscale_self_query.ipynb
 ---
+
 # MyScale
 
->[MyScale](https://docs.myscale.com/en/) is an integrated vector database. You can access your database in SQL and also from here, LangChain.
->`MyScale` can make use of [various data types and functions for filters](https://blog.myscale.com/2023/06/06/why-integrated-database-solution-can-boost-your-llm-apps/#filter-on-anything-without-constraints). It will boost up your LLM app no matter if you are scaling up your data or expand your system to broader application.
+>[MyScale](https://docs.myscale.com/en/) 是一个集成的向量数据库。您可以通过 SQL 访问您的数据库，也可以通过这里的 LangChain 访问。
+>`MyScale` 可以利用 [各种数据类型和过滤器功能](https://blog.myscale.com/2023/06/06/why-integrated-database-solution-can-boost-your-llm-apps/#filter-on-anything-without-constraints)。无论您是扩展数据还是将系统扩展到更广泛的应用，它都能提升您的 LLM 应用。
 
-In the notebook, we'll demo the `SelfQueryRetriever` wrapped around a `MyScale` vector store with some extra pieces we contributed to LangChain. 
+在笔记本中，我们将演示围绕 `MyScale` 向量存储的 `SelfQueryRetriever`，以及我们为 LangChain 贡献的一些额外组件。
 
-In short, it can be condensed into 4 points:
-1. Add `contain` comparator to match the list of any if there is more than one element matched
-2. Add `timestamp` data type for datetime match (ISO-format, or YYYY-MM-DD)
-3. Add `like` comparator for string pattern search
-4. Add arbitrary function capability
+简而言之，可以概括为 4 点：
+1. 添加 `contain` 比较器，以匹配如果有多个元素匹配的列表
+2. 添加 `timestamp` 数据类型以进行日期时间匹配（ISO 格式或 YYYY-MM-DD）
+3. 添加 `like` 比较器以进行字符串模式搜索
+4. 添加任意函数能力
 
-## Creating a MyScale vector store
-MyScale has already been integrated to LangChain for a while. So you can follow [this notebook](/docs/integrations/vectorstores/myscale) to create your own vectorstore for a self-query retriever.
+## 创建 MyScale 向量存储
+MyScale 已经与 LangChain 集成了一段时间。因此，您可以按照 [这个笔记本](/docs/integrations/vectorstores/myscale) 创建自己的向量存储，以便进行自查询检索。
 
-**Note:** All self-query retrievers requires you to have `lark` installed (`pip install lark`). We use `lark` for grammar definition. Before you proceed to the next step, we also want to remind you that `clickhouse-connect` is also needed to interact with your MyScale backend.
-
+**注意：** 所有自查询检索器都需要安装 `lark`（`pip install lark`）。我们使用 `lark` 进行语法定义。在您继续进行下一步之前，我们还想提醒您，需要 `clickhouse-connect` 来与您的 MyScale 后端进行交互。
 
 ```python
 %pip install --upgrade --quiet  lark clickhouse-connect
 ```
 
-In this tutorial we follow other example's setting and use `OpenAIEmbeddings`. Remember to get an OpenAI API Key for valid access to LLMs.
-
+在本教程中，我们遵循其他示例的设置，并使用 `OpenAIEmbeddings`。请记得获取一个有效访问 LLM 的 OpenAI API 密钥。
 
 ```python
 import getpass
@@ -38,7 +37,6 @@ os.environ["MYSCALE_USERNAME"] = getpass.getpass("MyScale Username:")
 os.environ["MYSCALE_PASSWORD"] = getpass.getpass("MyScale Password:")
 ```
 
-
 ```python
 from langchain_community.vectorstores import MyScale
 from langchain_core.documents import Document
@@ -47,10 +45,10 @@ from langchain_openai import OpenAIEmbeddings
 embeddings = OpenAIEmbeddings()
 ```
 
-## Create some sample data
-As you can see, the data we created has some differences compared to other self-query retrievers. We replaced the keyword `year` with `date` which gives you finer control on timestamps. We also changed the type of the keyword `gerne` to a list of strings, where an LLM can use a new `contain` comparator to construct filters. We also provide the `like` comparator and arbitrary function support to filters, which will be introduced in next few cells.
+## 创建一些示例数据
+正如您所看到的，我们创建的数据与其他自查询检索器相比有一些不同。我们将关键字 `year` 替换为 `date`，这使您可以更精细地控制时间戳。我们还将关键字 `gerne` 的类型更改为字符串列表，其中 LLM 可以使用新的 `contain` 比较器来构造过滤器。我们还为过滤器提供了 `like` 比较器和任意函数支持，这将在接下来的几节中介绍。
 
-Now let's look at the data first.
+现在让我们先看看数据。
 
 
 ```python
@@ -91,9 +89,8 @@ vectorstore = MyScale.from_documents(
 )
 ```
 
-## Creating our self-querying retriever
-Just like other retrievers... simple and nice.
-
+## 创建自查询检索器
+就像其他检索器一样……简单而美好。
 
 ```python
 from langchain.chains.query_constructor.base import AttributeInfo
@@ -103,42 +100,42 @@ from langchain_openai import ChatOpenAI
 metadata_field_info = [
     AttributeInfo(
         name="genre",
-        description="The genres of the movie. "
-        "It only supports equal and contain comparisons. "
-        "Here are some examples: genre = [' A '], genre = [' A ', 'B'], contain (genre, 'A')",
+        description="电影的类型。"
+        "只支持相等和包含比较。"
+        "以下是一些示例: genre = [' A '], genre = [' A ', 'B'], contain (genre, 'A')",
         type="list[string]",
     ),
-    # If you want to include length of a list, just define it as a new column
-    # This will teach the LLM to use it as a column when constructing filter.
+    # 如果您想包含列表的长度，只需将其定义为新列
+    # 这将教LLM在构建过滤器时将其用作列。
     AttributeInfo(
         name="length(genre)",
-        description="The length of genres of the movie",
+        description="电影类型的数量",
         type="integer",
     ),
-    # Now you can define a column as timestamp. By simply set the type to timestamp.
+    # 现在您可以将列定义为时间戳。只需将类型设置为时间戳即可。
     AttributeInfo(
         name="date",
-        description="The date the movie was released",
+        description="电影上映的日期",
         type="timestamp",
     ),
     AttributeInfo(
         name="director",
-        description="The name of the movie director",
+        description="电影导演的姓名",
         type="string",
     ),
     AttributeInfo(
-        name="rating", description="A 1-10 rating for the movie", type="float"
+        name="rating", description="电影的1-10评分", type="float"
     ),
 ]
-document_content_description = "Brief summary of a movie"
+document_content_description = "电影的简要概述"
 llm = ChatOpenAI(temperature=0, model_name="gpt-4o")
 retriever = SelfQueryRetriever.from_llm(
     llm, vectorstore, document_content_description, metadata_field_info, verbose=True
 )
 ```
 
-## Testing it out with self-query retriever's existing functionalities
-And now we can try actually using our retriever!
+## 测试自查询检索器现有功能
+现在我们可以尝试实际使用我们的检索器！
 
 
 ```python
@@ -172,39 +169,35 @@ retriever.invoke(
 )
 ```
 
-# Wait a second... what else?
+# 等一下... 还有什么？
 
-Self-query retriever with MyScale can do more! Let's find out.
-
+使用 MyScale 的自查询检索器可以做更多事情！让我们来看看。
 
 ```python
 # You can use length(genres) to do anything you want
 retriever.invoke("What's a movie that have more than 1 genres?")
 ```
 
-
 ```python
 # Fine-grained datetime? You got it already.
 retriever.invoke("What's a movie that release after feb 1995?")
 ```
-
 
 ```python
 # Don't know what your exact filter should be? Use string pattern match!
 retriever.invoke("What's a movie whose name is like Andrei?")
 ```
 
-
 ```python
 # Contain works for lists: so you can match a list with contain comparator!
 retriever.invoke("What's a movie who has genres science fiction and adventure?")
 ```
 
-## Filter k
+## 过滤 k
 
-We can also use the self query retriever to specify `k`: the number of documents to fetch.
+我们还可以使用自查询检索器来指定 `k`：要获取的文档数量。
 
-We can do this by passing `enable_limit=True` to the constructor.
+我们可以通过将 `enable_limit=True` 传递给构造函数来实现这一点。
 
 
 ```python
@@ -220,6 +213,6 @@ retriever = SelfQueryRetriever.from_llm(
 
 
 ```python
-# This example only specifies a relevant query
+# 此示例仅指定了一个相关查询
 retriever.invoke("what are two movies about dinosaurs")
 ```

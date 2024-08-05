@@ -1,29 +1,29 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/openllm.ipynb
 ---
+
 # OpenLLM
 
-[🦾 OpenLLM](https://github.com/bentoml/OpenLLM) is an open platform for operating large language models (LLMs) in production. It enables developers to easily run inference with any open-source LLMs, deploy to the cloud or on-premises, and build powerful AI apps.
+[🦾 OpenLLM](https://github.com/bentoml/OpenLLM) 是一个用于在生产环境中操作大型语言模型 (LLMs) 的开放平台。它使开发者能够轻松地与任何开源 LLM 进行推理，部署到云端或本地，并构建强大的 AI 应用。
 
-## Installation
+## 安装
 
-Install `openllm` through [PyPI](https://pypi.org/project/openllm/)
+通过 [PyPI](https://pypi.org/project/openllm/) 安装 `openllm`
 
 
 ```python
 %pip install --upgrade --quiet  openllm
 ```
 
-## Launch OpenLLM server locally
+## 在本地启动 OpenLLM 服务器
 
-To start an LLM server, use `openllm start` command. For example, to start a dolly-v2 server, run the following command from a terminal:
+要启动 LLM 服务器，请使用 `openllm start` 命令。例如，要启动 dolly-v2 服务器，请从终端运行以下命令：
 
 ```bash
 openllm start dolly-v2
 ```
 
-
-## Wrapper
+## 包装器
 
 
 ```python
@@ -33,13 +33,13 @@ server_url = "http://localhost:3000"  # Replace with remote host if you are runn
 llm = OpenLLM(server_url=server_url)
 ```
 
-### Optional: Local LLM Inference
+### 可选：本地 LLM 推理
 
-You may also choose to initialize an LLM managed by OpenLLM locally from current process. This is useful for development purpose and allows developers to quickly try out different types of LLMs.
+您还可以选择从当前进程初始化由 OpenLLM 管理的 LLM。这对于开发目的非常有用，并允许开发人员快速尝试不同类型的 LLM。
 
-When moving LLM applications to production, we recommend deploying the OpenLLM server separately and access via the `server_url` option demonstrated above.
+在将 LLM 应用程序迁移到生产环境时，我们建议单独部署 OpenLLM 服务器，并通过上面演示的 `server_url` 选项进行访问。
 
-To load an LLM locally via the LangChain wrapper:
+通过 LangChain 包装器本地加载 LLM：
 
 
 ```python
@@ -53,7 +53,7 @@ llm = OpenLLM(
 )
 ```
 
-### Integrate with a LLMChain
+### 与 LLMChain 集成
 
 
 ```python
@@ -73,7 +73,7 @@ print(generated)
 iLkb
 ```
 
-## Related
+## 相关
 
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

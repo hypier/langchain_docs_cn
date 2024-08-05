@@ -1,67 +1,64 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/toolkits/gitlab.ipynb
 ---
+
 # Gitlab
 
-The `Gitlab` toolkit contains tools that enable an LLM agent to interact with a gitlab repository. 
-The tool is a wrapper for the [python-gitlab](https://github.com/python-gitlab/python-gitlab) library. 
+`Gitlab` 工具包包含使 LLM 代理能够与 gitlab 仓库交互的工具。 
+该工具是 [python-gitlab](https://github.com/python-gitlab/python-gitlab) 库的封装。
 
-## Quickstart
-1. Install the python-gitlab library
-2. Create a Gitlab personal access token
-3. Set your environmental variables
-4. Pass the tools to your agent with `toolkit.get_tools()`
+## 快速入门
+1. 安装 python-gitlab 库
+2. 创建 Gitlab 个人访问令牌
+3. 设置您的环境变量
+4. 使用 `toolkit.get_tools()` 将工具传递给您的代理
 
-Each of these steps will be explained in great detail below.
+以下将详细解释每个步骤。
 
-1. **Get Issues**- fetches issues from the repository.
+1. **获取问题** - 从仓库中提取问题。
 
-2. **Get Issue**- fetches details about a specific issue.
+2. **获取问题** - 获取特定问题的详细信息。
 
-3. **Comment on Issue**- posts a comment on a specific issue.
+3. **对问题发表评论** - 在特定问题上发布评论。
 
-4. **Create Pull Request**- creates a pull request from the bot's working branch to the base branch.
+4. **创建拉取请求** - 从机器人的工作分支创建一个拉取请求到基础分支。
 
-5. **Create File**- creates a new file in the repository.
+5. **创建文件** - 在仓库中创建一个新文件。
 
-6. **Read File**- reads a file from the repository.
+6. **读取文件** - 从仓库中读取文件。
 
-7. **Update File**- updates a file in the repository.
+7. **更新文件** - 更新仓库中的文件。
 
-8. **Delete File**- deletes a file from the repository.
+8. **删除文件** - 从仓库中删除文件。
 
+## 设置
 
-
-## Setup
-
-### 1. Install the `python-gitlab` library 
+### 1. 安装 `python-gitlab` 库
 
 
 ```python
 %pip install --upgrade --quiet  python-gitlab langchain-community
 ```
 
-### 2. Create a Gitlab personal access token
+### 2. 创建 Gitlab 个人访问令牌
 
-[Follow the instructions here](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html) to create a Gitlab personal access token. Make sure your app has the following repository permissions:
+[请按照此处的说明](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html) 创建 Gitlab 个人访问令牌。确保您的应用具有以下仓库权限：
 
 * read_api
 * read_repository
 * write_repository
 
-### 3. Set Environmental Variables
+### 3. 设置环境变量
 
-Before initializing your agent, the following environmental variables need to be set:
+在初始化您的代理之前，需要设置以下环境变量：
 
-* **GITLAB_URL** - The URL hosted Gitlab. Defaults to "https://gitlab.com". 
-* **GITLAB_PERSONAL_ACCESS_TOKEN**- The personal access token you created in the last step
-* **GITLAB_REPOSITORY**- The name of the Gitlab repository you want your bot to act upon. Must follow the format {username}/{repo-name}.
-* **GITLAB_BRANCH**- The branch where the bot will make its commits. Defaults to 'main.'
-* **GITLAB_BASE_BRANCH**- The base branch of your repo, usually either 'main' or 'master.' This is where pull requests will base from. Defaults to 'main.'
+* **GITLAB_URL** - 托管 Gitlab 的 URL。默认为 "https://gitlab.com"。
+* **GITLAB_PERSONAL_ACCESS_TOKEN** - 您在上一步中创建的个人访问令牌
+* **GITLAB_REPOSITORY** - 您希望机器人操作的 Gitlab 仓库名称。必须遵循格式 {username}/{repo-name}。
+* **GITLAB_BRANCH** - 机器人将进行提交的分支。默认为 'main'。
+* **GITLAB_BASE_BRANCH** - 您仓库的基础分支，通常是 'main' 或 'master'。这是拉取请求的基础。默认为 'main'。
 
-
-## Example: Simple Agent
-
+## 示例：简单代理
 
 ```python
 import os
@@ -72,19 +69,17 @@ from langchain_community.utilities.gitlab import GitLabAPIWrapper
 from langchain_openai import OpenAI
 ```
 
-
 ```python
-# Set your environment variables using os.environ
+# 使用 os.environ 设置您的环境变量
 os.environ["GITLAB_URL"] = "https://gitlab.example.org"
 os.environ["GITLAB_PERSONAL_ACCESS_TOKEN"] = ""
 os.environ["GITLAB_REPOSITORY"] = "username/repo-name"
 os.environ["GITLAB_BRANCH"] = "bot-branch-name"
 os.environ["GITLAB_BASE_BRANCH"] = "main"
 
-# This example also requires an OpenAI API key
+# 此示例还需要一个 OpenAI API 密钥
 os.environ["OPENAI_API_KEY"] = ""
 ```
-
 
 ```python
 llm = OpenAI(temperature=0)
@@ -95,10 +90,9 @@ agent = initialize_agent(
 )
 ```
 
-
 ```python
 agent.run(
-    "You have the software engineering capabilities of a Google Principle engineer. You are tasked with completing issues on a gitlab repository. Please look at the open issues and complete them by creating pull requests that solve the issues."
+    "你具有 Google 首席工程师的软件工程能力。你的任务是完成 gitlab 仓库中的问题。请查看开放的问题，并通过创建解决这些问题的拉取请求来完成它们。"
 )
 ```
 ```output
@@ -153,8 +147,6 @@ Final Answer: I have created a pull request with number 12 that solves issue 15.
 [1m> Finished chain.[0m
 ```
 
-
 ```output
 'I have created a pull request with number 12 that solves issue 15.'
 ```
-

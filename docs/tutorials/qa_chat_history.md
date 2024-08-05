@@ -2,49 +2,48 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/tutorials/qa_chat_history.ipynb
 sidebar_position: 2
 ---
-# Conversational RAG
 
-:::info Prerequisites
+# 对话式 RAG
 
-This guide assumes familiarity with the following concepts:
+:::info 前提条件
 
-- [Chat history](/docs/concepts/#chat-history)
-- [Chat models](/docs/concepts/#chat-models)
-- [Embeddings](/docs/concepts/#embedding-models)
-- [Vector stores](/docs/concepts/#vector-stores)
-- [Retrieval-augmented generation](/docs/tutorials/rag/)
-- [Tools](/docs/concepts/#tools)
-- [Agents](/docs/concepts/#agents)
+本指南假设您对以下概念有一定了解：
+
+- [聊天历史](/docs/concepts/#chat-history)
+- [聊天模型](/docs/concepts/#chat-models)
+- [嵌入](/docs/concepts/#embedding-models)
+- [向量存储](/docs/concepts/#vector-stores)
+- [检索增强生成](/docs/tutorials/rag/)
+- [工具](/docs/concepts/#tools)
+- [代理](/docs/concepts/#agents)
 
 :::
 
-In many Q&A applications we want to allow the user to have a back-and-forth conversation, meaning the application needs some sort of "memory" of past questions and answers, and some logic for incorporating those into its current thinking.
+在许多问答应用中，我们希望允许用户进行互动对话，这意味着应用程序需要某种形式的“记忆”，以记录过去的问题和答案，并具备将这些信息融入当前思考的逻辑。
 
-In this guide we focus on **adding logic for incorporating historical messages.** Further details on chat history management is [covered here](/docs/how_to/message_history).
+在本指南中，我们专注于**添加用于整合历史消息的逻辑。** 有关聊天历史管理的更多细节，请参阅[此处](/docs/how_to/message_history)。
 
-We will cover two approaches:
+我们将介绍两种方法：
 
-1. Chains, in which we always execute a retrieval step;
-2. Agents, in which we give an LLM discretion over whether and how to execute a retrieval step (or multiple steps).
+1. 链接，其中我们始终执行检索步骤；
+2. 代理，其中我们赋予 LLM 自主决定是否以及如何执行检索步骤（或多个步骤）。
 
-For the external knowledge source, we will use the same [LLM Powered Autonomous Agents](https://lilianweng.github.io/posts/2023-06-23-agent/) blog post by Lilian Weng from the [RAG tutorial](/docs/tutorials/rag).
+作为外部知识来源，我们将使用 Lilian Weng 的同一篇[LLM 驱动的自主代理](https://lilianweng.github.io/posts/2023-06-23-agent/)博客文章，来自[RAG 教程](/docs/tutorials/rag)。
 
-## Setup
+## 设置
 
-### Dependencies
+### 依赖项
 
-We'll use OpenAI embeddings and a Chroma vector store in this walkthrough, but everything shown here works with any [Embeddings](/docs/concepts#embedding-models), and [VectorStore](/docs/concepts#vectorstores) or [Retriever](/docs/concepts#retrievers). 
+在本次演示中，我们将使用 OpenAI embeddings 和 Chroma 向量存储，但这里展示的所有内容都适用于任何 [Embeddings](/docs/concepts#embedding-models)、[VectorStore](/docs/concepts#vectorstores) 或 [Retriever](/docs/concepts#retrievers)。
 
-We'll use the following packages:
-
+我们将使用以下包：
 
 ```python
 %%capture --no-stderr
 %pip install --upgrade --quiet  langchain langchain-community langchainhub langchain-chroma bs4
 ```
 
-We need to set environment variable `OPENAI_API_KEY`, which can be done directly or loaded from a `.env` file like so:
-
+我们需要设置环境变量 `OPENAI_API_KEY`，这可以直接完成或从 `.env` 文件中加载，如下所示：
 
 ```python
 import getpass
@@ -60,9 +59,9 @@ if not os.environ.get("OPENAI_API_KEY"):
 
 ### LangSmith
 
-Many of the applications you build with LangChain will contain multiple steps with multiple invocations of LLM calls. As these applications get more and more complex, it becomes crucial to be able to inspect what exactly is going on inside your chain or agent. The best way to do this is with [LangSmith](https://smith.langchain.com).
+您使用 LangChain 构建的许多应用程序将包含多个步骤和多次调用 LLM。随着这些应用程序变得越来越复杂，能够检查您的链或代理内部究竟发生了什么变得至关重要。实现这一点的最佳方法是使用 [LangSmith](https://smith.langchain.com)。
 
-Note that LangSmith is not needed, but it is helpful. If you do want to use LangSmith, after you sign up at the link above, make sure to set your environment variables to start logging traces:
+请注意，LangSmith 不是必需的，但它是有帮助的。如果您确实想使用 LangSmith，请在上述链接注册后，确保设置您的环境变量以开始记录跟踪：
 
 
 ```python
@@ -73,7 +72,7 @@ if not os.environ.get("LANGCHAIN_API_KEY"):
 
 ## Chains {#chains}
 
-Let's first revisit the Q&A app we built over the [LLM Powered Autonomous Agents](https://lilianweng.github.io/posts/2023-06-23-agent/) blog post by Lilian Weng in the [RAG tutorial](/docs/tutorials/rag).
+让我们首先回顾一下我们在 [Lilian Weng 的博客文章](https://lilianweng.github.io/posts/2023-06-23-agent/) 中构建的 Q&A 应用，该文章介绍了 [RAG 教程](/docs/tutorials/rag)。
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
@@ -143,43 +142,43 @@ response["answer"]
 ```
 
 
-Note that we have used the built-in chain constructors `create_stuff_documents_chain` and `create_retrieval_chain`, so that the basic ingredients to our solution are:
+请注意，我们使用了内置的链构造函数 `create_stuff_documents_chain` 和 `create_retrieval_chain`，因此我们解决方案的基本组成部分是：
 
-1. retriever;
-2. prompt;
-3. LLM.
+1. 检索器；
+2. 提示；
+3. LLM。
 
-This will simplify the process of incorporating chat history.
+这将简化整合聊天历史的过程。
 
-### Adding chat history
+### 添加聊天历史
 
-The chain we have built uses the input query directly to retrieve relevant context. But in a conversational setting, the user query might require conversational context to be understood. For example, consider this exchange:
+我们构建的链条直接使用输入查询来检索相关上下文。但在对话环境中，用户查询可能需要对话上下文才能被理解。例如，考虑以下对话：
 
-> Human: "What is Task Decomposition?"
+> 人类: "什么是任务分解？"
 >
-> AI: "Task decomposition involves breaking down complex tasks into smaller and simpler steps to make them more manageable for an agent or model."
+> AI: "任务分解涉及将复杂任务分解为更小、更简单的步骤，以便让代理或模型更易于管理。"
 >
-> Human: "What are common ways of doing it?"
+> 人类: "常见的做法有哪些？"
 
-In order to answer the second question, our system needs to understand that "it" refers to "Task Decomposition."
+为了回答第二个问题，我们的系统需要理解“它”指的是“任务分解”。
 
-We'll need to update two things about our existing app:
+我们需要更新现有应用的两个方面：
 
-1. **Prompt**: Update our prompt to support historical messages as an input.
-2. **Contextualizing questions**: Add a sub-chain that takes the latest user question and reformulates it in the context of the chat history. This can be thought of simply as building a new "history aware" retriever. Whereas before we had:
+1. **提示**: 更新我们的提示以支持历史消息作为输入。
+2. **上下文化问题**: 添加一个子链，获取最新的用户问题，并在聊天历史的上下文中重新表述它。这可以简单地理解为构建一个新的“历史感知”检索器。之前我们有：
    - `query` -> `retriever`  
-     Now we will have:
+     现在我们将有：
    - `(query, conversation history)` -> `LLM` -> `rephrased query` -> `retriever`
 
-#### Contextualizing the question
+#### 上下文化问题
 
-First we'll need to define a sub-chain that takes historical messages and the latest user question, and reformulates the question if it makes reference to any information in the historical information.
+首先，我们需要定义一个子链，该链接受历史消息和最新的用户问题，并在其引用历史信息时重新表述问题。
 
-We'll use a prompt that includes a `MessagesPlaceholder` variable under the name "chat_history". This allows us to pass in a list of Messages to the prompt using the "chat_history" input key, and these messages will be inserted after the system message and before the human message containing the latest question.
+我们将使用一个包含 `MessagesPlaceholder` 变量的提示，名称为 "chat_history"。这使我们能够通过 "chat_history" 输入键将消息列表传递给提示，这些消息将在系统消息之后和包含最新问题的人类消息之前插入。
 
-Note that we leverage a helper function [create_history_aware_retriever](https://api.python.langchain.com/en/latest/chains/langchain.chains.history_aware_retriever.create_history_aware_retriever.html) for this step, which manages the case where `chat_history` is empty, and otherwise applies `prompt | llm | StrOutputParser() | retriever` in sequence.
+请注意，我们利用辅助函数 [create_history_aware_retriever](https://api.python.langchain.com/en/latest/chains/langchain.chains.history_aware_retriever.create_history_aware_retriever.html) 来处理这一步，该函数管理 `chat_history` 为空的情况，否则按顺序应用 `prompt | llm | StrOutputParser() | retriever`。
 
-`create_history_aware_retriever` constructs a chain that accepts keys `input` and `chat_history` as input, and has the same output schema as a retriever.
+`create_history_aware_retriever` 构建一个接受 `input` 和 `chat_history` 作为输入的链，并具有与检索器相同的输出模式。
 
 
 ```python
@@ -187,11 +186,11 @@ from langchain.chains import create_history_aware_retriever
 from langchain_core.prompts import MessagesPlaceholder
 
 contextualize_q_system_prompt = (
-    "Given a chat history and the latest user question "
-    "which might reference context in the chat history, "
-    "formulate a standalone question which can be understood "
-    "without the chat history. Do NOT answer the question, "
-    "just reformulate it if needed and otherwise return it as is."
+    "给定聊天历史和最新的用户问题，"
+    "该问题可能引用聊天历史中的上下文，"
+    "形成一个可以独立理解的问题，"
+    "不要回答问题，"
+    "如果需要则重新表述，其他情况保持原样。"
 )
 
 contextualize_q_prompt = ChatPromptTemplate.from_messages(
@@ -206,13 +205,13 @@ history_aware_retriever = create_history_aware_retriever(
 )
 ```
 
-This chain prepends a rephrasing of the input query to our retriever, so that the retrieval incorporates the context of the conversation.
+该链将输入查询的重新表述添加到我们的检索器之前，以便检索包含对话上下文。
 
-Now we can build our full QA chain. This is as simple as updating the retriever to be our new `history_aware_retriever`.
+现在我们可以构建完整的 QA 链。这只需将检索器更新为我们的新 `history_aware_retriever`。
 
-Again, we will use [create_stuff_documents_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.combine_documents.stuff.create_stuff_documents_chain.html) to generate a `question_answer_chain`, with input keys `context`, `chat_history`, and `input`-- it accepts the retrieved context alongside the conversation history and query to generate an answer. A more detailed explaination is over [here](/docs/tutorials/rag/#built-in-chains)
+同样，我们将使用 [create_stuff_documents_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.combine_documents.stuff.create_stuff_documents_chain.html) 生成一个 `question_answer_chain`，其输入键为 `context`、`chat_history` 和 `input`——它接受检索到的上下文以及对话历史和查询以生成答案。更详细的解释可以在 [这里](/docs/tutorials/rag/#built-in-chains) 找到。
 
-We build our final `rag_chain` with [create_retrieval_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.retrieval.create_retrieval_chain.html). This chain applies the `history_aware_retriever` and `question_answer_chain` in sequence, retaining intermediate outputs such as the retrieved context for convenience. It has input keys `input` and `chat_history`, and includes `input`, `chat_history`, `context`, and `answer` in its output.
+我们通过 [create_retrieval_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.retrieval.create_retrieval_chain.html) 构建最终的 `rag_chain`。该链按顺序应用 `history_aware_retriever` 和 `question_answer_chain`，保留中间输出，例如检索到的上下文，以方便使用。它具有输入键 `input` 和 `chat_history`，并在输出中包含 `input`、`chat_history`、`context` 和 `answer`。
 
 
 ```python
@@ -233,7 +232,7 @@ question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
 rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
 ```
 
-Let's try this. Below we ask a question and a follow-up question that requires contextualization to return a sensible response. Because our chain includes a `"chat_history"` input, the caller needs to manage the chat history. We can achieve this by appending input and output messages to a list:
+让我们试试这个。下面我们提出一个问题和一个需要上下文化的后续问题，以返回合理的响应。由于我们的链包括一个 `"chat_history"` 输入，调用者需要管理聊天历史。我们可以通过将输入和输出消息附加到列表来实现这一点：
 
 
 ```python
@@ -241,7 +240,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 
 chat_history = []
 
-question = "What is Task Decomposition?"
+question = "什么是任务分解？"
 ai_msg_1 = rag_chain.invoke({"input": question, "chat_history": chat_history})
 chat_history.extend(
     [
@@ -250,34 +249,34 @@ chat_history.extend(
     ]
 )
 
-second_question = "What are common ways of doing it?"
+second_question = "常见的做法有哪些？"
 ai_msg_2 = rag_chain.invoke({"input": second_question, "chat_history": chat_history})
 
 print(ai_msg_2["answer"])
 ```
 ```output
-Task decomposition can be achieved through various methods such as using techniques like Chain of Thought (CoT) or Tree of Thoughts to break down complex tasks into smaller steps. Common ways include prompting the model with simple instructions like "Steps for XYZ" or task-specific instructions like "Write a story outline." Human inputs can also be used to guide the task decomposition process effectively.
+任务分解可以通过多种方法实现，例如使用链式思维（CoT）或思维树等技术将复杂任务分解为更小的步骤。常见的方法包括用简单的指令提示模型，如“XYZ的步骤”或特定任务的指令，如“写一个故事大纲”。人类输入也可以有效地指导任务分解过程。
 ```
 :::tip
 
-Check out the [LangSmith trace](https://smith.langchain.com/public/243301e4-4cc5-4e52-a6e7-8cfe9208398d/r) 
+查看 [LangSmith 跟踪](https://smith.langchain.com/public/243301e4-4cc5-4e52-a6e7-8cfe9208398d/r) 
 
 :::
 
-#### Stateful management of chat history
+#### 有状态的聊天历史管理
 
-Here we've gone over how to add application logic for incorporating historical outputs, but we're still manually updating the chat history and inserting it into each input. In a real Q&A application we'll want some way of persisting chat history and some way of automatically inserting and updating it.
+在这里，我们讨论了如何添加应用逻辑以纳入历史输出，但我们仍在手动更新聊天历史并将其插入每个输入。在一个真实的问答应用中，我们希望有某种方式来持久化聊天历史，并自动插入和更新它。
 
-For this we can use:
+为此，我们可以使用：
 
-- [BaseChatMessageHistory](https://api.python.langchain.com/en/latest/langchain_api_reference.html#module-langchain.memory): Store chat history.
-- [RunnableWithMessageHistory](/docs/how_to/message_history): Wrapper for an LCEL chain and a `BaseChatMessageHistory` that handles injecting chat history into inputs and updating it after each invocation.
+- [BaseChatMessageHistory](https://api.python.langchain.com/en/latest/langchain_api_reference.html#module-langchain.memory): 存储聊天历史。
+- [RunnableWithMessageHistory](/docs/how_to/message_history): 一个 LCEL 链和 `BaseChatMessageHistory` 的包装器，处理将聊天历史注入输入并在每次调用后更新它。
 
-For a detailed walkthrough of how to use these classes together to create a stateful conversational chain, head to the [How to add message history (memory)](/docs/how_to/message_history) LCEL page.
+有关如何将这些类结合使用以创建有状态对话链的详细说明，请访问 [如何添加消息历史（内存）](/docs/how_to/message_history) LCEL 页面。
 
-Below, we implement a simple example of the second option, in which chat histories are stored in a simple dict. LangChain manages memory integrations with [Redis](/docs/integrations/memory/redis_chat_message_history/) and other technologies to provide for more robust persistence.
+下面，我们实现第二种选择的简单示例，其中聊天历史存储在一个简单的字典中。LangChain 与 [Redis](/docs/integrations/memory/redis_chat_message_history/) 和其他技术管理内存集成，以提供更强大的持久性。
 
-Instances of `RunnableWithMessageHistory` manage the chat history for you. They accept a config with a key (`"session_id"` by default) that specifies what conversation history to fetch and prepend to the input, and append the output to the same conversation history. Below is an example:
+`RunnableWithMessageHistory` 的实例为您管理聊天历史。它们接受一个带有键（默认是 `"session_id"`）的配置，该键指定要获取并添加到输入的对话历史，并将输出附加到同一对话历史。以下是一个示例：
 
 
 ```python
@@ -306,24 +305,24 @@ conversational_rag_chain = RunnableWithMessageHistory(
 
 ```python
 conversational_rag_chain.invoke(
-    {"input": "What is Task Decomposition?"},
+    {"input": "什么是任务分解？"},
     config={
         "configurable": {"session_id": "abc123"}
-    },  # constructs a key "abc123" in `store`.
+    },  # 在 `store` 中构建一个键 "abc123"。
 )["answer"]
 ```
 
 
 
 ```output
-'Task decomposition involves breaking down complex tasks into smaller and simpler steps to make them more manageable. Techniques like Chain of Thought (CoT) and Tree of Thoughts help models decompose hard tasks into multiple manageable subtasks. This process allows agents to plan ahead and tackle intricate tasks effectively.'
+'任务分解涉及将复杂任务分解为更小、更简单的步骤，以便让它们更易于管理。技术如链式思维（CoT）和思维树有助于模型将困难任务分解为多个可管理的子任务。这个过程使代理能够提前规划，有效地处理复杂任务。'
 ```
 
 
 
 ```python
 conversational_rag_chain.invoke(
-    {"input": "What are common ways of doing it?"},
+    {"input": "常见的做法有哪些？"},
     config={"configurable": {"session_id": "abc123"}},
 )["answer"]
 ```
@@ -331,11 +330,11 @@ conversational_rag_chain.invoke(
 
 
 ```output
-'Task decomposition can be achieved through various methods such as using Language Model (LLM) with simple prompting, task-specific instructions tailored to the specific task at hand, or incorporating human inputs to break down the task into smaller components. These approaches help in guiding agents to think step by step and decompose complex tasks into more manageable subgoals.'
+'任务分解可以通过多种方法实现，例如使用语言模型（LLM）进行简单提示、针对特定任务量身定制的任务特定指令，或结合人类输入将任务分解为更小的组成部分。这些方法有助于指导代理逐步思考，将复杂任务分解为更可管理的子目标。'
 ```
 
 
-The conversation history can be inspected in the `store` dict:
+可以在 `store` 字典中检查对话历史：
 
 
 ```python
@@ -343,24 +342,25 @@ for message in store["abc123"].messages:
     if isinstance(message, AIMessage):
         prefix = "AI"
     else:
-        prefix = "User"
+        prefix = "用户"
 
     print(f"{prefix}: {message.content}\n")
 ```
 ```output
-User: What is Task Decomposition?
+用户: 什么是任务分解？
 
-AI: Task decomposition involves breaking down complex tasks into smaller and simpler steps to make them more manageable. Techniques like Chain of Thought (CoT) and Tree of Thoughts help models decompose hard tasks into multiple manageable subtasks. This process allows agents to plan ahead and tackle intricate tasks effectively.
+AI: 任务分解涉及将复杂任务分解为更小、更简单的步骤，以便让它们更易于管理。技术如链式思维（CoT）和思维树有助于模型将困难任务分解为多个可管理的子任务。这个过程使代理能够提前规划，有效地处理复杂任务。
 
-User: What are common ways of doing it?
+用户: 常见的做法有哪些？
 
-AI: Task decomposition can be achieved through various methods such as using Language Model (LLM) with simple prompting, task-specific instructions tailored to the specific task at hand, or incorporating human inputs to break down the task into smaller components. These approaches help in guiding agents to think step by step and decompose complex tasks into more manageable subgoals.
+AI: 任务分解可以通过多种方法实现，例如使用语言模型（LLM）进行简单提示、针对特定任务量身定制的任务特定指令，或结合人类输入将任务分解为更小的组成部分。这些方法有助于指导代理逐步思考，将复杂任务分解为更可管理的子目标。
 ```
-### Tying it together
+
+### 整合内容
 
 ![](../../static/img/conversational_retrieval_chain.png)
 
-For convenience, we tie together all of the necessary steps in a single code cell:
+为了方便起见，我们将所有必要的步骤整合到一个代码单元中：
 
 
 ```python
@@ -379,7 +379,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
 
 
-### Construct retriever ###
+### 构建检索器 ###
 loader = WebBaseLoader(
     web_paths=("https://lilianweng.github.io/posts/2023-06-23-agent/",),
     bs_kwargs=dict(
@@ -396,13 +396,13 @@ vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings
 retriever = vectorstore.as_retriever()
 
 
-### Contextualize question ###
+### 上下文化问题 ###
 contextualize_q_system_prompt = (
-    "Given a chat history and the latest user question "
-    "which might reference context in the chat history, "
-    "formulate a standalone question which can be understood "
-    "without the chat history. Do NOT answer the question, "
-    "just reformulate it if needed and otherwise return it as is."
+    "给定聊天记录和最新的用户问题，"
+    "该问题可能引用聊天记录中的上下文，"
+    "形成一个独立的问题，该问题可以在没有聊天记录的情况下理解。"
+    "请不要回答问题，"
+    "如果需要，请重新表述问题，否则按原样返回。"
 )
 contextualize_q_prompt = ChatPromptTemplate.from_messages(
     [
@@ -416,13 +416,13 @@ history_aware_retriever = create_history_aware_retriever(
 )
 
 
-### Answer question ###
+### 回答问题 ###
 system_prompt = (
-    "You are an assistant for question-answering tasks. "
-    "Use the following pieces of retrieved context to answer "
-    "the question. If you don't know the answer, say that you "
-    "don't know. Use three sentences maximum and keep the "
-    "answer concise."
+    "您是一个负责问答任务的助手。"
+    "使用以下检索到的上下文来回答"
+    "问题。如果您不知道答案，请说您"
+    "不知道。最多使用三句话，并保持"
+    "回答简洁。"
     "\n\n"
     "{context}"
 )
@@ -438,7 +438,7 @@ question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
 rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
 
 
-### Statefully manage chat history ###
+### 有状态地管理聊天记录 ###
 store = {}
 
 
@@ -488,18 +488,16 @@ conversational_rag_chain.invoke(
 'Task decomposition can be achieved through various methods such as using prompting techniques like "Steps for XYZ" or "What are the subgoals for achieving XYZ?", providing task-specific instructions like "Write a story outline," or incorporating human inputs to break down complex tasks into smaller components. These approaches help in organizing thoughts and planning ahead for successful task completion.'
 ```
 
+## 代理 {#agents}
 
-## Agents {#agents}
+代理利用LLMs的推理能力在执行过程中做出决策。使用代理可以将检索过程中的一些自主权转移出去。尽管它们的行为比链式结构更难以预测，但在这种情况下它们提供了一些优势：
 
-Agents leverage the reasoning capabilities of LLMs to make decisions during execution. Using agents allow you to offload some discretion over the retrieval process. Although their behavior is less predictable than chains, they offer some advantages in this context:
+- 代理直接生成检索器的输入，而不一定需要我们像上面那样明确构建上下文；
+- 代理可以为查询执行多个检索步骤，或者完全不执行检索步骤（例如，作为对用户的通用问候的回应）。
 
-- Agents generate the input to the retriever directly, without necessarily needing us to explicitly build in contextualization, as we did above;
-- Agents can execute multiple retrieval steps in service of a query, or refrain from executing a retrieval step altogether (e.g., in response to a generic greeting from a user).
+### 检索工具
 
-### Retrieval tool
-
-Agents can access "tools" and manage their execution. In this case, we will convert our retriever into a LangChain tool to be wielded by the agent:
-
+代理可以访问“工具”并管理其执行。在这种情况下，我们将把我们的检索器转换为 LangChain 工具，以便代理使用：
 
 ```python
 from langchain.tools.retriever import create_retriever_tool
@@ -507,30 +505,20 @@ from langchain.tools.retriever import create_retriever_tool
 tool = create_retriever_tool(
     retriever,
     "blog_post_retriever",
-    "Searches and returns excerpts from the Autonomous Agents blog post.",
+    "搜索并返回来自自主代理博客文章的摘录。",
 )
 tools = [tool]
 ```
 
-Tools are LangChain [Runnables](/docs/concepts#langchain-expression-language-lcel), and implement the usual interface:
-
+工具是 LangChain [可运行的](/docs/concepts#langchain-expression-language-lcel)，并实现了常规接口：
 
 ```python
 tool.invoke("task decomposition")
 ```
 
+### 代理构造器
 
-
-```output
-'Tree of Thoughts (Yao et al. 2023) extends CoT by exploring multiple reasoning possibilities at each step. It first decomposes the problem into multiple thought steps and generates multiple thoughts per step, creating a tree structure. The search process can be BFS (breadth-first search) or DFS (depth-first search) with each state evaluated by a classifier (via a prompt) or majority vote.\nTask decomposition can be done (1) by LLM with simple prompting like "Steps for XYZ.\\n1.", "What are the subgoals for achieving XYZ?", (2) by using task-specific instructions; e.g. "Write a story outline." for writing a novel, or (3) with human inputs.\n\nTree of Thoughts (Yao et al. 2023) extends CoT by exploring multiple reasoning possibilities at each step. It first decomposes the problem into multiple thought steps and generates multiple thoughts per step, creating a tree structure. The search process can be BFS (breadth-first search) or DFS (depth-first search) with each state evaluated by a classifier (via a prompt) or majority vote.\nTask decomposition can be done (1) by LLM with simple prompting like "Steps for XYZ.\\n1.", "What are the subgoals for achieving XYZ?", (2) by using task-specific instructions; e.g. "Write a story outline." for writing a novel, or (3) with human inputs.\n\nFig. 1. Overview of a LLM-powered autonomous agent system.\nComponent One: Planning#\nA complicated task usually involves many steps. An agent needs to know what they are and plan ahead.\nTask Decomposition#\nChain of thought (CoT; Wei et al. 2022) has become a standard prompting technique for enhancing model performance on complex tasks. The model is instructed to “think step by step” to utilize more test-time computation to decompose hard tasks into smaller and simpler steps. CoT transforms big tasks into multiple manageable tasks and shed lights into an interpretation of the model’s thinking process.\n\nFig. 1. Overview of a LLM-powered autonomous agent system.\nComponent One: Planning#\nA complicated task usually involves many steps. An agent needs to know what they are and plan ahead.\nTask Decomposition#\nChain of thought (CoT; Wei et al. 2022) has become a standard prompting technique for enhancing model performance on complex tasks. The model is instructed to “think step by step” to utilize more test-time computation to decompose hard tasks into smaller and simpler steps. CoT transforms big tasks into multiple manageable tasks and shed lights into an interpretation of the model’s thinking process.'
-```
-
-
-### Agent constructor
-
-Now that we have defined the tools and the LLM, we can create the agent. We will be using [LangGraph](/docs/concepts/#langgraph) to construct the agent. 
-Currently we are using a high level interface to construct the agent, but the nice thing about LangGraph is that this high-level interface is backed by a low-level, highly controllable API in case you want to modify the agent logic.
-
+现在我们已经定义了工具和 LLM，我们可以创建代理。我们将使用 [LangGraph](/docs/concepts/#langgraph) 来构建代理。目前我们使用的是一个高级接口来构造代理，但 LangGraph 的一个优点是这个高级接口是由一个低级、高度可控的 API 支持的，以防您想修改代理逻辑。
 
 ```python
 from langgraph.prebuilt import create_react_agent
@@ -538,8 +526,7 @@ from langgraph.prebuilt import create_react_agent
 agent_executor = create_react_agent(llm, tools)
 ```
 
-We can now try it out. Note that so far it is not stateful (we still need to add in memory)
-
+我们现在可以试一试。请注意，到目前为止它是无状态的（我们仍然需要添加内存）。
 
 ```python
 query = "What is Task Decomposition?"
@@ -550,18 +537,8 @@ for s in agent_executor.stream(
     print(s)
     print("----")
 ```
-```output
-Error in LangChainTracer.on_tool_end callback: TracerException("Found chain run at ID 1a50f4da-34a7-44af-8cbb-c67c90c9619e, but expected {'tool'} run.")
-``````output
-{'agent': {'messages': [AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_1ZkTWsLYIlKZ1uMyIQGUuyJx', 'function': {'arguments': '{"query":"Task Decomposition"}', 'name': 'blog_post_retriever'}, 'type': 'function'}]}, response_metadata={'token_usage': {'completion_tokens': 19, 'prompt_tokens': 68, 'total_tokens': 87}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': None, 'finish_reason': 'tool_calls', 'logprobs': None}, id='run-dddbe2d2-2355-4ca5-9961-1ceb39d78cf9-0', tool_calls=[{'name': 'blog_post_retriever', 'args': {'query': 'Task Decomposition'}, 'id': 'call_1ZkTWsLYIlKZ1uMyIQGUuyJx'}])]}}
-----
-{'tools': {'messages': [ToolMessage(content='Fig. 1. Overview of a LLM-powered autonomous agent system.\nComponent One: Planning#\nA complicated task usually involves many steps. An agent needs to know what they are and plan ahead.\nTask Decomposition#\nChain of thought (CoT; Wei et al. 2022) has become a standard prompting technique for enhancing model performance on complex tasks. The model is instructed to “think step by step” to utilize more test-time computation to decompose hard tasks into smaller and simpler steps. CoT transforms big tasks into multiple manageable tasks and shed lights into an interpretation of the model’s thinking process.\n\nFig. 1. Overview of a LLM-powered autonomous agent system.\nComponent One: Planning#\nA complicated task usually involves many steps. An agent needs to know what they are and plan ahead.\nTask Decomposition#\nChain of thought (CoT; Wei et al. 2022) has become a standard prompting technique for enhancing model performance on complex tasks. The model is instructed to “think step by step” to utilize more test-time computation to decompose hard tasks into smaller and simpler steps. CoT transforms big tasks into multiple manageable tasks and shed lights into an interpretation of the model’s thinking process.\n\nTree of Thoughts (Yao et al. 2023) extends CoT by exploring multiple reasoning possibilities at each step. It first decomposes the problem into multiple thought steps and generates multiple thoughts per step, creating a tree structure. The search process can be BFS (breadth-first search) or DFS (depth-first search) with each state evaluated by a classifier (via a prompt) or majority vote.\nTask decomposition can be done (1) by LLM with simple prompting like "Steps for XYZ.\\n1.", "What are the subgoals for achieving XYZ?", (2) by using task-specific instructions; e.g. "Write a story outline." for writing a novel, or (3) with human inputs.\n\nTree of Thoughts (Yao et al. 2023) extends CoT by exploring multiple reasoning possibilities at each step. It first decomposes the problem into multiple thought steps and generates multiple thoughts per step, creating a tree structure. The search process can be BFS (breadth-first search) or DFS (depth-first search) with each state evaluated by a classifier (via a prompt) or majority vote.\nTask decomposition can be done (1) by LLM with simple prompting like "Steps for XYZ.\\n1.", "What are the subgoals for achieving XYZ?", (2) by using task-specific instructions; e.g. "Write a story outline." for writing a novel, or (3) with human inputs.', name='blog_post_retriever', tool_call_id='call_1ZkTWsLYIlKZ1uMyIQGUuyJx')]}}
-----
-{'agent': {'messages': [AIMessage(content='Task decomposition is a technique used to break down complex tasks into smaller and simpler steps. This approach helps in managing and solving difficult tasks by dividing them into more manageable components. One common method of task decomposition is the Chain of Thought (CoT) technique, where models are instructed to think step by step to decompose hard tasks into smaller steps. Another extension of CoT is the Tree of Thoughts, which explores multiple reasoning possibilities at each step and generates multiple thoughts per step, creating a tree structure. Task decomposition can be facilitated by using simple prompts, task-specific instructions, or human inputs.', response_metadata={'token_usage': {'completion_tokens': 119, 'prompt_tokens': 636, 'total_tokens': 755}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-4a701854-97f2-4ec2-b6e1-73410911fa72-0')]}}
-----
-```
-LangGraph comes with built in persistence, so we don't need to use ChatMessageHistory! Rather, we can pass in a checkpointer to our LangGraph agent directly
 
+LangGraph 自带持久化功能，因此我们不需要使用 ChatMessageHistory！相反，我们可以直接将检查点传递给我们的 LangGraph 代理。
 
 ```python
 from langgraph.checkpoint.sqlite import SqliteSaver
@@ -571,10 +548,9 @@ memory = SqliteSaver.from_conn_string(":memory:")
 agent_executor = create_react_agent(llm, tools, checkpointer=memory)
 ```
 
-This is all we need to construct a conversational RAG agent.
+这就是构建对话式 RAG 代理所需的一切。
 
-Let's observe its behavior. Note that if we input a query that does not require a retrieval step, the agent does not execute one:
-
+让我们观察它的行为。请注意，如果我们输入的查询不需要检索步骤，代理不会执行检索：
 
 ```python
 config = {"configurable": {"thread_id": "abc123"}}
@@ -589,8 +565,7 @@ for s in agent_executor.stream(
 {'agent': {'messages': [AIMessage(content='Hello Bob! How can I assist you today?', response_metadata={'token_usage': {'completion_tokens': 11, 'prompt_tokens': 67, 'total_tokens': 78}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-022806f0-eb26-4c87-9132-ed2fcc6c21ea-0')]}}
 ----
 ```
-Further, if we input a query that does require a retrieval step, the agent generates the input to the tool:
-
+进一步地，如果我们输入的查询确实需要检索步骤，代理会生成工具的输入：
 
 ```python
 query = "What is Task Decomposition?"
@@ -601,19 +576,10 @@ for s in agent_executor.stream(
     print(s)
     print("----")
 ```
-```output
-{'agent': {'messages': [AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_DdAAJJgGIQOZQgKVE4duDyML', 'function': {'arguments': '{"query":"Task Decomposition"}', 'name': 'blog_post_retriever'}, 'type': 'function'}]}, response_metadata={'token_usage': {'completion_tokens': 19, 'prompt_tokens': 91, 'total_tokens': 110}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': None, 'finish_reason': 'tool_calls', 'logprobs': None}, id='run-acc3c903-4f6f-48dd-8b36-f6f3b80d0856-0', tool_calls=[{'name': 'blog_post_retriever', 'args': {'query': 'Task Decomposition'}, 'id': 'call_DdAAJJgGIQOZQgKVE4duDyML'}])]}}
-----
-``````output
-Error in LangChainTracer.on_tool_end callback: TracerException("Found chain run at ID 9a7ba580-ec91-412d-9649-1b5cbf5ae7bc, but expected {'tool'} run.")
-``````output
-{'tools': {'messages': [ToolMessage(content='Fig. 1. Overview of a LLM-powered autonomous agent system.\nComponent One: Planning#\nA complicated task usually involves many steps. An agent needs to know what they are and plan ahead.\nTask Decomposition#\nChain of thought (CoT; Wei et al. 2022) has become a standard prompting technique for enhancing model performance on complex tasks. The model is instructed to “think step by step” to utilize more test-time computation to decompose hard tasks into smaller and simpler steps. CoT transforms big tasks into multiple manageable tasks and shed lights into an interpretation of the model’s thinking process.\n\nFig. 1. Overview of a LLM-powered autonomous agent system.\nComponent One: Planning#\nA complicated task usually involves many steps. An agent needs to know what they are and plan ahead.\nTask Decomposition#\nChain of thought (CoT; Wei et al. 2022) has become a standard prompting technique for enhancing model performance on complex tasks. The model is instructed to “think step by step” to utilize more test-time computation to decompose hard tasks into smaller and simpler steps. CoT transforms big tasks into multiple manageable tasks and shed lights into an interpretation of the model’s thinking process.\n\nTree of Thoughts (Yao et al. 2023) extends CoT by exploring multiple reasoning possibilities at each step. It first decomposes the problem into multiple thought steps and generates multiple thoughts per step, creating a tree structure. The search process can be BFS (breadth-first search) or DFS (depth-first search) with each state evaluated by a classifier (via a prompt) or majority vote.\nTask decomposition can be done (1) by LLM with simple prompting like "Steps for XYZ.\\n1.", "What are the subgoals for achieving XYZ?", (2) by using task-specific instructions; e.g. "Write a story outline." for writing a novel, or (3) with human inputs.\n\nTree of Thoughts (Yao et al. 2023) extends CoT by exploring multiple reasoning possibilities at each step. It first decomposes the problem into multiple thought steps and generates multiple thoughts per step, creating a tree structure. The search process can be BFS (breadth-first search) or DFS (depth-first search) with each state evaluated by a classifier (via a prompt) or majority vote.\nTask decomposition can be done (1) by LLM with simple prompting like "Steps for XYZ.\\n1.", "What are the subgoals for achieving XYZ?", (2) by using task-specific instructions; e.g. "Write a story outline." for writing a novel, or (3) with human inputs.', name='blog_post_retriever', tool_call_id='call_DdAAJJgGIQOZQgKVE4duDyML')]}}
-----
-```
-Above, instead of inserting our query verbatim into the tool, the agent stripped unnecessary words like "what" and "is".
 
-This same principle allows the agent to use the context of the conversation when necessary:
+在上面，代理没有将我们的查询逐字插入工具，而是去掉了“what”和“is”等不必要的词。
 
+同样的原则使代理在必要时能够利用对话的上下文：
 
 ```python
 query = "What according to the blog post are common ways of doing it? redo the search"
@@ -624,20 +590,12 @@ for s in agent_executor.stream(
     print(s)
     print("----")
 ```
-```output
-{'agent': {'messages': [AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_KvoiamnLfGEzMeEMlV3u0TJ7', 'function': {'arguments': '{"query":"common ways of task decomposition"}', 'name': 'blog_post_retriever'}, 'type': 'function'}]}, response_metadata={'token_usage': {'completion_tokens': 21, 'prompt_tokens': 930, 'total_tokens': 951}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': 'fp_3b956da36b', 'finish_reason': 'tool_calls', 'logprobs': None}, id='run-dd842071-6dbd-4b68-8657-892eaca58638-0', tool_calls=[{'name': 'blog_post_retriever', 'args': {'query': 'common ways of task decomposition'}, 'id': 'call_KvoiamnLfGEzMeEMlV3u0TJ7'}])]}}
-----
-{'action': {'messages': [ToolMessage(content='Tree of Thoughts (Yao et al. 2023) extends CoT by exploring multiple reasoning possibilities at each step. It first decomposes the problem into multiple thought steps and generates multiple thoughts per step, creating a tree structure. The search process can be BFS (breadth-first search) or DFS (depth-first search) with each state evaluated by a classifier (via a prompt) or majority vote.\nTask decomposition can be done (1) by LLM with simple prompting like "Steps for XYZ.\\n1.", "What are the subgoals for achieving XYZ?", (2) by using task-specific instructions; e.g. "Write a story outline." for writing a novel, or (3) with human inputs.\n\nFig. 1. Overview of a LLM-powered autonomous agent system.\nComponent One: Planning#\nA complicated task usually involves many steps. An agent needs to know what they are and plan ahead.\nTask Decomposition#\nChain of thought (CoT; Wei et al. 2022) has become a standard prompting technique for enhancing model performance on complex tasks. The model is instructed to “think step by step” to utilize more test-time computation to decompose hard tasks into smaller and simpler steps. CoT transforms big tasks into multiple manageable tasks and shed lights into an interpretation of the model’s thinking process.\n\nResources:\n1. Internet access for searches and information gathering.\n2. Long Term memory management.\n3. GPT-3.5 powered Agents for delegation of simple tasks.\n4. File output.\n\nPerformance Evaluation:\n1. Continuously review and analyze your actions to ensure you are performing to the best of your abilities.\n2. Constructively self-criticize your big-picture behavior constantly.\n3. Reflect on past decisions and strategies to refine your approach.\n4. Every command has a cost, so be smart and efficient. Aim to complete tasks in the least number of steps.\n\n(3) Task execution: Expert models execute on the specific tasks and log results.\nInstruction:\n\nWith the input and the inference results, the AI assistant needs to describe the process and results. The previous stages can be formed as - User Input: {{ User Input }}, Task Planning: {{ Tasks }}, Model Selection: {{ Model Assignment }}, Task Execution: {{ Predictions }}. You must first answer the user\'s request in a straightforward manner. Then describe the task process and show your analysis and model inference results to the user in the first person. If inference results contain a file path, must tell the user the complete file path.', name='blog_post_retriever', id='c749bb8e-c8e0-4fa3-bc11-3e2e0651880b', tool_call_id='call_KvoiamnLfGEzMeEMlV3u0TJ7')]}}
-----
-{'agent': {'messages': [AIMessage(content='According to the blog post, common ways of task decomposition include:\n\n1. Using language models with simple prompting like "Steps for XYZ" or "What are the subgoals for achieving XYZ?"\n2. Utilizing task-specific instructions, for example, using "Write a story outline" for writing a novel.\n3. Involving human inputs in the task decomposition process.\n\nThese methods help in breaking down complex tasks into smaller and more manageable steps, facilitating better planning and execution of the overall task.', response_metadata={'token_usage': {'completion_tokens': 100, 'prompt_tokens': 1475, 'total_tokens': 1575}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': 'fp_3b956da36b', 'finish_reason': 'stop', 'logprobs': None}, id='run-98b765b3-f1a6-4c9a-ad0f-2db7950b900f-0')]}}
-----
-```
-Note that the agent was able to infer that "it" in our query refers to "task decomposition", and generated a reasonable search query as a result-- in this case, "common ways of task decomposition".
 
-### Tying it together
+请注意，代理能够推断出我们查询中的“it”指的是“任务分解”，并因此生成了一个合理的搜索查询——在这种情况下是“任务分解的常见方法”。
 
-For convenience, we tie together all of the necessary steps in a single code cell:
+### 综合起来
 
+为了方便，我们将所有必要的步骤整合在一个代码单元中：
 
 ```python
 import bs4
@@ -658,7 +616,7 @@ memory = SqliteSaver.from_conn_string(":memory:")
 llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
 
 
-### Construct retriever ###
+### 构建检索器 ###
 loader = WebBaseLoader(
     web_paths=("https://lilianweng.github.io/posts/2023-06-23-agent/",),
     bs_kwargs=dict(
@@ -675,11 +633,11 @@ vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings
 retriever = vectorstore.as_retriever()
 
 
-### Build retriever tool ###
+### 构建检索工具 ###
 tool = create_retriever_tool(
     retriever,
     "blog_post_retriever",
-    "Searches and returns excerpts from the Autonomous Agents blog post.",
+    "搜索并返回来自自主代理博客文章的摘录。",
 )
 tools = [tool]
 
@@ -687,15 +645,15 @@ tools = [tool]
 agent_executor = create_react_agent(llm, tools, checkpointer=memory)
 ```
 
-## Next steps
+## 下一步
 
-We've covered the steps to build a basic conversational Q&A application:
+我们已经介绍了构建基本对话问答应用程序的步骤：
 
-- We used chains to build a predictable application that generates search queries for each user input;
-- We used agents to build an application that "decides" when and how to generate search queries.
+- 我们使用链构建了一个可预测的应用程序，为每个用户输入生成搜索查询；
+- 我们使用代理构建了一个“决定”何时以及如何生成搜索查询的应用程序。
 
-To explore different types of retrievers and retrieval strategies, visit the [retrievers](/docs/how_to/#retrievers) section of the how-to guides.
+要探索不同类型的检索器和检索策略，请访问[检索器](/docs/how_to/#retrievers)部分的操作指南。
 
-For a detailed walkthrough of LangChain's conversation memory abstractions, visit the [How to add message history (memory)](/docs/how_to/message_history) LCEL page.
+有关LangChain对话记忆抽象的详细讲解，请访问[如何添加消息历史（记忆）](/docs/how_to/message_history) LCEL页面。
 
-To learn more about agents, head to the [Agents Modules](/docs/tutorials/agents).
+要了解更多关于代理的信息，请前往[代理模块](/docs/tutorials/agents)。

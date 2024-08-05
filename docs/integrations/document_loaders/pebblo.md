@@ -1,27 +1,27 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/pebblo.ipynb
 ---
+
 # Pebblo Safe DocumentLoader
 
-> [Pebblo](https://daxa-ai.github.io/pebblo/) enables developers to safely load data and promote their Gen AI app to deployment without worrying about the organization’s compliance and security requirements. The project identifies semantic topics and entities found in the loaded data and summarizes them on the UI or a PDF report.
+> [Pebblo](https://daxa-ai.github.io/pebblo/) 使开发者能够安全地加载数据，并在不担心组织的合规性和安全要求的情况下将其 Gen AI 应用程序推广到部署。该项目识别加载数据中发现的语义主题和实体，并在 UI 或 PDF 报告中对其进行总结。
 
-Pebblo has two components.
+Pebblo 由两个组件组成。
 
 1. Pebblo Safe DocumentLoader for Langchain
 1. Pebblo Server
 
-This document describes how to augment your existing Langchain DocumentLoader with Pebblo Safe DocumentLoader to get deep data visibility on the types of Topics and Entities ingested into the Gen-AI Langchain application. For details on `Pebblo Server` see this [pebblo server](https://daxa-ai.github.io/pebblo/daemon) document.
+本文档描述了如何使用 Pebblo Safe DocumentLoader 增强您现有的 Langchain DocumentLoader，以便深入了解输入到 Gen-AI Langchain 应用程序中的主题和实体类型。有关 `Pebblo Server` 的详细信息，请参阅此 [pebblo server](https://daxa-ai.github.io/pebblo/daemon) 文档。
 
-Pebblo Safeloader enables safe data ingestion for Langchain `DocumentLoader`. This is done by wrapping the document loader call with `Pebblo Safe DocumentLoader`.
+Pebblo Safeloader 使 Langchain `DocumentLoader` 的安全数据摄取成为可能。这是通过用 `Pebblo Safe DocumentLoader` 包装文档加载器调用来完成的。
 
-Note: To configure pebblo server on some url other that pebblo's default (localhost:8000) url, put the correct URL in `PEBBLO_CLASSIFIER_URL` env variable. This is configurable using the `classifier_url` keyword argument as well. Ref: [server-configurations](https://daxa-ai.github.io/pebblo/config)
+注意：要在 Pebblo 的默认 URL（localhost:8000）以外的某个 URL 上配置 Pebblo 服务器，请在 `PEBBLO_CLASSIFIER_URL` 环境变量中放入正确的 URL。这也可以通过 `classifier_url` 关键字参数进行配置。参考：[server-configurations](https://daxa-ai.github.io/pebblo/config)
 
-#### How to Pebblo enable Document Loading?
+#### 如何启用 Pebblo 文档加载？
 
-Assume a Langchain RAG application snippet using `CSVLoader` to read a CSV document for inference.
+假设一个使用 `CSVLoader` 读取 CSV 文档进行推理的 Langchain RAG 应用程序代码片段。
 
-Here is the snippet of Document loading using `CSVLoader`.
-
+以下是使用 `CSVLoader` 的文档加载代码片段。
 
 ```python
 from langchain_community.document_loaders import CSVLoader
@@ -31,8 +31,7 @@ documents = loader.load()
 print(documents)
 ```
 
-The Pebblo SafeLoader can be enabled with few lines of code change to the above snippet.
-
+可以通过对上述代码片段进行几行代码更改来启用 Pebblo SafeLoader。
 
 ```python
 from langchain_community.document_loaders import CSVLoader, PebbloSafeLoader
@@ -47,10 +46,9 @@ documents = loader.load()
 print(documents)
 ```
 
-### Send semantic topics and identities to Pebblo cloud server
+### 将语义主题和身份发送到 Pebblo 云服务器
 
-To send semantic data to pebblo-cloud, pass api-key to PebbloSafeLoader as an argument or alternatively, put the api-key in `PEBBLO_API_KEY` environment variable.
-
+要将语义数据发送到 pebblo-cloud，将 api-key 作为参数传递给 PebbloSafeLoader，或者将 api-key 放入 `PEBBLO_API_KEY` 环境变量中。
 
 ```python
 from langchain_community.document_loaders import CSVLoader, PebbloSafeLoader
@@ -66,10 +64,9 @@ documents = loader.load()
 print(documents)
 ```
 
-### Add semantic topics and identities to loaded metadata
+### 为加载的元数据添加语义主题和实体
 
-To add semantic topics and sematic entities to metadata of loaded documents, set load_semantic to True as an argument or alternatively, define a new environment variable `PEBBLO_LOAD_SEMANTIC`, and setting it to True.
-
+要为加载文档的元数据添加语义主题和语义实体，将 `load_semantic` 设置为 True 作为参数，或者定义一个新的环境变量 `PEBBLO_LOAD_SEMANTIC`，并将其设置为 True。
 
 ```python
 from langchain_community.document_loaders import CSVLoader, PebbloSafeLoader
@@ -86,8 +83,7 @@ documents = loader.load()
 print(documents[0].metadata)
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

@@ -2,9 +2,10 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/llama_api.ipynb
 sidebar_label: Llama API
 ---
+
 # ChatLlamaAPI
 
-This notebook shows how to use LangChain with [LlamaAPI](https://llama-api.com/) - a hosted version of Llama2 that adds in support for function calling.
+本笔记本展示了如何使用LangChain与[LlamaAPI](https://llama-api.com/) - Llama2的托管版本，增加了对函数调用的支持。
 
 %pip install --upgrade --quiet  llamaapi
 
@@ -61,9 +62,7 @@ chain.run("give me your money")
 {'sentiment': 'aggressive', 'aggressiveness': 8, 'language': 'english'}
 ```
 
+## 相关
 
-
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

@@ -1,18 +1,18 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/add_scores_retriever.ipynb
 ---
-# How to add scores to retriever results
 
-Retrievers will return sequences of [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html) objects, which by default include no information about the process that retrieved them (e.g., a similarity score against a query). Here we demonstrate how to add retrieval scores to the `.metadata` of documents:
-1. From [vectorstore retrievers](/docs/how_to/vectorstore_retriever);
-2. From higher-order LangChain retrievers, such as [SelfQueryRetriever](/docs/how_to/self_query) or [MultiVectorRetriever](/docs/how_to/multi_vector).
+# 如何为检索结果添加分数
 
-For (1), we will implement a short wrapper function around the corresponding vector store. For (2), we will update a method of the corresponding class.
+检索器将返回[Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html)对象的序列，这些对象默认不包含有关检索过程的信息（例如，与查询的相似度分数）。在这里，我们演示如何将检索分数添加到文档的`.metadata`中：
+1. 从[vectorstore retrievers](/docs/how_to/vectorstore_retriever);
+2. 从更高阶的LangChain检索器，例如[SelfQueryRetriever](/docs/how_to/self_query)或[MultiVectorRetriever](/docs/how_to/multi_vector).
 
-## Create vector store
+对于（1），我们将围绕相应的向量存储实现一个简短的包装函数。对于（2），我们将更新相应类的方法。
 
-First we populate a vector store with some data. We will use a [PineconeVectorStore](https://api.python.langchain.com/en/latest/vectorstores/langchain_pinecone.vectorstores.PineconeVectorStore.html), but this guide is compatible with any LangChain vector store that implements a `.similarity_search_with_score` method.
+## 创建向量存储
 
+首先，我们用一些数据填充向量存储。我们将使用 [PineconeVectorStore](https://api.python.langchain.com/en/latest/vectorstores/langchain_pinecone.vectorstores.PineconeVectorStore.html)，但本指南与任何实现 `.similarity_search_with_score` 方法的 LangChain 向量存储兼容。
 
 ```python
 from langchain_core.documents import Document
@@ -56,12 +56,11 @@ vectorstore = PineconeVectorStore.from_documents(
 )
 ```
 
-## Retriever
+## 检索器
 
-To obtain scores from a vector store retriever, we wrap the underlying vector store's `.similarity_search_with_score` method in a short function that packages scores into the associated document's metadata.
+为了从向量存储检索器中获取分数，我们将底层向量存储的 `.similarity_search_with_score` 方法封装在一个短函数中，该函数将分数打包到相关文档的元数据中。
 
-We add a `@chain` decorator to the function to create a [Runnable](/docs/concepts/#langchain-expression-language) that can be used similarly to a typical retriever.
-
+我们为该函数添加了一个 `@chain` 装饰器，以创建一个可以类似于典型检索器使用的 [Runnable](/docs/concepts/#langchain-expression-language)。
 
 ```python
 from typing import List
@@ -95,16 +94,15 @@ result
 ```
 
 
-Note that similarity scores from the retrieval step are included in the metadata of the above documents.
+请注意，从检索步骤获得的相似性分数包含在上述文档的元数据中。
 
 ## SelfQueryRetriever
 
-`SelfQueryRetriever` will use a LLM to generate a query that is potentially structured-- for example, it can construct filters for the retrieval on top of the usual semantic-similarity driven selection. See [this guide](/docs/how_to/self_query) for more detail.
+`SelfQueryRetriever` 将使用 LLM 生成一个可能结构化的查询——例如，它可以在通常基于语义相似性选择的基础上构建检索过滤器。有关更多详细信息，请参见 [本指南](/docs/how_to/self_query)。
 
-`SelfQueryRetriever` includes a short (1 - 2 line) method `_get_docs_with_query` that executes the `vectorstore` search. We can subclass `SelfQueryRetriever` and override this method to propagate similarity scores.
+`SelfQueryRetriever` 包含一个简短的方法 `_get_docs_with_query`（1 - 2 行），该方法执行 `vectorstore` 搜索。我们可以子类化 `SelfQueryRetriever` 并重写此方法以传播相似性分数。
 
-First, following the [how-to guide](/docs/how_to/self_query), we will need to establish some metadata on which to filter:
-
+首先，按照 [如何指南](/docs/how_to/self_query)，我们需要建立一些用于过滤的元数据：
 
 ```python
 from langchain.chains.query_constructor.base import AttributeInfo
@@ -114,29 +112,28 @@ from langchain_openai import ChatOpenAI
 metadata_field_info = [
     AttributeInfo(
         name="genre",
-        description="The genre of the movie. One of ['science fiction', 'comedy', 'drama', 'thriller', 'romance', 'action', 'animated']",
+        description="电影的类型。可选值包括 ['science fiction', 'comedy', 'drama', 'thriller', 'romance', 'action', 'animated']",
         type="string",
     ),
     AttributeInfo(
         name="year",
-        description="The year the movie was released",
+        description="电影上映的年份",
         type="integer",
     ),
     AttributeInfo(
         name="director",
-        description="The name of the movie director",
+        description="电影导演的名字",
         type="string",
     ),
     AttributeInfo(
-        name="rating", description="A 1-10 rating for the movie", type="float"
+        name="rating", description="电影的评分，范围为 1-10", type="float"
     ),
 ]
-document_content_description = "Brief summary of a movie"
+document_content_description = "电影的简要总结"
 llm = ChatOpenAI(temperature=0)
 ```
 
-We then override the `_get_docs_with_query` to use the `similarity_search_with_score` method of the underlying vector store: 
-
+然后我们重写 `_get_docs_with_query` 方法，以使用底层向量存储的 `similarity_search_with_score` 方法：
 
 ```python
 from typing import Any, Dict
@@ -146,7 +143,7 @@ class CustomSelfQueryRetriever(SelfQueryRetriever):
     def _get_docs_with_query(
         self, query: str, search_kwargs: Dict[str, Any]
     ) -> List[Document]:
-        """Get docs, adding score information."""
+        """获取文档，并添加分数信息。"""
         docs, scores = zip(
             *vectorstore.similarity_search_with_score(query, **search_kwargs)
         )
@@ -156,8 +153,7 @@ class CustomSelfQueryRetriever(SelfQueryRetriever):
         return docs
 ```
 
-Invoking this retriever will now include similarity scores in the document metadata. Note that the underlying structured-query capabilities of `SelfQueryRetriever` are retained.
-
+调用此检索器现在将在文档元数据中包含相似性分数。请注意，`SelfQueryRetriever` 的底层结构化查询功能得以保留。
 
 ```python
 retriever = CustomSelfQueryRetriever.from_llm(
@@ -172,21 +168,17 @@ result = retriever.invoke("dinosaur movie with rating less than 8")
 result
 ```
 
-
-
 ```output
 (Document(page_content='A bunch of scientists bring back dinosaurs and mayhem breaks loose', metadata={'genre': 'science fiction', 'rating': 7.7, 'year': 1993.0, 'score': 0.84429127}),)
 ```
 
-
 ## MultiVectorRetriever
 
-`MultiVectorRetriever` allows you to associate multiple vectors with a single document. This can be useful in a number of applications. For example, we can index small chunks of a larger document and run the retrieval on the chunks, but return the larger "parent" document when invoking the retriever. [ParentDocumentRetriever](/docs/how_to/parent_document_retriever/), a subclass of `MultiVectorRetriever`, includes convenience methods for populating a vector store to support this. Further applications are detailed in this [how-to guide](/docs/how_to/multi_vector/).
+`MultiVectorRetriever` 允许您将多个向量与单个文档关联。这在许多应用中都很有用。例如，我们可以对较大文档的小块进行索引，并在这些块上运行检索，但在调用检索器时返回较大的“父”文档。[ParentDocumentRetriever](/docs/how_to/parent_document_retriever/) 是 `MultiVectorRetriever` 的一个子类，包含填充向量存储以支持此功能的便利方法。更多应用详见此 [使用指南](/docs/how_to/multi_vector/)。
 
-To propagate similarity scores through this retriever, we can again subclass `MultiVectorRetriever` and override a method. This time we will override `_get_relevant_documents`.
+为了通过此检索器传播相似度分数，我们可以再次子类化 `MultiVectorRetriever` 并重写一个方法。这次我们将重写 `_get_relevant_documents`。
 
-First, we prepare some fake data. We generate fake "whole documents" and store them in a document store; here we will use a simple [InMemoryStore](https://api.python.langchain.com/en/latest/stores/langchain_core.stores.InMemoryBaseStore.html).
-
+首先，我们准备一些虚假数据。我们生成虚假的“完整文档”，并将其存储在文档存储中；这里我们将使用一个简单的 [InMemoryStore](https://api.python.langchain.com/en/latest/stores/langchain_core.stores.InMemoryBaseStore.html)。
 
 ```python
 from langchain.storage import InMemoryStore
@@ -201,8 +193,7 @@ fake_whole_documents = [
 docstore.mset(fake_whole_documents)
 ```
 
-Next we will add some fake "sub-documents" to our vector store. We can link these sub-documents to the parent documents by populating the `"doc_id"` key in its metadata.
-
+接下来，我们将向向量存储中添加一些虚假的“子文档”。我们可以通过填充其元数据中的 `"doc_id"` 键来将这些子文档链接到父文档。
 
 ```python
 docs = [
@@ -223,20 +214,16 @@ docs = [
 vectorstore.add_documents(docs)
 ```
 
-
-
 ```output
 ['62a85353-41ff-4346-bff7-be6c8ec2ed89',
  '5d4a0e83-4cc5-40f1-bc73-ed9cbad0ee15',
  '8c1d9a56-120f-45e4-ba70-a19cd19a38f4']
 ```
 
+为了传播分数，我们子类化 `MultiVectorRetriever` 并重写其 `_get_relevant_documents` 方法。在这里我们将进行两个更改：
 
-To propagate the scores, we subclass `MultiVectorRetriever` and override its `_get_relevant_documents` method. Here we will make two changes:
-
-1. We will add similarity scores to the metadata of the corresponding "sub-documents" using the `similarity_search_with_score` method of the underlying vector store as above;
-2. We will include a list of these sub-documents in the metadata of the retrieved parent document. This surfaces what snippets of text were identified by the retrieval, together with their corresponding similarity scores.
-
+1. 我们将使用底层向量存储的 `similarity_search_with_score` 方法将相似度分数添加到相应“子文档”的元数据中；
+2. 我们将在检索到的父文档的元数据中包含这些子文档的列表。这显示了通过检索识别出的文本片段及其相应的相似度分数。
 
 ```python
 from collections import defaultdict
@@ -280,8 +267,7 @@ class CustomMultiVectorRetriever(MultiVectorRetriever):
         return docs
 ```
 
-Invoking this retriever, we can see that it identifies the correct parent document, including the relevant snippet from the sub-document with similarity score.
-
+调用此检索器，我们可以看到它识别了正确的父文档，包括来自子文档的相关片段及其相似度分数。
 
 ```python
 retriever = CustomMultiVectorRetriever(vectorstore=vectorstore, docstore=docstore)
@@ -289,9 +275,6 @@ retriever = CustomMultiVectorRetriever(vectorstore=vectorstore, docstore=docstor
 retriever.invoke("cat")
 ```
 
-
-
 ```output
 [Document(page_content='fake whole document 1', metadata={'sub_docs': [Document(page_content='A snippet from a larger document discussing cats.', metadata={'doc_id': 'fake_id_1', 'score': 0.831276655})]})]
 ```
-

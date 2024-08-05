@@ -2,35 +2,36 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/tutorials/query_analysis.ipynb
 sidebar_position: 0
 ---
-# Build a Query Analysis System
 
-:::info Prerequisites
+# 构建查询分析系统
 
-This guide assumes familiarity with the following concepts:
+:::info 前提条件
 
-- [Document loaders](/docs/concepts/#document-loaders)
-- [Chat models](/docs/concepts/#chat-models)
-- [Embeddings](/docs/concepts/#embedding-models)
-- [Vector stores](/docs/concepts/#vector-stores)
-- [Retrieval](/docs/concepts/#retrieval)
+本指南假设您熟悉以下概念：
+
+- [文档加载器](/docs/concepts/#document-loaders)
+- [聊天模型](/docs/concepts/#chat-models)
+- [嵌入](/docs/concepts/#embedding-models)
+- [向量存储](/docs/concepts/#vector-stores)
+- [检索](/docs/concepts/#retrieval)
 
 :::
 
-This page will show how to use query analysis in a basic end-to-end example. This will cover creating a simple search engine, showing a failure mode that occurs when passing a raw user question to that search, and then an example of how query analysis can help address that issue. There are MANY different query analysis techniques and this end-to-end example will not show all of them.
+本页面将展示如何在一个基本的端到端示例中使用查询分析。这将包括创建一个简单的搜索引擎，展示在将原始用户问题传递给该搜索时发生的失败模式，以及查询分析如何帮助解决该问题的示例。有许多不同的查询分析技术，而这个端到端示例不会展示所有这些技术。
 
-For the purpose of this example, we will do retrieval over the LangChain YouTube videos.
+为了这个示例，我们将对LangChain YouTube视频进行检索。
 
-## Setup
-#### Install dependencies
+## 设置
+#### 安装依赖
 
 
 ```python
 # %pip install -qU langchain langchain-community langchain-openai youtube-transcript-api pytube langchain-chroma
 ```
 
-#### Set environment variables
+#### 设置环境变量
 
-We'll use OpenAI in this example:
+在本示例中，我们将使用 OpenAI：
 
 
 ```python
@@ -39,15 +40,14 @@ import os
 
 os.environ["OPENAI_API_KEY"] = getpass.getpass()
 
-# Optional, uncomment to trace runs with LangSmith. Sign up here: https://smith.langchain.com.
+# 可选，取消注释以使用 LangSmith 跟踪运行。请在此处注册： https://smith.langchain.com.
 # os.environ["LANGCHAIN_TRACING_V2"] = "true"
 # os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 ```
 
-### Load documents
+### 加载文档
 
-We can use the `YouTubeLoader` to load transcripts of a few LangChain videos:
-
+我们可以使用 `YouTubeLoader` 来加载一些 LangChain 视频的转录文本：
 
 ```python
 from langchain_community.document_loaders import YoutubeLoader
@@ -72,11 +72,10 @@ for url in urls:
     docs.extend(YoutubeLoader.from_youtube_url(url, add_video_info=True).load())
 ```
 
-
 ```python
 import datetime
 
-# Add some additional metadata: what year the video was published
+# 添加一些额外的元数据：视频发布的年份
 for doc in docs:
     doc.metadata["publish_year"] = int(
         datetime.datetime.strptime(
@@ -85,45 +84,38 @@ for doc in docs:
     )
 ```
 
-Here are the titles of the videos we've loaded:
-
+以下是我们加载的视频的标题：
 
 ```python
 [doc.metadata["title"] for doc in docs]
 ```
 
-
-
 ```output
 ['OpenGPTs',
- 'Building a web RAG chatbot: using LangChain, Exa (prev. Metaphor), LangSmith, and Hosted Langserve',
- 'Streaming Events: Introducing a new `stream_events` method',
- 'LangGraph: Multi-Agent Workflows',
- 'Build and Deploy a RAG app with Pinecone Serverless',
- 'Auto-Prompt Builder (with Hosted LangServe)',
- 'Build a Full Stack RAG App With TypeScript',
- 'Getting Started with Multi-Modal LLMs',
- 'SQL Research Assistant',
- 'Skeleton-of-Thought: Building a New Template from Scratch',
- 'Benchmarking RAG over LangChain Docs',
- 'Building a Research Assistant from Scratch',
- 'LangServe and LangChain Templates Webinar']
+ '构建一个网络 RAG 聊天机器人：使用 LangChain、Exa（前称 Metaphor）、LangSmith 和 Hosted Langserve',
+ '流式事件：介绍新的 `stream_events` 方法',
+ 'LangGraph：多智能体工作流',
+ '使用 Pinecone Serverless 构建和部署 RAG 应用',
+ '自动提示生成器（与 Hosted LangServe 一起）',
+ '使用 TypeScript 构建全栈 RAG 应用',
+ '开始使用多模态 LLMs',
+ 'SQL 研究助手',
+ '思维骨架：从零开始构建新模板',
+ '对 LangChain 文档进行 RAG 基准测试',
+ '从零开始构建研究助手',
+ 'LangServe 和 LangChain 模板网络研讨会']
 ```
 
-
-Here's the metadata associated with each video. We can see that each document also has a title, view count, publication date, and length:
-
+这是与每个视频相关的元数据。我们可以看到每个文档还有标题、观看次数、发布日期和时长：
 
 ```python
 docs[0].metadata
 ```
 
-
-
 ```output
 {'source': 'HAn9vnJy6S4',
  'title': 'OpenGPTs',
- 'description': 'Unknown',
+ 'description': '未知',
  'view_count': 7210,
  'thumbnail_url': 'https://i.ytimg.com/vi/HAn9vnJy6S4/hq720.jpg',
  'publish_date': '2024-01-31 00:00:00',
@@ -132,25 +124,19 @@ docs[0].metadata
  'publish_year': 2024}
 ```
 
-
-And here's a sample from a document's contents:
-
+这是文档内容的一个示例：
 
 ```python
 docs[0].page_content[:500]
 ```
 
-
-
 ```output
 "hello today I want to talk about open gpts open gpts is a project that we built here at linkchain uh that replicates the GPT store in a few ways so it creates uh end user-facing friendly interface to create different Bots and these Bots can have access to different tools and they can uh be given files to retrieve things over and basically it's a way to create a variety of bots and expose the configuration of these Bots to end users it's all open source um it can be used with open AI it can be us"
 ```
 
+### 索引文档
 
-### Indexing documents
-
-Whenever we perform retrieval we need to create an index of documents that we can query. We'll use a vector store to index our documents, and we'll chunk them first to make our retrievals more concise and precise:
-
+每当我们执行检索时，我们需要创建一个可以查询的文档索引。我们将使用向量存储来索引我们的文档，并且我们会先对它们进行分块，以使我们的检索更加简洁和精确：
 
 ```python
 from langchain_chroma import Chroma
@@ -166,10 +152,9 @@ vectorstore = Chroma.from_documents(
 )
 ```
 
-## Retrieval without query analysis
+## 无需查询分析的检索
 
-We can perform similarity search on a user question directly to find chunks relevant to the question:
-
+我们可以直接对用户问题执行相似性搜索，以查找与问题相关的内容：
 
 ```python
 search_results = vectorstore.similarity_search("how do I build a RAG agent")
@@ -180,11 +165,9 @@ print(search_results[0].page_content[:500])
 Build and Deploy a RAG app with Pinecone Serverless
 hi this is Lance from the Lang chain team and today we're going to be building and deploying a rag app using pine con serval list from scratch so we're going to kind of walk through all the code required to do this and I'll use these slides as kind of a guide to kind of lay the the ground work um so first what is rag so under capoy has this pretty nice visualization that shows LMS as a kernel of a new kind of operating system and of course one of the core components of our operating system is th
 ```
-This works pretty well! Our first result is quite relevant to the question.
+这效果很好！我们的第一个结果与问题相当相关。
 
-
-What if we wanted to search for results from a specific time period?
-
+如果我们想要从特定时间段搜索结果呢？
 
 ```python
 search_results = vectorstore.similarity_search("videos on RAG published in 2023")
@@ -197,16 +180,16 @@ OpenGPTs
 2024-01-31
 hardcoded that it will always do a retrieval step here the assistant decides whether to do a retrieval step or not sometimes this is good sometimes this is bad sometimes it you don't need to do a retrieval step when I said hi it didn't need to call it tool um but other times you know the the llm might mess up and not realize that it needs to do a retrieval step and so the rag bot will always do a retrieval step so it's more focused there because this is also a simpler architecture so it's always
 ```
-Our first result is from 2024 (despite us asking for videos from 2023), and not very relevant to the input. Since we're just searching against document contents, there's no way for the results to be filtered on any document attributes.
+我们的第一个结果来自2024年（尽管我们请求的是2023年的视频），而且与输入的相关性不高。由于我们只是对文档内容进行搜索，因此无法根据任何文档属性过滤结果。
 
-This is just one failure mode that can arise. Let's now take a look at how a basic form of query analysis can fix it!
+这只是可能出现的一种失败模式。现在让我们看看基本的查询分析形式如何解决这个问题！
 
-## Query analysis
+## 查询分析
 
-We can use query analysis to improve the results of retrieval. This will involve defining a **query schema** that contains some date filters and use a function-calling model to convert a user question into a structured queries. 
+我们可以使用查询分析来改善检索结果。这将涉及定义一个包含一些日期过滤器的 **查询模式**，并使用函数调用模型将用户问题转换为结构化查询。
 
-### Query schema
-In this case we'll have explicit min and max attributes for publication date so that it can be filtered on.
+### 查询模式
+在这种情况下，我们将为发布日期设置明确的最小和最大属性，以便进行过滤。
 
 
 ```python
@@ -216,19 +199,18 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 
 
 class Search(BaseModel):
-    """Search over a database of tutorial videos about a software library."""
+    """在关于软件库的教程视频数据库中进行搜索。"""
 
     query: str = Field(
         ...,
-        description="Similarity search query applied to video transcripts.",
+        description="应用于视频转录的相似性搜索查询。",
     )
-    publish_year: Optional[int] = Field(None, description="Year video was published")
+    publish_year: Optional[int] = Field(None, description="视频发布的年份")
 ```
 
-### Query generation
+### 查询生成
 
-To convert user questions to structured queries we'll make use of OpenAI's tool-calling API. Specifically we'll use the new [ChatModel.with_structured_output()](/docs/how_to/structured_output) constructor to handle passing the schema to the model and parsing the output.
-
+为了将用户问题转换为结构化查询，我们将利用 OpenAI 的工具调用 API。具体来说，我们将使用新的 [ChatModel.with_structured_output()](/docs/how_to/structured_output) 构造函数来处理将模式传递给模型并解析输出。
 
 ```python
 from langchain_core.prompts import ChatPromptTemplate
@@ -254,38 +236,29 @@ query_analyzer = {"question": RunnablePassthrough()} | prompt | structured_llm
 /Users/bagatur/langchain/libs/core/langchain_core/_api/beta_decorator.py:86: LangChainBetaWarning: The function `with_structured_output` is in beta. It is actively being worked on, so the API may change.
   warn_beta(
 ```
-Let's see what queries our analyzer generates for the questions we searched earlier:
-
+让我们看看我们的分析器为我们之前搜索的问题生成了什么查询：
 
 ```python
 query_analyzer.invoke("how do I build a RAG agent")
 ```
 
-
-
 ```output
 Search(query='build RAG agent', publish_year=None)
 ```
-
-
 
 ```python
 query_analyzer.invoke("videos on RAG published in 2023")
 ```
 
-
-
 ```output
 Search(query='RAG', publish_year=2023)
 ```
 
+## 查询分析的检索
 
-## Retrieval with query analysis
+我们的查询分析看起来不错；现在让我们尝试使用生成的查询来实际执行检索。
 
-Our query analysis looks pretty good; now let's try using our generated queries to actually perform retrieval. 
-
-**Note:** in our example, we specified `tool_choice="Search"`. This will force the LLM to call one - and only one - tool, meaning that we will always have one optimized query to look up. Note that this is not always the case - see other guides for how to deal with situations when no - or multiple - optmized queries are returned.
-
+**注意：** 在我们的示例中，我们指定了 `tool_choice="Search"`。这将强制 LLM 调用一个 - 仅一个 - 工具，这意味着我们将始终有一个优化的查询进行查找。请注意，这并不总是如此 - 有关如何处理未返回或返回多个优化查询的情况，请参见其他指南。
 
 ```python
 from typing import List
@@ -293,36 +266,30 @@ from typing import List
 from langchain_core.documents import Document
 ```
 
-
 ```python
 def retrieval(search: Search) -> List[Document]:
     if search.publish_year is not None:
-        # This is syntax specific to Chroma,
-        # the vector database we are using.
+        # 这是特定于 Chroma 的语法，
+        # 我们正在使用的向量数据库。
         _filter = {"publish_year": {"$eq": search.publish_year}}
     else:
         _filter = None
     return vectorstore.similarity_search(search.query, filter=_filter)
 ```
 
-
 ```python
 retrieval_chain = query_analyzer | retrieval
 ```
 
-We can now run this chain on the problematic input from before, and see that it yields only results from that year!
-
+我们现在可以在之前的问题输入上运行这个链，并看到它仅返回该年份的结果！
 
 ```python
 results = retrieval_chain.invoke("RAG tutorial published in 2023")
 ```
 
-
 ```python
 [(doc.metadata["title"], doc.metadata["publish_date"]) for doc in results]
 ```
-
-
 
 ```output
 [('Getting Started with Multi-Modal LLMs', '2023-12-20 00:00:00'),
@@ -330,4 +297,3 @@ results = retrieval_chain.invoke("RAG tutorial published in 2023")
  ('Getting Started with Multi-Modal LLMs', '2023-12-20 00:00:00'),
  ('Building a Research Assistant from Scratch', '2023-11-16 00:00:00')]
 ```
-

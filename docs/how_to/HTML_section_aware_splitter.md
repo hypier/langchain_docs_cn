@@ -1,17 +1,19 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/HTML_section_aware_splitter.ipynb
 ---
-# How to split by HTML sections
-## Description and motivation
-Similar in concept to the [HTMLHeaderTextSplitter](/docs/how_to/HTML_header_metadata_splitter), the `HTMLSectionSplitter` is a "structure-aware" chunker that splits text at the element level and adds metadata for each header "relevant" to any given chunk.
 
-It can return chunks element by element or combine elements with the same metadata, with the objectives of (a) keeping related text grouped (more or less) semantically and (b) preserving context-rich information encoded in document structures.
+# 如何按 HTML 部分拆分
 
-Use `xslt_path` to provide an absolute path to transform the HTML so that it can detect sections based on provided tags. The default is to use the `converting_to_header.xslt` file in the `data_connection/document_transformers` directory. This is for converting the html to a format/layout that is easier to detect sections. For example, `span` based on their font size can be converted to header tags to be detected as a section.
+## 描述和动机
+类似于 [HTMLHeaderTextSplitter](/docs/how_to/HTML_header_metadata_splitter) 的概念，`HTMLSectionSplitter` 是一个“结构感知”的分块器，它在元素级别拆分文本，并为与任何给定块“相关”的每个标题添加元数据。
 
-## Usage examples
-### 1) How to split HTML strings:
+它可以逐个元素返回块，或者将具有相同元数据的元素组合在一起，目的是 (a) 保持相关文本在语义上（或多或少）分组，以及 (b) 保留编码在文档结构中的上下文丰富信息。
 
+使用 `xslt_path` 提供一个绝对路径以转换 HTML，以便能够根据提供的标签检测部分。默认情况下使用 `data_connection/document_transformers` 目录中的 `converting_to_header.xslt` 文件。这是为了将 HTML 转换为更易于检测部分的格式/布局。例如，可以将基于字体大小的 `span` 转换为标题标签，以便被检测为一个部分。
+
+## 使用示例
+
+### 1) 如何拆分 HTML 字符串：
 
 ```python
 from langchain_text_splitters import HTMLSectionSplitter
@@ -49,19 +51,15 @@ html_header_splits = html_splitter.split_text(html_string)
 html_header_splits
 ```
 
-
-
 ```output
 [Document(page_content='Foo \n Some intro text about Foo.', metadata={'Header 1': 'Foo'}),
  Document(page_content='Bar main section \n Some intro text about Bar. \n Bar subsection 1 \n Some text about the first subtopic of Bar. \n Bar subsection 2 \n Some text about the second subtopic of Bar.', metadata={'Header 2': 'Bar main section'}),
  Document(page_content='Baz \n Some text about Baz \n \n \n Some concluding text about Foo', metadata={'Header 2': 'Baz'})]
 ```
 
+### 2) 如何限制块大小：
 
-### 2) How to constrain chunk sizes:
-
-`HTMLSectionSplitter` can be used with other text splitters as part of a chunking pipeline. Internally, it uses the `RecursiveCharacterTextSplitter` when the section size is larger than the chunk size. It also considers the font size of the text to determine whether it is a section or not based on the determined font size threshold.
-
+`HTMLSectionSplitter` 可以与其他文本分割器一起使用，作为块处理管道的一部分。在内部，当节的大小大于块的大小时，它使用 `RecursiveCharacterTextSplitter`。它还考虑文本的字体大小，以根据确定的字体大小阈值来判断它是否是一个节。
 
 ```python
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -114,8 +112,6 @@ splits = text_splitter.split_documents(html_header_splits)
 splits
 ```
 
-
-
 ```output
 [Document(page_content='Foo \n Some intro text about Foo.', metadata={'Header 1': 'Foo'}),
  Document(page_content='Bar main section \n Some intro text about Bar.', metadata={'Header 2': 'Bar main section'}),
@@ -123,4 +119,3 @@ splits
  Document(page_content='Bar subsection 2 \n Some text about the second subtopic of Bar.', metadata={'Header 3': 'Bar subsection 2'}),
  Document(page_content='Baz \n Some text about Baz \n \n \n Some concluding text about Foo', metadata={'Header 2': 'Baz'})]
 ```
-

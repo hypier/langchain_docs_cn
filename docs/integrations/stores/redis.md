@@ -2,36 +2,37 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/stores/redis.ipynb
 sidebar_label: Redis
 ---
+
 # RedisStore
 
-This will help you get started with Redis [key-value stores](/docs/concepts/#key-value-stores). For detailed documentation of all `RedisStore` features and configurations head to the [API reference](https://api.python.langchain.com/en/latest/storage/langchain_community.storage.redis.RedisStore.html).
+这将帮助您入门 Redis [键值存储](/docs/concepts/#key-value-stores)。有关所有 `RedisStore` 功能和配置的详细文档，请访问 [API 参考](https://api.python.langchain.com/en/latest/storage/langchain_community.storage.redis.RedisStore.html)。
 
-## Overview
+## 概述
 
-The `RedisStore` is an implementation of `ByteStore` that stores everything in your Redis instance.
+`RedisStore` 是 `ByteStore` 的一种实现，它将所有内容存储在您的 Redis 实例中。
 
-### Integration details
+### 集成细节
 
-| Class | Package | Local | [JS support](https://js.langchain.com/v0.2/docs/integrations/stores/ioredis_storage) | Package downloads | Package latest |
+| 类别 | 包 | 本地 | [JS 支持](https://js.langchain.com/v0.2/docs/integrations/stores/ioredis_storage) | 包下载量 | 包最新版本 |
 | :--- | :--- | :---: | :---: |  :---: | :---: |
 | [RedisStore](https://api.python.langchain.com/en/latest/storage/langchain_community.storage.redis.RedisStore.html) | [langchain_community](https://api.python.langchain.com/en/latest/community_api_reference.html) | ✅ | ✅ | ![PyPI - Downloads](https://img.shields.io/pypi/dm/langchain_community?style=flat-square&label=%20) | ![PyPI - Version](https://img.shields.io/pypi/v/langchain_community?style=flat-square&label=%20) |
 
-## Setup
+## 设置
 
-To create a Redis byte store, you'll need to set up a Redis instance. You can do this locally or via a provider - see our [Redis guide](/docs/integrations/providers/redis) for an overview of options.
+要创建一个 Redis 字节存储，您需要设置一个 Redis 实例。您可以在本地或通过提供商进行此操作 - 请参阅我们的 [Redis 指南](/docs/integrations/providers/redis) 以获取选项概述。
 
-### Installation
+### 安装
 
-The LangChain `RedisStore` integration lives in the `langchain_community` package:
+LangChain `RedisStore` 集成位于 `langchain_community` 包中：
 
 
 ```python
 %pip install -qU langchain_community redis
 ```
 
-## Instantiation
+## 实例化
 
-Now we can instantiate our byte store:
+现在我们可以实例化我们的字节存储：
 
 
 ```python
@@ -40,9 +41,9 @@ from langchain_community.storage import RedisStore
 kv_store = RedisStore(redis_url="redis://localhost:6379")
 ```
 
-## Usage
+## 用法
 
-You can set data under keys like this using the `mset` method:
+您可以使用 `mset` 方法在键下设置数据，如下所示：
 
 
 ```python
@@ -68,7 +69,7 @@ kv_store.mget(
 ```
 
 
-And you can delete data using the `mdelete` method:
+您可以使用 `mdelete` 方法删除数据：
 
 
 ```python
@@ -93,12 +94,10 @@ kv_store.mget(
 [None, None]
 ```
 
+## API 参考
 
-## API reference
+有关所有 `RedisStore` 功能和配置的详细文档，请访问 API 参考： https://api.python.langchain.com/en/latest/storage/langchain_community.storage.redis.RedisStore.html
 
-For detailed documentation of all `RedisStore` features and configurations, head to the API reference: https://api.python.langchain.com/en/latest/storage/langchain_community.storage.redis.RedisStore.html
+## 相关
 
-
-## Related
-
-- [Key-value store conceptual guide](/docs/concepts/#key-value-stores)
+- [键值存储概念指南](/docs/concepts/#key-value-stores)

@@ -1,22 +1,21 @@
 # Label Studio
 
 
->[Label Studio](https://labelstud.io/guide/get_started) is an open-source data labeling platform that provides LangChain with flexibility when it comes to labeling data for fine-tuning large language models (LLMs). It also enables the preparation of custom training data and the collection and evaluation of responses through human feedback.
+>[Label Studio](https://labelstud.io/guide/get_started) 是一个开源数据标注平台，为 LangChain 提供了灵活性，以便为微调大型语言模型（LLMs）标注数据。它还支持准备自定义训练数据，并通过人类反馈收集和评估响应。
 
-## Installation and Setup
+## 安装与设置
 
-See the [Label Studio installation guide](https://labelstud.io/guide/install) for installation options.
+请参阅[Label Studio 安装指南](https://labelstud.io/guide/install)以获取安装选项。
 
-We need to install the  `label-studio` and `label-studio-sdk-python` Python packages:
+我们需要安装 `label-studio` 和 `label-studio-sdk-python` Python 包：
 
 ```bash
 pip install label-studio label-studio-sdk
 ```
 
+## 回调
 
-## Callbacks
-
-See a [usage example](/docs/integrations/callbacks/labelstudio).
+请参见 [使用示例](/docs/integrations/callbacks/labelstudio)。
 
 ```python
 from langchain.callbacks import LabelStudioCallbackHandler

@@ -1,26 +1,25 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/promptlayer_openai.ipynb
 ---
+
 # PromptLayer OpenAI
 
-`PromptLayer` is the first platform that allows you to track, manage, and share your GPT prompt engineering. `PromptLayer` acts a middleware between your code and `OpenAI’s` python library.
+`PromptLayer` 是第一个允许您跟踪、管理和共享您的 GPT 提示工程的平台。`PromptLayer` 充当您的代码与 `OpenAI` 的 Python 库之间的中间件。
 
-`PromptLayer` records all your `OpenAI API` requests, allowing you to search and explore request history in the `PromptLayer` dashboard.
+`PromptLayer` 记录您所有的 `OpenAI API` 请求，允许您在 `PromptLayer` 仪表板中搜索和浏览请求历史。
 
+此示例展示了如何连接到 [PromptLayer](https://www.promptlayer.com) 以开始记录您的 OpenAI 请求。
 
-This example showcases how to connect to [PromptLayer](https://www.promptlayer.com) to start recording your OpenAI requests.
+另一个示例请见 [这里](/docs/integrations/providers/promptlayer)。
 
-Another example is [here](/docs/integrations/providers/promptlayer).
-
-## Install PromptLayer
-The `promptlayer` package is required to use PromptLayer with OpenAI. Install `promptlayer` using pip.
-
+## 安装 PromptLayer
+使用 OpenAI 需要 `promptlayer` 包。使用 pip 安装 `promptlayer`。
 
 ```python
 %pip install --upgrade --quiet  promptlayer
 ```
 
-## Imports
+## 导入
 
 
 ```python
@@ -30,12 +29,12 @@ import promptlayer
 from langchain_community.llms import PromptLayerOpenAI
 ```
 
-## Set the Environment API Key
-You can create a PromptLayer API Key at [www.promptlayer.com](https://www.promptlayer.com) by clicking the settings cog in the navbar.
+## 设置环境 API 密钥
+您可以通过点击导航栏中的设置图标，在 [www.promptlayer.com](https://www.promptlayer.com) 创建一个 PromptLayer API 密钥。
 
-Set it as an environment variable called `PROMPTLAYER_API_KEY`.
+将其设置为名为 `PROMPTLAYER_API_KEY` 的环境变量。
 
-You also need an OpenAI Key, called `OPENAI_API_KEY`.
+您还需要一个 OpenAI 密钥，名为 `OPENAI_API_KEY`。
 
 
 ```python
@@ -65,8 +64,8 @@ OPENAI_API_KEY = getpass()
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 ```
 
-## Use the PromptLayerOpenAI LLM like normal
-*You can optionally pass in `pl_tags` to track your requests with PromptLayer's tagging feature.*
+## 像正常一样使用 PromptLayerOpenAI LLM
+*您可以选择性地传入 `pl_tags` 以通过 PromptLayer 的标签功能跟踪您的请求。*
 
 
 ```python
@@ -74,11 +73,10 @@ llm = PromptLayerOpenAI(pl_tags=["langchain"])
 llm("I am a cat and I want")
 ```
 
-**The above request should now appear on your [PromptLayer dashboard](https://www.promptlayer.com).**
+**上述请求现在应该出现在您的 [PromptLayer 仪表板](https://www.promptlayer.com) 上。**
 
-## Using PromptLayer Track
-If you would like to use any of the [PromptLayer tracking features](https://magniv.notion.site/Track-4deee1b1f7a34c1680d085f82567dab9), you need to pass the argument `return_pl_id` when instantiating the PromptLayer LLM to get the request id.  
-
+## 使用 PromptLayer 跟踪
+如果您希望使用任何 [PromptLayer 跟踪功能](https://magniv.notion.site/Track-4deee1b1f7a34c1680d085f82567dab9)，您需要在实例化 PromptLayer LLM 时传递参数 `return_pl_id` 以获取请求 ID。  
 
 ```python
 llm = PromptLayerOpenAI(return_pl_id=True)
@@ -89,11 +87,9 @@ for res in llm_results.generations:
     promptlayer.track.score(request_id=pl_request_id, score=100)
 ```
 
-Using this allows you to track the performance of your model in the PromptLayer dashboard. If you are using a prompt template, you can attach a template to a request as well.
-Overall, this gives you the opportunity to track the performance of different templates and models in the PromptLayer dashboard.
+使用此功能可以让您在 PromptLayer 仪表板上跟踪模型的性能。如果您使用的是提示模板，您还可以将模板附加到请求中。总体而言，这为您提供了在 PromptLayer 仪表板上跟踪不同模板和模型性能的机会。
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

@@ -1,25 +1,24 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/providers/comet_tracking.ipynb
 ---
+
 # Comet
 
->[Comet](https://www.comet.com/) machine learning platform integrates with your existing infrastructure
->and tools so you can manage, visualize, and optimize models—from training runs to production monitoring
+>[Comet](https://www.comet.com/) 机器学习平台与您现有的基础设施和工具集成，使您能够管理、可视化和优化模型——从训练运行到生产监控。
 
 ![](https://user-images.githubusercontent.com/7529846/230328046-a8b18c51-12e3-4617-9b39-97614a571a2d.png)
 
-In this guide we will demonstrate how to track your Langchain Experiments, Evaluation Metrics, and LLM Sessions with [Comet](https://www.comet.com/site/?utm_source=langchain&utm_medium=referral&utm_campaign=comet_notebook).  
+在本指南中，我们将演示如何使用 [Comet](https://www.comet.com/site/?utm_source=langchain&utm_medium=referral&utm_campaign=comet_notebook) 跟踪您的 Langchain 实验、评估指标和 LLM 会话。
 
 <a target="_blank" href="https://colab.research.google.com/github/hwchase17/langchain/blob/master/docs/ecosystem/comet_tracking">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 </a>
 
-**Example Project:** [Comet with LangChain](https://www.comet.com/examples/comet-example-langchain/view/b5ZThK6OFdhKWVSP3fDfRtrNF/panels?utm_source=langchain&utm_medium=referral&utm_campaign=comet_notebook)
+**示例项目：** [Comet 与 LangChain](https://www.comet.com/examples/comet-example-langchain/view/b5ZThK6OFdhKWVSP3fDfRtrNF/panels?utm_source=langchain&utm_medium=referral&utm_campaign=comet_notebook)
 
 ![](https://user-images.githubusercontent.com/7529846/230326720-a9711435-9c6f-4edb-a707-94b67271ab25.png)
 
-
-### Install Comet and Dependencies
+### 安装 Comet 及其依赖项
 
 
 ```python
@@ -29,10 +28,9 @@ In this guide we will demonstrate how to track your Langchain Experiments, Evalu
 !{sys.executable} -m spacy download en_core_web_sm
 ```
 
-### Initialize Comet and Set your Credentials
+### 初始化 Comet 并设置您的凭据
 
-You can grab your [Comet API Key here](https://www.comet.com/signup?utm_source=langchain&utm_medium=referral&utm_campaign=comet_notebook) or click the link after initializing Comet
-
+您可以在此处获取您的 [Comet API Key](https://www.comet.com/signup?utm_source=langchain&utm_medium=referral&utm_campaign=comet_notebook)，或在初始化 Comet 后点击该链接
 
 ```python
 import comet_ml
@@ -40,9 +38,9 @@ import comet_ml
 comet_ml.init(project_name="comet-example-langchain")
 ```
 
-### Set OpenAI and SerpAPI credentials
+### 设置 OpenAI 和 SerpAPI 凭证
 
-You will need an [OpenAI API Key](https://platform.openai.com/account/api-keys) and a [SerpAPI API Key](https://serpapi.com/dashboard) to run the following examples
+您需要一个 [OpenAI API 密钥](https://platform.openai.com/account/api-keys) 和一个 [SerpAPI API 密钥](https://serpapi.com/dashboard) 来运行以下示例
 
 
 ```python
@@ -53,7 +51,7 @@ os.environ["OPENAI_API_KEY"] = "..."
 os.environ["SERPAPI_API_KEY"] = "..."
 ```
 
-### Scenario 1: Using just an LLM
+### 场景 1：仅使用 LLM
 
 
 ```python
@@ -76,7 +74,7 @@ print("LLM result", llm_result)
 comet_callback.flush_tracker(llm, finish=True)
 ```
 
-### Scenario 2: Using an LLM in a Chain
+### 场景 2：在链中使用 LLM
 
 
 ```python
@@ -106,8 +104,7 @@ print(synopsis_chain.apply(test_prompts))
 comet_callback.flush_tracker(synopsis_chain, finish=True)
 ```
 
-### Scenario 3: Using An Agent with Tools 
-
+### 场景 3：使用带工具的代理
 
 ```python
 from langchain.agents import initialize_agent, load_tools
@@ -138,18 +135,15 @@ agent.run(
 comet_callback.flush_tracker(agent, finish=True)
 ```
 
-### Scenario 4: Using Custom Evaluation Metrics
+### 场景 4：使用自定义评估指标
 
-The `CometCallbackManager` also allows you to define and use Custom Evaluation Metrics to assess generated outputs from your model. Let's take a look at how this works. 
+`CometCallbackManager` 还允许您定义和使用自定义评估指标，以评估模型生成的输出。让我们看看这是如何工作的。
 
-
-In the snippet below, we will use the [ROUGE](https://huggingface.co/spaces/evaluate-metric/rouge) metric to evaluate the quality of a generated summary of an input prompt. 
-
+在下面的代码片段中，我们将使用 [ROUGE](https://huggingface.co/spaces/evaluate-metric/rouge) 指标来评估输入提示生成的摘要的质量。
 
 ```python
 %pip install --upgrade --quiet  rouge-score
 ```
-
 
 ```python
 from langchain.chains import LLMChain
@@ -226,13 +220,11 @@ print(synopsis_chain.apply(test_prompts, callbacks=callbacks))
 comet_callback.flush_tracker(synopsis_chain, finish=True)
 ```
 
-### Callback Tracer
+### 回调跟踪器
 
-There is another integration with Comet:
+还有一个与 Comet 的集成：
 
-See an [example](/docs/integrations/callbacks/comet_tracing).
-
-
+请参见 [示例](/docs/integrations/callbacks/comet_tracing).
 
 ```python
 from langchain_community.callbacks.tracers.comet import CometTracer

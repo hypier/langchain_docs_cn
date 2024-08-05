@@ -1,20 +1,20 @@
 ---
 sidebar_position: 3
-sidebar_label: Changes
+sidebar_label: 变更
 keywords: [retrievalqa, llmchain, conversationalretrievalchain]
 ---
 
-# Deprecations and Breaking Changes
+# 弃用和重大变更
 
-This code contains a list of deprecations and removals in the `langchain` and `langchain-core` packages.
+此代码包含 `langchain` 和 `langchain-core` 包中的弃用和移除列表。
 
-New features and improvements are not listed here. See the [overview](/docs/versions/overview/) for a summary of what's new in this release.
+新功能和改进未在此列出。有关此版本新内容的摘要，请参阅 [概述](/docs/versions/overview/)。
 
-## Breaking changes
+## 重大变化
 
-As of release 0.2.0, `langchain` is required to be integration-agnostic. This means that code in `langchain`  should not by default instantiate any specific chat models, llms, embedding models, vectorstores etc; instead, the user will be required to specify those explicitly.
+从版本 0.2.0 开始，`langchain` 被要求与集成无关。这意味着 `langchain` 中的代码默认不应实例化任何特定的聊天模型、LLMs、嵌入模型、向量存储等；相反，用户需要明确指定这些内容。
 
-The following functions and classes require an explicit LLM to be passed as an argument:
+以下函数和类需要显式传递 LLM 作为参数：
 
 - `langchain.agents.agent_toolkits.vectorstore.toolkit.VectorStoreToolkit`
 - `langchain.agents.agent_toolkits.vectorstore.toolkit.VectorStoreRouterToolkit`
@@ -25,24 +25,21 @@ The following functions and classes require an explicit LLM to be passed as an a
 - `langchain.indexes.VectorStoreIndexWrapper.aquery_with_sources`
 - `langchain.chains.flare.FlareChain`
 
-
-The following classes now require passing an explicit Embedding model as an argument:
+以下类现在需要显式传递嵌入模型作为参数：
 
 - `langchain.indexes.VectostoreIndexCreator`
 
-The following code has been removed:
+以下代码已被删除：
 
-- `langchain.natbot.NatBotChain.from_default` removed in favor of the `from_llm` class method.
+- `langchain.natbot.NatBotChain.from_default` 被 `from_llm` 类方法取代。
 
-Behavior was changed for the following code:
+以下代码的行为已被更改：
 
+### @tool 装饰器
 
-### @tool decorator
+`@tool` 装饰器现在将函数的文档字符串作为工具描述。之前，`@tool` 装饰器用于在函数签名之前添加内容。
 
-`@tool` decorator now assigns the function doc-string as the tool description. Previously, the `@tool` decorator
-using to prepend the function signature.
-
-Before 0.2.0:
+在 0.2.0 之前：
 
 ```python
 @tool
@@ -53,17 +50,17 @@ def my_tool(x: str) -> str:
 print(my_tool.description)
 ```
 
-Would result in: `my_tool: (x: str) -> str - Some description.`
+将会得到：`my_tool: (x: str) -> str - Some description.`
 
-As of 0.2.0:
+从 0.2.0 开始：
 
-It will result in: `Some description.`
+将会得到：`Some description.`
 
-## Code that moved to another package
+## 移动到另一个包的代码
 
-Code that was moved from `langchain` into another package (e.g, `langchain-community`)
+从 `langchain` 移动到另一个包中的代码（例如，`langchain-community`）
 
-If you try to import it from `langchain`, the import will keep on working, but will raise a deprecation warning. The warning will provide a replacement import statement.
+如果您尝试从 `langchain` 导入，它将继续工作，但会引发弃用警告。该警告将提供替代的导入语句。
 
  ```shell
  python -c "from langchain.document_loaders.markdown import UnstructuredMarkdownLoader"
@@ -79,415 +76,414 @@ If you try to import it from `langchain`, the import will keep on working, but w
  >> from langchain_community.document_loaders import UnstructuredMarkdownLoader
 ```
 
-We will continue supporting the imports in `langchain` until release 0.4 as long as the relevant package where the code lives is installed. (e.g., as long as `langchain_community` is installed.)
+我们将继续支持在 `langchain` 中的导入，直到 0.4 版本发布，只要相关的代码所在包已安装。（例如，只要安装了 `langchain_community`。）
 
-However, we advise for users to not rely on these imports and instead migrate to the new imports. To help with this process, we’re releasing a migration script via the LangChain CLI. See further instructions in migration guide.
+然而，我们建议用户不要依赖这些导入，而是迁移到新的导入。为了帮助这个过程，我们通过 LangChain CLI 发布了一个迁移脚本。请参阅迁移指南中的进一步说明。
 
-## Code targeted for removal
+## 计划移除的代码
 
-Code that has better alternatives available and will eventually be removed, so there’s only a single way to do things. (e.g., `predict_messages` method in ChatModels has been deprecated in favor of `invoke`).
+有更好替代方案的代码，最终将被移除，以确保只有一种方式来完成事情。（例如，ChatModels中的`predict_messages`方法已被弃用，取而代之的是`invoke`）。
 
 ### astream events V1
 
-If you are using `astream_events`, please review how to [migrate to astream events v2](/docs/versions/v0_2/migrating_astream_events).
+如果您正在使用 `astream_events`，请查看如何 [迁移到 astream events v2](/docs/versions/v0_2/migrating_astream_events)。
 
 ### langchain_core
 
 #### try_load_from_hub
 
 
-In module: `utils.loading`
-Deprecated: 0.1.30
-Removal: 0.3.0
+在模块: `utils.loading`
+已弃用: 0.1.30
+移除: 0.3.0
 
 
-Alternative: Using the hwchase17/langchain-hub repo for prompts is deprecated. Please use https://smith.langchain.com/hub instead.
+替代方案: 使用 hwchase17/langchain-hub 仓库的提示已弃用。请改用 https://smith.langchain.com/hub。
 
 
 #### BaseLanguageModel.predict
 
 
-In module: `language_models.base`
-Deprecated: 0.1.7
-Removal: 0.3.0
+在模块: `language_models.base`
+已弃用: 0.1.7
+移除: 0.3.0
 
 
-Alternative: invoke
+替代方案: invoke
 
 
 #### BaseLanguageModel.predict_messages
 
 
-In module: `language_models.base`
-Deprecated: 0.1.7
-Removal: 0.3.0
+在模块: `language_models.base`
+已弃用: 0.1.7
+移除: 0.3.0
 
 
-Alternative: invoke
+替代方案: invoke
 
 
 #### BaseLanguageModel.apredict
 
 
-In module: `language_models.base`
-Deprecated: 0.1.7
-Removal: 0.3.0
+在模块: `language_models.base`
+已弃用: 0.1.7
+移除: 0.3.0
 
 
-Alternative: ainvoke
+替代方案: ainvoke
 
 
 #### BaseLanguageModel.apredict_messages
 
 
-In module: `language_models.base`
-Deprecated: 0.1.7
-Removal: 0.3.0
+在模块: `language_models.base`
+已弃用: 0.1.7
+移除: 0.3.0
 
 
-Alternative: ainvoke
+替代方案: ainvoke
 
 
 #### RunTypeEnum
 
 
-In module: `tracers.schemas`
-Deprecated: 0.1.0
-Removal: 0.3.0
+在模块: `tracers.schemas`
+已弃用: 0.1.0
+移除: 0.3.0
 
 
-Alternative: Use string instead.
+替代方案: 使用字符串。
 
 
 #### TracerSessionV1Base
 
 
-In module: `tracers.schemas`
-Deprecated: 0.1.0
-Removal: 0.3.0
+在模块: `tracers.schemas`
+已弃用: 0.1.0
+移除: 0.3.0
 
 
-Alternative:
+替代方案:
 
 
 #### TracerSessionV1Create
 
 
-In module: `tracers.schemas`
-Deprecated: 0.1.0
-Removal: 0.3.0
+在模块: `tracers.schemas`
+已弃用: 0.1.0
+移除: 0.3.0
 
 
-Alternative:
+替代方案:
 
 
 #### TracerSessionV1
 
 
-In module: `tracers.schemas`
-Deprecated: 0.1.0
-Removal: 0.3.0
+在模块: `tracers.schemas`
+已弃用: 0.1.0
+移除: 0.3.0
 
 
-Alternative:
+替代方案:
 
 
 #### TracerSessionBase
 
 
-In module: `tracers.schemas`
-Deprecated: 0.1.0
-Removal: 0.3.0
+在模块: `tracers.schemas`
+已弃用: 0.1.0
+移除: 0.3.0
 
 
-Alternative:
+替代方案:
 
 
 #### TracerSession
 
 
-In module: `tracers.schemas`
-Deprecated: 0.1.0
-Removal: 0.3.0
+在模块: `tracers.schemas`
+已弃用: 0.1.0
+移除: 0.3.0
 
 
-Alternative:
+替代方案:
 
 
 #### BaseRun
 
 
-In module: `tracers.schemas`
-Deprecated: 0.1.0
-Removal: 0.3.0
+在模块: `tracers.schemas`
+已弃用: 0.1.0
+移除: 0.3.0
 
 
-Alternative: Run
+替代方案: Run
 
 
 #### LLMRun
 
 
-In module: `tracers.schemas`
-Deprecated: 0.1.0
-Removal: 0.3.0
+在模块: `tracers.schemas`
+已弃用: 0.1.0
+移除: 0.3.0
 
 
-Alternative: Run
+替代方案: Run
 
 
 #### ChainRun
 
 
-In module: `tracers.schemas`
-Deprecated: 0.1.0
-Removal: 0.3.0
+在模块: `tracers.schemas`
+已弃用: 0.1.0
+移除: 0.3.0
 
 
-Alternative: Run
+替代方案: Run
 
 
 #### ToolRun
 
 
-In module: `tracers.schemas`
-Deprecated: 0.1.0
-Removal: 0.3.0
+在模块: `tracers.schemas`
+已弃用: 0.1.0
+移除: 0.3.0
 
 
-Alternative: Run
+替代方案: Run
 
 
 #### BaseChatModel.__call__
 
 
-In module: `language_models.chat_models`
-Deprecated: 0.1.7
-Removal: 0.3.0
+在模块: `language_models.chat_models`
+已弃用: 0.1.7
+移除: 0.3.0
 
 
-Alternative: invoke
+替代方案: invoke
 
 
 #### BaseChatModel.call_as_llm
 
 
-In module: `language_models.chat_models`
-Deprecated: 0.1.7
-Removal: 0.3.0
+在模块: `language_models.chat_models`
+已弃用: 0.1.7
+移除: 0.3.0
 
 
-Alternative: invoke
+替代方案: invoke
 
 
 #### BaseChatModel.predict
 
 
-In module: `language_models.chat_models`
-Deprecated: 0.1.7
-Removal: 0.3.0
+在模块: `language_models.chat_models`
+已弃用: 0.1.7
+移除: 0.3.0
 
 
-Alternative: invoke
+替代方案: invoke
 
 
 #### BaseChatModel.predict_messages
 
 
-In module: `language_models.chat_models`
-Deprecated: 0.1.7
-Removal: 0.3.0
+在模块: `language_models.chat_models`
+已弃用: 0.1.7
+移除: 0.3.0
 
 
-Alternative: invoke
+替代方案: invoke
 
 
 #### BaseChatModel.apredict
 
 
-In module: `language_models.chat_models`
-Deprecated: 0.1.7
-Removal: 0.3.0
+在模块: `language_models.chat_models`
+已弃用: 0.1.7
+移除: 0.3.0
 
 
-Alternative: ainvoke
+替代方案: ainvoke
 
 
 #### BaseChatModel.apredict_messages
 
 
-In module: `language_models.chat_models`
-Deprecated: 0.1.7
-Removal: 0.3.0
+在模块: `language_models.chat_models`
+已弃用: 0.1.7
+移除: 0.3.0
 
 
-Alternative: ainvoke
+替代方案: ainvoke
 
 
 #### BaseLLM.__call__
 
 
-In module: `language_models.llms`
-Deprecated: 0.1.7
-Removal: 0.3.0
+在模块: `language_models.llms`
+已弃用: 0.1.7
+移除: 0.3.0
 
 
-Alternative: invoke
+替代方案: invoke
 
 
 #### BaseLLM.predict
 
 
-In module: `language_models.llms`
-Deprecated: 0.1.7
-Removal: 0.3.0
+在模块: `language_models.llms`
+已弃用: 0.1.7
+移除: 0.3.0
 
 
-Alternative: invoke
+替代方案: invoke
 
 
 #### BaseLLM.predict_messages
 
 
-In module: `language_models.llms`
-Deprecated: 0.1.7
-Removal: 0.3.0
+在模块: `language_models.llms`
+已弃用: 0.1.7
+移除: 0.3.0
 
 
-Alternative: invoke
+替代方案: invoke
 
 
 #### BaseLLM.apredict
 
 
-In module: `language_models.llms`
-Deprecated: 0.1.7
-Removal: 0.3.0
+在模块: `language_models.llms`
+已弃用: 0.1.7
+移除: 0.3.0
 
 
-Alternative: ainvoke
+替代方案: ainvoke
 
 
 #### BaseLLM.apredict_messages
 
 
-In module: `language_models.llms`
-Deprecated: 0.1.7
-Removal: 0.3.0
+在模块: `language_models.llms`
+已弃用: 0.1.7
+移除: 0.3.0
 
 
-Alternative: ainvoke
+替代方案: ainvoke
 
 
 #### BaseRetriever.get_relevant_documents
 
 
-In module: `retrievers`
-Deprecated: 0.1.46
-Removal: 0.3.0
+在模块: `retrievers`
+已弃用: 0.1.46
+移除: 0.3.0
 
 
-Alternative: invoke
+替代方案: invoke
 
 
 #### BaseRetriever.aget_relevant_documents
 
 
-In module: `retrievers`
-Deprecated: 0.1.46
-Removal: 0.3.0
+在模块: `retrievers`
+已弃用: 0.1.46
+移除: 0.3.0
 
 
-Alternative: ainvoke
+替代方案: ainvoke
 
 
 #### ChatPromptTemplate.from_role_strings
 
 
-In module: `prompts.chat`
-Deprecated: 0.0.1
-Removal:
+在模块: `prompts.chat`
+已弃用: 0.0.1
+移除:
 
 
-Alternative: from_messages classmethod
+替代方案: from_messages 类方法
 
 
 #### ChatPromptTemplate.from_strings
 
 
-In module: `prompts.chat`
-Deprecated: 0.0.1
-Removal:
+在模块: `prompts.chat`
+已弃用: 0.0.1
+移除:
 
 
-Alternative: from_messages classmethod
+替代方案: from_messages 类方法
 
 
 #### BaseTool.__call__
 
 
-In module: `tools`
-Deprecated: 0.1.47
-Removal: 0.3.0
+在模块: `tools`
+已弃用: 0.1.47
+移除: 0.3.0
 
 
-Alternative: invoke
+替代方案: invoke
 
 
 #### convert_pydantic_to_openai_function
 
 
-In module: `utils.function_calling`
-Deprecated: 0.1.16
-Removal: 0.3.0
+在模块: `utils.function_calling`
+已弃用: 0.1.16
+移除: 0.3.0
 
 
-Alternative: langchain_core.utils.function_calling.convert_to_openai_function()
+替代方案: langchain_core.utils.function_calling.convert_to_openai_function()
 
 
 #### convert_pydantic_to_openai_tool
 
 
-In module: `utils.function_calling`
-Deprecated: 0.1.16
-Removal: 0.3.0
+在模块: `utils.function_calling`
+已弃用: 0.1.16
+移除: 0.3.0
 
 
-Alternative: langchain_core.utils.function_calling.convert_to_openai_tool()
+替代方案: langchain_core.utils.function_calling.convert_to_openai_tool()
 
 
 #### convert_python_function_to_openai_function
 
 
-In module: `utils.function_calling`
-Deprecated: 0.1.16
-Removal: 0.3.0
+在模块: `utils.function_calling`
+已弃用: 0.1.16
+移除: 0.3.0
 
 
-Alternative: langchain_core.utils.function_calling.convert_to_openai_function()
+替代方案: langchain_core.utils.function_calling.convert_to_openai_function()
 
 
 #### format_tool_to_openai_function
 
 
-In module: `utils.function_calling`
-Deprecated: 0.1.16
-Removal: 0.3.0
+在模块: `utils.function_calling`
+已弃用: 0.1.16
+移除: 0.3.0
 
 
-Alternative: langchain_core.utils.function_calling.convert_to_openai_function()
+替代方案: langchain_core.utils.function_calling.convert_to_openai_function()
 
 
 #### format_tool_to_openai_tool
 
 
-In module: `utils.function_calling`
-Deprecated: 0.1.16
-Removal: 0.3.0
+在模块: `utils.function_calling`
+已弃用: 0.1.16
+移除: 0.3.0
 
 
-Alternative: langchain_core.utils.function_calling.convert_to_openai_tool()
-
+替代方案: langchain_core.utils.function_calling.convert_to_openai_tool()
 
 ### langchain
 
@@ -495,408 +491,408 @@ Alternative: langchain_core.utils.function_calling.convert_to_openai_tool()
 #### AgentType
 
 
-In module: `agents.agent_types`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `agents.agent_types`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative: Use [LangGraph](/docs/how_to/migrate_agent/) or new agent constructor methods like create_react_agent, create_json_agent, create_structured_chat_agent, etc.
+替代方案：使用 [LangGraph](/docs/how_to/migrate_agent/) 或新的代理构造方法，如 create_react_agent、create_json_agent、create_structured_chat_agent 等。
 
 
 #### Chain.__call__
 
 
-In module: `chains.base`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `chains.base`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative: invoke
+替代方案：invoke
 
 
 #### Chain.acall
 
 
-In module: `chains.base`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `chains.base`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative: ainvoke
+替代方案：ainvoke
 
 
 #### Chain.run
 
 
-In module: `chains.base`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `chains.base`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative: invoke
+替代方案：invoke
 
 
 #### Chain.arun
 
 
-In module: `chains.base`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `chains.base`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative: ainvoke
+替代方案：ainvoke
 
 
 #### Chain.apply
 
 
-In module: `chains.base`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `chains.base`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative: batch
+替代方案：batch
 
 
 #### LLMChain
 
 
-In module: `chains.llm`
-Deprecated: 0.1.17
-Removal: 0.3.0
+模块： `chains.llm`
+已弃用： 0.1.17
+移除： 0.3.0
 
 
-Alternative: [RunnableSequence](/docs/how_to/sequence/), e.g., `prompt | llm`
+替代方案：[RunnableSequence](/docs/how_to/sequence/)，例如 `prompt | llm`
 
-This [migration guide](/docs/versions/migrating_chains/llm_chain) has a side-by-side comparison.
+此 [迁移指南](/docs/versions/migrating_chains/llm_chain) 提供了并排比较。
 
 
 #### LLMSingleActionAgent
 
 
-In module: `agents.agent`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `agents.agent`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative: Use [LangGraph](/docs/how_to/migrate_agent/) or new agent constructor methods like create_react_agent, create_json_agent, create_structured_chat_agent, etc.
+替代方案：使用 [LangGraph](/docs/how_to/migrate_agent/) 或新的代理构造方法，如 create_react_agent、create_json_agent、create_structured_chat_agent 等。
 
 
 #### Agent
 
 
-In module: `agents.agent`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `agents.agent`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative: Use [LangGraph](/docs/how_to/migrate_agent/) or new agent constructor methods like create_react_agent, create_json_agent, create_structured_chat_agent, etc.
+替代方案：使用 [LangGraph](/docs/how_to/migrate_agent/) 或新的代理构造方法，如 create_react_agent、create_json_agent、create_structured_chat_agent 等。
 
 
 #### OpenAIFunctionsAgent
 
 
-In module: `agents.openai_functions_agent.base`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `agents.openai_functions_agent.base`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative: create_openai_functions_agent
+替代方案：create_openai_functions_agent
 
 
 #### ZeroShotAgent
 
 
-In module: `agents.mrkl.base`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `agents.mrkl.base`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative: create_react_agent
+替代方案：create_react_agent
 
 
 #### MRKLChain
 
 
-In module: `agents.mrkl.base`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `agents.mrkl.base`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative:
+替代方案：
 
 
 #### ConversationalAgent
 
 
-In module: `agents.conversational.base`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `agents.conversational.base`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative: create_react_agent
+替代方案：create_react_agent
 
 
 #### ConversationalChatAgent
 
 
-In module: `agents.conversational_chat.base`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `agents.conversational_chat.base`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative: create_json_chat_agent
+替代方案：create_json_chat_agent
 
 
 #### ChatAgent
 
 
-In module: `agents.chat.base`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `agents.chat.base`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative: create_react_agent
+替代方案：create_react_agent
 
 
 #### OpenAIMultiFunctionsAgent
 
 
-In module: `agents.openai_functions_multi_agent.base`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `agents.openai_functions_multi_agent.base`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative: create_openai_tools_agent
+替代方案：create_openai_tools_agent
 
 
 #### ReActDocstoreAgent
 
 
-In module: `agents.react.base`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `agents.react.base`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative:
+替代方案：
 
 
 #### DocstoreExplorer
 
 
-In module: `agents.react.base`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `agents.react.base`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative:
+替代方案：
 
 
 #### ReActTextWorldAgent
 
 
-In module: `agents.react.base`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `agents.react.base`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative:
+替代方案：
 
 
 #### ReActChain
 
 
-In module: `agents.react.base`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `agents.react.base`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative:
+替代方案：
 
 
 #### SelfAskWithSearchAgent
 
 
-In module: `agents.self_ask_with_search.base`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `agents.self_ask_with_search.base`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative: create_self_ask_with_search
+替代方案：create_self_ask_with_search
 
 
 #### SelfAskWithSearchChain
 
 
-In module: `agents.self_ask_with_search.base`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `agents.self_ask_with_search.base`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative:
+替代方案：
 
 
 #### StructuredChatAgent
 
 
-In module: `agents.structured_chat.base`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `agents.structured_chat.base`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative: create_structured_chat_agent
+替代方案：create_structured_chat_agent
 
 
 #### RetrievalQA
 
 
-In module: `chains.retrieval_qa.base`
-Deprecated: 0.1.17
-Removal: 0.3.0
+模块： `chains.retrieval_qa.base`
+已弃用： 0.1.17
+移除： 0.3.0
 
 
-Alternative: [create_retrieval_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.retrieval.create_retrieval_chain.html#langchain-chains-retrieval-create-retrieval-chain)
-This [migration guide](/docs/versions/migrating_chains/retrieval_qa) has a side-by-side comparison.
+替代方案：[create_retrieval_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.retrieval.create_retrieval_chain.html#langchain-chains-retrieval-create-retrieval-chain)
+此 [迁移指南](/docs/versions/migrating_chains/retrieval_qa) 提供了并排比较。
 
 
 #### load_agent_from_config
 
 
-In module: `agents.loading`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `agents.loading`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative:
+替代方案：
 
 
 #### load_agent
 
 
-In module: `agents.loading`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `agents.loading`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative:
+替代方案：
 
 
 #### initialize_agent
 
 
-In module: `agents.initialize`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `agents.initialize`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative: Use [LangGraph](/docs/how_to/migrate_agent/) or new agent constructor methods like create_react_agent, create_json_agent, create_structured_chat_agent, etc.
+替代方案：使用 [LangGraph](/docs/how_to/migrate_agent/) 或新的代理构造方法，如 create_react_agent、create_json_agent、create_structured_chat_agent 等。
 
 
 #### XMLAgent
 
 
-In module: `agents.xml.base`
-Deprecated: 0.1.0
-Removal: 0.3.0
+模块： `agents.xml.base`
+已弃用： 0.1.0
+移除： 0.3.0
 
 
-Alternative: create_xml_agent
+替代方案：create_xml_agent
 
 
 #### CohereRerank
 
 
-In module: `retrievers.document_compressors.cohere_rerank`
-Deprecated: 0.0.30
-Removal: 0.3.0
+模块： `retrievers.document_compressors.cohere_rerank`
+已弃用： 0.0.30
+移除： 0.3.0
 
 
-Alternative: langchain_cohere.CohereRerank
+替代方案：langchain_cohere.CohereRerank
 
 
 #### ConversationalRetrievalChain
 
 
-In module: `chains.conversational_retrieval.base`
-Deprecated: 0.1.17
-Removal: 0.3.0
+模块： `chains.conversational_retrieval.base`
+已弃用： 0.1.17
+移除： 0.3.0
 
 
-Alternative: [create_history_aware_retriever](https://api.python.langchain.com/en/latest/chains/langchain.chains.history_aware_retriever.create_history_aware_retriever.html) together with [create_retrieval_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.retrieval.create_retrieval_chain.html#langchain-chains-retrieval-create-retrieval-chain) (see example in docstring)
-This [migration guide](/docs/versions/migrating_chains/conversation_retrieval_chain) has a side-by-side comparison.
+替代方案：[create_history_aware_retriever](https://api.python.langchain.com/en/latest/chains/langchain.chains.history_aware_retriever.create_history_aware_retriever.html) 以及 [create_retrieval_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.retrieval.create_retrieval_chain.html#langchain-chains-retrieval-create-retrieval-chain)（见文档字符串中的示例）
+此 [迁移指南](/docs/versions/migrating_chains/conversation_retrieval_chain) 提供了并排比较。
 
 
 #### create_extraction_chain_pydantic
 
 
-In module: `chains.openai_tools.extraction`
-Deprecated: 0.1.14
-Removal: 0.3.0
+模块： `chains.openai_tools.extraction`
+已弃用： 0.1.14
+移除： 0.3.0
 
 
-Alternative: [with_structured_output](/docs/how_to/structured_output/#the-with_structured_output-method) method on chat models that support tool calling.
+替代方案：[with_structured_output](/docs/how_to/structured_output/#the-with_structured_output-method) 方法在支持工具调用的聊天模型上。
 
 
 #### create_openai_fn_runnable
 
 
-In module: `chains.structured_output.base`
-Deprecated: 0.1.14
-Removal: 0.3.0
+模块： `chains.structured_output.base`
+已弃用： 0.1.14
+移除： 0.3.0
 
 
-Alternative: [with_structured_output](/docs/how_to/structured_output/#the-with_structured_output-method) method on chat models that support tool calling.
+替代方案：[with_structured_output](/docs/how_to/structured_output/#the-with_structured_output-method) 方法在支持工具调用的聊天模型上。
 
 
 #### create_structured_output_runnable
 
 
-In module: `chains.structured_output.base`
-Deprecated: 0.1.17
-Removal: 0.3.0
+模块： `chains.structured_output.base`
+已弃用： 0.1.17
+移除： 0.3.0
 
 
-Alternative: [with_structured_output](/docs/how_to/structured_output/#the-with_structured_output-method) method on chat models that support tool calling.
+替代方案：[with_structured_output](/docs/how_to/structured_output/#the-with_structured_output-method) 方法在支持工具调用的聊天模型上。
 
 
 #### create_openai_fn_chain
 
 
-In module: `chains.openai_functions.base`
-Deprecated: 0.1.1
-Removal: 0.3.0
+模块： `chains.openai_functions.base`
+已弃用： 0.1.1
+移除： 0.3.0
 
 
-Alternative: create_openai_fn_runnable
+替代方案：create_openai_fn_runnable
 
 
 #### create_structured_output_chain
 
 
-In module: `chains.openai_functions.base`
-Deprecated: 0.1.1
-Removal: 0.3.0
+模块： `chains.openai_functions.base`
+已弃用： 0.1.1
+移除： 0.3.0
 
-Alternative: ChatOpenAI.with_structured_output
+替代方案：ChatOpenAI.with_structured_output
 
 
 #### create_extraction_chain
 
 
-In module: `chains.openai_functions.extraction`
-Deprecated: 0.1.14
-Removal: 0.3.0
+模块： `chains.openai_functions.extraction`
+已弃用： 0.1.14
+移除： 0.3.0
 
 
-Alternative: [with_structured_output](/docs/how_to/structured_output/#the-with_structured_output-method) method on chat models that support tool calling.
+替代方案：[with_structured_output](/docs/how_to/structured_output/#the-with_structured_output-method) 方法在支持工具调用的聊天模型上。
 
 
 #### create_extraction_chain_pydantic
 
 
-In module: `chains.openai_functions.extraction`
-Deprecated: 0.1.14
-Removal: 0.3.0
+模块： `chains.openai_functions.extraction`
+已弃用： 0.1.14
+移除： 0.3.0
 
 
-Alternative: [with_structured_output](/docs/how_to/structured_output/#the-with_structured_output-method) method on chat models that support tool calling.
+替代方案：[with_structured_output](/docs/how_to/structured_output/#the-with_structured_output-method) 方法在支持工具调用的聊天模型上。

@@ -1,21 +1,19 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/opaqueprompts.ipynb
 ---
+
 # OpaquePrompts
 
-[OpaquePrompts](https://opaqueprompts.readthedocs.io/en/latest/) is a service that enables applications to leverage the power of language models without compromising user privacy. Designed for composability and ease of integration into existing applications and services, OpaquePrompts is consumable via a simple Python library as well as through LangChain. Perhaps more importantly, OpaquePrompts leverages the power of [confidential computing](https://en.wikipedia.org/wiki/Confidential_computing) to ensure that even the OpaquePrompts service itself cannot access the data it is protecting.
- 
+[OpaquePrompts](https://opaqueprompts.readthedocs.io/en/latest/) 是一项服务，使应用程序能够利用语言模型的强大功能而不妨碍用户隐私。OpaquePrompts 旨在可组合性和易于集成到现有应用程序和服务中，可以通过一个简单的 Python 库以及 LangChain 进行使用。更重要的是，OpaquePrompts 利用 [保密计算](https://en.wikipedia.org/wiki/Confidential_computing) 的强大功能，确保即使是 OpaquePrompts 服务本身也无法访问其保护的数据。
 
-This notebook goes over how to use LangChain to interact with `OpaquePrompts`.
-
+本笔记本介绍如何使用 LangChain 与 `OpaquePrompts` 进行交互。
 
 ```python
 # install the opaqueprompts and langchain packages
 %pip install --upgrade --quiet  opaqueprompts langchain
 ```
 
-Accessing the OpaquePrompts API requires an API key, which you can get by creating an account on [the OpaquePrompts website](https://opaqueprompts.opaque.co/). Once you have an account, you can find your API key on [the API Keys page](https:opaqueprompts.opaque.co/api-keys).
-
+访问 OpaquePrompts API 需要一个 API 密钥，您可以通过在 [OpaquePrompts 网站](https://opaqueprompts.opaque.co/) 上创建帐户来获取。创建帐户后，您可以在 [API 密钥页面](https:opaqueprompts.opaque.co/api-keys) 找到您的 API 密钥。
 
 ```python
 import os
@@ -26,10 +24,9 @@ os.environ["OPAQUEPROMPTS_API_KEY"] = "<OPAQUEPROMPTS_API_KEY>"
 os.environ["OPENAI_API_KEY"] = "<OPENAI_API_KEY>"
 ```
 
-# Use OpaquePrompts LLM Wrapper
+# 使用 OpaquePrompts LLM 包装器
 
-Applying OpaquePrompts to your application could be as simple as wrapping your LLM using the OpaquePrompts class by replace `llm=OpenAI()` with `llm=OpaquePrompts(base_llm=OpenAI())`.
-
+将 OpaquePrompts 应用到您的应用程序中，可以像用 OpaquePrompts 类包装您的 LLM 一样简单，只需将 `llm=OpenAI()` 替换为 `llm=OpaquePrompts(base_llm=OpenAI())`。
 
 ```python
 from langchain.chains import LLMChain
@@ -44,37 +41,22 @@ set_debug(True)
 set_verbose(True)
 
 prompt_template = """
-As an AI assistant, you will answer questions according to given context.
+作为 AI 助手，您将根据给定的上下文回答问题。
 
-Sensitive personal information in the question is masked for privacy.
-For instance, if the original text says "Giana is good," it will be changed
-to "PERSON_998 is good." 
+问题中的敏感个人信息已被屏蔽以保护隐私。
+例如，如果原始文本说 "Giana is good"，它将被更改为
+"PERSON_998 is good。" 
 
-Here's how to handle these changes:
-* Consider these masked phrases just as placeholders, but still refer to
-them in a relevant way when answering.
-* It's possible that different masked terms might mean the same thing.
-Stick with the given term and don't modify it.
-* All masked terms follow the "TYPE_ID" pattern.
-* Please don't invent new masked terms. For instance, if you see "PERSON_998,"
-don't come up with "PERSON_997" or "PERSON_999" unless they're already in the question.
+以下是如何处理这些更改：
+* 将这些屏蔽的短语视为占位符，但在回答时仍要以相关的方式提及它们。
+* 不同的屏蔽术语可能意味着相同的事物。
+请坚持使用给定的术语，不要修改它。
+* 所有屏蔽术语遵循 "TYPE_ID" 模式。
+* 请不要发明新的屏蔽术语。例如，如果您看到 "PERSON_998"，请不要想出 "PERSON_997" 或 "PERSON_999"，除非它们已经在问题中。
 
-Conversation History: ```{history}```
-Context : ```During our recent meeting on February 23, 2023, at 10:30 AM,
-John Doe provided me with his personal details. His email is johndoe@example.com
-and his contact number is 650-456-7890. He lives in New York City, USA, and
-belongs to the American nationality with Christian beliefs and a leaning towards
-the Democratic party. He mentioned that he recently made a transaction using his
-credit card 4111 1111 1111 1111 and transferred bitcoins to the wallet address
-1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa. While discussing his European travels, he noted
-down his IBAN as GB29 NWBK 6016 1331 9268 19. Additionally, he provided his website
-as https://johndoeportfolio.com. John also discussed some of his US-specific details.
-He said his bank account number is 1234567890123456 and his drivers license is Y12345678.
-His ITIN is 987-65-4321, and he recently renewed his passport, the number for which is
-123456789. He emphasized not to share his SSN, which is 123-45-6789. Furthermore, he
-mentioned that he accesses his work files remotely through the IP 192.168.1.1 and has
-a medical license number MED-123456. ```
-Question: ```{question}```
+对话历史： ```{history}```
+上下文 : ```在我们最近于 2023 年 2 月 23 日上午 10:30 的会议上，John Doe 向我提供了他的个人信息。他的电子邮件是 johndoe@example.com，联系电话是 650-456-7890。他住在美国纽约市，属于美国国籍，信仰基督教，倾向于民主党。他提到他最近用他的信用卡 4111 1111 1111 1111 进行了交易，并将比特币转移到钱包地址 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa。在讨论他的欧洲旅行时，他记录下他的 IBAN 为 GB29 NWBK 6016 1331 9268 19。此外，他提供了他的网站 https://johndoeportfolio.com。John 还讨论了一些他在美国的具体信息。他说他的银行账户号码是 1234567890123456，驾照是 Y12345678。他的 ITIN 是 987-65-4321，他最近更新了他的护照，护照号码是 123456789。他强调不分享他的社会安全号码，号码是 123-45-6789。此外，他提到他通过 IP 192.168.1.1 远程访问他的工作文件，并拥有医疗执照号码 MED-123456。```
+问题： ```{question}```
 
 """
 
@@ -89,49 +71,48 @@ chain = LLMChain(
 print(
     chain.run(
         {
-            "question": """Write a message to remind John to do password reset for his website to stay secure."""
+            "question": """写一条消息提醒 John 为他的网站重置密码以保持安全。"""
         },
         callbacks=[StdOutCallbackHandler()],
     )
 )
 ```
 
-From the output, you can see the following context from user input has sensitive data.
+从输出中，您可以看到用户输入的上下文中包含敏感数据。
 
 ``` 
-# Context from user input
+# 用户输入的上下文
 
-During our recent meeting on February 23, 2023, at 10:30 AM, John Doe provided me with his personal details. His email is johndoe@example.com and his contact number is 650-456-7890. He lives in New York City, USA, and belongs to the American nationality with Christian beliefs and a leaning towards the Democratic party. He mentioned that he recently made a transaction using his credit card 4111 1111 1111 1111 and transferred bitcoins to the wallet address 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa. While discussing his European travels, he noted down his IBAN as GB29 NWBK 6016 1331 9268 19. Additionally, he provided his website as https://johndoeportfolio.com. John also discussed some of his US-specific details. He said his bank account number is 1234567890123456 and his drivers license is Y12345678. His ITIN is 987-65-4321, and he recently renewed his passport, the number for which is 123456789. He emphasized not to share his SSN, which is 669-45-6789. Furthermore, he mentioned that he accesses his work files remotely through the IP 192.168.1.1 and has a medical license number MED-123456.
+在我们最近于 2023 年 2 月 23 日上午 10:30 的会议上，John Doe 向我提供了他的个人信息。他的电子邮件是 johndoe@example.com，联系电话是 650-456-7890。他住在美国纽约市，属于美国国籍，信仰基督教，倾向于民主党。他提到他最近用他的信用卡 4111 1111 1111 1111 进行了交易，并将比特币转移到钱包地址 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa。在讨论他的欧洲旅行时，他记录下他的 IBAN 为 GB29 NWBK 6016 1331 9268 19。此外，他提供了他的网站 https://johndoeportfolio.com。John 还讨论了一些他在美国的具体信息。他说他的银行账户号码是 1234567890123456，驾照是 Y12345678。他的 ITIN 是 987-65-4321，他最近更新了他的护照，护照号码是 123456789。他强调不分享他的社会安全号码，号码是 123-45-6789。此外，他提到他通过 IP 192.168.1.1 远程访问他的工作文件，并拥有医疗执照号码 MED-123456。
 ```
 
-OpaquePrompts will automatically detect the sensitive data and replace it with a placeholder. 
+OpaquePrompts 将自动检测敏感数据并用占位符替换。
 
 ```
-# Context after OpaquePrompts
+# OpaquePrompts 处理后的上下文
 
-During our recent meeting on DATE_TIME_3, at DATE_TIME_2, PERSON_3 provided me with his personal details. His email is EMAIL_ADDRESS_1 and his contact number is PHONE_NUMBER_1. He lives in LOCATION_3, LOCATION_2, and belongs to the NRP_3 nationality with NRP_2 beliefs and a leaning towards the Democratic party. He mentioned that he recently made a transaction using his credit card CREDIT_CARD_1 and transferred bitcoins to the wallet address CRYPTO_1. While discussing his NRP_1 travels, he noted down his IBAN as IBAN_CODE_1. Additionally, he provided his website as URL_1. PERSON_2 also discussed some of his LOCATION_1-specific details. He said his bank account number is US_BANK_NUMBER_1 and his drivers license is US_DRIVER_LICENSE_2. His ITIN is US_ITIN_1, and he recently renewed his passport, the number for which is DATE_TIME_1. He emphasized not to share his SSN, which is US_SSN_1. Furthermore, he mentioned that he accesses his work files remotely through the IP IP_ADDRESS_1 and has a medical license number MED-US_DRIVER_LICENSE_1.
+在我们最近于 DATE_TIME_3 的会议上，在 DATE_TIME_2，PERSON_3 向我提供了他的个人信息。他的电子邮件是 EMAIL_ADDRESS_1，联系电话是 PHONE_NUMBER_1。他住在 LOCATION_3，LOCATION_2，属于 NRP_3 国籍，信仰 NRP_2，倾向于民主党。他提到他最近用他的信用卡 CREDIT_CARD_1 进行了交易，并将比特币转移到钱包地址 CRYPTO_1。在讨论他的 NRP_1 旅行时，他记录下他的 IBAN 为 IBAN_CODE_1。此外，他提供了他的网站为 URL_1。PERSON_2 还讨论了一些他在 LOCATION_1 的具体信息。他说他的银行账户号码是 US_BANK_NUMBER_1，驾照是 US_DRIVER_LICENSE_2。他的 ITIN 是 US_ITIN_1，他最近更新了他的护照，护照号码是 DATE_TIME_1。他强调不分享他的社会安全号码，号码是 US_SSN_1。此外，他提到他通过 IP IP_ADDRESS_1 远程访问他的工作文件，并拥有医疗执照号码 MED-US_DRIVER_LICENSE_1。
 ```
 
-Placeholder is used in the LLM response.
+占位符在 LLM 响应中使用。
 
 ```
-# response returned by LLM
+# LLM 返回的响应
 
-Hey PERSON_1, just wanted to remind you to do a password reset for your website URL_1 through your email EMAIL_ADDRESS_1. It's important to stay secure online, so don't forget to do it!
+嘿 PERSON_1，只想提醒你通过你的电子邮件 EMAIL_ADDRESS_1 为你的网站 URL_1 重置密码。保持在线安全很重要，所以不要忘了去做！
 ```
 
-Response is desanitized by replacing the placeholder with the original sensitive data.
+通过用原始敏感数据替换占位符，响应被去敏感化。
 
 ```
-# desanitized LLM response from OpaquePrompts
+# OpaquePrompts 去敏感化后的 LLM 响应
 
-Hey John, just wanted to remind you to do a password reset for your website https://johndoeportfolio.com through your email johndoe@example.com. It's important to stay secure online, so don't forget to do it!
+嘿 John，只想提醒你通过你的电子邮件 johndoe@example.com 为你的网站 https://johndoeportfolio.com 重置密码。保持在线安全很重要，所以不要忘了去做！
 ```
 
-# Use OpaquePrompts in LangChain expression
+# 在 LangChain 表达式中使用 OpaquePrompts
 
-There are functions that can be used with LangChain expression as well if a drop-in replacement doesn't offer the flexibility you need. 
-
+如果现成的替代方案无法提供所需的灵活性，也可以使用与 LangChain 表达式一起使用的函数。
 
 ```python
 import langchain_community.utilities.opaqueprompts as op
@@ -156,8 +137,7 @@ pg_chain.invoke(
 )
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

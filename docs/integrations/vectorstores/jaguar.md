@@ -1,40 +1,44 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/jaguar.ipynb
 ---
+
 # Jaguar Vector Database
 
-1. It is a distributed vector database
-2. The “ZeroMove” feature of JaguarDB enables instant horizontal scalability
-3. Multimodal: embeddings, text, images, videos, PDFs, audio, time series, and geospatial
-4. All-masters: allows both parallel reads and writes
-5. Anomaly detection capabilities
-6. RAG support: combines LLM with proprietary and real-time data
-7. Shared metadata: sharing of metadata across multiple vector indexes
-8. Distance metrics: Euclidean, Cosine, InnerProduct, Manhatten, Chebyshev, Hamming, Jeccard, Minkowski
+1. 它是一个分布式向量数据库
+2. JaguarDB 的“ZeroMove”功能实现了即时的横向扩展
+3. 多模态：嵌入、文本、图像、视频、PDF、音频、时间序列和地理空间
+4. 全主控：允许并行读取和写入
+5. 异常检测能力
+6. RAG 支持：将 LLM 与专有和实时数据结合
+7. 共享元数据：在多个向量索引之间共享元数据
+8. 距离度量：欧几里得、余弦、内积、曼哈顿、切比雪夫、汉明、杰卡德、明可夫斯基
 
-## Prerequisites
+```
+# Sample code block
+def example_function():
+    pass
+```
 
-There are two requirements for running the examples in this file.
-1. You must install and set up the JaguarDB server and its HTTP gateway server.
-   Please refer to the instructions in:
+## 先决条件
+
+运行本文件中的示例有两个要求。
+1. 您必须安装并设置 JaguarDB 服务器及其 HTTP 网关服务器。
+   请参考以下说明：
    [www.jaguardb.com](http://www.jaguardb.com)
-   For quick setup in docker environment:
+   在 Docker 环境中快速设置：
    docker pull jaguardb/jaguardb_with_http
    docker run -d -p 8888:8888 -p 8080:8080 --name jaguardb_with_http  jaguardb/jaguardb_with_http
 
-2. You must install the http client package for JaguarDB:
+2. 您必须安装 JaguarDB 的 HTTP 客户端包：
    ```
        pip install -U jaguardb-http-client
    ```
    
-3. You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
+3. 您需要使用 `pip install -qU langchain-community` 安装 `langchain-community` 以使用此集成。
 
+## RAG 与 Langchain
 
-## RAG With Langchain
-
-This section demonstrates chatting with LLM together with Jaguar in the langchain software stack.
-
-
+本节演示了如何在 langchain 软件栈中与 LLM 和 Jaguar 进行对话。
 
 ```python
 from langchain.chains import RetrievalQAWithSourcesChain
@@ -47,7 +51,7 @@ from langchain_openai import ChatOpenAI, OpenAI, OpenAIEmbeddings
 from langchain_text_splitters import CharacterTextSplitter
 
 """ 
-Load a text file into a set of documents 
+将文本文件加载到一组文档中 
 """
 loader = TextLoader("../../how_to/state_of_the_union.txt")
 documents = loader.load()
@@ -55,80 +59,80 @@ text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=300)
 docs = text_splitter.split_documents(documents)
 
 """
-Instantiate a Jaguar vector store
+实例化一个 Jaguar 向量存储
 """
-### Jaguar HTTP endpoint
+### Jaguar HTTP 端点
 url = "http://192.168.5.88:8080/fwww/"
 
-### Use OpenAI embedding model
+### 使用 OpenAI 嵌入模型
 embeddings = OpenAIEmbeddings()
 
-### Pod is a database for vectors
+### Pod 是向量的数据库
 pod = "vdb"
 
-### Vector store name
+### 向量存储名称
 store = "langchain_rag_store"
 
-### Vector index name
+### 向量索引名称
 vector_index = "v"
 
-### Type of the vector index
-# cosine: distance metric
-# fraction: embedding vectors are decimal numbers
-# float: values stored with floating-point numbers
+### 向量索引的类型
+# cosine: 距离度量
+# fraction: 嵌入向量为十进制数
+# float: 以浮点数存储的值
 vector_type = "cosine_fraction_float"
 
-### Dimension of each embedding vector
+### 每个嵌入向量的维度
 vector_dimension = 1536
 
-### Instantiate a Jaguar store object
+### 实例化一个 Jaguar 存储对象
 vectorstore = Jaguar(
     pod, store, vector_index, vector_type, vector_dimension, url, embeddings
 )
 
 """
-Login must be performed to authorize the client.
-The environment variable JAGUAR_API_KEY or file $HOME/.jagrc
-should contain the API key for accessing JaguarDB servers.
+必须执行登录以授权客户端。
+环境变量 JAGUAR_API_KEY 或文件 $HOME/.jagrc
+应包含访问 JaguarDB 服务器的 API 密钥。
 """
 vectorstore.login()
 
 
 """
-Create vector store on the JaguarDB database server.
-This should be done only once.
+在 JaguarDB 数据库服务器上创建向量存储。
+这应该只做一次。
 """
-# Extra metadata fields for the vector store
+# 向量存储的额外元数据字段
 metadata = "category char(16)"
 
-# Number of characters for the text field of the store
+# 存储文本字段的字符数
 text_size = 4096
 
-#  Create a vector store on the server
+#  在服务器上创建一个向量存储
 vectorstore.create(metadata, text_size)
 
 """
-Add the texts from the text splitter to our vectorstore
+将文本分割器中的文本添加到我们的向量存储中
 """
 vectorstore.add_documents(docs)
-# or tag the documents:
+# 或标记文档：
 # vectorstore.add_documents(more_docs, text_tag="tags to these documents")
 
-""" Get the retriever object """
+""" 获取检索器对象 """
 retriever = vectorstore.as_retriever()
 # retriever = vectorstore.as_retriever(search_kwargs={"where": "m1='123' and m2='abc'"})
 
-template = """You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.
-Question: {question}
-Context: {context}
-Answer:
+template = """你是一个问答任务的助手。使用以下检索到的上下文片段来回答问题。如果你不知道答案，请直接说你不知道。最多使用三句话，保持回答简洁。
+问题: {question}
+上下文: {context}
+答案:
 """
 prompt = ChatPromptTemplate.from_template(template)
 
-""" Obtain a Large Language Model """
+""" 获取大型语言模型 """
 LLM = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
 
-""" Create a chain for the RAG flow """
+""" 为 RAG 流创建一个链 """
 rag_chain = (
     {"context": retriever, "question": RunnablePassthrough()}
     | prompt
@@ -136,13 +140,13 @@ rag_chain = (
     | StrOutputParser()
 )
 
-resp = rag_chain.invoke("What did the president say about Justice Breyer?")
+resp = rag_chain.invoke("总统关于布雷耶法官说了什么？")
 print(resp)
 ```
 
-## Interaction With Jaguar Vector Store
+## 与 Jaguar 向量存储的交互
 
-Users can interact directly with the Jaguar vector store for similarity search and anomaly detection.
+用户可以直接与 Jaguar 向量存储进行相似性搜索和异常检测。
 
 
 
@@ -221,8 +225,7 @@ vectorstore.drop()
 vectorstore.logout()
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

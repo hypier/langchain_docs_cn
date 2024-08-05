@@ -1,81 +1,78 @@
 ---
 sidebar_position: 0
-sidebar_label: Overview
+sidebar_label: 概述
 ---
 
-# LangChain over time
+# LangChain 随时间变化
 
-## What’s new in LangChain?
+## LangChain 中的新特性
 
-The following features have been added during the development of 0.1.x:
+在 0.1.x 的开发过程中添加了以下功能：
 
-- Better streaming support via the [Event Streaming API](https://python.langchain.com/docs/expression_language/streaming/#using-stream-events).
-- [Standardized tool calling support](https://blog.langchain.dev/tool-calling-with-langchain/)
-- A standardized interface for [structuring output](https://github.com/langchain-ai/langchain/discussions/18154)
-- [@chain decorator](https://python.langchain.com/docs/expression_language/how_to/decorator/) to more easily create **RunnableLambdas**
+- 通过 [Event Streaming API](https://python.langchain.com/docs/expression_language/streaming/#using-stream-events) 提供更好的流支持。
+- [标准化工具调用支持](https://blog.langchain.dev/tool-calling-with-langchain/)
+- 一个标准化接口用于 [结构化输出](https://github.com/langchain-ai/langchain/discussions/18154)
+- [@chain 装饰器](https://python.langchain.com/docs/expression_language/how_to/decorator/) 使创建 **RunnableLambdas** 更加简单
 - https://python.langchain.com/docs/expression_language/how_to/inspect/
-- In Python, better async support for many core abstractions (thank you [@cbornet](https://github.com/cbornet)!!)
-- Include response metadata in `AIMessage` to make it easy to access raw output from the underlying models
-- Tooling to visualize [your runnables](https://python.langchain.com/docs/expression_language/how_to/inspect/) or [your langgraph app](https://github.com/langchain-ai/langgraph/blob/main/examples/visualization.ipynb)
-- Interoperability of chat message histories across most providers
-- [Over 20+ partner packages in python](https://python.langchain.com/docs/integrations/platforms/) for popular integrations
+- 在 Python 中，对许多核心抽象提供更好的异步支持（感谢 [@cbornet](https://github.com/cbornet)!!)
+- 在 `AIMessage` 中包含响应元数据，以便轻松访问底层模型的原始输出
+- 工具可视化 [您的可运行项](https://python.langchain.com/docs/expression_language/how_to/inspect/) 或 [您的 langgraph 应用](https://github.com/langchain-ai/langgraph/blob/main/examples/visualization.ipynb)
+- 大多数提供商之间聊天消息历史的互操作性
+- 针对流行集成的 [20+ 个合作伙伴包](https://python.langchain.com/docs/integrations/platforms/)
 
+## LangChain 将迎来哪些新功能？
 
-## What’s coming to LangChain?
+- 我们一直在努力开发 [langgraph](https://langchain-ai.github.io/langgraph/)。我们将会在此基础上构建更多功能，并专注于使其成为代理架构的首选框架。
+- Vectorstores V2！我们将重新审视我们的 vectorstores 抽象，以帮助提高可用性和可靠性。
+- 更好的文档和版本化文档！
+- 我们计划在七月至九月之间发布一个重大版本（0.3.0），以 [升级到对 Pydantic 2 的全面支持](https://github.com/langchain-ai/langchain/discussions/19339)，并将停止对 Pydantic 1 的支持（包括源自 Pydantic 2 的 `v1` 命名空间的对象）。
 
-- We’ve been working hard on [langgraph](https://langchain-ai.github.io/langgraph/). We will be building more capabilities on top of it and focusing on making it the go-to framework for agent architectures.
-- Vectorstores V2! We’ll be revisiting our vectorstores abstractions to help improve usability and reliability.
-- Better documentation and versioned docs!
-- We’re planning a breaking release (0.3.0) sometime between July-September to [upgrade to full support of Pydantic 2](https://github.com/langchain-ai/langchain/discussions/19339), and will drop support for Pydantic 1 (including objects originating from the `v1` namespace of Pydantic 2).
+## 有什么变化？
 
-## What changed?
+由于快速发展的领域，LangChain 也快速发展。
 
-Due to the rapidly evolving field, LangChain has also evolved rapidly.
-
-This document serves to outline at a high level what has changed and why.
+本文档旨在高层次概述发生了什么变化以及原因。
 
 ### TLDR
 
-**As of 0.2.0:**
+**截至 0.2.0：**
 
-- This release completes the work that we started with release 0.1.0 by removing the dependency of `langchain` on `langchain-community`.
-- `langchain` package no longer requires `langchain-community` . Instead `langchain-community` will now depend on `langchain-core` and `langchain` .
-- User code that still relies on deprecated imports from `langchain` will continue to work as long `langchain_community` is installed. These imports will start raising errors in release 0.4.x.
+- 此版本完成了我们在 0.1.0 版本中开始的工作，通过移除 `langchain` 对 `langchain-community` 的依赖。
+- `langchain` 包不再需要 `langchain-community`。相反，`langchain-community` 现在将依赖于 `langchain-core` 和 `langchain`。
+- 仍然依赖于 `langchain` 中已弃用导入的用户代码，只要安装了 `langchain_community`，就会继续工作。这些导入将在 0.4.x 版本中开始引发错误。
 
-**As of 0.1.0:**
+**截至 0.1.0：**
 
-- `langchain` was split into the following component packages: `langchain-core`, `langchain`, `langchain-community`, `langchain-[partner]` to improve the usability of langchain code in production settings. You can read more about it on our [blog](https://blog.langchain.dev/langchain-v0-1-0/).
+- `langchain` 被拆分为以下组件包：`langchain-core`、`langchain`、`langchain-community`、`langchain-[partner]`，以提高 langchain 代码在生产环境中的可用性。您可以在我们的 [博客](https://blog.langchain.dev/langchain-v0-1-0/) 上阅读更多信息。
 
-### Ecosystem organization
+### 生态系统组织
 
-By the release of 0.1.0, LangChain had grown to a large ecosystem with many integrations and a large community.
+到0.1.0版本发布时，LangChain已经发展成为一个拥有众多集成和庞大社区的大型生态系统。
 
-To improve the usability of LangChain in production, we split the single `langchain` package into multiple packages. This allowed us to create a good foundation architecture for the LangChain ecosystem and improve the usability of `langchain` in production.
+为了提高LangChain在生产环境中的可用性，我们将单一的`langchain`包拆分为多个包。这使我们能够为LangChain生态系统创建良好的基础架构，并改善`langchain`在生产中的可用性。
 
-Here is the high level break down of the Eco-system:
+以下是生态系统的高层次划分：
 
-- **langchain-core**:  contains core abstractions involving LangChain Runnables, tooling for observability, and base implementations of important abstractions (e.g., Chat Models).
-- **langchain:** contains generic code that is built using interfaces defined in `langchain-core`. This package is for code that generalizes well across different implementations of specific interfaces. For example, `create_tool_calling_agent` works across chat models that support [tool calling capabilities](https://blog.langchain.dev/tool-calling-with-langchain/).
-- **langchain-community**: community maintained 3rd party integrations. Contains integrations based on interfaces defined in **langchain-core**. Maintained by the LangChain community.
-- **Partner Packages (e.g., langchain-[partner])**: Partner packages are packages dedicated to especially popular integrations (e.g., `langchain-openai`, `langchain-anthropic` etc.). The dedicated packages generally benefit from better reliability and support.
-- `langgraph`: Build robust and stateful multi-actor applications with LLMs by modeling steps as edges and nodes in a graph.
-- `langserve`: Deploy LangChain chains as REST APIs.
+- **langchain-core**: 包含与LangChain Runnables相关的核心抽象、可观察性工具和重要抽象（例如，聊天模型）的基本实现。
+- **langchain**: 包含使用`langchain-core`中定义的接口构建的通用代码。该包适用于在不同具体接口实现中具有良好通用性的代码。例如，`create_tool_calling_agent`可以在支持[工具调用能力](https://blog.langchain.dev/tool-calling-with-langchain/)的聊天模型中工作。
+- **langchain-community**: 社区维护的第三方集成。包含基于**langchain-core**中定义的接口的集成。由LangChain社区维护。
+- **合作伙伴包（例如，langchain-[partner]）**: 合作伙伴包专门用于特别流行的集成（例如，`langchain-openai`、`langchain-anthropic`等）。专用包通常受益于更好的可靠性和支持。
+- `langgraph`: 通过将步骤建模为图中的边和节点，构建健壮的有状态多参与者应用程序。
+- `langserve`: 将LangChain链部署为REST API。
 
+在0.1.0版本中，`langchain-community`作为`langchain`的必要依赖项被保留。
 
-In the 0.1.0 release, `langchain-community` was retained as required a dependency of `langchain`.
+这使得向`langchain`的向量存储、聊天模型和其他集成的导入能够继续工作，而无需强迫用户更新所有导入到`langchain-community`。
 
-This allowed imports of vectorstores, chat models, and other integrations to continue working through `langchain`
-rather than forcing users to update all of their imports to `langchain-community`.
+在0.2.0版本中，我们将移除`langchain`对`langchain-community`的依赖。这是我们自0.1版本以来一直计划做的事情，因为我们相信这是正确的包架构。
 
-For the 0.2.0 release, we’re removing the dependency of `langchain` on `langchain-community`. This is something we’ve been planning to do since the 0.1 release because we believe this is the right package architecture.
+只要安装了`langchain-community`，旧的导入将继续有效。这些导入将在0.4.0版本中移除。
 
-Old imports will continue to work as long as `langchain-community` is installed. These imports will be removed in the 0.4.0 release.
+要理解我们为什么认为打破`langchain`对`langchain-community`的依赖是最好的，我们需要了解每个包的目的。
 
-To understand why we think breaking the dependency of `langchain` on `langchain-community` is best we should understand what each package is meant to do.
+`langchain`旨在包含高层次的链和代理架构。这些逻辑应在`ChatModel`和`Retriever`等抽象层面上指定，而不应特定于任何一个集成。这有两个主要好处：
 
-`langchain` is meant to contain high-level chains and agent architectures. The logic in these should be specified at the level of abstractions like `ChatModel` and `Retriever`, and should not be specific to any one integration. This has two main benefits:
-
-1. `langchain` is fairly lightweight. Here is the full list of required dependencies (after the split)
+1. `langchain`相对轻量。以下是所需依赖项的完整列表（拆分后）
 
     ```toml
     python = ">=3.8.1,<4.0"
@@ -92,12 +89,12 @@ To understand why we think breaking the dependency of `langchain` on `langchain-
     jsonpatch = "^1.33"
     ```
 
-2. `langchain` chains/agents are largely integration-agnostic, which makes it easy to experiment with different integrations and future-proofs your code should there be issues with one specific integration.
+2. `langchain`链/代理在很大程度上与集成无关，这使得尝试不同集成变得容易，并且在某个特定集成出现问题时可以保障代码的未来兼容性。
 
-There is also a third less tangible benefit which is that being integration-agnostic forces us to find only those very generic abstractions and architectures which generalize well across integrations. Given how general the abilities of the foundational tech are, and how quickly the space is moving, having generic architectures is a good way of future-proofing your applications.
+还有第三个不太具体的好处，即与集成无关迫使我们找到那些在集成间良好通用的非常通用的抽象和架构。考虑到基础技术的能力是多么通用，以及这个领域发展得多么迅速，拥有通用架构是保障应用程序未来兼容性的好方法。
 
-`langchain-community` is intended to have all integration-specific components that are not yet being maintained in separate `langchain-{partner}` packages. Today this is still the majority of integrations and a lot of code. This code is primarily contributed by the community, while `langchain` is largely written by core maintainers. All of these integrations use optional dependencies and conditional imports, which prevents dependency bloat and conflicts but means compatible dependency versions are not made explicit. Given the volume of integrations in `langchain-community` and the speed at which integrations change, it’s very hard to follow semver versioning, and we currently don’t.
+`langchain-community`旨在包含尚未在单独的`langchain-{partner}`包中维护的所有特定于集成的组件。今天，这仍然是大多数集成和大量代码。这些代码主要由社区贡献，而`langchain`则主要由核心维护者编写。所有这些集成都使用可选依赖项和条件导入，这防止了依赖膨胀和冲突，但意味着兼容的依赖版本没有明确说明。鉴于`langchain-community`中的集成数量以及集成变化的速度，遵循语义版本控制非常困难，而我们目前并没有做到。
 
-All of which is to say that there’s no large benefits to `langchain` depending on `langchain-community` and some obvious downsides: the functionality in `langchain` should be integration agnostic anyways, `langchain-community` can’t be properly versioned, and depending on `langchain-community` increases the [vulnerability surface](https://github.com/langchain-ai/langchain/discussions/19083) of `langchain`.
+所有这些意味着`langchain`依赖于`langchain-community`没有大的好处，而且有一些明显的缺点：`langchain`中的功能应该与集成无关，`langchain-community`无法正确版本化，而依赖于`langchain-community`增加了`langchain`的[脆弱性表面](https://github.com/langchain-ai/langchain/discussions/19083)。
 
-For more context about the reason for the organization please see our blog: https://blog.langchain.dev/langchain-v0-1-0/
+有关组织原因的更多背景信息，请参阅我们的博客：https://blog.langchain.dev/langchain-v0-1-0/

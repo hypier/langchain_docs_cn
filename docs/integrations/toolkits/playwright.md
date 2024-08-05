@@ -1,19 +1,20 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/toolkits/playwright.ipynb
 ---
-# PlayWright Browser
 
-This toolkit is used to interact with the browser. While other tools (like the `Requests` tools) are fine for static sites, `PlayWright Browser` toolkits let your agent navigate the web and interact with dynamically rendered sites. 
+# PlayWright 浏览器
 
-Some tools bundled within the `PlayWright Browser` toolkit include:
+此工具包用于与浏览器进行交互。虽然其他工具（如 `Requests` 工具）适合静态网站，但 `PlayWright 浏览器` 工具包允许您的代理浏览网页并与动态渲染的网站互动。
 
-- `NavigateTool` (navigate_browser) - navigate to a URL
-- `NavigateBackTool` (previous_page) - wait for an element to appear
-- `ClickTool` (click_element) - click on an element (specified by selector)
-- `ExtractTextTool` (extract_text) - use beautiful soup to extract text from the current web page
-- `ExtractHyperlinksTool` (extract_hyperlinks) - use beautiful soup to extract hyperlinks from the current web page
-- `GetElementsTool` (get_elements) - select elements by CSS selector
-- `CurrentPageTool` (current_page) - get the current page URL
+`PlayWright 浏览器` 工具包中包含的一些工具包括：
+
+- `NavigateTool` (navigate_browser) - 导航到一个 URL
+- `NavigateBackTool` (previous_page) - 等待一个元素出现
+- `ClickTool` (click_element) - 点击一个元素（由选择器指定）
+- `ExtractTextTool` (extract_text) - 使用 Beautiful Soup 从当前网页提取文本
+- `ExtractHyperlinksTool` (extract_hyperlinks) - 使用 Beautiful Soup 从当前网页提取超链接
+- `GetElementsTool` (get_elements) - 通过 CSS 选择器选择元素
+- `CurrentPageTool` (current_page) - 获取当前页面 URL
 
 
 
@@ -21,8 +22,8 @@ Some tools bundled within the `PlayWright Browser` toolkit include:
 %pip install --upgrade --quiet  playwright > /dev/null
 %pip install --upgrade --quiet  lxml
 
-# If this is your first time using playwright, you'll have to install a browser executable.
-# Running `playwright install` by default installs a chromium browser executable.
+# 如果这是您第一次使用 playwright，您需要安装浏览器可执行文件。
+# 运行 `playwright install` 默认会安装一个 chromium 浏览器可执行文件。
 # playwright install
 ```
 
@@ -31,27 +32,26 @@ Some tools bundled within the `PlayWright Browser` toolkit include:
 from langchain_community.agent_toolkits import PlayWrightBrowserToolkit
 ```
 
-Async function to create context and launch browser:
+异步函数以创建上下文并启动浏览器：
 
 
 ```python
 from langchain_community.tools.playwright.utils import (
-    create_async_playwright_browser,  # A synchronous browser is available, though it isn't compatible with jupyter.\n",	  },
+    create_async_playwright_browser,  # 虽然有一个同步浏览器可用，但它与 jupyter 不兼容。\n",	  },
 )
 ```
 
 
 ```python
-# This import is required only for jupyter notebooks, since they have their own eventloop
+# 此导入仅在 jupyter 笔记本中需要，因为它们有自己的事件循环
 import nest_asyncio
 
 nest_asyncio.apply()
 ```
 
-## Instantiating a Browser Toolkit
+## 实例化浏览器工具包
 
-It's always recommended to instantiate using the `from_browser` method so that the 
-
+建议始终使用 `from_browser` 方法进行实例化，以便 
 
 ```python
 async_browser = create_async_playwright_browser()
@@ -60,26 +60,11 @@ tools = toolkit.get_tools()
 tools
 ```
 
-
-
-```output
-[ClickTool(name='click_element', description='Click on an element with the given CSS selector', args_schema=<class 'langchain_community.tools.playwright.click.ClickToolInput'>, return_direct=False, verbose=False, callbacks=None, callback_manager=None, sync_browser=None, async_browser=<Browser type=<BrowserType name=chromium executable_path=/Users/wfh/Library/Caches/ms-playwright/chromium-1055/chrome-mac/Chromium.app/Contents/MacOS/Chromium> version=112.0.5615.29>),
- NavigateTool(name='navigate_browser', description='Navigate a browser to the specified URL', args_schema=<class 'langchain_community.tools.playwright.navigate.NavigateToolInput'>, return_direct=False, verbose=False, callbacks=None, callback_manager=None, sync_browser=None, async_browser=<Browser type=<BrowserType name=chromium executable_path=/Users/wfh/Library/Caches/ms-playwright/chromium-1055/chrome-mac/Chromium.app/Contents/MacOS/Chromium> version=112.0.5615.29>),
- NavigateBackTool(name='previous_webpage', description='Navigate back to the previous page in the browser history', args_schema=<class 'pydantic.main.BaseModel'>, return_direct=False, verbose=False, callbacks=None, callback_manager=None, sync_browser=None, async_browser=<Browser type=<BrowserType name=chromium executable_path=/Users/wfh/Library/Caches/ms-playwright/chromium-1055/chrome-mac/Chromium.app/Contents/MacOS/Chromium> version=112.0.5615.29>),
- ExtractTextTool(name='extract_text', description='Extract all the text on the current webpage', args_schema=<class 'pydantic.main.BaseModel'>, return_direct=False, verbose=False, callbacks=None, callback_manager=None, sync_browser=None, async_browser=<Browser type=<BrowserType name=chromium executable_path=/Users/wfh/Library/Caches/ms-playwright/chromium-1055/chrome-mac/Chromium.app/Contents/MacOS/Chromium> version=112.0.5615.29>),
- ExtractHyperlinksTool(name='extract_hyperlinks', description='Extract all hyperlinks on the current webpage', args_schema=<class 'langchain_community.tools.playwright.extract_hyperlinks.ExtractHyperlinksToolInput'>, return_direct=False, verbose=False, callbacks=None, callback_manager=None, sync_browser=None, async_browser=<Browser type=<BrowserType name=chromium executable_path=/Users/wfh/Library/Caches/ms-playwright/chromium-1055/chrome-mac/Chromium.app/Contents/MacOS/Chromium> version=112.0.5615.29>),
- GetElementsTool(name='get_elements', description='Retrieve elements in the current web page matching the given CSS selector', args_schema=<class 'langchain_community.tools.playwright.get_elements.GetElementsToolInput'>, return_direct=False, verbose=False, callbacks=None, callback_manager=None, sync_browser=None, async_browser=<Browser type=<BrowserType name=chromium executable_path=/Users/wfh/Library/Caches/ms-playwright/chromium-1055/chrome-mac/Chromium.app/Contents/MacOS/Chromium> version=112.0.5615.29>),
- CurrentWebPageTool(name='current_webpage', description='Returns the URL of the current page', args_schema=<class 'pydantic.main.BaseModel'>, return_direct=False, verbose=False, callbacks=None, callback_manager=None, sync_browser=None, async_browser=<Browser type=<BrowserType name=chromium executable_path=/Users/wfh/Library/Caches/ms-playwright/chromium-1055/chrome-mac/Chromium.app/Contents/MacOS/Chromium> version=112.0.5615.29>)]
-```
-
-
-
 ```python
 tools_by_name = {tool.name: tool for tool in tools}
 navigate_tool = tools_by_name["navigate_browser"]
 get_elements_tool = tools_by_name["get_elements"]
 ```
-
 
 ```python
 await navigate_tool.arun(
@@ -87,51 +72,36 @@ await navigate_tool.arun(
 )
 ```
 
-
-
 ```output
 'Navigating to https://web.archive.org/web/20230428131116/https://www.cnn.com/world returned status code 200'
 ```
 
-
-
 ```python
-# The browser is shared across tools, so the agent can interact in a stateful manner
+# 浏览器在工具之间共享，因此代理可以以状态化的方式进行交互
 await get_elements_tool.arun(
     {"selector": ".container__headline", "attributes": ["innerText"]}
 )
 ```
 
-
-
-```output
-'[{"innerText": "These Ukrainian veterinarians are risking their lives to care for dogs and cats in the war zone"}, {"innerText": "Life in the ocean\\u2019s \\u2018twilight zone\\u2019 could disappear due to the climate crisis"}, {"innerText": "Clashes renew in West Darfur as food and water shortages worsen in Sudan violence"}, {"innerText": "Thai policeman\\u2019s wife investigated over alleged murder and a dozen other poison cases"}, {"innerText": "American teacher escaped Sudan on French evacuation plane, with no help offered back home"}, {"innerText": "Dubai\\u2019s emerging hip-hop scene is finding its voice"}, {"innerText": "How an underwater film inspired a marine protected area off Kenya\\u2019s coast"}, {"innerText": "The Iranian drones deployed by Russia in Ukraine are powered by stolen Western technology, research reveals"}, {"innerText": "India says border violations erode \\u2018entire basis\\u2019 of ties with China"}, {"innerText": "Australian police sift through 3,000 tons of trash for missing woman\\u2019s remains"}, {"innerText": "As US and Philippine defense ties grow, China warns over Taiwan tensions"}, {"innerText": "Don McLean offers duet with South Korean president who sang \\u2018American Pie\\u2019 to Biden"}, {"innerText": "Almost two-thirds of elephant habitat lost across Asia, study finds"}, {"innerText": "\\u2018We don\\u2019t sleep \\u2026 I would call it fainting\\u2019: Working as a doctor in Sudan\\u2019s crisis"}, {"innerText": "Kenya arrests second pastor to face criminal charges \\u2018related to mass killing of his followers\\u2019"}, {"innerText": "Russia launches deadly wave of strikes across Ukraine"}, {"innerText": "Woman forced to leave her forever home or \\u2018walk to your death\\u2019 she says"}, {"innerText": "U.S. House Speaker Kevin McCarthy weighs in on Disney-DeSantis feud"}, {"innerText": "Two sides agree to extend Sudan ceasefire"}, {"innerText": "Spanish Leopard 2 tanks are on their way to Ukraine, defense minister confirms"}, {"innerText": "Flamb\\u00e9ed pizza thought to have sparked deadly Madrid restaurant fire"}, {"innerText": "Another bomb found in Belgorod just days after Russia accidentally struck the city"}, {"innerText": "A Black teen\\u2019s murder sparked a crisis over racism in British policing. Thirty years on, little has changed"}, {"innerText": "Belgium destroys shipment of American beer after taking issue with \\u2018Champagne of Beer\\u2019 slogan"}, {"innerText": "UK Prime Minister Rishi Sunak rocked by resignation of top ally Raab over bullying allegations"}, {"innerText": "Iran\\u2019s Navy seizes Marshall Islands-flagged ship"}, {"innerText": "A divided Israel stands at a perilous crossroads on its 75th birthday"}, {"innerText": "Palestinian reporter breaks barriers by reporting in Hebrew on Israeli TV"}, {"innerText": "One-fifth of water pollution comes from textile dyes. But a shellfish-inspired solution could clean it up"}, {"innerText": "\\u2018People sacrificed their lives for just\\u00a010 dollars\\u2019: At least 78 killed in Yemen crowd surge"}, {"innerText": "Israeli police say two men shot near Jewish tomb in Jerusalem in suspected \\u2018terror attack\\u2019"}, {"innerText": "King Charles III\\u2019s coronation: Who\\u2019s performing at the ceremony"}, {"innerText": "The week in 33 photos"}, {"innerText": "Hong Kong\\u2019s endangered turtles"}, {"innerText": "In pictures: Britain\\u2019s Queen Camilla"}, {"innerText": "Catastrophic drought that\\u2019s pushed millions into crisis made 100 times more likely by climate change, analysis finds"}, {"innerText": "For years, a UK mining giant was untouchable in Zambia for pollution until a former miner\\u2019s son took them on"}, {"innerText": "Former Sudanese minister Ahmed Haroun wanted on war crimes charges freed from Khartoum prison"}, {"innerText": "WHO warns of \\u2018biological risk\\u2019 after Sudan fighters seize lab, as violence mars US-brokered ceasefire"}, {"innerText": "How Colombia\\u2019s Petro, a former leftwing guerrilla, found his opening in Washington"}, {"innerText": "Bolsonaro accidentally created Facebook post questioning Brazil election results, say his attorneys"}, {"innerText": "Crowd kills over a dozen suspected gang members in Haiti"}, {"innerText": "Thousands of tequila bottles containing liquid meth seized"}, {"innerText": "Why send a US stealth submarine to South Korea \\u2013 and tell the world about it?"}, {"innerText": "Fukushima\\u2019s fishing industry survived a nuclear disaster. 12 years on, it fears Tokyo\\u2019s next move may finish it off"}, {"innerText": "Singapore executes man for trafficking two pounds of cannabis"}, {"innerText": "Conservative Thai party looks to woo voters with promise to legalize sex toys"}, {"innerText": "Inside the Italian village being repopulated by Americans"}, {"innerText": "Strikes, soaring airfares and yo-yoing hotel fees: A traveler\\u2019s guide to the coronation"}, {"innerText": "A year in Azerbaijan: From spring\\u2019s Grand Prix to winter ski adventures"}, {"innerText": "The bicycle mayor peddling a two-wheeled revolution in Cape Town"}, {"innerText": "Tokyo ramen shop bans customers from using their phones while eating"}, {"innerText": "South African opera star will perform at coronation of King Charles III"}, {"innerText": "Luxury loot under the hammer: France auctions goods seized from drug dealers"}, {"innerText": "Judy Blume\\u2019s books were formative for generations of readers. Here\\u2019s why they endure"}, {"innerText": "Craft, salvage and sustainability take center stage at Milan Design Week"}, {"innerText": "Life-sized chocolate King Charles III sculpture unveiled to celebrate coronation"}, {"innerText": "Severe storms to strike the South again as millions in Texas could see damaging winds and hail"}, {"innerText": "The South is in the crosshairs of severe weather again, as the multi-day threat of large hail and tornadoes continues"}, {"innerText": "Spring snowmelt has cities along the Mississippi bracing for flooding in homes and businesses"}, {"innerText": "Know the difference between a tornado watch, a tornado warning and a tornado emergency"}, {"innerText": "Reporter spotted familiar face covering Sudan evacuation. See what happened next"}, {"innerText": "This country will soon become the world\\u2019s most populated"}, {"innerText": "April 27, 2023 - Russia-Ukraine news"}, {"innerText": "\\u2018Often they shoot at each other\\u2019: Ukrainian drone operator details chaos in Russian ranks"}, {"innerText": "Hear from family members of Americans stuck in Sudan frustrated with US response"}, {"innerText": "U.S. talk show host Jerry Springer dies at 79"}, {"innerText": "Bureaucracy stalling at least one family\\u2019s evacuation from Sudan"}, {"innerText": "Girl to get life-saving treatment for rare immune disease"}, {"innerText": "Haiti\\u2019s crime rate more than doubles in a year"}, {"innerText": "Ocean census aims to discover 100,000 previously unknown marine species"}, {"innerText": "Wall Street Journal editor discusses reporter\\u2019s arrest in Moscow"}, {"innerText": "Can Tunisia\\u2019s democracy be saved?"}, {"innerText": "Yasmeen Lari, \\u2018starchitect\\u2019 turned social engineer, wins one of architecture\\u2019s most coveted prizes"}, {"innerText": "A massive, newly restored Frank Lloyd Wright mansion is up for sale"}, {"innerText": "Are these the most sustainable architectural projects in the world?"}, {"innerText": "Step inside a $72 million London townhouse in a converted army barracks"}, {"innerText": "A 3D-printing company is preparing to build on the lunar surface. But first, a moonshot at home"}, {"innerText": "Simona Halep says \\u2018the stress is huge\\u2019 as she battles to return to tennis following positive drug test"}, {"innerText": "Barcelona reaches third straight Women\\u2019s Champions League final with draw against Chelsea"}, {"innerText": "Wrexham: An intoxicating tale of Hollywood glamor and sporting romance"}, {"innerText": "Shohei Ohtani comes within inches of making yet more MLB history in Angels win"}, {"innerText": "This CNN Hero is recruiting recreational divers to help rebuild reefs in Florida one coral at a time"}, {"innerText": "This CNN Hero offers judgment-free veterinary care for the pets of those experiencing homelessness"}, {"innerText": "Don\\u2019t give up on milestones: A CNN Hero\\u2019s message for Autism Awareness Month"}, {"innerText": "CNN Hero of the Year Nelly Cheboi returned to Kenya with plans to lift more students out of poverty"}]'
-```
-
-
-
 ```python
-# If the agent wants to remember the current webpage, it can use the `current_webpage` tool
+# 如果代理想要记住当前网页，可以使用 `current_webpage` 工具
 await tools_by_name["current_webpage"].arun({})
 ```
-
-
 
 ```output
 'https://web.archive.org/web/20230428133211/https://cnn.com/world'
 ```
 
+## 在代理中使用
 
-## Use within an Agent
-
-Several of the browser tools are `StructuredTool`'s, meaning they expect multiple arguments. These aren't compatible (out of the box) with agents older than the `STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION`
+多个浏览器工具是 `StructuredTool`，这意味着它们期望多个参数。这些工具与早于 `STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION` 的代理不兼容（开箱即用）
 
 
 ```python
 from langchain.agents import AgentType, initialize_agent
 from langchain_anthropic import ChatAnthropic
 
-llm = ChatAnthropic(temperature=0)  # or any other LLM, e.g., ChatOpenAI(), OpenAI()
+llm = ChatAnthropic(temperature=0)  # 或其他任何 LLM，例如 ChatOpenAI()，OpenAI()
 
 agent_chain = initialize_agent(
     tools,
@@ -143,7 +113,7 @@ agent_chain = initialize_agent(
 
 
 ```python
-result = await agent_chain.arun("What are the headers on langchain.com?")
+result = await agent_chain.arun("langchain.com 上的标题是什么？")
 print(result)
 ```
 ```output
@@ -196,21 +166,21 @@ Action:
 Observation: [33;1m[1;3mNavigating to https://langchain.com/ returned status code 200[0m
 Thought:
 [1m> Finished chain.[0m
-The headers on langchain.com are:
+langchain.com 上的标题是：
 
-h1: Langchain - Decentralized Translation Protocol 
-h2: A protocol for decentralized translation 
-h3: How it works
-h3: The Problem
-h3: The Solution
-h3: Key Features
-h3: Roadmap
-h3: Team
-h3: Advisors
-h3: Partners
-h3: FAQ
-h3: Contact Us
-h3: Subscribe for updates
-h3: Follow us on social media 
-h3: Langchain Foundation Ltd. All rights reserved.
+h1: Langchain - 去中心化翻译协议 
+h2: 去中心化翻译协议 
+h3: 工作原理
+h3: 问题
+h3: 解决方案
+h3: 主要特性
+h3: 路线图
+h3: 团队
+h3: 顾问
+h3: 合作伙伴
+h3: 常见问题
+h3: 联系我们
+h3: 订阅更新
+h3: 在社交媒体上关注我们 
+h3: Langchain Foundation Ltd. 版权所有。
 ```

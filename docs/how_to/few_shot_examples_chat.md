@@ -2,35 +2,36 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/few_shot_examples_chat.ipynb
 sidebar_position: 2
 ---
-# How to use few shot examples in chat models
 
-:::info Prerequisites
+# 如何在聊天模型中使用少量示例
 
-This guide assumes familiarity with the following concepts:
-- [Prompt templates](/docs/concepts/#prompt-templates)
-- [Example selectors](/docs/concepts/#example-selectors)
-- [Chat models](/docs/concepts/#chat-model)
-- [Vectorstores](/docs/concepts/#vector-stores)
+:::info 前提条件
+
+本指南假设您熟悉以下概念：
+- [提示模板](/docs/concepts/#prompt-templates)
+- [示例选择器](/docs/concepts/#example-selectors)
+- [聊天模型](/docs/concepts/#chat-model)
+- [向量存储](/docs/concepts/#vector-stores)
 
 :::
 
-This guide covers how to prompt a chat model with example inputs and outputs. Providing the model with a few such examples is called few-shotting, and is a simple yet powerful way to guide generation and in some cases drastically improve model performance.
+本指南介绍如何通过示例输入和输出提示聊天模型。向模型提供少量此类示例称为少量示例提示（few-shotting），这是一种简单但强大的引导生成的方法，在某些情况下可以显著提高模型性能。
 
-There does not appear to be solid consensus on how best to do few-shot prompting, and the optimal prompt compilation will likely vary by model. Because of this, we provide few-shot prompt templates like the [FewShotChatMessagePromptTemplate](https://api.python.langchain.com/en/latest/prompts/langchain_core.prompts.few_shot.FewShotChatMessagePromptTemplate.html?highlight=fewshot#langchain_core.prompts.few_shot.FewShotChatMessagePromptTemplate) as a flexible starting point, and you can modify or replace them as you see fit.
+关于如何最佳地进行少量示例提示似乎没有明确的共识，最佳的提示编制可能因模型而异。因此，我们提供了像 [FewShotChatMessagePromptTemplate](https://api.python.langchain.com/en/latest/prompts/langchain_core.prompts.few_shot.FewShotChatMessagePromptTemplate.html?highlight=fewshot#langchain_core.prompts.few_shot.FewShotChatMessagePromptTemplate) 这样的少量示例提示模板作为灵活的起点，您可以根据需要进行修改或替换。
 
-The goal of few-shot prompt templates are to dynamically select examples based on an input, and then format the examples in a final prompt to provide for the model.
+少量示例提示模板的目标是根据输入动态选择示例，然后将示例格式化为最终提示以提供给模型。
 
-**Note:** The following code examples are for chat models only, since `FewShotChatMessagePromptTemplates` are designed to output formatted [chat messages](/docs/concepts/#message-types) rather than pure strings. For similar few-shot prompt examples for pure string templates compatible with completion models (LLMs), see the [few-shot prompt templates](/docs/how_to/few_shot_examples/) guide.
+**注意：** 以下代码示例仅适用于聊天模型，因为 `FewShotChatMessagePromptTemplates` 旨在输出格式化的 [聊天消息](/docs/concepts/#message-types)，而不是纯字符串。有关与完成模型（LLMs）兼容的纯字符串模板的类似少量示例提示，请参阅 [少量示例提示模板](/docs/how_to/few_shot_examples/) 指南。
 
-## Fixed Examples
+## 固定示例
 
-The most basic (and common) few-shot prompting technique is to use fixed prompt examples. This way you can select a chain, evaluate it, and avoid worrying about additional moving parts in production.
+最基本（也是最常见）的少量提示技术是使用固定的提示示例。这样，您可以选择一个链，评估它，并避免在生产中担心额外的可变部分。
 
-The basic components of the template are:
-- `examples`: A list of dictionary examples to include in the final prompt.
-- `example_prompt`: converts each example into 1 or more messages through its [`format_messages`](https://api.python.langchain.com/en/latest/prompts/langchain_core.prompts.chat.ChatPromptTemplate.html?highlight=format_messages#langchain_core.prompts.chat.ChatPromptTemplate.format_messages) method. A common example would be to convert each example into one human message and one AI message response, or a human message followed by a function call message.
+模板的基本组成部分是：
+- `examples`: 包含在最终提示中的字典示例列表。
+- `example_prompt`: 通过其 [`format_messages`](https://api.python.langchain.com/en/latest/prompts/langchain_core.prompts.chat.ChatPromptTemplate.html?highlight=format_messages#langchain_core.prompts.chat.ChatPromptTemplate.format_messages) 方法将每个示例转换为1个或多个消息。一个常见的示例是将每个示例转换为一个人类消息和一个AI消息响应，或者一个人类消息后跟一个函数调用消息。
 
-Below is a simple demonstration. First, define the examples you'd like to include. Let's give the LLM an unfamiliar mathematical operator, denoted by the "🦜" emoji:
+下面是一个简单的演示。首先，定义您想要包含的示例。我们给LLM一个不熟悉的数学运算符，用“🦜”表情符号表示：
 
 
 ```python
@@ -42,7 +43,7 @@ from getpass import getpass
 os.environ["OPENAI_API_KEY"] = getpass()
 ```
 
-If we try to ask the model what the result of this expression is, it will fail:
+如果我们尝试询问模型这个表达式的结果，它将失败：
 
 
 ```python
@@ -60,7 +61,7 @@ AIMessage(content='The expression "2 🦜 9" is not a standard mathematical oper
 ```
 
 
-Now let's see what happens if we give the LLM some examples to work with. We'll define some below:
+现在让我们看看如果给LLM一些示例会发生什么。我们将在下面定义一些：
 
 
 ```python
@@ -72,11 +73,11 @@ examples = [
 ]
 ```
 
-Next, assemble them into the few-shot prompt template.
+接下来，将它们组装成少量提示模板。
 
 
 ```python
-# This is a prompt template used to format each individual example.
+# 这是一个用于格式化每个单独示例的提示模板。
 example_prompt = ChatPromptTemplate.from_messages(
     [
         ("human", "{input}"),
@@ -93,7 +94,7 @@ print(few_shot_prompt.invoke({}).to_messages())
 ```output
 [HumanMessage(content='2 🦜 2'), AIMessage(content='4'), HumanMessage(content='2 🦜 3'), AIMessage(content='5')]
 ```
-Finally, we assemble the final prompt as shown below, passing `few_shot_prompt` directly into the `from_messages` factory method, and use it with a model:
+最后，我们将最终提示组装如下，将 `few_shot_prompt` 直接传递给 `from_messages` 工厂方法，并与模型一起使用：
 
 
 ```python
@@ -106,7 +107,7 @@ final_prompt = ChatPromptTemplate.from_messages(
 )
 ```
 
-And now let's ask the model the initial question and see how it does:
+现在让我们问模型最初的问题，看看它的表现如何：
 
 
 ```python
@@ -124,19 +125,18 @@ AIMessage(content='11', response_metadata={'token_usage': {'completion_tokens': 
 ```
 
 
-And we can see that the model has now inferred that the parrot emoji means addition from the given few-shot examples!
+我们可以看到，模型现在从给定的少量示例中推断出鹦鹉表情符号表示加法！
 
-## Dynamic few-shot prompting
+## 动态少样本提示
 
-Sometimes you may want to select only a few examples from your overall set to show based on the input. For this, you can replace the `examples` passed into `FewShotChatMessagePromptTemplate` with an `example_selector`. The other components remain the same as above! Our dynamic few-shot prompt template would look like:
+有时您可能希望根据输入仅选择整体集合中的少数示例进行展示。为此，您可以将传递到 `FewShotChatMessagePromptTemplate` 中的 `examples` 替换为 `example_selector`。其他组件与上述保持一致！我们的动态少样本提示模板如下所示：
 
-- `example_selector`: responsible for selecting few-shot examples (and the order in which they are returned) for a given input. These implement the [BaseExampleSelector](https://api.python.langchain.com/en/latest/example_selectors/langchain_core.example_selectors.base.BaseExampleSelector.html?highlight=baseexampleselector#langchain_core.example_selectors.base.BaseExampleSelector) interface. A common example is the vectorstore-backed [SemanticSimilarityExampleSelector](https://api.python.langchain.com/en/latest/example_selectors/langchain_core.example_selectors.semantic_similarity.SemanticSimilarityExampleSelector.html?highlight=semanticsimilarityexampleselector#langchain_core.example_selectors.semantic_similarity.SemanticSimilarityExampleSelector)
-- `example_prompt`: convert each example into 1 or more messages through its [`format_messages`](https://api.python.langchain.com/en/latest/prompts/langchain_core.prompts.chat.ChatPromptTemplate.html?highlight=chatprompttemplate#langchain_core.prompts.chat.ChatPromptTemplate.format_messages) method. A common example would be to convert each example into one human message and one AI message response, or a human message followed by a function call message.
+- `example_selector`：负责为给定输入选择少样本示例（以及返回顺序）。这些实现了 [BaseExampleSelector](https://api.python.langchain.com/en/latest/example_selectors/langchain_core.example_selectors.base.BaseExampleSelector.html?highlight=baseexampleselector#langchain_core.example_selectors.base.BaseExampleSelector) 接口。一个常见的例子是基于向量存储的 [SemanticSimilarityExampleSelector](https://api.python.langchain.com/en/latest/example_selectors/langchain_core.example_selectors.semantic_similarity.SemanticSimilarityExampleSelector.html?highlight=semanticsimilarityexampleselector#langchain_core.example_selectors.semantic_similarity.SemanticSimilarityExampleSelector)
+- `example_prompt`：通过其 [`format_messages`](https://api.python.langchain.com/en/latest/prompts/langchain_core.prompts.chat.ChatPromptTemplate.html?highlight=chatprompttemplate#langchain_core.prompts.chat.ChatPromptTemplate.format_messages) 方法将每个示例转换为 1 个或多个消息。一个常见的例子是将每个示例转换为一个人类消息和一个 AI 消息响应，或者一个人类消息后跟一个函数调用消息。
 
-These once again can be composed with other messages and chat templates to assemble your final prompt.
+这些可以再次与其他消息和聊天模板组合，以组装您的最终提示。
 
-Let's walk through an example with the `SemanticSimilarityExampleSelector`. Since this implementation uses a vectorstore to select examples based on semantic similarity, we will want to first populate the store. Since the basic idea here is that we want to search for and return examples most similar to the text input, we embed the `values` of our prompt examples rather than considering the keys:
-
+让我们通过 `SemanticSimilarityExampleSelector` 举个例子。由于此实现使用向量存储根据语义相似性选择示例，我们首先需要填充存储。由于这里的基本思想是我们希望搜索并返回与文本输入最相似的示例，因此我们嵌入我们的提示示例的 `values`，而不是考虑键：
 
 ```python
 from langchain_chroma import Chroma
@@ -159,10 +159,9 @@ embeddings = OpenAIEmbeddings()
 vectorstore = Chroma.from_texts(to_vectorize, embeddings, metadatas=examples)
 ```
 
-### Create the `example_selector`
+### 创建 `example_selector`
 
-With a vectorstore created, we can create the `example_selector`. Here we will call it in isolation, and set `k` on it to only fetch the two example closest to the input.
-
+在创建了 vectorstore 后，我们可以创建 `example_selector`。在这里我们将单独调用它，并将 `k` 设置为仅获取与输入最接近的两个示例。
 
 ```python
 example_selector = SemanticSimilarityExampleSelector(
@@ -170,34 +169,30 @@ example_selector = SemanticSimilarityExampleSelector(
     k=2,
 )
 
-# The prompt template will load examples by passing the input do the `select_examples` method
+# 提示模板将通过传递输入到 `select_examples` 方法加载示例
 example_selector.select_examples({"input": "horse"})
 ```
-
-
 
 ```output
 [{'input': 'What did the cow say to the moon?', 'output': 'nothing at all'},
  {'input': '2 🦜 4', 'output': '6'}]
 ```
 
+### 创建提示模板
 
-### Create prompt template
-
-We now assemble the prompt template, using the `example_selector` created above.
-
+我们现在组装提示模板，使用上面创建的 `example_selector`。
 
 ```python
 from langchain_core.prompts import ChatPromptTemplate, FewShotChatMessagePromptTemplate
 
-# Define the few-shot prompt.
+# 定义少量示例提示。
 few_shot_prompt = FewShotChatMessagePromptTemplate(
-    # The input variables select the values to pass to the example_selector
+    # 输入变量选择要传递给 example_selector 的值
     input_variables=["input"],
     example_selector=example_selector,
-    # Define how each example will be formatted.
-    # In this case, each example will become 2 messages:
-    # 1 human, and 1 AI
+    # 定义每个示例的格式。
+    # 在这种情况下，每个示例将变成 2 条消息：
+    # 1 条人类消息和 1 条 AI 消息
     example_prompt=ChatPromptTemplate.from_messages(
         [("human", "{input}"), ("ai", "{output}")]
     ),
@@ -208,8 +203,7 @@ print(few_shot_prompt.invoke(input="What's 3 🦜 3?").to_messages())
 ```output
 [HumanMessage(content='2 🦜 3'), AIMessage(content='5'), HumanMessage(content='2 🦜 4'), AIMessage(content='6')]
 ```
-And we can pass this few-shot chat message prompt template into another chat prompt template:
-
+我们可以将这个少量示例聊天消息提示模板传递给另一个聊天提示模板：
 
 ```python
 final_prompt = ChatPromptTemplate.from_messages(
@@ -225,10 +219,10 @@ print(few_shot_prompt.invoke(input="What's 3 🦜 3?"))
 ```output
 messages=[HumanMessage(content='2 🦜 3'), AIMessage(content='5'), HumanMessage(content='2 🦜 4'), AIMessage(content='6')]
 ```
-### Use with an chat model
 
-Finally, you can connect your model to the few-shot prompt.
+### 与聊天模型的使用
 
+最后，您可以将模型连接到少量示例提示。
 
 ```python
 chain = final_prompt | ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0.0)
@@ -242,9 +236,8 @@ chain.invoke({"input": "What's 3 🦜 3?"})
 AIMessage(content='6', response_metadata={'token_usage': {'completion_tokens': 1, 'prompt_tokens': 60, 'total_tokens': 61}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-d1863e5e-17cd-4e9d-bf7a-b9f118747a65-0', usage_metadata={'input_tokens': 60, 'output_tokens': 1, 'total_tokens': 61})
 ```
 
+## 下一步
 
-## Next steps
+您现在已经学习了如何向聊天提示添加少量示例。
 
-You've now learned how to add few-shot examples to your chat prompts.
-
-Next, check out the other how-to guides on prompt templates in this section, the related how-to guide on [few shotting with text completion models](/docs/how_to/few_shot_examples), or the other [example selector how-to guides](/docs/how_to/example_selectors/).
+接下来，请查看本节中关于提示模板的其他操作指南，以及与[文本补全模型的少量示例](/docs/how_to/few_shot_examples)相关的操作指南，或其他[示例选择器操作指南](/docs/how_to/example_selectors/)。

@@ -1,59 +1,57 @@
 ---
 sidebar_position: 3
-sidebar_label: Packages
+sidebar_label: 包
 ---
 
-# 📕 Package versioning
+# 📕 包版本控制
 
-As of now, LangChain has an ad hoc release process: releases are cut with high frequency by
-a maintainer and published to [PyPI](https://pypi.org/).
-The different packages are versioned slightly differently.
+目前，LangChain 采用临时的发布流程：由维护者高频率地进行发布，并发布到 [PyPI](https://pypi.org/)。
+不同的包版本控制略有不同。
 
 ## `langchain-core`
 
-`langchain-core` is currently on version `0.2.x`. 
+`langchain-core` 当前版本为 `0.2.x`。
 
-As `langchain-core` contains the base abstractions and runtime for the whole LangChain ecosystem, we will communicate any breaking changes with advance notice and version bumps. The exception for this is anything marked with the `beta` decorator (you can see this in the API reference and will see warnings when using such functionality). The reason for beta features is that given the rate of change of the field, being able to move quickly is still a priority.
+由于 `langchain-core` 包含整个 LangChain 生态系统的基础抽象和运行时，我们将提前通知任何重大更改并进行版本升级。唯一的例外是标记为 `beta` 装饰器的内容（您可以在 API 参考中看到这一点，并在使用此类功能时会看到警告）。引入 beta 特性的原因是，由于该领域变化的速度，能够快速响应仍然是优先事项。
 
-Minor version increases will occur for:
+小版本增加将发生在：
 
-- Breaking changes for any public interfaces marked as `beta`.
+- 任何标记为 `beta` 的公共接口的重大更改。
 
-Patch version increases will occur for:
+补丁版本增加将发生在：
 
-- Bug fixes
-- New features
-- Any changes to private interfaces
-- Any changes to `beta` features
+- 错误修复
+- 新特性
+- 对私有接口的任何更改
+- 对 `beta` 特性的任何更改
 
 ## `langchain`
 
-`langchain` is currently on version `0.2.x`
+`langchain` 当前版本为 `0.2.x`
 
-Minor version increases will occur for:
+次版本增加将发生在：
 
-- Breaking changes for any public interfaces NOT marked as `beta`.
+- 任何未标记为 `beta` 的公共接口的破坏性更改。
 
-Patch version increases will occur for:
+补丁版本增加将发生在：
 
-- Bug fixes
-- New features
-- Any changes to private interfaces
-- Any changes to `beta` features.
+- 错误修复
+- 新功能
+- 任何对私有接口的更改
+- 任何对 `beta` 功能的更改。
 
 ## `langchain-community`
 
-`langchain-community` is currently on version `0.2.x`
+`langchain-community` 当前版本为 `0.2.x`
 
-The versions will increase following the same guidelines as `langchain`.
+版本将按照与 `langchain` 相同的指南进行更新。
 
 ## `langchain-experimental`
 
-`langchain-experimental` is currently on version `0.0.x`
+`langchain-experimental` 当前版本为 `0.0.x`
 
-All changes will be accompanied by a patch version increase.
+所有更改都将伴随补丁版本的增加。
 
-## Partner Packages
+## 合作伙伴套餐
 
-Partner packages are versioned independently.
-
+合作伙伴套餐是独立版本控制的。

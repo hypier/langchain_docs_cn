@@ -1,17 +1,18 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/python.ipynb
 ---
+
 # Python REPL
 
-Sometimes, for complex calculations, rather than have an LLM generate the answer directly, it can be better to have the LLM generate code to calculate the answer, and then run that code to get the answer. In order to easily do that, we provide a simple Python REPL to execute commands in.
+有时，对于复杂的计算，与其让 LLM 直接生成答案，不如让 LLM 生成代码来计算答案，然后运行该代码以获取答案。为了方便实现这一点，我们提供了一个简单的 Python REPL 来执行命令。
 
-This interface will only return things that are printed - therefore, if you want to use it to calculate an answer, make sure to have it print out the answer.
+该接口只会返回打印的内容——因此，如果您想用它来计算答案，请确保打印出答案。
 
 
 :::caution
-Python REPL can execute arbitrary code on the host machine (e.g., delete files, make network requests). Use with caution.
+Python REPL 可以在主机上执行任意代码（例如，删除文件，进行网络请求）。请谨慎使用。
 
-For more information general security guidelines, please see https://python.langchain.com/v0.2/docs/security/.
+有关一般安全指南的更多信息，请参见 https://python.langchain.com/v0.2/docs/security/.
 :::
 
 
@@ -44,13 +45,12 @@ Python REPL can execute arbitrary code. Use with caution.
 # You can create the tool to pass to an agent
 repl_tool = Tool(
     name="python_repl",
-    description="A Python shell. Use this to execute python commands. Input should be a valid python command. If you want to see the output of a value, you should print it out with `print(...)`.",
+    description="一个 Python shell。使用它来执行 Python 命令。输入应该是有效的 Python 命令。如果您想查看值的输出，应该使用 `print(...)` 将其打印出来。",
     func=python_repl.run,
 )
 ```
 
+## 相关
 
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

@@ -1,34 +1,32 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/fallbacks.ipynb
-keywords: [LCEL, fallbacks]
+keywords: [LCEL, 后备方案]
 ---
-# How to add fallbacks to a runnable
 
-When working with language models, you may often encounter issues from the underlying APIs, whether these be rate limiting or downtime. Therefore, as you go to move your LLM applications into production it becomes more and more important to safeguard against these. That's why we've introduced the concept of fallbacks. 
+# 如何为可运行对象添加后备方案
 
-A **fallback** is an alternative plan that may be used in an emergency.
+在使用语言模型时，您可能经常会遇到来自底层 API 的问题，无论是速率限制还是停机。因此，当您将 LLM 应用程序投入生产时，保护这些问题变得越来越重要。这就是我们引入后备方案概念的原因。
 
-Crucially, fallbacks can be applied not only on the LLM level but on the whole runnable level. This is important because often times different models require different prompts. So if your call to OpenAI fails, you don't just want to send the same prompt to Anthropic - you probably want to use a different prompt template and send a different version there.
+**后备方案**是在紧急情况下可以使用的替代计划。
 
-## Fallback for LLM API Errors
+至关重要的是，后备方案不仅可以在 LLM 级别应用，还可以在整个可运行对象级别应用。这一点很重要，因为不同的模型通常需要不同的提示。因此，如果您对 OpenAI 的调用失败，您不仅想向 Anthropic 发送相同的提示 - 您可能想使用不同的提示模板并发送不同的版本。
 
-This is maybe the most common use case for fallbacks. A request to an LLM API can fail for a variety of reasons - the API could be down, you could have hit rate limits, any number of things. Therefore, using fallbacks can help protect against these types of things.
+## LLM API错误的备用方案
 
-IMPORTANT: By default, a lot of the LLM wrappers catch errors and retry. You will most likely want to turn those off when working with fallbacks. Otherwise the first wrapper will keep on retrying and not failing.
+这可能是备用方案最常见的用例。对LLM API的请求可能因多种原因而失败——API可能出现故障，您可能达到了速率限制，或其他任何原因。因此，使用备用方案可以帮助防范这些类型的问题。
 
+重要提示：默认情况下，许多LLM包装器会捕获错误并重试。在使用备用方案时，您很可能希望关闭这些功能。否则，第一个包装器将不断重试而不会失败。
 
 ```python
 %pip install --upgrade --quiet  langchain langchain-openai
 ```
-
 
 ```python
 from langchain_anthropic import ChatAnthropic
 from langchain_openai import ChatOpenAI
 ```
 
-First, let's mock out what happens if we hit a RateLimitError from OpenAI
-
+首先，让我们模拟一下如果我们遇到OpenAI的RateLimitError会发生什么
 
 ```python
 from unittest.mock import patch
@@ -41,40 +39,37 @@ response = httpx.Response(200, request=request)
 error = RateLimitError("rate limit", response=response, body="")
 ```
 
-
 ```python
-# Note that we set max_retries = 0 to avoid retrying on RateLimits, etc
+# 注意，我们将max_retries设置为0，以避免在速率限制等情况下重试
 openai_llm = ChatOpenAI(model="gpt-3.5-turbo-0125", max_retries=0)
 anthropic_llm = ChatAnthropic(model="claude-3-haiku-20240307")
 llm = openai_llm.with_fallbacks([anthropic_llm])
 ```
 
-
 ```python
-# Let's use just the OpenAI LLm first, to show that we run into an error
+# 我们先仅使用OpenAI LLM，以展示我们遇到错误的情况
 with patch("openai.resources.chat.completions.Completions.create", side_effect=error):
     try:
-        print(openai_llm.invoke("Why did the chicken cross the road?"))
+        print(openai_llm.invoke("为什么鸡要过马路？"))
     except RateLimitError:
-        print("Hit error")
+        print("遇到错误")
 ```
 ```output
-Hit error
+遇到错误
 ```
 
 ```python
-# Now let's try with fallbacks to Anthropic
+# 现在让我们尝试使用备用方案调用Anthropic
 with patch("openai.resources.chat.completions.Completions.create", side_effect=error):
     try:
-        print(llm.invoke("Why did the chicken cross the road?"))
+        print(llm.invoke("为什么鸡要过马路？"))
     except RateLimitError:
-        print("Hit error")
+        print("遇到错误")
 ```
 ```output
-content=' I don\'t actually know why the chicken crossed the road, but here are some possible humorous answers:\n\n- To get to the other side!\n\n- It was too chicken to just stand there. \n\n- It wanted a change of scenery.\n\n- It wanted to show the possum it could be done.\n\n- It was on its way to a poultry farmers\' convention.\n\nThe joke plays on the double meaning of "the other side" - literally crossing the road to the other side, or the "other side" meaning the afterlife. So it\'s an anti-joke, with a silly or unexpected pun as the answer.' additional_kwargs={} example=False
+content=' 我实际上不知道鸡为什么要过马路，但这里有一些可能的幽默回答：\n\n- 为了到达另一边！\n\n- 它太胆小了，无法就这样站着。\n\n- 它想换个环境。\n\n- 它想给负鼠展示这件事是可以做到的。\n\n- 它正在前往一个家禽农民的大会。\n\n这个笑话玩的是“另一边”的双关意义——字面上是过马路到另一边，或者“另一边”意味着来世。所以这是一个反笑话，答案是一个愚蠢或意外的双关语。' additional_kwargs={} example=False
 ```
-We can use our "LLM with Fallbacks" as we would a normal LLM.
-
+我们可以像使用普通LLM一样使用我们的“带备用方案的LLM”。
 
 ```python
 from langchain_core.prompts import ChatPromptTemplate
@@ -83,25 +78,25 @@ prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "You're a nice assistant who always includes a compliment in your response",
+            "你是一个友好的助手，总是在回答中包含赞美",
         ),
-        ("human", "Why did the {animal} cross the road"),
+        ("human", "为什么{animal}要过马路"),
     ]
 )
 chain = prompt | llm
 with patch("openai.resources.chat.completions.Completions.create", side_effect=error):
     try:
-        print(chain.invoke({"animal": "kangaroo"}))
+        print(chain.invoke({"animal": "袋鼠"}))
     except RateLimitError:
-        print("Hit error")
+        print("遇到错误")
 ```
 ```output
-content=" I don't actually know why the kangaroo crossed the road, but I can take a guess! Here are some possible reasons:\n\n- To get to the other side (the classic joke answer!)\n\n- It was trying to find some food or water \n\n- It was trying to find a mate during mating season\n\n- It was fleeing from a predator or perceived threat\n\n- It was disoriented and crossed accidentally \n\n- It was following a herd of other kangaroos who were crossing\n\n- It wanted a change of scenery or environment \n\n- It was trying to reach a new habitat or territory\n\nThe real reason is unknown without more context, but hopefully one of those potential explanations does the joke justice! Let me know if you have any other animal jokes I can try to decipher." additional_kwargs={} example=False
+content=" 我实际上不知道袋鼠为什么要过马路，但我可以猜测一下！这里有一些可能的原因：\n\n- 为了到达另一边（经典的笑话回答！）\n\n- 它想找些食物或水\n\n- 它在交配季节试图寻找配偶\n\n- 它在逃避捕食者或感知到的威胁\n\n- 它迷失了方向，不小心过马路\n\n- 它在跟随一群正在过马路的其他袋鼠\n\n- 它想换个环境或景观\n\n- 它试图到达一个新的栖息地或领地\n\n真正的原因在没有更多上下文的情况下是未知的，但希望其中一个潜在的解释能让这个笑话更有趣！如果你有其他动物笑话我可以尝试解读，请告诉我。" additional_kwargs={} example=False
 ```
-## Fallback for Sequences
 
-We can also create fallbacks for sequences, that are sequences themselves. Here we do that with two different models: ChatOpenAI and then normal OpenAI (which does not use a chat model). Because OpenAI is NOT a chat model, you likely want a different prompt.
+## 序列的回退
 
+我们也可以为序列创建回退，这些序列本身就是序列。这里我们使用两个不同的模型来实现这一点：ChatOpenAI 和普通的 OpenAI（不使用聊天模型）。因为 OpenAI 不是聊天模型，所以你可能需要一个不同的提示。
 
 ```python
 # First let's create a chain with a ChatModel
@@ -122,7 +117,6 @@ chat_model = ChatOpenAI(model="gpt-fake")
 bad_chain = chat_prompt | chat_model | StrOutputParser()
 ```
 
-
 ```python
 # Now lets create a chain with the normal OpenAI model
 from langchain_core.prompts import PromptTemplate
@@ -136,24 +130,19 @@ llm = OpenAI()
 good_chain = prompt | llm
 ```
 
-
 ```python
 # We can now create a final chain which combines the two
 chain = bad_chain.with_fallbacks([good_chain])
 chain.invoke({"animal": "turtle"})
 ```
 
-
-
 ```output
 '\n\nAnswer: The turtle crossed the road to get to the other side, and I have to say he had some impressive determination.'
 ```
 
+## 长输入的后备方案
 
-## Fallback for Long Inputs
-
-One of the big limiting factors of LLMs is their context window. Usually, you can count and track the length of prompts before sending them to an LLM, but in situations where that is hard/complicated, you can fallback to a model with a longer context length.
-
+LLM 的一个主要限制因素是它们的上下文窗口。通常，在将提示发送到 LLM 之前，您可以计算和跟踪提示的长度，但在那些困难/复杂的情况下，您可以回退到具有更长上下文长度的模型。
 
 ```python
 short_llm = ChatOpenAI()
@@ -161,11 +150,9 @@ long_llm = ChatOpenAI(model="gpt-3.5-turbo-16k")
 llm = short_llm.with_fallbacks([long_llm])
 ```
 
-
 ```python
 inputs = "What is the next number: " + ", ".join(["one", "two"] * 3000)
 ```
-
 
 ```python
 try:
@@ -186,9 +173,10 @@ except Exception as e:
 ```output
 content='The next number in the sequence is two.' additional_kwargs={} example=False
 ```
-## Fallback to Better Model
 
-Often times we ask models to output format in a specific format (like JSON). Models like GPT-3.5 can do this okay, but sometimes struggle. This naturally points to fallbacks - we can try with GPT-3.5 (faster, cheaper), but then if parsing fails we can use GPT-4.
+## 回退到更好的模型
+
+我们经常要求模型以特定格式（如 JSON）输出。像 GPT-3.5 这样的模型可以做到这一点，但有时会遇到困难。这自然指向了回退机制——我们可以尝试使用 GPT-3.5（更快，更便宜），但如果解析失败，我们可以使用 GPT-4。
 
 
 ```python
@@ -204,8 +192,8 @@ prompt = ChatPromptTemplate.from_template(
 
 
 ```python
-# In this case we are going to do the fallbacks on the LLM + output parser level
-# Because the error will get raised in the OutputParser
+# 在这种情况下，我们将在 LLM + 输出解析器级别进行回退
+# 因为错误将在 OutputParser 中引发
 openai_35 = ChatOpenAI() | DatetimeOutputParser()
 openai_4 = ChatOpenAI(model="gpt-4") | DatetimeOutputParser()
 ```

@@ -1,31 +1,30 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/astradb.ipynb
 ---
+
 # Astra DB
 
-This page provides a quickstart for using [Astra DB](https://docs.datastax.com/en/astra/home/astra.html) as a Vector Store.
+本页面提供了使用 [Astra DB](https://docs.datastax.com/en/astra/home/astra.html) 作为向量存储的快速入门指南。
 
-> DataStax [Astra DB](https://docs.datastax.com/en/astra/home/astra.html) is a serverless vector-capable database built on Apache Cassandra® and made conveniently available through an easy-to-use JSON API.
+> DataStax [Astra DB](https://docs.datastax.com/en/astra/home/astra.html) 是一个无服务器的向量数据库，基于 Apache Cassandra® 构建，并通过易于使用的 JSON API 方便地提供。
 
-_Note: in addition to access to the database, an OpenAI API Key is required to run the full example._
+_注意：除了访问数据库外，还需要一个 OpenAI API 密钥才能运行完整示例。_
 
-## Setup and general dependencies
+## 设置和一般依赖
 
-Use of the integration requires the corresponding Python package:
-
+使用该集成需要相应的 Python 包：
 
 ```python
 pip install -qU langchain-astradb
 ```
 
-_Make sure you have installed the packages required to run all of this demo:_
-
+_确保您已安装运行此演示所需的所有包：_
 
 ```python
 pip install -qU langchain langchain-community langchain-openai datasets pypdf
 ```
 
-### Import dependencies
+### 导入依赖
 
 
 ```python
@@ -43,20 +42,20 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 ```
 
-## Import the Vector Store
+## 导入向量存储
 
 
 ```python
 from langchain_astradb import AstraDBVectorStore
 ```
 
-## DB Connection parameters
+## DB 连接参数
 
-These are found on your Astra DB dashboard:
+这些信息可以在您的 Astra DB 仪表板上找到：
 
-- the API Endpoint looks like `https://01234567-89ab-cdef-0123-456789abcdef-us-east1.apps.astra.datastax.com`
-- the Token looks like `AstraCS:6gBhNmsk135....`
-- you may optionally provide a _Namespace_ such as `my_namespace`
+- API 端点看起来像 `https://01234567-89ab-cdef-0123-456789abcdef-us-east1.apps.astra.datastax.com`
+- 令牌看起来像 `AstraCS:6gBhNmsk135....`
+- 您可以选择提供一个 _命名空间_，例如 `my_namespace`
 
 
 ```python
@@ -70,19 +69,19 @@ else:
     ASTRA_DB_KEYSPACE = None
 ```
 
-## Create the vector store
+## 创建向量存储
 
-There are two ways to create an Astra DB vector store, which differ in how the embeddings are computed.
+有两种方法可以创建 Astra DB 向量存储，它们在计算嵌入的方式上有所不同。
 
-*Explicit embeddings*. You can separately instantiate a `langchain_core.embeddings.Embeddings` class and pass it to the `AstraDBVectorStore` constructor, just like with most other LangChain vector stores.
+*显式嵌入*。您可以单独实例化一个 `langchain_core.embeddings.Embeddings` 类，并将其传递给 `AstraDBVectorStore` 构造函数，就像与大多数其他 LangChain 向量存储一样。
 
-*Integrated embedding computation*. Alternatively, you can use the [Vectorize](https://www.datastax.com/blog/simplifying-vector-embedding-generation-with-astra-vectorize) feature of Astra DB and simply specify the name of a supported embedding model when creating the store. The embedding computations are entirely handled within the database. (To proceed with this method, you must have enabled the desired embedding integration for your database, as described [in the docs](https://docs.datastax.com/en/astra-db-serverless/databases/embedding-generation.html).)
+*集成嵌入计算*。另外，您可以使用 Astra DB 的 [Vectorize](https://www.datastax.com/blog/simplifying-vector-embedding-generation-with-astra-vectorize) 功能，在创建存储时简单地指定一个支持的嵌入模型名称。嵌入计算完全在数据库内部处理。 （要使用此方法，您必须为您的数据库启用所需的嵌入集成功能，如 [文档](https://docs.datastax.com/en/astra-db-serverless/databases/embedding-generation.html) 中所述。）
 
-**Please choose one method and run the corresponding cells only.**
+**请选定一种方法并仅运行相应的单元格。**
 
-### Method 1: provide embeddings explicitly
+### 方法 1：显式提供嵌入
 
-This demo will use an OpenAI embedding model:
+此演示将使用 OpenAI 嵌入模型：
 
 
 ```python
@@ -94,7 +93,7 @@ os.environ["OPENAI_API_KEY"] = getpass("OPENAI_API_KEY = ")
 my_embeddings = OpenAIEmbeddings()
 ```
 
-Now you can create the vector store:
+现在您可以创建向量存储：
 
 
 ```python
@@ -107,16 +106,15 @@ vstore = AstraDBVectorStore(
 )
 ```
 
-### Method 2: use Astra Vectorize (embeddings integrated in Astra DB)
+### 方法二：使用 Astra Vectorize（集成在 Astra DB 中的嵌入）
 
-Here it is assumed that you have
+这里假设您已经
 
-- enabled the OpenAI integration in your Astra DB organization,
--  added an API Key named `"MY_OPENAI_API_KEY"` to the integration, and
-- scoped it to the database you are using.
+- 在您的 Astra DB 组织中启用了 OpenAI 集成，
+- 为该集成添加了名为 `"MY_OPENAI_API_KEY"` 的 API 密钥，并且
+- 将其作用域设置为您正在使用的数据库。
 
-For more details please consult the [documentation](https://docs.datastax.com/en/astra-db-serverless/integrations/embedding-providers/openai.html).
-
+有关更多详细信息，请参阅 [文档](https://docs.datastax.com/en/astra-db-serverless/integrations/embedding-providers/openai.html)。
 
 ```python
 openai_vectorize_options = CollectionVectorServiceOptions(
@@ -136,10 +134,9 @@ vstore = AstraDBVectorStore(
 )
 ```
 
-## Load a dataset
+## 加载数据集
 
-Convert each entry in the source dataset into a `Document`, then write them into the vector store:
-
+将源数据集中的每个条目转换为 `Document`，然后将它们写入向量存储：
 
 ```python
 philo_dataset = load_dataset("datastax/philosopher-quotes")["train"]
@@ -154,12 +151,11 @@ inserted_ids = vstore.add_documents(docs)
 print(f"\nInserted {len(inserted_ids)} documents.")
 ```
 
-In the above, `metadata` dictionaries are created from the source data and are part of the `Document`.
+在上面，`metadata` 字典是从源数据创建的，并且是 `Document` 的一部分。
 
-_Note: check the [Astra DB API Docs](https://docs.datastax.com/en/astra-serverless/docs/develop/dev-with-json.html#_json_api_limits) for the valid metadata field names: some characters are reserved and cannot be used._
+_注意：请查看 [Astra DB API 文档](https://docs.datastax.com/en/astra-serverless/docs/develop/dev-with-json.html#_json_api_limits) 以获取有效的元数据字段名称：某些字符是保留的，不能使用。_
 
-Add some more entries, this time with `add_texts`:
-
+添加更多条目，这次使用 `add_texts`：
 
 ```python
 texts = ["I think, therefore I am.", "To the things themselves!"]
@@ -170,13 +166,11 @@ inserted_ids_2 = vstore.add_texts(texts=texts, metadatas=metadatas, ids=ids)
 print(f"\nInserted {len(inserted_ids_2)} documents.")
 ```
 
-_Note: you may want to speed up the execution of `add_texts` and `add_documents` by increasing the concurrency level for_
-_these bulk operations - check out the `*_concurrency` parameters in the class constructor and the `add_texts` docstrings_
-_for more details. Depending on the network and the client machine specifications, your best-performing choice of parameters may vary._
+_注意：您可能希望通过增加这些批量操作的并发级别来加快 `add_texts` 和 `add_documents` 的执行速度 - 请查看类构造函数中的 `*_concurrency` 参数和 `add_texts` 文档字符串以获取更多详细信息。根据网络和客户端机器的规格，您最佳的参数选择可能会有所不同。_
 
-## Run searches
+## 运行搜索
 
-This section demonstrates metadata filtering and getting the similarity scores back:
+本节演示了元数据过滤和获取相似度分数的过程：
 
 
 ```python
@@ -203,10 +197,9 @@ for res, score in results:
     print(f"* [SIM={score:3f}] {res.page_content} [{res.metadata}]")
 ```
 
-### MMR (Maximal-marginal-relevance) search
+### MMR (最大边际相关性) 搜索
 
-_Note: the MMR search method is not (yet) supported for vector stores built with Astra Vectorize._
-
+_注意：MMR 搜索方法尚不支持使用 Astra Vectorize 构建的向量存储。_
 
 ```python
 results = vstore.max_marginal_relevance_search(
@@ -220,9 +213,9 @@ for res in results:
 
 ### Async
 
-Note that the Astra DB vector store supports all fully async methods (`asimilarity_search`, `afrom_texts`, `adelete` and so on) natively, i.e. without thread wrapping involved.
+请注意，Astra DB 向量存储原生支持所有完全异步的方法（`asimilarity_search`、`afrom_texts`、`adelete` 等），即不涉及线程包装。
 
-## Deleting stored documents
+## 删除存储的文档
 
 
 ```python
@@ -236,12 +229,12 @@ delete_2 = vstore.delete(inserted_ids[2:5])
 print(f"some_succeeds={delete_2}")  # True, though some IDs were gone already
 ```
 
-## A minimal RAG chain
+## 最小化的 RAG 链
 
-The next cells will implement a simple RAG pipeline:
-- download a sample PDF file and load it onto the store;
-- create a RAG chain with LCEL (LangChain Expression Language), with the vector store at its heart;
-- run the question-answering chain.
+接下来的单元将实现一个简单的 RAG 管道：
+- 下载一个示例 PDF 文件并将其加载到存储中；
+- 使用 LCEL（LangChain 表达式语言）创建一个 RAG 链，以向量存储为核心；
+- 运行问答链。
 
 
 ```python
@@ -295,21 +288,19 @@ chain = (
 chain.invoke("How does Russel elaborate on Peirce's idea of the security blanket?")
 ```
 
-For more, check out a complete RAG template using Astra DB [here](https://github.com/langchain-ai/langchain/tree/master/templates/rag-astradb).
+欲了解更多信息，请查看使用 Astra DB 的完整 RAG 模板 [这里](https://github.com/langchain-ai/langchain/tree/master/templates/rag-astradb)。
 
-## Cleanup
+## 清理
 
-If you want to completely delete the collection from your Astra DB instance, run this.
+如果您想从您的 Astra DB 实例中完全删除集合，请运行此命令。
 
-_(You will lose the data you stored in it.)_
-
+_(您将失去存储在其中的数据。)_
 
 ```python
 vstore.delete_collection()
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

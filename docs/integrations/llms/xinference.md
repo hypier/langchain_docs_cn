@@ -1,33 +1,33 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/xinference.ipynb
 ---
-# Xorbits Inference (Xinference)
 
-[Xinference](https://github.com/xorbitsai/inference) is a powerful and versatile library designed to serve LLMs, 
-speech recognition models, and multimodal models, even on your laptop. It supports a variety of models compatible with GGML, such as chatglm, baichuan, whisper, vicuna, orca, and many others. This notebook demonstrates how to use Xinference with LangChain.
+# Xorbits 推理 (Xinference)
 
-## Installation
+[Xinference](https://github.com/xorbitsai/inference) 是一个强大而多功能的库，旨在为 LLM、语音识别模型和多模态模型提供服务，甚至可以在您的笔记本电脑上使用。它支持多种与 GGML 兼容的模型，如 chatglm、baichuan、whisper、vicuna、orca 等等。此笔记本演示了如何将 Xinference 与 LangChain 一起使用。
 
-Install `Xinference` through PyPI:
+## 安装
+
+通过 PyPI 安装 `Xinference`：
 
 
 ```python
 %pip install --upgrade --quiet  "xinference[all]"
 ```
 
-## Deploy Xinference Locally or in a Distributed Cluster.
+## 在本地或分布式集群中部署 Xinference。
 
-For local deployment, run `xinference`. 
+要进行本地部署，请运行 `xinference`。
 
-To deploy Xinference in a cluster, first start an Xinference supervisor using the `xinference-supervisor`. You can also use the option -p to specify the port and -H to specify the host. The default port is 9997.
+要在集群中部署 Xinference，首先使用 `xinference-supervisor` 启动一个 Xinference 监督进程。您还可以使用 -p 选项指定端口，使用 -H 选项指定主机。默认端口为 9997。
 
-Then, start the Xinference workers using `xinference-worker` on each server you want to run them on. 
+然后，在您希望运行 Xinference worker 的每个服务器上使用 `xinference-worker` 启动 Xinference worker。
 
-You can consult the README file from [Xinference](https://github.com/xorbitsai/inference) for more information.
+您可以查阅 [Xinference](https://github.com/xorbitsai/inference) 的 README 文件以获取更多信息。
+
 ## Wrapper
 
-To use Xinference with LangChain, you need to first launch a model. You can use command line interface (CLI) to do so:
-
+要将 Xinference 与 LangChain 一起使用，您需要首先启动一个模型。您可以使用命令行接口 (CLI) 来做到这一点：
 
 ```python
 !xinference launch -n vicuna-v1.3 -f ggmlv3 -q q4_0
@@ -35,8 +35,7 @@ To use Xinference with LangChain, you need to first launch a model. You can use 
 ```output
 Model uid: 7167b2b0-2a04-11ee-83f0-d29396a3f064
 ```
-A model UID is returned for you to use. Now you can use Xinference with LangChain:
-
+返回一个模型 UID 供您使用。现在您可以将 Xinference 与 LangChain 一起使用：
 
 ```python
 from langchain_community.llms import Xinference
@@ -51,14 +50,11 @@ llm(
 )
 ```
 
-
-
 ```output
 ' You can visit the Eiffel Tower, Notre-Dame Cathedral, the Louvre Museum, and many other historical sites in Paris, the capital of France.'
 ```
 
-
-### Integrate with a LLMChain
+### 与 LLMChain 集成
 
 
 ```python
@@ -78,15 +74,14 @@ print(generated)
 
 A: You can visit many places in Paris, such as the Eiffel Tower, the Louvre Museum, Notre-Dame Cathedral, the Champs-Elysées, Montmartre, Sacré-Cœur, and the Palace of Versailles.
 ```
-Lastly, terminate the model when you do not need to use it:
+最后，当您不再需要使用模型时，请终止模型：
 
 
 ```python
 !xinference terminate --model-uid "7167b2b0-2a04-11ee-83f0-d29396a3f064"
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

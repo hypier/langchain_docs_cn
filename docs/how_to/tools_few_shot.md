@@ -1,12 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/tools_few_shot.ipynb
 ---
-# How to use few-shot prompting with tool calling
 
-For more complex tool use it's very useful to add few-shot examples to the prompt. We can do this by adding `AIMessage`s with `ToolCall`s and corresponding `ToolMessage`s to our prompt.
+# 如何使用少量示例提示与工具调用
 
-First let's define our tools and model.
+对于更复杂的工具使用，向提示中添加少量示例非常有用。我们可以通过添加 `AIMessage` 和 `ToolCall` 及其对应的 `ToolMessage` 来实现。
 
+首先，让我们定义我们的工具和模型。
 
 ```python
 from langchain_core.tools import tool
@@ -27,7 +27,6 @@ def multiply(a: int, b: int) -> int:
 tools = [add, multiply]
 ```
 
-
 ```python
 import os
 from getpass import getpass
@@ -40,8 +39,7 @@ llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 llm_with_tools = llm.bind_tools(tools)
 ```
 
-Let's run our model where we can notice that even with some special instructions our model can get tripped up by order of operations. 
-
+让我们运行我们的模型，可以注意到即使有一些特殊指令，我们的模型也可能因运算顺序而出现问题。
 
 ```python
 llm_with_tools.invoke(
@@ -58,10 +56,9 @@ llm_with_tools.invoke(
   'id': 'call_licdlmGsRqzup8rhqJSb1yZ4'}]
 ```
 
-The model shouldn't be trying to add anything yet, since it technically can't know the results of 119 * 8 yet.
+模型不应该尝试添加任何内容，因为它在技术上还不知道 119 * 8 的结果。
 
-By adding a prompt with some examples we can correct this behavior:
-
+通过添加带有一些示例的提示，我们可以纠正这种行为：
 
 ```python
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
@@ -113,6 +110,6 @@ chain.invoke("Whats 119 times 8 minus 20").tool_calls
   'id': 'call_9MvuwQqg7dlJupJcoTWiEsDo'}]
 ```
 
-And we get the correct output this time.
+这次我们得到了正确的输出。
 
-Here's what the [LangSmith trace](https://smith.langchain.com/public/f70550a1-585f-4c9d-a643-13148ab1616f/r) looks like.
+以下是 [LangSmith 跟踪](https://smith.langchain.com/public/f70550a1-585f-4c9d-a643-13148ab1616f/r) 的样子。

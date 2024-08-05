@@ -1,27 +1,24 @@
 # Arxiv
 
->[arXiv](https://arxiv.org/) is an open-access archive for 2 million scholarly articles in the fields of physics, 
-> mathematics, computer science, quantitative biology, quantitative finance, statistics, electrical engineering and 
-> systems science, and economics.
+>[arXiv](https://arxiv.org/) 是一个开放获取的档案库，包含200万篇在物理学、数学、计算机科学、定量生物学、定量金融、统计学、电气工程与系统科学以及经济学领域的学术文章。
 
+## 安装和设置
 
-## Installation and Setup
-
-First, you need to install `arxiv` python package.
+首先，您需要安装 `arxiv` python 包。
 
 ```bash
 pip install arxiv
 ```
 
-Second, you need to install `PyMuPDF` python package which transforms PDF files downloaded from the `arxiv.org` site into the text format.
+其次，您需要安装 `PyMuPDF` python 包，它将从 `arxiv.org` 网站下载的 PDF 文件转换为文本格式。
 
 ```bash
 pip install pymupdf
 ```
 
-## Document Loader
+## 文档加载器
 
-See a [usage example](/docs/integrations/document_loaders/arxiv).
+查看 [使用示例](/docs/integrations/document_loaders/arxiv).
 
 ```python
 from langchain_community.document_loaders import ArxivLoader
@@ -29,7 +26,7 @@ from langchain_community.document_loaders import ArxivLoader
 
 ## Retriever
 
-See a [usage example](/docs/integrations/retrievers/arxiv).
+查看[用法示例](/docs/integrations/retrievers/arxiv)。
 
 ```python
 from langchain.retrievers import ArxivRetriever

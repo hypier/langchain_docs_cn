@@ -1,25 +1,26 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/astradb_chat_message_history.ipynb
 ---
+
 # Astra DB 
 
-> DataStax [Astra DB](https://docs.datastax.com/en/astra/home/astra.html) is a serverless vector-capable database built on Cassandra and made conveniently available through an easy-to-use JSON API.
+> DataStax [Astra DB](https://docs.datastax.com/en/astra/home/astra.html) 是一个无服务器的支持向量的数据库，基于 Cassandra 构建，并通过易于使用的 JSON API 方便地提供。
 
-This notebook goes over how to use Astra DB to store chat message history.
+本笔记本介绍了如何使用 Astra DB 存储聊天消息历史记录。
 
-## Setting up
+## 设置
 
-To run this notebook you need a running Astra DB. Get the connection secrets on your Astra dashboard:
+要运行此笔记本，您需要一个正在运行的 Astra DB。在您的 Astra 仪表板上获取连接密钥：
 
-- the API Endpoint looks like `https://01234567-89ab-cdef-0123-456789abcdef-us-east1.apps.astra.datastax.com`;
-- the Token looks like `AstraCS:6gBhNmsk135...`.
+- API 端点看起来像 `https://01234567-89ab-cdef-0123-456789abcdef-us-east1.apps.astra.datastax.com`；
+- 令牌看起来像 `AstraCS:6gBhNmsk135...`。
 
 
 ```python
 %pip install --upgrade --quiet  "astrapy>=0.7.1 langchain-community" 
 ```
 
-### Set up the database connection parameters and secrets
+### 设置数据库连接参数和密钥
 
 
 ```python
@@ -32,9 +33,9 @@ ASTRA_DB_APPLICATION_TOKEN = getpass.getpass("ASTRA_DB_APPLICATION_TOKEN = ")
 ASTRA_DB_API_ENDPOINT =  https://01234567-89ab-cdef-0123-456789abcdef-us-east1.apps.astra.datastax.com
 ASTRA_DB_APPLICATION_TOKEN =  ········
 ```
-Depending on whether local or cloud-based Astra DB, create the corresponding database connection "Session" object.
+根据是本地还是基于云的 Astra DB，创建相应的数据库连接 "Session" 对象。
 
-## Example
+## 示例
 
 
 ```python
@@ -61,4 +62,3 @@ message_history.messages
 ```output
 [HumanMessage(content='hi!'), AIMessage(content='whats up?')]
 ```
-

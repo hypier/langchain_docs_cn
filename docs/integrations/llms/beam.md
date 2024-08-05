@@ -1,21 +1,20 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/beam.ipynb
 ---
+
 # Beam
 
-Calls the Beam API wrapper to deploy and make subsequent calls to an instance of the gpt2 LLM in a cloud deployment. Requires installation of the Beam library and registration of Beam Client ID and Client Secret. By calling the wrapper an instance of the model is created and run, with returned text relating to the prompt. Additional calls can then be made by directly calling the Beam API.
+调用 Beam API 封装器以在云部署中部署并对 gpt2 LLM 实例进行后续调用。需要安装 Beam 库并注册 Beam 客户端 ID 和客户端密钥。通过调用封装器创建并运行模型实例，返回的文本与提示相关。然后可以通过直接调用 Beam API 进行额外的调用。
 
-[Create an account](https://www.beam.cloud/), if you don't have one already. Grab your API keys from the [dashboard](https://www.beam.cloud/dashboard/settings/api-keys).
+[创建一个账户](https://www.beam.cloud/)，如果您还没有。请从 [仪表板](https://www.beam.cloud/dashboard/settings/api-keys) 获取您的 API 密钥。
 
-Install the Beam CLI
-
+安装 Beam CLI
 
 ```python
 !curl https://raw.githubusercontent.com/slai-labs/get-beam/main/get-beam.sh -sSfL | sh
 ```
 
-Register API Keys and set your beam client id and secret environment variables:
-
+注册 API 密钥并设置您的 Beam 客户端 ID 和密钥环境变量：
 
 ```python
 import os
@@ -23,25 +22,23 @@ import os
 beam_client_id = "<Your beam client id>"
 beam_client_secret = "<Your beam client secret>"
 
-# Set the environment variables
+# 设置环境变量
 os.environ["BEAM_CLIENT_ID"] = beam_client_id
 os.environ["BEAM_CLIENT_SECRET"] = beam_client_secret
 
-# Run the beam configure command
+# 运行 beam 配置命令
 !beam configure --clientId={beam_client_id} --clientSecret={beam_client_secret}
 ```
 
-Install the Beam SDK:
-
+安装 Beam SDK：
 
 ```python
 %pip install --upgrade --quiet  beam-sdk
 ```
 
-**Deploy and call Beam directly from langchain!**
+**直接从 langchain 部署并调用 Beam！**
 
-Note that a cold start might take a couple of minutes to return the response, but subsequent calls will be faster!
-
+请注意，冷启动可能需要几分钟才能返回响应，但后续调用会更快！
 
 ```python
 from langchain_community.llms.beam import Beam
@@ -73,8 +70,7 @@ response = llm._call("Running machine learning on a remote GPU")
 print(response)
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

@@ -1,27 +1,26 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/providers/together.ipynb
 ---
+
 # Together AI
 
-[Together AI](https://www.together.ai/) offers an API to query [50+ leading open-source models](https://docs.together.ai/docs/inference-models) in a couple lines of code.
+[Together AI](https://www.together.ai/) 提供了一个 API，可以用几行代码查询 [50+ 领先的开源模型](https://docs.together.ai/docs/inference-models)。
 
-This example goes over how to use LangChain to interact with Together AI models.
+本示例介绍了如何使用 LangChain 与 Together AI 模型进行交互。
 
-## Installation
+## 安装
 
 
 ```python
 %pip install --upgrade langchain-together
 ```
 
-## Environment
+## 环境
 
-To use Together AI, you'll need an API key which you can find here:
-https://api.together.ai/settings/api-keys. This can be passed in as an init param
-``together_api_key`` or set as environment variable ``TOGETHER_API_KEY``.
+要使用 Together AI，您需要一个 API 密钥，您可以在这里找到：
+https://api.together.ai/settings/api-keys。这可以作为初始化参数 ``together_api_key`` 传递或设置为环境变量 ``TOGETHER_API_KEY``。
 
-
-## Example
+## 示例
 
 
 ```python

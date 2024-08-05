@@ -1,21 +1,21 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_transformers/ai21_semantic_text_splitter.ipynb
 ---
+
 # AI21SemanticTextSplitter
 
-This example goes over how to use AI21SemanticTextSplitter in LangChain.
+本示例介绍了如何在 LangChain 中使用 AI21SemanticTextSplitter。
 
-## Installation
+## 安装
 
 
 ```python
 pip install langchain-ai21
 ```
 
-## Environment Setup
+## 环境设置
 
-We'll need to get a AI21 API key and set the AI21_API_KEY environment variable:
-
+我们需要获取一个 AI21 API 密钥并设置 AI21_API_KEY 环境变量：
 
 ```python
 import os
@@ -24,12 +24,11 @@ from getpass import getpass
 os.environ["AI21_API_KEY"] = getpass()
 ```
 
-## Example Usages
+## 示例用法
 
-### Splitting text by semantic meaning
+### 按语义意义拆分文本
 
-This example shows how to use AI21SemanticTextSplitter to split a text into chunks based on semantic meaning.
-
+本示例展示了如何使用 AI21SemanticTextSplitter 根据语义意义将文本拆分为多个部分。
 
 ```python
 from langchain_ai21 import AI21SemanticTextSplitter
@@ -62,10 +61,9 @@ for chunk in chunks:
     print("====")
 ```
 
-### Splitting text by semantic meaning with merge
+### 按语义意义拆分文本并合并
 
-This example shows how to use AI21SemanticTextSplitter to split a text into chunks based on semantic meaning, then merging the chunks based on `chunk_size`.
-
+此示例展示了如何使用 AI21SemanticTextSplitter 根据语义意义将文本拆分为多个块，然后根据 `chunk_size` 合并这些块。
 
 ```python
 from langchain_ai21 import AI21SemanticTextSplitter
@@ -98,10 +96,9 @@ for chunk in chunks:
     print("====")
 ```
 
-### Splitting text to documents
+### 将文本拆分为文档
 
-This example shows how to use AI21SemanticTextSplitter to split a text into Documents based on semantic meaning. The metadata will contain a type for each document.
-
+本示例演示如何使用 AI21SemanticTextSplitter 根据语义含义将文本拆分为文档。元数据将包含每个文档的类型。
 
 ```python
 from langchain_ai21 import AI21SemanticTextSplitter
@@ -135,10 +132,9 @@ for doc in documents:
     print("====")
 ```
 
-### Creating Documents with Metadata
+### 创建带有元数据的文档
 
-This example shows how to use AI21SemanticTextSplitter to create Documents from texts, and adding custom Metadata to each Document.
-
+本示例展示了如何使用 AI21SemanticTextSplitter 从文本创建文档，并为每个文档添加自定义元数据。
 
 ```python
 from langchain_ai21 import AI21SemanticTextSplitter
@@ -175,10 +171,10 @@ for doc in documents:
     print("====")
 ```
 
-### Splitting text to documents with start index
+### 将文本拆分为带起始索引的文档
 
-This example shows how to use AI21SemanticTextSplitter to split a text into Documents based on semantic meaning. The metadata will contain a start index for each document.
-**Note** that the start index provides an indication of the order of the chunks rather than the actual start index for each chunk.
+本示例展示了如何使用 AI21SemanticTextSplitter 根据语义含义将文本拆分为文档。元数据将包含每个文档的起始索引。
+**注意**，起始索引提供了块的顺序指示，而不是每个块的实际起始索引。
 
 
 ```python
@@ -212,10 +208,9 @@ for doc in documents:
     print("====")
 ```
 
-### Splitting documents
+### 拆分文档
 
-This example shows how to use AI21SemanticTextSplitter to split a list of Documents into chunks based on semantic meaning.
-
+此示例展示了如何使用AI21SemanticTextSplitter根据语义意义将文档列表拆分为多个块。
 
 ```python
 from langchain_ai21 import AI21SemanticTextSplitter

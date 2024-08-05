@@ -2,24 +2,24 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/upstage_groundedness_check.ipynb
 sidebar_label: Upstage
 ---
-# Upstage Groundedness Check
 
-This notebook covers how to get started with Upstage groundedness check models.
+# Upstage 基础性检查
 
-## Installation  
+本笔记本介绍了如何开始使用 Upstage 基础性检查模型。
 
-Install `langchain-upstage` package.
+## 安装  
+
+安装 `langchain-upstage` 包。
 
 ```bash
 pip install -U langchain-upstage
 ```
 
-## Environment Setup
+## 环境设置
 
-Make sure to set the following environment variables:
+确保设置以下环境变量：
 
-- `UPSTAGE_API_KEY`: Your Upstage API key from [Upstage developers document](https://developers.upstage.ai/docs/getting-started/quick-start).
-
+- `UPSTAGE_API_KEY`: 您的 Upstage API 密钥来自 [Upstage 开发者文档](https://developers.upstage.ai/docs/getting-started/quick-start)。
 
 ```python
 import os
@@ -27,9 +27,9 @@ import os
 os.environ["UPSTAGE_API_KEY"] = "YOUR_API_KEY"
 ```
 
-## Usage
+## 用法
 
-Initialize `UpstageGroundednessCheck` class.
+初始化 `UpstageGroundednessCheck` 类。
 
 
 ```python
@@ -38,7 +38,7 @@ from langchain_upstage import UpstageGroundednessCheck
 groundedness_check = UpstageGroundednessCheck()
 ```
 
-Use the `run` method to check the groundedness of the input text.
+使用 `run` 方法检查输入文本的真实性。
 
 
 ```python
@@ -51,8 +51,7 @@ response = groundedness_check.invoke(request_input)
 print(response)
 ```
 
+## 相关
 
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

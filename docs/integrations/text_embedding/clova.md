@@ -1,10 +1,11 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/clova.ipynb
 ---
-# Clova Embeddings
-[Clova](https://api.ncloud-docs.com/docs/ai-naver-clovastudio-summary) offers an embeddings service
 
-This example goes over how to use LangChain to interact with Clova inference for text embedding.
+# Clova Embeddings
+[Clova](https://api.ncloud-docs.com/docs/ai-naver-clovastudio-summary) 提供了嵌入服务
+
+本示例介绍如何使用 LangChain 与 Clova 推理进行文本嵌入。
 
 
 
@@ -38,8 +39,7 @@ document_text = ["This is a test doc1.", "This is a test doc2."]
 document_result = embeddings.embed_documents(document_text)
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

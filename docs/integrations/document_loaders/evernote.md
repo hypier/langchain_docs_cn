@@ -1,17 +1,17 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/evernote.ipynb
 ---
+
 # EverNote
 
->[EverNote](https://evernote.com/) is intended for archiving and creating notes in which photos, audio and saved web content can be embedded. Notes are stored in virtual "notebooks" and can be tagged, annotated, edited, searched, and exported.
+>[EverNote](https://evernote.com/) 旨在存档和创建可以嵌入照片、音频和保存的网页内容的笔记。笔记存储在虚拟“笔记本”中，可以进行标记、注释、编辑、搜索和导出。
 
-This notebook shows how to load an `Evernote` [export](https://help.evernote.com/hc/en-us/articles/209005557-Export-notes-and-notebooks-as-ENEX-or-HTML) file (.enex) from disk.
+本笔记本展示了如何从磁盘加载一个 `Evernote` [导出](https://help.evernote.com/hc/en-us/articles/209005557-Export-notes-and-notebooks-as-ENEX-or-HTML) 文件 (.enex)。
 
-A document will be created for each note in the export.
-
+将为导出中的每个笔记创建一个文档。
 
 ```python
-# lxml and html2text are required to parse EverNote notes
+# lxml 和 html2text 是解析 EverNote 笔记所需的
 %pip install --upgrade --quiet  lxml
 %pip install --upgrade --quiet  html2text
 ```
@@ -20,7 +20,7 @@ A document will be created for each note in the export.
 ```python
 from langchain_community.document_loaders import EverNoteLoader
 
-# By default all notes are combined into a single Document
+# 默认情况下，所有笔记合并为一个单一的文档
 loader = EverNoteLoader("example_data/testing.enex")
 loader.load()
 ```
@@ -34,7 +34,7 @@ loader.load()
 
 
 ```python
-# It's likely more useful to return a Document for each note
+# 返回每个笔记的文档可能更有用
 loader = EverNoteLoader("example_data/testing.enex", load_single_document=False)
 loader.load()
 ```
@@ -46,9 +46,7 @@ loader.load()
  Document(page_content='**Jan - March 2022**', metadata={'title': 'Summer Training Program', 'created': time.struct_time(tm_year=2022, tm_mon=12, tm_mday=27, tm_hour=1, tm_min=59, tm_sec=48, tm_wday=1, tm_yday=361, tm_isdst=-1), 'note-attributes.author': 'Mike McGarry', 'note-attributes.source': 'mobile.iphone', 'source': 'example_data/testing.enex'})]
 ```
 
+## 相关
 
-
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

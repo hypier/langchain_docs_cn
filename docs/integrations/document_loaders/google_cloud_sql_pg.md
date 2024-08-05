@@ -1,36 +1,35 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/google_cloud_sql_pg.ipynb
 ---
+
 # Google Cloud SQL for PostgreSQL
 
-> [Cloud SQL for PostgreSQL](https://cloud.google.com/sql/docs/postgres) is a fully-managed database service that helps you set up, maintain, manage, and administer your PostgreSQL relational databases on Google Cloud Platform. Extend your database application to build AI-powered experiences leveraging Cloud SQL for PostgreSQL's Langchain integrations.
+> [Cloud SQL for PostgreSQL](https://cloud.google.com/sql/docs/postgres) 是一种完全托管的数据库服务，帮助您在 Google Cloud Platform 上设置、维护、管理和管理您的 PostgreSQL 关系数据库。扩展您的数据库应用程序，构建利用 Cloud SQL for PostgreSQL 的 Langchain 集成的 AI 驱动体验。
 
-This notebook goes over how to use `Cloud SQL for PostgreSQL` to load Documents with the `PostgresLoader` class.
+本笔记本介绍了如何使用 `Cloud SQL for PostgreSQL` 通过 `PostgresLoader` 类加载文档。
 
-Learn more about the package on [GitHub](https://github.com/googleapis/langchain-google-cloud-sql-pg-python/).
+在 [GitHub](https://github.com/googleapis/langchain-google-cloud-sql-pg-python/) 上了解有关该软件包的更多信息。
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/googleapis/langchain-google-cloud-sql-pg-python/blob/main/docs/document_loader.ipynb)
 
-## Before you begin
+## 开始之前
 
-To run this notebook, you will need to do the following:
+要运行此笔记本，您需要执行以下操作：
 
- * [Create a Google Cloud Project](https://developers.google.com/workspace/guides/create-project)
- * [Enable the Cloud SQL Admin API.](https://console.cloud.google.com/marketplace/product/google/sqladmin.googleapis.com)
- * [Create a Cloud SQL for PostgreSQL instance.](https://cloud.google.com/sql/docs/postgres/create-instance)
- * [Create a Cloud SQL for PostgreSQL database.](https://cloud.google.com/sql/docs/postgres/create-manage-databases)
- * [Add a User to the database.](https://cloud.google.com/sql/docs/postgres/create-manage-users)
+ * [创建一个 Google Cloud 项目](https://developers.google.com/workspace/guides/create-project)
+ * [启用 Cloud SQL Admin API。](https://console.cloud.google.com/marketplace/product/google/sqladmin.googleapis.com)
+ * [创建一个 Cloud SQL for PostgreSQL 实例。](https://cloud.google.com/sql/docs/postgres/create-instance)
+ * [创建一个 Cloud SQL for PostgreSQL 数据库。](https://cloud.google.com/sql/docs/postgres/create-manage-databases)
+ * [向数据库添加用户。](https://cloud.google.com/sql/docs/postgres/create-manage-users)
 
-### 🦜🔗 Library Installation
-Install the integration library, `langchain_google_cloud_sql_pg`.
-
+### 🦜🔗 库安装
+安装集成库 `langchain_google_cloud_sql_pg`。
 
 ```python
 %pip install --upgrade --quiet  langchain_google_cloud_sql_pg
 ```
 
-**Colab only:** Uncomment the following cell to restart the kernel or use the button to restart the kernel. For Vertex AI Workbench you can restart the terminal using the button on top.
-
+**仅限 Colab:** 取消注释以下单元以重启内核，或使用按钮重启内核。对于 Vertex AI Workbench，您可以使用顶部的按钮重启终端。
 
 ```python
 # # Automatically restart kernel after installs so that your environment can access the new packages
@@ -40,11 +39,11 @@ Install the integration library, `langchain_google_cloud_sql_pg`.
 # app.kernel.do_shutdown(True)
 ```
 
-### 🔐 Authentication
-Authenticate to Google Cloud as the IAM user logged into this notebook in order to access your Google Cloud Project.
+### 🔐 身份验证
+作为登录此笔记本的 IAM 用户对 Google Cloud 进行身份验证，以访问您的 Google Cloud 项目。
 
-* If you are using Colab to run this notebook, use the cell below and continue.
-* If you are using Vertex AI Workbench, check out the setup instructions [here](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env).
+* 如果您使用 Colab 运行此笔记本，请使用下面的单元格并继续。
+* 如果您使用 Vertex AI Workbench，请查看[这里](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env)的设置说明。
 
 
 ```python
@@ -53,15 +52,14 @@ from google.colab import auth
 auth.authenticate_user()
 ```
 
-### ☁ Set Your Google Cloud Project
-Set your Google Cloud project so that you can leverage Google Cloud resources within this notebook.
+### ☁ 设置您的 Google Cloud 项目
+设置您的 Google Cloud 项目，以便您可以在此笔记本中利用 Google Cloud 资源。
 
-If you don't know your project ID, try the following:
+如果您不知道您的项目 ID，请尝试以下方法：
 
-* Run `gcloud config list`.
-* Run `gcloud projects list`.
-* See the support page: [Locate the project ID](https://support.google.com/googleapi/answer/7014113).
-
+* 运行 `gcloud config list`。
+* 运行 `gcloud projects list`。
+* 查看支持页面：[定位项目 ID](https://support.google.com/googleapi/answer/7014113)。
 
 ```python
 # @title Project { display-mode: "form" }
@@ -71,11 +69,10 @@ PROJECT_ID = "gcp_project_id"  # @param {type:"string"}
 ! gcloud config set project {PROJECT_ID}
 ```
 
-## Basic Usage
+## 基本用法
 
-### Set Cloud SQL database values
-Find your database variables, in the [Cloud SQL Instances page](https://console.cloud.google.com/sql/instances).
-
+### 设置 Cloud SQL 数据库值
+在 [Cloud SQL 实例页面](https://console.cloud.google.com/sql/instances) 找到您的数据库变量。
 
 ```python
 # @title Set Your Values Here { display-mode: "form" }
@@ -87,25 +84,23 @@ TABLE_NAME = "vector_store"  # @param {type: "string"}
 
 ### Cloud SQL Engine
 
-One of the requirements and arguments to establish PostgreSQL as a document loader is a `PostgresEngine` object. The `PostgresEngine`  configures a connection pool to your Cloud SQL for PostgreSQL database, enabling successful connections from your application and following industry best practices.
+建立 PostgreSQL 作为文档加载器的一个要求和论据是一个 `PostgresEngine` 对象。`PostgresEngine` 配置了与您的 Cloud SQL for PostgreSQL 数据库的连接池，使您的应用程序能够成功连接并遵循行业最佳实践。
 
-To create a `PostgresEngine` using `PostgresEngine.from_instance()` you need to provide only 4 things:
+要使用 `PostgresEngine.from_instance()` 创建一个 `PostgresEngine`，您只需提供 4 个参数：
 
-1. `project_id` : Project ID of the Google Cloud Project where the Cloud SQL instance is located.
-1. `region` : Region where the Cloud SQL instance is located.
-1. `instance` : The name of the Cloud SQL instance.
-1. `database` : The name of the database to connect to on the Cloud SQL instance.
+1. `project_id` : Cloud SQL 实例所在的 Google Cloud 项目的项目 ID。
+1. `region` : Cloud SQL 实例所在的区域。
+1. `instance` : Cloud SQL 实例的名称。
+1. `database` : 要连接的 Cloud SQL 实例上的数据库名称。
 
-By default, [IAM database authentication](https://cloud.google.com/sql/docs/postgres/iam-authentication) will be used as the method of database authentication. This library uses the IAM principal belonging to the [Application Default Credentials (ADC)](https://cloud.google.com/docs/authentication/application-default-credentials) sourced from the environment.
+默认情况下，将使用 [IAM 数据库身份验证](https://cloud.google.com/sql/docs/postgres/iam-authentication) 作为数据库身份验证的方法。该库使用属于 [应用程序默认凭据 (ADC)](https://cloud.google.com/docs/authentication/application-default-credentials) 的 IAM 主体，该凭据来自环境。
 
-Optionally, [built-in database authentication](https://cloud.google.com/sql/docs/postgres/users) using a username and password to access the Cloud SQL database can also be used. Just provide the optional `user` and `password` arguments to `PostgresEngine.from_instance()`:
+可选地，也可以使用用户名和密码访问 Cloud SQL 数据库的 [内置数据库身份验证](https://cloud.google.com/sql/docs/postgres/users)。只需向 `PostgresEngine.from_instance()` 提供可选的 `user` 和 `password` 参数：
 
-* `user` : Database user to use for built-in database authentication and login
-* `password` : Database password to use for built-in database authentication and login.
+* `user` : 用于内置数据库身份验证和登录的数据库用户
+* `password` : 用于内置数据库身份验证和登录的数据库密码。
 
-
-**Note**: This tutorial demonstrates the async interface. All async methods have corresponding sync methods.
-
+**注意**：本教程演示了异步接口。所有异步方法都有对应的同步方法。
 
 ```python
 from langchain_google_cloud_sql_pg import PostgresEngine
@@ -118,20 +113,18 @@ engine = await PostgresEngine.afrom_instance(
 )
 ```
 
-### Create PostgresLoader
+### 创建 PostgresLoader
 
 
 ```python
 from langchain_google_cloud_sql_pg import PostgresLoader
 
-# Creating a basic PostgreSQL object
+# 创建基本的 PostgreSQL 对象
 loader = await PostgresLoader.create(engine, table_name=TABLE_NAME)
 ```
 
-### Load Documents via default table
-The loader returns a list of Documents from the table using the first column as page_content and all other columns as metadata. The default table will have the first column as
-page_content and the second column as metadata (JSON). Each row becomes a document. Please note that if you want your documents to have ids you will need to add them in.
-
+### 通过默认表加载文档
+加载器从表中返回文档列表，使用第一列作为 page_content，所有其他列作为元数据。默认表的第一列将是 page_content，第二列将是元数据（JSON）。每一行成为一个文档。请注意，如果您希望文档具有 ID，您需要将它们添加进去。
 
 ```python
 from langchain_google_cloud_sql_pg import PostgresLoader
@@ -143,7 +136,7 @@ docs = await loader.aload()
 print(docs)
 ```
 
-### Load documents via custom table/metadata or custom page content columns
+### 通过自定义表/元数据或自定义页面内容列加载文档
 
 
 ```python
@@ -157,10 +150,8 @@ docs = await loader.aload()
 print(docs)
 ```
 
-### Set page content format
-The loader returns a list of Documents, with one document per row, with page content in specified string format, i.e. text (space separated concatenation), JSON, YAML, CSV, etc. JSON and YAML formats include headers, while text and CSV do not include field headers.
-
-
+### 设置页面内容格式
+加载器返回一个文档列表，每行一个文档，页面内容采用指定的字符串格式，即文本（以空格分隔的连接）、JSON、YAML、CSV等。JSON和YAML格式包括表头，而文本和CSV不包括字段表头。
 
 ```python
 loader = await PostgresLoader.create(
@@ -173,8 +164,7 @@ docs = await loader.aload()
 print(docs)
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

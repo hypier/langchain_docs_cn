@@ -1,18 +1,15 @@
 # Atlas
 
->[Nomic Atlas](https://docs.nomic.ai/index.html) is a platform for interacting with both 
-> small and internet scale unstructured datasets.
+>[Nomic Atlas](https://docs.nomic.ai/index.html) 是一个用于与小型和互联网规模非结构化数据集交互的平台。
 
+## 安装与设置
 
-## Installation and Setup
+- 使用 `pip install nomic` 安装 Python 包
+- `Nomic` 也包含在 langchains 的 poetry 附加功能中 `poetry install -E all`
 
-- Install the Python package with `pip install nomic`
-- `Nomic` is also included in langchains poetry extras `poetry install -E all`
+## 向量存储
 
-
-## VectorStore
-
-See a [usage example](/docs/integrations/vectorstores/atlas).
+查看 [使用示例](/docs/integrations/vectorstores/atlas)。
 
 ```python
 from langchain_community.vectorstores import AtlasDB

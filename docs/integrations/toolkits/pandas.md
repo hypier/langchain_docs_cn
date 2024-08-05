@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/toolkits/pandas.ipynb
 ---
+
 # Pandas Dataframe
 
-This notebook shows how to use agents to interact with a `Pandas DataFrame`. It is mostly optimized for question answering.
+本笔记本展示了如何使用代理与 `Pandas DataFrame` 进行交互。它主要针对问答进行优化。
 
-**NOTE: this agent calls the `Python` agent under the hood, which executes LLM generated Python code - this can be bad if the LLM generated Python code is harmful. Use cautiously.**
+**注意：此代理在后台调用 `Python` 代理，执行 LLM 生成的 Python 代码 - 如果 LLM 生成的 Python 代码有害，这可能是危险的。请谨慎使用。**
 
 
 ```python
@@ -24,18 +25,17 @@ df = pd.read_csv(
 )
 ```
 
-## Using `ZERO_SHOT_REACT_DESCRIPTION`
+## 使用 `ZERO_SHOT_REACT_DESCRIPTION`
 
-This shows how to initialize the agent using the `ZERO_SHOT_REACT_DESCRIPTION` agent type.
-
+这展示了如何使用 `ZERO_SHOT_REACT_DESCRIPTION` 代理类型初始化代理。
 
 ```python
 agent = create_pandas_dataframe_agent(OpenAI(temperature=0), df, verbose=True)
 ```
 
-## Using OpenAI Functions
+## 使用 OpenAI 函数
 
-This shows how to initialize the agent using the OPENAI_FUNCTIONS agent type. Note that this is an alternative to the above.
+这展示了如何使用 OPENAI_FUNCTIONS 代理类型初始化代理。请注意，这是一种替代上述方法。
 
 
 ```python
@@ -49,7 +49,7 @@ agent = create_pandas_dataframe_agent(
 
 
 ```python
-agent.invoke("how many rows are there?")
+agent.invoke("有多少行？")
 ```
 ```output
 
@@ -59,87 +59,84 @@ agent.invoke("how many rows are there?")
 Invoking: `python_repl_ast` with `df.shape[0]`
 
 
-[0m[36;1m[1;3m891[0m[32;1m[1;3mThere are 891 rows in the dataframe.[0m
+[0m[36;1m[1;3m891[0m[32;1m[1;3m数据框中有 891 行。[0m
 
 [1m> Finished chain.[0m
 ```
 
 
 ```output
-'There are 891 rows in the dataframe.'
+'数据框中有 891 行。'
 ```
 
 
 
 ```python
-agent.invoke("how many people have more than 3 siblings")
+agent.invoke("有多少人有超过 3 个兄弟姐妹")
 ```
 ```output
 
 
 [1m> Entering new AgentExecutor chain...[0m
-[32;1m[1;3mThought: I need to count the number of people with more than 3 siblings
+[32;1m[1;3mThought: 我需要计算有超过 3 个兄弟姐妹的人数
 Action: python_repl_ast
 Action Input: df[df['SibSp'] > 3].shape[0][0m
 Observation: [36;1m[1;3m30[0m
-Thought:[32;1m[1;3m I now know the final answer
-Final Answer: 30 people have more than 3 siblings.[0m
+Thought:[32;1m[1;3m 我现在知道最终答案
+Final Answer: 30 人有超过 3 个兄弟姐妹。[0m
 
 [1m> Finished chain.[0m
 ```
 
 
 ```output
-'30 people have more than 3 siblings.'
+'30 人有超过 3 个兄弟姐妹。'
 ```
 
 
 
 ```python
-agent.invoke("whats the square root of the average age?")
+agent.invoke("平均年龄的平方根是多少？")
 ```
 ```output
 
 
 [1m> Entering new AgentExecutor chain...[0m
-[32;1m[1;3mThought: I need to calculate the average age first
+[32;1m[1;3mThought: 我需要先计算平均年龄
 Action: python_repl_ast
 Action Input: df['Age'].mean()[0m
 Observation: [36;1m[1;3m29.69911764705882[0m
-Thought:[32;1m[1;3m I now need to calculate the square root of the average age
+Thought:[32;1m[1;3m 我现在需要计算平均年龄的平方根
 Action: python_repl_ast
 Action Input: math.sqrt(df['Age'].mean())[0m
 Observation: [36;1m[1;3mNameError("name 'math' is not defined")[0m
-Thought:[32;1m[1;3m I need to import the math library
+Thought:[32;1m[1;3m 我需要导入 math 库
 Action: python_repl_ast
 Action Input: import math[0m
 Observation: [36;1m[1;3m[0m
-Thought:[32;1m[1;3m I now need to calculate the square root of the average age
+Thought:[32;1m[1;3m 我现在需要计算平均年龄的平方根
 Action: python_repl_ast
 Action Input: math.sqrt(df['Age'].mean())[0m
 Observation: [36;1m[1;3m5.449689683556195[0m
-Thought:[32;1m[1;3m I now know the final answer
-Final Answer: The square root of the average age is 5.449689683556195.[0m
+Thought:[32;1m[1;3m 我现在知道最终答案
+Final Answer: 平均年龄的平方根是 5.449689683556195。[0m
 
 [1m> Finished chain.[0m
 ```
 
 
 ```output
-'The square root of the average age is 5.449689683556195.'
+'平均年龄的平方根是 5.449689683556195。'
 ```
 
+## 多数据框示例
 
-## Multi DataFrame Example
-
-This next part shows how the agent can interact with multiple dataframes passed in as a list.
-
+下一部分展示了代理如何与作为列表传入的多个数据框进行交互。
 
 ```python
 df1 = df.copy()
 df1["Age"] = df1["Age"].fillna(df1["Age"].mean())
 ```
-
 
 ```python
 agent = create_pandas_dataframe_agent(OpenAI(temperature=0), [df, df1], verbose=True)
@@ -159,8 +156,6 @@ Final Answer: 177 rows in the age column are different.[0m
 [1m> Finished chain.[0m
 ```
 
-
 ```output
 '177 rows in the age column are different.'
 ```
-

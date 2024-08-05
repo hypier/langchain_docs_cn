@@ -1,44 +1,42 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/tutorials/classification.ipynb
-title: Tagging
+title: 标记
 sidebar_class_name: hidden
 ---
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/langchain-ai/langchain/blob/master/docs/docs/use_cases/tagging.ipynb)
+[![在 Colab 中打开](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/langchain-ai/langchain/blob/master/docs/docs/use_cases/tagging.ipynb)
 
-# Classify Text into Labels
+# 将文本分类为标签
 
-Tagging means labeling a document with classes such as:
+标记是指用类别对文档进行标记，例如：
 
-- sentiment
-- language
-- style (formal, informal etc.)
-- covered topics
-- political tendency
+- 情感
+- 语言
+- 风格（正式、非正式等）
+- 涉及主题
+- 政治倾向
 
 ![Image description](../../static/img/tagging.png)
 
-## Overview
+## 概述
 
-Tagging has a few components:
+标记有几个组成部分：
 
-* `function`: Like [extraction](/docs/tutorials/extraction), tagging uses [functions](https://openai.com/blog/function-calling-and-other-api-updates) to specify how the model should tag a document
-* `schema`: defines how we want to tag the document
+* `function`: 像 [extraction](/docs/tutorials/extraction) 一样，标记使用 [functions](https://openai.com/blog/function-calling-and-other-api-updates) 来指定模型应如何标记文档
+* `schema`: 定义我们希望如何标记文档
 
-## Quickstart
+## 快速入门
 
-Let's see a very straightforward example of how we can use OpenAI tool calling for tagging in LangChain. We'll use the [`with_structured_output`](/docs/how_to/structured_output) method supported by OpenAI models:
-
+让我们看看一个非常简单的例子，展示如何在 LangChain 中使用 OpenAI 工具调用进行标记。我们将使用 OpenAI 模型支持的 [`with_structured_output`](/docs/how_to/structured_output) 方法：
 
 ```python
 %pip install --upgrade --quiet langchain langchain-openai
 
-# Set env var OPENAI_API_KEY or load from a .env file:
+# 设置环境变量 OPENAI_API_KEY 或从 .env 文件加载：
 # import dotenv
 # dotenv.load_dotenv()
 ```
 
-Let's specify a Pydantic model with a few properties and their expected type in our schema.
-
+接下来，我们将指定一个 Pydantic 模型，包含一些属性及其预期类型。
 
 ```python
 from langchain_core.prompts import ChatPromptTemplate
@@ -47,22 +45,22 @@ from langchain_openai import ChatOpenAI
 
 tagging_prompt = ChatPromptTemplate.from_template(
     """
-Extract the desired information from the following passage.
+从以下段落中提取所需的信息。
 
-Only extract the properties mentioned in the 'Classification' function.
+仅提取“Classification”函数中提到的属性。
 
-Passage:
+段落：
 {input}
 """
 )
 
 
 class Classification(BaseModel):
-    sentiment: str = Field(description="The sentiment of the text")
+    sentiment: str = Field(description="文本的情感")
     aggressiveness: int = Field(
-        description="How aggressive the text is on a scale from 1 to 10"
+        description="文本的攻击性，按 1 到 10 的比例"
     )
-    language: str = Field(description="The language the text is written in")
+    language: str = Field(description="文本所写的语言")
 
 
 # LLM
@@ -73,21 +71,16 @@ llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-0125").with_structured_outp
 tagging_chain = tagging_prompt | llm
 ```
 
-
 ```python
 inp = "Estoy increiblemente contento de haberte conocido! Creo que seremos muy buenos amigos!"
 tagging_chain.invoke({"input": inp})
 ```
 
-
-
 ```output
 Classification(sentiment='positive', aggressiveness=1, language='Spanish')
 ```
 
-
-If we want JSON output, we can just call `.dict()`
-
+如果我们想要 JSON 输出，只需调用 `.dict()` 
 
 ```python
 inp = "Estoy muy enojado con vos! Te voy a dar tu merecido!"
@@ -95,31 +88,27 @@ res = tagging_chain.invoke({"input": inp})
 res.dict()
 ```
 
-
-
 ```output
 {'sentiment': 'negative', 'aggressiveness': 8, 'language': 'Spanish'}
 ```
 
+如我们在示例中所见，它正确地解释了我们的需求。
 
-As we can see in the examples, it correctly interprets what we want.
+结果会有所不同，例如，我们可能会得到不同语言的情感（如 'positive'、'enojado' 等）。
 
-The results vary so that we may get, for example, sentiments in different languages ('positive', 'enojado' etc.).
+我们将在下一节中看到如何控制这些结果。
 
-We will see how to control these results in the next section.
+## 更精细的控制
 
-## Finer control
+仔细的模式定义使我们对模型的输出有了更多的控制。
 
-Careful schema definition gives us more control over the model's output. 
+具体来说，我们可以定义：
 
-Specifically, we can define:
+- 每个属性的可能值
+- 描述以确保模型理解该属性
+- 需要返回的属性
 
-- possible values for each property
-- description to make sure that the model understands the property
-- required properties to be returned
-
-Let's redeclare our Pydantic model to control for each of the previously mentioned aspects using enums:
-
+让我们重新声明我们的 Pydantic 模型，以控制之前提到的每个方面，使用枚举：
 
 ```python
 class Classification(BaseModel):
@@ -133,7 +122,6 @@ class Classification(BaseModel):
         ..., enum=["spanish", "english", "french", "german", "italian"]
     )
 ```
-
 
 ```python
 tagging_prompt = ChatPromptTemplate.from_template(
@@ -154,52 +142,40 @@ llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-0125").with_structured_outp
 chain = tagging_prompt | llm
 ```
 
-Now the answers will be restricted in a way we expect!
-
+现在，答案将以我们期望的方式受到限制！
 
 ```python
 inp = "Estoy increiblemente contento de haberte conocido! Creo que seremos muy buenos amigos!"
 chain.invoke({"input": inp})
 ```
 
-
-
 ```output
 Classification(sentiment='happy', aggressiveness=1, language='spanish')
 ```
-
-
 
 ```python
 inp = "Estoy muy enojado con vos! Te voy a dar tu merecido!"
 chain.invoke({"input": inp})
 ```
 
-
-
 ```output
 Classification(sentiment='sad', aggressiveness=5, language='spanish')
 ```
-
-
 
 ```python
 inp = "Weather is ok here, I can go outside without much more than a coat"
 chain.invoke({"input": inp})
 ```
 
-
-
 ```output
 Classification(sentiment='neutral', aggressiveness=2, language='english')
 ```
 
-
-The [LangSmith trace](https://smith.langchain.com/public/38294e04-33d8-4c5a-ae92-c2fe68be8332/r) lets us peek under the hood:
+[LangSmith trace](https://smith.langchain.com/public/38294e04-33d8-4c5a-ae92-c2fe68be8332/r) 让我们窥视内部工作：
 
 ![Image description](../../static/img/tagging_trace.png)
 
-### Going deeper
+### 深入探讨
 
-* You can use the [metadata tagger](/docs/integrations/document_transformers/openai_metadata_tagger) document transformer to extract metadata from a LangChain `Document`. 
-* This covers the same basic functionality as the tagging chain, only applied to a LangChain `Document`.
+* 您可以使用 [metadata tagger](/docs/integrations/document_transformers/openai_metadata_tagger) 文档转换器从 LangChain `Document` 中提取元数据。
+* 这涵盖了与标签链相同的基本功能，只是应用于 LangChain `Document`。

@@ -1,24 +1,23 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/kinetica.ipynb
 ---
-# Kinetica Vectorstore based Retriever
 
->[Kinetica](https://www.kinetica.com/) is a database with integrated support for vector similarity search
+# Kinetica 向量存储检索器
 
-It supports:
-- exact and approximate nearest neighbor search
-- L2 distance, inner product, and cosine distance
+>[Kinetica](https://www.kinetica.com/) 是一个集成支持向量相似性搜索的数据库
 
-This notebook shows how to use a retriever based on Kinetica vector store (`Kinetica`).
+它支持：
+- 精确和近似最近邻搜索
+- L2 距离、内积和余弦距离
 
+本笔记本展示了如何使用基于 Kinetica 向量存储的检索器（`Kinetica`）。
 
 ```python
 # Please ensure that this connector is installed in your working environment.
 %pip install gpudb==7.2.0.9
 ```
 
-We want to use `OpenAIEmbeddings` so we have to get the OpenAI API Key.
-
+我们想使用 `OpenAIEmbeddings`，因此我们需要获取 OpenAI API 密钥。
 
 ```python
 import getpass
@@ -27,14 +26,12 @@ import os
 os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API Key:")
 ```
 
-
 ```python
 ## Loading Environment Variables
 from dotenv import load_dotenv
 
 load_dotenv()
 ```
-
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -46,7 +43,6 @@ from langchain_core.documents import Document
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import CharacterTextSplitter
 ```
-
 
 ```python
 # Kinetica needs the connection to the database.
@@ -61,7 +57,7 @@ def create_config() -> KineticaSettings:
     return KineticaSettings(host=HOST, username=USERNAME, password=PASSWORD)
 ```
 
-## Create Retriever from vector store
+## 从向量存储创建检索器
 
 
 ```python
@@ -72,8 +68,8 @@ docs = text_splitter.split_documents(documents)
 
 embeddings = OpenAIEmbeddings()
 
-# The Kinetica Module will try to create a table with the name of the collection.
-# So, make sure that the collection name is unique and the user has the permission to create a table.
+# Kinetica 模块将尝试创建一个与集合名称相同的表。
+# 因此，请确保集合名称是唯一的，并且用户有权限创建表。
 
 COLLECTION_NAME = "state_of_the_union_test"
 connection = create_config()
@@ -85,11 +81,11 @@ db = Kinetica.from_documents(
     config=connection,
 )
 
-# create retriever from the vector store
+# 从向量存储创建检索器
 retriever = db.as_retriever(search_kwargs={"k": 2})
 ```
 
-## Search with retriever
+## 使用检索器搜索
 
 
 ```python
@@ -99,8 +95,7 @@ result = retriever.get_relevant_documents(
 print(docs[0].page_content)
 ```
 
+## 相关
 
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

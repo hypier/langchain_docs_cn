@@ -1,28 +1,28 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/cohere.ipynb
 ---
+
 # Cohere
 
 :::caution
-You are currently on a page documenting the use of Cohere models as [text completion models](/docs/concepts/#llms). Many popular Cohere models are [chat completion models](/docs/concepts/#chat-models).
+您当前正在查看文档，介绍了如何使用 Cohere 模型作为 [文本补全模型](/docs/concepts/#llms)。许多流行的 Cohere 模型是 [聊天补全模型](/docs/concepts/#chat-models)。
 
-You may be looking for [this page instead](/docs/integrations/chat/cohere/).
+您可能想查看 [这页](/docs/integrations/chat/cohere/)。
 :::
 
->[Cohere](https://cohere.ai/about) is a Canadian startup that provides natural language processing models that help companies improve human-machine interactions.
+>[Cohere](https://cohere.ai/about) 是一家加拿大初创公司，提供自然语言处理模型，帮助公司改善人机交互。
 
-Head to the [API reference](https://api.python.langchain.com/en/latest/llms/langchain_community.llms.cohere.Cohere.html) for detailed documentation of all attributes and methods.
+前往 [API 参考](https://api.python.langchain.com/en/latest/llms/langchain_community.llms.cohere.Cohere.html) 获取所有属性和方法的详细文档。
 
-## Setup
+## 设置
 
-The integration lives in the `langchain-community` package. We also need to install the `cohere` package itself. We can install these with:
+集成位于 `langchain-community` 包中。我们还需要安装 `cohere` 包。我们可以通过以下命令安装这些包：
 
 ```bash
 pip install -U langchain-community langchain-cohere
 ```
 
-We'll also need to get a [Cohere API key](https://cohere.com/) and set the `COHERE_API_KEY` environment variable:
-
+我们还需要获取一个 [Cohere API 密钥](https://cohere.com/) 并设置 `COHERE_API_KEY` 环境变量：
 
 ```python
 import getpass
@@ -33,17 +33,16 @@ os.environ["COHERE_API_KEY"] = getpass.getpass()
 ```output
  ········
 ```
-It's also helpful (but not needed) to set up [LangSmith](https://smith.langchain.com/) for best-in-class observability
-
+设置 [LangSmith](https://smith.langchain.com/) 以获得最佳的可观察性也是有帮助的（但不是必需的）
 
 ```python
 # os.environ["LANGCHAIN_TRACING_V2"] = "true"
 # os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 ```
 
-## Usage
+## 用法
 
-Cohere supports all [LLM](/docs/how_to#llms) functionality:
+Cohere 支持所有 [LLM](/docs/how_to#llms) 功能：
 
 
 ```python
@@ -101,7 +100,7 @@ model.batch([message])
 ```
 
 
-You can also easily combine with a prompt template for easy structuring of user input. We can do this using [LCEL](/docs/concepts#langchain-expression-language-lcel)
+您还可以轻松地与提示模板结合，以便于结构化用户输入。我们可以使用 [LCEL](/docs/concepts#langchain-expression-language-lcel) 来实现这一点。
 
 
 ```python
@@ -122,9 +121,7 @@ chain.invoke({"topic": "bears"})
 ' Why did the teddy bear cross the road?\nBecause he had bear crossings.\n\nWould you like to hear another joke? '
 ```
 
+## 相关
 
-
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

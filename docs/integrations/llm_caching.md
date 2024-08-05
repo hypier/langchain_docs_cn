@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llm_caching.ipynb
 ---
-# Model caches
 
-This notebook covers how to cache results of individual LLM calls using different caches.
+# 模型缓存
 
-First, let's install some dependencies
+本笔记本介绍了如何使用不同的缓存来缓存单个 LLM 调用的结果。
+
+首先，让我们安装一些依赖项
 
 
 ```python
@@ -22,8 +23,8 @@ os.environ["OPENAI_API_KEY"] = getpass()
 from langchain.globals import set_llm_cache
 from langchain_openai import OpenAI
 
-# To make the caching really obvious, lets use a slower and older model.
-# Caching supports newer chat models as well.
+# 为了让缓存变得更加明显，我们使用一个较慢且较旧的模型。
+# 缓存也支持更新的聊天模型。
 llm = OpenAI(model="gpt-3.5-turbo-instruct", n=2, best_of=2)
 ```
 
@@ -39,7 +40,7 @@ set_llm_cache(InMemoryCache())
 
 ```python
 %%time
-# The first time, it is not yet in cache, so it should take longer
+# 第一次调用时，尚未缓存，因此应该需要更长的时间
 llm.invoke("Tell me a joke")
 ```
 ```output
@@ -56,7 +57,7 @@ Wall time: 649 ms
 
 ```python
 %%time
-# The second time it is, so it goes faster
+# 第二次调用时，已经缓存，因此速度更快
 llm.invoke("Tell me a joke")
 ```
 ```output
@@ -69,8 +70,7 @@ Wall time: 1.23 ms
 "\n\nWhy couldn't the bicycle stand up by itself? Because it was two-tired!"
 ```
 
-
-## `SQLite` Cache
+## `SQLite` 缓存
 
 
 ```python
@@ -79,7 +79,7 @@ Wall time: 1.23 ms
 
 
 ```python
-# We can do the same thing with a SQLite cache
+# 我们可以使用 SQLite 缓存做同样的事情
 from langchain_community.cache import SQLiteCache
 
 set_llm_cache(SQLiteCache(database_path=".langchain.db"))
@@ -88,7 +88,7 @@ set_llm_cache(SQLiteCache(database_path=".langchain.db"))
 
 ```python
 %%time
-# The first time, it is not yet in cache, so it should take longer
+# 第一次，它还不在缓存中，所以会花更长的时间
 llm.invoke("Tell me a joke")
 ```
 ```output
@@ -98,14 +98,14 @@ Wall time: 486 ms
 
 
 ```output
-"\n\nWhy couldn't the bicycle stand up by itself? Because it was two-tired!"
+"\n\n为什么自行车无法独自站立？因为它太累了！"
 ```
 
 
 
 ```python
 %%time
-# The second time it is, so it goes faster
+# 第二次它已经在缓存中，所以会更快
 llm.invoke("Tell me a joke")
 ```
 ```output
@@ -115,20 +115,17 @@ Wall time: 113 ms
 
 
 ```output
-"\n\nWhy couldn't the bicycle stand up by itself? Because it was two-tired!"
+"\n\n为什么自行车无法独自站立？因为它太累了！"
 ```
 
+## `Upstash Redis` 缓存
 
-## `Upstash Redis` Cache
-
-### Standard Cache
-Use [Upstash Redis](https://upstash.com) to cache prompts and responses with a serverless HTTP API.
-
+### 标准缓存
+使用 [Upstash Redis](https://upstash.com) 通过无服务器 HTTP API 缓存提示和响应。
 
 ```python
 %pip install -qU upstash_redis
 ```
-
 
 ```python
 import langchain
@@ -141,10 +138,9 @@ TOKEN = "<UPSTASH_REDIS_REST_TOKEN>"
 langchain.llm_cache = UpstashRedisCache(redis_=Redis(url=URL, token=TOKEN))
 ```
 
-
 ```python
 %%time
-# The first time, it is not yet in cache, so it should take longer
+# 第一次调用时，缓存中尚不存在，因此需要更长时间
 llm.invoke("Tell me a joke")
 ```
 ```output
@@ -152,16 +148,13 @@ CPU times: user 7.56 ms, sys: 2.98 ms, total: 10.5 ms
 Wall time: 1.14 s
 ```
 
-
 ```output
 '\n\nWhy did the chicken cross the road?\n\nTo get to the other side!'
 ```
 
-
-
 ```python
 %%time
-# The second time it is, so it goes faster
+# 第二次调用时，缓存中已存在，因此速度更快
 llm.invoke("Tell me a joke")
 ```
 ```output
@@ -169,16 +162,14 @@ CPU times: user 2.78 ms, sys: 1.95 ms, total: 4.73 ms
 Wall time: 82.9 ms
 ```
 
-
 ```output
 '\n\nWhy did the chicken cross the road?\n\nTo get to the other side!'
 ```
 
+## `Redis` 缓存
 
-## `Redis` Cache
-
-### Standard Cache
-Use [Redis](/docs/integrations/providers/redis) to cache prompts and responses.
+### 标准缓存
+使用 [Redis](/docs/integrations/providers/redis) 来缓存提示和响应。
 
 
 ```python
@@ -187,8 +178,8 @@ Use [Redis](/docs/integrations/providers/redis) to cache prompts and responses.
 
 
 ```python
-# We can do the same thing with a Redis cache
-# (make sure your local Redis instance is running first before running this example)
+# 我们可以使用 Redis 缓存做同样的事情
+# （在运行此示例之前，请确保您的本地 Redis 实例已启动）
 from langchain_community.cache import RedisCache
 from redis import Redis
 
@@ -198,7 +189,7 @@ set_llm_cache(RedisCache(redis_=Redis()))
 
 ```python
 %%time
-# The first time, it is not yet in cache, so it should take longer
+# 第一次，它还不在缓存中，因此应该需要更长时间
 llm.invoke("Tell me a joke")
 ```
 ```output
@@ -208,14 +199,14 @@ Wall time: 1.04 s
 
 
 ```output
-'\n\nWhy did the chicken cross the road?\n\nTo get to the other side!'
+'\n\n为什么鸡要过马路？\n\n为了到达另一边！'
 ```
 
 
 
 ```python
 %%time
-# The second time it is, so it goes faster
+# 第二次它在缓存中，因此速度更快
 llm.invoke("Tell me a joke")
 ```
 ```output
@@ -225,18 +216,15 @@ Wall time: 5.58 ms
 
 
 ```output
-'\n\nWhy did the chicken cross the road?\n\nTo get to the other side!'
+'\n\n为什么鸡要过马路？\n\n为了到达另一边！'
 ```
 
-
-### Semantic Cache
-Use [Redis](/docs/integrations/providers/redis) to cache prompts and responses and evaluate hits based on semantic similarity.
-
+### 语义缓存
+使用 [Redis](/docs/integrations/providers/redis) 来缓存提示和响应，并根据语义相似性评估命中率。
 
 ```python
 %pip install -qU redis
 ```
-
 
 ```python
 from langchain_community.cache import RedisSemanticCache
@@ -247,10 +235,9 @@ set_llm_cache(
 )
 ```
 
-
 ```python
 %%time
-# The first time, it is not yet in cache, so it should take longer
+# 第一次，它还不在缓存中，所以应该需要更长时间
 llm.invoke("Tell me a joke")
 ```
 ```output
@@ -258,17 +245,14 @@ CPU times: user 351 ms, sys: 156 ms, total: 507 ms
 Wall time: 3.37 s
 ```
 
-
 ```output
 "\n\nWhy don't scientists trust atoms?\nBecause they make up everything."
 ```
 
-
-
 ```python
 %%time
-# The second time, while not a direct hit, the question is semantically similar to the original question,
-# so it uses the cached result!
+# 第二次，虽然不是直接命中，但问题在语义上与原始问题相似，
+# 因此使用缓存的结果！
 llm.invoke("Tell me one joke")
 ```
 ```output
@@ -276,17 +260,15 @@ CPU times: user 6.25 ms, sys: 2.72 ms, total: 8.97 ms
 Wall time: 262 ms
 ```
 
-
 ```output
 "\n\nWhy don't scientists trust atoms?\nBecause they make up everything."
 ```
 
-
 ## `GPTCache`
 
-We can use [GPTCache](https://github.com/zilliztech/GPTCache) for exact match caching OR to cache results based on semantic similarity
+我们可以使用 [GPTCache](https://github.com/zilliztech/GPTCache) 进行精确匹配缓存或基于语义相似性缓存结果
 
-Let's first start with an example of exact match
+首先让我们从一个精确匹配的例子开始
 
 
 ```python
@@ -321,7 +303,7 @@ set_llm_cache(GPTCache(init_gptcache))
 
 ```python
 %%time
-# The first time, it is not yet in cache, so it should take longer
+# 第一次，它还不在缓存中，所以应该花更长的时间
 llm.invoke("Tell me a joke")
 ```
 ```output
@@ -331,14 +313,14 @@ Wall time: 6.2 s
 
 
 ```output
-'\n\nWhy did the chicken cross the road?\n\nTo get to the other side!'
+'\n\n为什么鸡要过马路？\n\n为了到达另一边！'
 ```
 
 
 
 ```python
 %%time
-# The second time it is, so it goes faster
+# 第二次它在缓存中，所以速度更快
 llm.invoke("Tell me a joke")
 ```
 ```output
@@ -348,11 +330,11 @@ Wall time: 635 µs
 
 
 ```output
-'\n\nWhy did the chicken cross the road?\n\nTo get to the other side!'
+'\n\n为什么鸡要过马路？\n\n为了到达另一边！'
 ```
 
 
-Let's now show an example of similarity caching
+现在让我们展示一个相似性缓存的例子
 
 
 ```python
@@ -378,7 +360,7 @@ set_llm_cache(GPTCache(init_gptcache))
 
 ```python
 %%time
-# The first time, it is not yet in cache, so it should take longer
+# 第一次，它还不在缓存中，所以应该花更长的时间
 llm.invoke("Tell me a joke")
 ```
 ```output
@@ -388,14 +370,14 @@ Wall time: 8.44 s
 
 
 ```output
-'\n\nWhy did the chicken cross the road?\n\nTo get to the other side.'
+'\n\n为什么鸡要过马路？\n\n为了到达另一边。'
 ```
 
 
 
 ```python
 %%time
-# This is an exact match, so it finds it in the cache
+# 这是一个精确匹配，所以它在缓存中找到了
 llm.invoke("Tell me a joke")
 ```
 ```output
@@ -405,14 +387,14 @@ Wall time: 226 ms
 
 
 ```output
-'\n\nWhy did the chicken cross the road?\n\nTo get to the other side.'
+'\n\n为什么鸡要过马路？\n\n为了到达另一边。'
 ```
 
 
 
 ```python
 %%time
-# This is not an exact match, but semantically within distance so it hits!
+# 这不是一个精确匹配，但在语义上在距离之内，所以它命中！
 llm.invoke("Tell me joke")
 ```
 ```output
@@ -422,20 +404,18 @@ Wall time: 224 ms
 
 
 ```output
-'\n\nWhy did the chicken cross the road?\n\nTo get to the other side.'
+'\n\n为什么鸡要过马路？\n\n为了到达另一边。'
 ```
 
+## `MongoDB Atlas` 缓存
 
-## `MongoDB Atlas` Cache
-
-[MongoDB Atlas](https://www.mongodb.com/docs/atlas/) is a fully-managed cloud database available in AWS, Azure, and GCP. It has native support for 
-Vector Search on the MongoDB document data.
-Use [MongoDB Atlas Vector Search](/docs/integrations/providers/mongodb_atlas) to semantically cache prompts and responses.
+[MongoDB Atlas](https://www.mongodb.com/docs/atlas/) 是一个完全托管的云数据库，支持 AWS、Azure 和 GCP。它对 MongoDB 文档数据原生支持向量搜索。
+使用 [MongoDB Atlas 向量搜索](/docs/integrations/providers/mongodb_atlas) 进行语义缓存提示和响应。
 
 ### `MongoDBCache`
-An abstraction to store a simple cache in MongoDB. This does not use Semantic Caching, nor does it require an index to be made on the collection before generation.
+一个用于在MongoDB中存储简单缓存的抽象。这不使用语义缓存，也不需要在生成之前在集合上创建索引。
 
-To import this cache, first install the required dependency:
+要导入此缓存，首先安装所需的依赖项：
 
 ```bash
 %pip install -qU langchain-mongodb
@@ -446,11 +426,11 @@ from langchain_mongodb.cache import MongoDBCache
 ```
 
 
-To use this cache with your LLMs:
+要将此缓存与您的LLM一起使用：
 ```python
 from langchain_core.globals import set_llm_cache
 
-# use any embedding provider...
+# 使用任何嵌入提供者...
 from tests.integration_tests.vectorstores.fake_embeddings import FakeEmbeddings
 
 mongodb_atlas_uri = "<YOUR_CONNECTION_STRING>"
@@ -464,21 +444,20 @@ set_llm_cache(MongoDBCache(
 ))
 ```
 
-
 ### `MongoDBAtlasSemanticCache`
-Semantic caching allows users to retrieve cached prompts based on semantic similarity between the user input and previously cached results. Under the hood it blends MongoDBAtlas as both a cache and a vectorstore.
-The MongoDBAtlasSemanticCache inherits from `MongoDBAtlasVectorSearch` and needs an Atlas Vector Search Index defined to work. Please look at the [usage example](/docs/integrations/vectorstores/mongodb_atlas) on how to set up the index.
+语义缓存允许用户根据用户输入与先前缓存结果之间的语义相似性检索缓存提示。在底层，它将MongoDBAtlas作为缓存和向量存储进行结合。
+MongoDBAtlasSemanticCache继承自`MongoDBAtlasVectorSearch`，并需要定义一个Atlas向量搜索索引才能工作。请查看[使用示例](/docs/integrations/vectorstores/mongodb_atlas)以了解如何设置索引。
 
-To import this cache:
+要导入此缓存：
 ```python
 from langchain_mongodb.cache import MongoDBAtlasSemanticCache
 ```
 
-To use this cache with your LLMs:
+要将此缓存与您的LLM一起使用：
 ```python
 from langchain_core.globals import set_llm_cache
 
-# use any embedding provider...
+# 使用任何嵌入提供者...
 from tests.integration_tests.vectorstores.fake_embeddings import FakeEmbeddings
 
 mongodb_atlas_uri = "<YOUR_CONNECTION_STRING>"
@@ -493,19 +472,19 @@ set_llm_cache(MongoDBAtlasSemanticCache(
 ))
 ```
 
-To find more resources about using MongoDBSemanticCache visit [here](https://www.mongodb.com/blog/post/introducing-semantic-caching-dedicated-mongodb-lang-chain-package-gen-ai-apps)
+要查找有关使用MongoDBSemanticCache的更多资源，请访问[这里](https://www.mongodb.com/blog/post/introducing-semantic-caching-dedicated-mongodb-lang-chain-package-gen-ai-apps)
 
-## `Momento` Cache
-Use [Momento](/docs/integrations/providers/momento) to cache prompts and responses.
+## `Momento` 缓存
+使用 [Momento](/docs/integrations/providers/momento) 来缓存提示和响应。
 
-Requires momento to use, uncomment below to install:
+使用前需要安装 momento，取消下面的注释以进行安装：
 
 
 ```python
 %pip install -qU momento
 ```
 
-You'll need to get a Momento auth token to use this class. This can either be passed in to a momento.CacheClient if you'd like to instantiate that directly, as a named parameter `auth_token` to `MomentoChatMessageHistory.from_client_params`, or can just be set as an environment variable `MOMENTO_AUTH_TOKEN`.
+您需要获取一个 Momento 认证令牌才能使用此类。可以将其作为命名参数 `auth_token` 传递给 `MomentoChatMessageHistory.from_client_params`，也可以直接传递给 momento.CacheClient，或者将其设置为环境变量 `MOMENTO_AUTH_TOKEN`。
 
 
 ```python
@@ -521,7 +500,7 @@ set_llm_cache(MomentoCache.from_client_params(cache_name, ttl))
 
 ```python
 %%time
-# The first time, it is not yet in cache, so it should take longer
+# 第一次，它还不在缓存中，因此应该需要更长时间
 llm.invoke("Tell me a joke")
 ```
 ```output
@@ -538,8 +517,8 @@ Wall time: 1.73 s
 
 ```python
 %%time
-# The second time it is, so it goes faster
-# When run in the same region as the cache, latencies are single digit ms
+# 第二次，它已经在缓存中，因此速度更快
+# 在与缓存位于同一地区运行时，延迟为个位数毫秒
 llm.invoke("Tell me a joke")
 ```
 ```output
@@ -552,11 +531,9 @@ Wall time: 57.9 ms
 '\n\nWhy did the chicken cross the road?\n\nTo get to the other side!'
 ```
 
+## `SQLAlchemy` 缓存
 
-## `SQLAlchemy` Cache
-
-You can use `SQLAlchemyCache` to cache with any SQL database supported by `SQLAlchemy`.
-
+您可以使用 `SQLAlchemyCache` 在任何由 `SQLAlchemy` 支持的 SQL 数据库中进行缓存。
 
 ```python
 # from langchain.cache import SQLAlchemyCache
@@ -566,7 +543,7 @@ You can use `SQLAlchemyCache` to cache with any SQL database supported by `SQLAl
 # set_llm_cache(SQLAlchemyCache(engine))
 ```
 
-### Custom SQLAlchemy Schemas
+### 自定义 SQLAlchemy 模式
 
 
 ```python
@@ -602,33 +579,32 @@ engine = create_engine("postgresql://postgres:postgres@localhost:5432/postgres")
 set_llm_cache(SQLAlchemyCache(engine, FulltextLLMCache))
 ```
 
-## `Cassandra` caches
+## `Cassandra` 缓存
 
-> [Apache Cassandra®](https://cassandra.apache.org/) is a NoSQL, row-oriented, highly scalable and highly available database. Starting with version 5.0, the database ships with [vector search capabilities](https://cassandra.apache.org/doc/trunk/cassandra/vector-search/overview.html).
+> [Apache Cassandra®](https://cassandra.apache.org/) 是一个 NoSQL、行导向、高度可扩展和高度可用的数据库。从 5.0 版本开始，数据库支持 [向量搜索功能](https://cassandra.apache.org/doc/trunk/cassandra/vector-search/overview.html)。
 
-You can use Cassandra for caching LLM responses, choosing from the exact-match `CassandraCache` or the (vector-similarity-based) `CassandraSemanticCache`.
+您可以使用 Cassandra 来缓存 LLM 响应，选择精确匹配的 `CassandraCache` 或基于向量相似性的 `CassandraSemanticCache`。
 
-Let's see both in action. The next cells guide you through the (little) required setup, and the following cells showcase the two available cache classes.
+让我们看看这两者的实际应用。接下来的单元格将指导您完成（少量）所需的设置，后续单元格展示了两个可用的缓存类。
 
-### Required dependency
+### 所需依赖项
 
 
 ```python
 %pip install -qU "cassio>=0.1.4"
 ```
 
-### Connect to the DB
+### 连接到数据库
 
-The Cassandra caches shown in this page can be used with Cassandra as well as other derived databases, such as Astra DB, which use the CQL (Cassandra Query Language) protocol.
+本页面显示的 Cassandra 缓存可与 Cassandra 及其他衍生数据库一起使用，例如 Astra DB，它使用 CQL（Cassandra 查询语言）协议。
 
-> DataStax [Astra DB](https://docs.datastax.com/en/astra-serverless/docs/vector-search/quickstart.html) is a managed serverless database built on Cassandra, offering the same interface and strengths.
+> DataStax [Astra DB](https://docs.datastax.com/en/astra-serverless/docs/vector-search/quickstart.html) 是一个基于 Cassandra 的托管无服务器数据库，提供相同的接口和优势。
 
-Depending on whether you connect to a Cassandra cluster or to Astra DB through CQL, you will provide different parameters when instantiating the cache (through initialization of a CassIO connection).
+根据您是通过 CQL 连接到 Cassandra 集群还是 Astra DB，您在实例化缓存（通过初始化 CassIO 连接）时将提供不同的参数。
 
-#### Connecting to a Cassandra cluster
+#### 连接到 Cassandra 集群
 
-You first need to create a `cassandra.cluster.Session` object, as described in the [Cassandra driver documentation](https://docs.datastax.com/en/developer/python-driver/latest/api/cassandra/cluster/#module-cassandra.cluster). The details vary (e.g. with network settings and authentication), but this might be something like:
-
+您首先需要创建一个 `cassandra.cluster.Session` 对象，如 [Cassandra 驱动程序文档](https://docs.datastax.com/en/developer/python-driver/latest/api/cassandra/cluster/#module-cassandra.cluster) 中所述。具体细节各不相同（例如网络设置和身份验证），但这可能类似于：
 
 ```python
 from cassandra.cluster import Cluster
@@ -637,8 +613,7 @@ cluster = Cluster(["127.0.0.1"])
 session = cluster.connect()
 ```
 
-You can now set the session, along with your desired keyspace name, as a global CassIO parameter:
-
+现在，您可以将会话和所需的键空间名称设置为全局 CassIO 参数：
 
 ```python
 import cassio
@@ -650,14 +625,13 @@ cassio.init(session=session, keyspace=CASSANDRA_KEYSPACE)
 ```output
 CASSANDRA_KEYSPACE =  demo_keyspace
 ```
-#### Connecting to Astra DB through CQL
+#### 通过 CQL 连接到 Astra DB
 
-In this case you initialize CassIO with the following connection parameters:
+在这种情况下，您使用以下连接参数初始化 CassIO：
 
-- the Database ID, e.g. `01234567-89ab-cdef-0123-456789abcdef`
-- the Token, e.g. `AstraCS:6gBhNmsk135....` (it must be a "Database Administrator" token)
-- Optionally a Keyspace name (if omitted, the default one for the database will be used)
-
+- 数据库 ID，例如 `01234567-89ab-cdef-0123-456789abcdef`
+- 令牌，例如 `AstraCS:6gBhNmsk135....`（必须是“数据库管理员”令牌）
+- 可选的键空间名称（如果省略，将使用数据库的默认名称）
 
 ```python
 import getpass
@@ -687,10 +661,9 @@ cassio.init(
 )
 ```
 
-### Cassandra: Exact cache
+### Cassandra: 精确缓存
 
-This will avoid invoking the LLM when the supplied prompt is _exactly_ the same as one encountered already:
-
+这将避免在提供的提示与之前遇到的完全相同时调用LLM：
 
 ```python
 from langchain_community.cache import CassandraCache
@@ -698,7 +671,6 @@ from langchain_core.globals import set_llm_cache
 
 set_llm_cache(CassandraCache())
 ```
-
 
 ```python
 %%time
@@ -725,17 +697,16 @@ The Moon is tidally locked with the Earth, which means that its rotation on its 
 CPU times: user 5.51 ms, sys: 0 ns, total: 5.51 ms
 Wall time: 5.78 ms
 ```
-### Cassandra: Semantic cache
 
-This cache will do a semantic similarity search and return a hit if it finds a cached entry that is similar enough, For this, you need to provide an `Embeddings` instance of your choice.
+### Cassandra: 语义缓存
 
+此缓存将进行语义相似性搜索，如果找到足够相似的缓存条目，则返回命中。为此，您需要提供一个您选择的 `Embeddings` 实例。
 
 ```python
 from langchain_openai import OpenAIEmbeddings
 
 embedding = OpenAIEmbeddings()
 ```
-
 
 ```python
 from langchain_community.cache import CassandraSemanticCache
@@ -749,16 +720,15 @@ set_llm_cache(
 )
 ```
 
-
 ```python
 %%time
 
-print(llm.invoke("Why is the Moon always showing the same side?"))
+print(llm.invoke("为什么月球总是显示同一面？"))
 ```
 ```output
 
 
-The Moon is always showing the same side because of a phenomenon called synchronous rotation. This means that the Moon rotates on its axis at the same rate that it orbits around the Earth, which takes approximately 27.3 days. This results in the same side of the Moon always facing the Earth. This is due to the gravitational forces between the Earth and the Moon, which have caused the Moon's rotation to gradually slow down and become synchronized with its orbit. This is a common occurrence among many moons in our solar system.
+月球总是显示同一面是因为一种叫做同步旋转的现象。这意味着月球以与其绕地球公转相同的速度自转，公转大约需要27.3天。这导致月球的同一面始终朝向地球。这是由于地球和月球之间的引力作用，导致月球的自转逐渐减慢并与其公转同步。这在我们太阳系的许多卫星中都是一种常见现象。
 CPU times: user 49.5 ms, sys: 7.38 ms, total: 56.9 ms
 Wall time: 2.55 s
 ```
@@ -766,27 +736,27 @@ Wall time: 2.55 s
 ```python
 %%time
 
-print(llm.invoke("How come we always see one face of the moon?"))
+print(llm.invoke("为什么我们总是看到月球的一面？"))
 ```
 ```output
 
 
-The Moon is always showing the same side because of a phenomenon called synchronous rotation. This means that the Moon rotates on its axis at the same rate that it orbits around the Earth, which takes approximately 27.3 days. This results in the same side of the Moon always facing the Earth. This is due to the gravitational forces between the Earth and the Moon, which have caused the Moon's rotation to gradually slow down and become synchronized with its orbit. This is a common occurrence among many moons in our solar system.
+月球总是显示同一面是因为一种叫做同步旋转的现象。这意味着月球以与其绕地球公转相同的速度自转，公转大约需要27.3天。这导致月球的同一面始终朝向地球。这是由于地球和月球之间的引力作用，导致月球的自转逐渐减慢并与其公转同步。这在我们太阳系的许多卫星中都是一种常见现象。
 CPU times: user 21.2 ms, sys: 3.38 ms, total: 24.6 ms
 Wall time: 532 ms
 ```
-#### Attribution statement
+#### 版权声明
 
->Apache Cassandra, Cassandra and Apache are either registered trademarks or trademarks of the [Apache Software Foundation](http://www.apache.org/) in the United States and/or other countries.
+>Apache Cassandra、Cassandra 和 Apache 是 [Apache 软件基金会](http://www.apache.org/) 在美国和/或其他国家的注册商标或商标。
 
-## `Astra DB` Caches
+## `Astra DB` 缓存
 
-You can easily use [Astra DB](https://docs.datastax.com/en/astra/home/astra.html) as an LLM cache, with either the "exact" or the "semantic-based" cache.
+您可以轻松地将 [Astra DB](https://docs.datastax.com/en/astra/home/astra.html) 用作 LLM 缓存，可以选择“精确”或“基于语义”的缓存。
 
-Make sure you have a running database (it must be a Vector-enabled database to use the Semantic cache) and get the required credentials on your Astra dashboard:
+确保您有一个正在运行的数据库（必须是支持向量的数据库才能使用语义缓存），并在您的 Astra 控制面板上获取所需的凭据：
 
-- the API Endpoint looks like `https://01234567-89ab-cdef-0123-456789abcdef-us-east1.apps.astra.datastax.com`
-- the Token looks like `AstraCS:6gBhNmsk135....`
+- API 端点看起来像 `https://01234567-89ab-cdef-0123-456789abcdef-us-east1.apps.astra.datastax.com`
+- 令牌看起来像 `AstraCS:6gBhNmsk135....`
 
 
 ```python
@@ -801,10 +771,10 @@ ASTRA_DB_APPLICATION_TOKEN = getpass.getpass("ASTRA_DB_APPLICATION_TOKEN = ")
 ASTRA_DB_API_ENDPOINT =  https://01234567-89ab-cdef-0123-456789abcdef-us-east1.apps.astra.datastax.com
 ASTRA_DB_APPLICATION_TOKEN =  ········
 ```
-### Astra DB exact LLM cache
 
-This will avoid invoking the LLM when the supplied prompt is _exactly_ the same as one encountered already:
+### Astra DB 精确 LLM 缓存
 
+这将避免在提供的提示与已遇到的提示_完全_相同时调用 LLM：
 
 ```python
 from langchain.globals import set_llm_cache
@@ -817,7 +787,6 @@ set_llm_cache(
     )
 )
 ```
-
 
 ```python
 %%time
@@ -844,17 +813,16 @@ There is no definitive answer to this question as it depends on the interpretati
 CPU times: user 15.1 ms, sys: 3.7 ms, total: 18.8 ms
 Wall time: 531 ms
 ```
-### Astra DB Semantic cache
 
-This cache will do a semantic similarity search and return a hit if it finds a cached entry that is similar enough, For this, you need to provide an `Embeddings` instance of your choice.
+### Astra DB 语义缓存
 
+该缓存将进行语义相似性搜索，如果找到足够相似的缓存条目，则返回命中。为此，您需要提供一个您选择的 `Embeddings` 实例。
 
 ```python
 from langchain_openai import OpenAIEmbeddings
 
 embedding = OpenAIEmbeddings()
 ```
-
 
 ```python
 from langchain_astradb import AstraDBSemanticCache
@@ -868,7 +836,6 @@ set_llm_cache(
     )
 )
 ```
-
 
 ```python
 %%time
@@ -895,10 +862,10 @@ There is no definitive answer to this question since it presupposes a great deal
 CPU times: user 29.3 ms, sys: 6.21 ms, total: 35.5 ms
 Wall time: 1.03 s
 ```
-## Azure Cosmos DB Semantic Cache
 
-You can use this integrated [vector database](https://learn.microsoft.com/en-us/azure/cosmos-db/vector-database) for caching.
+## Azure Cosmos DB 语义缓存
 
+您可以使用这个集成的 [向量数据库](https://learn.microsoft.com/en-us/azure/cosmos-db/vector-database) 进行缓存。
 
 ```python
 from langchain_community.cache import AzureCosmosDBSemanticCache
@@ -982,21 +949,18 @@ Wall time: 474 ms
 '\n\nWhy was the math book sad? Because it had too many problems.'
 ```
 
+## `Elasticsearch` 缓存
+用于 LLM 的缓存层，使用 Elasticsearch。
 
-## `Elasticsearch` Cache
-A caching layer for LLMs that uses Elasticsearch.
-
-First install the LangChain integration with Elasticsearch.
-
+首先安装与 Elasticsearch 的 LangChain 集成。
 
 ```python
 %pip install -qU langchain-elasticsearch
 ```
 
-Use the class `ElasticsearchCache`.
+使用类 `ElasticsearchCache`。
 
-Simple example:
-
+简单示例：
 
 ```python
 from langchain.globals import set_llm_cache
@@ -1011,20 +975,20 @@ set_llm_cache(
 )
 ```
 
-The `index_name` parameter can also accept aliases. This allows to use the 
-[ILM: Manage the index lifecycle](https://www.elastic.co/guide/en/elasticsearch/reference/current/index-lifecycle-management.html)
-that we suggest to consider for managing retention and controlling cache growth.
+`index_name` 参数也可以接受别名。这允许使用 
+[ILM: 管理索引生命周期](https://www.elastic.co/guide/en/elasticsearch/reference/current/index-lifecycle-management.html)
+，建议考虑用于管理保留和控制缓存增长。
 
-Look at the class docstring for all parameters.
+查看类文档字符串以获取所有参数。
 
-### Index the generated text
+### 索引生成的文本
 
-The cached data won't be searchable by default.
-The developer can customize the building of the Elasticsearch document in order to add indexed text fields,
-where to put, for example, the text generated by the LLM.
+缓存的数据默认不可搜索。
+开发者可以自定义构建Elasticsearch文档，以便添加索引文本字段，
+例如，将LLM生成的文本放置其中。
 
-This can be done by subclassing end overriding methods.
-The new cache class can be applied also to a pre-existing cache index:
+这可以通过子类化并重写方法来完成。
+新的缓存类也可以应用于现有的缓存索引：
 
 
 ```python
@@ -1068,17 +1032,15 @@ set_llm_cache(
 )
 ```
 
-When overriding the mapping and the document building, 
-please only make additive modifications, keeping the base mapping intact.
+在重写映射和文档构建时，
+请仅进行附加修改，保持基础映射不变。
 
-## Optional Caching
-You can also turn off caching for specific LLMs should you choose. In the example below, even though global caching is enabled, we turn it off for a specific LLM
-
+## 可选缓存
+您也可以选择为特定的 LLM 关闭缓存。在下面的例子中，尽管全局缓存已启用，但我们为特定的 LLM 关闭了缓存。
 
 ```python
 llm = OpenAI(model="gpt-3.5-turbo-instruct", n=2, best_of=2, cache=False)
 ```
-
 
 ```python
 %%time
@@ -1089,12 +1051,9 @@ CPU times: user 5.8 ms, sys: 2.71 ms, total: 8.51 ms
 Wall time: 745 ms
 ```
 
-
 ```output
-'\n\nWhy did the chicken cross the road?\n\nTo get to the other side!'
+'\n\n为什么鸡要过马路？\n\n为了到达另一边！'
 ```
-
-
 
 ```python
 %%time
@@ -1105,16 +1064,14 @@ CPU times: user 4.91 ms, sys: 2.64 ms, total: 7.55 ms
 Wall time: 623 ms
 ```
 
-
 ```output
-'\n\nTwo guys stole a calendar. They got six months each.'
+'\n\n两个家伙偷了一本日历。他们每人得了六个月。'
 ```
 
+## 链中的可选缓存
+您还可以为链中的特定节点关闭缓存。请注意，由于某些接口，通常先构建链，然后再编辑 LLM 更加方便。
 
-## Optional Caching in Chains
-You can also turn off caching for particular nodes in chains. Note that because of certain interfaces, its often easier to construct the chain first, and then edit the LLM afterwards.
-
-As an example, we will load a summarizer map-reduce chain. We will cache results for the map-step, but then not freeze it for the combine step.
+作为示例，我们将加载一个摘要的 map-reduce 链。我们将为 map 步骤缓存结果，但不在 combine 步骤中冻结它。
 
 
 ```python
@@ -1160,15 +1117,8 @@ Wall time: 4.42 s
 ```
 
 
-```output
-{'input_documents': [Document(page_content='Madam Speaker, Madam Vice President, our First Lady and Second Gentleman. Members of Congress and the Cabinet. Justices of the Supreme Court. My fellow Americans.  \n\nLast year COVID-19 kept us apart. This year we are finally together again. \n\nTonight, we meet as Democrats Republicans and Independents. But most importantly as Americans. \n\nWith a duty to one another to the American people to the Constitution. \n\nAnd with an unwavering resolve that freedom will always triumph over tyranny. \n\nSix days ago, Russia’s Vladimir Putin sought to shake the foundations of the free world thinking he could make it bend to his menacing ways. But he badly miscalculated. \n\nHe thought he could roll into Ukraine and the world would roll over. Instead he met a wall of strength he never imagined. \n\nHe met the Ukrainian people. \n\nFrom President Zelenskyy to every Ukrainian, their fearlessness, their courage, their determination, inspires the world. \n\nGroups of citizens blocking tanks with their bodies. Everyone from students to retirees teachers turned soldiers defending their homeland. \n\nIn this struggle as President Zelenskyy said in his speech to the European Parliament “Light will win over darkness.” The Ukrainian Ambassador to the United States is here tonight. \n\nLet each of us here tonight in this Chamber send an unmistakable signal to Ukraine and to the world. \n\nPlease rise if you are able and show that, Yes, we the United States of America stand with the Ukrainian people. \n\nThroughout our history we’ve learned this lesson when dictators do not pay a price for their aggression they cause more chaos.   \n\nThey keep moving.   \n\nAnd the costs and the threats to America and the world keep rising.   \n\nThat’s why the NATO Alliance was created to secure peace and stability in Europe after World War 2. \n\nThe United States is a member along with 29 other nations. \n\nIt matters. American diplomacy matters. American resolve matters. \n\nPutin’s latest attack on Ukraine was premeditated and unprovoked. \n\nHe rejected repeated efforts at diplomacy. \n\nHe thought the West and NATO wouldn’t respond. And he thought he could divide us at home. Putin was wrong. We were ready.  Here is what we did.   \n\nWe prepared extensively and carefully. \n\nWe spent months building a coalition of other freedom-loving nations from Europe and the Americas to Asia and Africa to confront Putin. \n\nI spent countless hours unifying our European allies. We shared with the world in advance what we knew Putin was planning and precisely how he would try to falsely justify his aggression.  \n\nWe countered Russia’s lies with truth.   \n\nAnd now that he has acted the free world is holding him accountable. \n\nAlong with twenty-seven members of the European Union including France, Germany, Italy, as well as countries like the United Kingdom, Canada, Japan, Korea, Australia, New Zealand, and many others, even Switzerland. \n\nWe are inflicting pain on Russia and supporting the people of Ukraine. Putin is now isolated from the world more than ever. \n\nTogether with our allies –we are right now enforcing powerful economic sanctions. \n\nWe are cutting off Russia’s largest banks from the international financial system.  \n\nPreventing Russia’s central bank from defending the Russian Ruble making Putin’s $630 Billion “war fund” worthless.   \n\nWe are choking off Russia’s access to technology that will sap its economic strength and weaken its military for years to come.  \n\nTonight I say to the Russian oligarchs and corrupt leaders who have bilked billions of dollars off this violent regime no more. \n\nThe U.S. Department of Justice is assembling a dedicated task force to go after the crimes of Russian oligarchs.  \n\nWe are joining with our European allies to find and seize your yachts your luxury apartments your private jets. We are coming for your ill-begotten gains.'),
-  Document(page_content='We are joining with our European allies to find and seize your yachts your luxury apartments your private jets. We are coming for your ill-begotten gains. \n\nAnd tonight I am announcing that we will join our allies in closing off American air space to all Russian flights – further isolating Russia – and adding an additional squeeze –on their economy. The Ruble has lost 30% of its value. \n\nThe Russian stock market has lost 40% of its value and trading remains suspended. Russia’s economy is reeling and Putin alone is to blame. \n\nTogether with our allies we are providing support to the Ukrainians in their fight for freedom. Military assistance. Economic assistance. Humanitarian assistance. \n\nWe are giving more than $1 Billion in direct assistance to Ukraine. \n\nAnd we will continue to aid the Ukrainian people as they defend their country and to help ease their suffering.  \n\nLet me be clear, our forces are not engaged and will not engage in conflict with Russian forces in Ukraine.  \n\nOur forces are not going to Europe to fight in Ukraine, but to defend our NATO Allies – in the event that Putin decides to keep moving west.  \n\nFor that purpose we’ve mobilized American ground forces, air squadrons, and ship deployments to protect NATO countries including Poland, Romania, Latvia, Lithuania, and Estonia. \n\nAs I have made crystal clear the United States and our Allies will defend every inch of territory of NATO countries with the full force of our collective power.  \n\nAnd we remain clear-eyed. The Ukrainians are fighting back with pure courage. But the next few days weeks, months, will be hard on them.  \n\nPutin has unleashed violence and chaos.  But while he may make gains on the battlefield – he will pay a continuing high price over the long run. \n\nAnd a proud Ukrainian people, who have known 30 years  of independence, have repeatedly shown that they will not tolerate anyone who tries to take their country backwards.  \n\nTo all Americans, I will be honest with you, as I’ve always promised. A Russian dictator, invading a foreign country, has costs around the world. \n\nAnd I’m taking robust action to make sure the pain of our sanctions  is targeted at Russia’s economy. And I will use every tool at our disposal to protect American businesses and consumers. \n\nTonight, I can announce that the United States has worked with 30 other countries to release 60 Million barrels of oil from reserves around the world.  \n\nAmerica will lead that effort, releasing 30 Million barrels from our own Strategic Petroleum Reserve. And we stand ready to do more if necessary, unified with our allies.  \n\nThese steps will help blunt gas prices here at home. And I know the news about what’s happening can seem alarming. \n\nBut I want you to know that we are going to be okay. \n\nWhen the history of this era is written Putin’s war on Ukraine will have left Russia weaker and the rest of the world stronger. \n\nWhile it shouldn’t have taken something so terrible for people around the world to see what’s at stake now everyone sees it clearly. \n\nWe see the unity among leaders of nations and a more unified Europe a more unified West. And we see unity among the people who are gathering in cities in large crowds around the world even in Russia to demonstrate their support for Ukraine.  \n\nIn the battle between democracy and autocracy, democracies are rising to the moment, and the world is clearly choosing the side of peace and security. \n\nThis is a real test. It’s going to take time. So let us continue to draw inspiration from the iron will of the Ukrainian people. \n\nTo our fellow Ukrainian Americans who forge a deep bond that connects our two nations we stand with you. \n\nPutin may circle Kyiv with tanks, but he will never gain the hearts and souls of the Ukrainian people. \n\nHe will never extinguish their love of freedom. He will never weaken the resolve of the free world. \n\nWe meet tonight in an America that has lived through two of the hardest years this nation has ever faced.'),
-  Document(page_content='We meet tonight in an America that has lived through two of the hardest years this nation has ever faced. \n\nThe pandemic has been punishing. \n\nAnd so many families are living paycheck to paycheck, struggling to keep up with the rising cost of food, gas, housing, and so much more. \n\nI understand. \n\nI remember when my Dad had to leave our home in Scranton, Pennsylvania to find work. I grew up in a family where if the price of food went up, you felt it. \n\nThat’s why one of the first things I did as President was fight to pass the American Rescue Plan.  \n\nBecause people were hurting. We needed to act, and we did. \n\nFew pieces of legislation have done more in a critical moment in our history to lift us out of crisis. \n\nIt fueled our efforts to vaccinate the nation and combat COVID-19. It delivered immediate economic relief for tens of millions of Americans.  \n\nHelped put food on their table, keep a roof over their heads, and cut the cost of health insurance. \n\nAnd as my Dad used to say, it gave people a little breathing room. \n\nAnd unlike the $2 Trillion tax cut passed in the previous administration that benefitted the top 1% of Americans, the American Rescue Plan helped working people—and left no one behind. \n\nAnd it worked. It created jobs. Lots of jobs. \n\nIn fact—our economy created over 6.5 Million new jobs just last year, more jobs created in one year  \nthan ever before in the history of America. \n\nOur economy grew at a rate of 5.7% last year, the strongest growth in nearly 40 years, the first step in bringing fundamental change to an economy that hasn’t worked for the working people of this nation for too long.  \n\nFor the past 40 years we were told that if we gave tax breaks to those at the very top, the benefits would trickle down to everyone else. \n\nBut that trickle-down theory led to weaker economic growth, lower wages, bigger deficits, and the widest gap between those at the top and everyone else in nearly a century. \n\nVice President Harris and I ran for office with a new economic vision for America. \n\nInvest in America. Educate Americans. Grow the workforce. Build the economy from the bottom up  \nand the middle out, not from the top down.  \n\nBecause we know that when the middle class grows, the poor have a ladder up and the wealthy do very well. \n\nAmerica used to have the best roads, bridges, and airports on Earth. \n\nNow our infrastructure is ranked 13th in the world. \n\nWe won’t be able to compete for the jobs of the 21st Century if we don’t fix that. \n\nThat’s why it was so important to pass the Bipartisan Infrastructure Law—the most sweeping investment to rebuild America in history. \n\nThis was a bipartisan effort, and I want to thank the members of both parties who worked to make it happen. \n\nWe’re done talking about infrastructure weeks. \n\nWe’re going to have an infrastructure decade. \n\nIt is going to transform America and put us on a path to win the economic competition of the 21st Century that we face with the rest of the world—particularly with China.  \n\nAs I’ve told Xi Jinping, it is never a good bet to bet against the American people. \n\nWe’ll create good jobs for millions of Americans, modernizing roads, airports, ports, and waterways all across America. \n\nAnd we’ll do it all to withstand the devastating effects of the climate crisis and promote environmental justice. \n\nWe’ll build a national network of 500,000 electric vehicle charging stations, begin to replace poisonous lead pipes—so every child—and every American—has clean water to drink at home and at school, provide affordable high-speed internet for every American—urban, suburban, rural, and tribal communities. \n\n4,000 projects have already been announced. \n\nAnd tonight, I’m announcing that this year we will start fixing over 65,000 miles of highway and 1,500 bridges in disrepair. \n\nWhen we use taxpayer dollars to rebuild America – we are going to Buy American: buy American products to support American jobs.')],
- 'output_text': " The speaker addresses the unity and strength of Americans and discusses the recent conflict with Russia and actions taken by the US and its allies. They announce closures of airspace, support for Ukraine, and measures to target corrupt Russian leaders. President Biden reflects on past hardships and highlights efforts to pass the American Rescue Plan. He criticizes the previous administration's policies and shares plans for the economy, including investing in America, education, rebuilding infrastructure, and supporting American jobs. "}
-```
 
-
-When we run it again, we see that it runs substantially faster but the final answer is different. This is due to caching at the map steps, but not at the reduce step.
+当我们再次运行时，我们会看到它运行得快得多，但最终答案不同。这是由于在 map 步骤中缓存，但在 reduce 步骤中没有缓存。
 
 
 ```python
@@ -1181,13 +1131,6 @@ Wall time: 1.06 s
 ```
 
 
-```output
-{'input_documents': [Document(page_content='Madam Speaker, Madam Vice President, our First Lady and Second Gentleman. Members of Congress and the Cabinet. Justices of the Supreme Court. My fellow Americans.  \n\nLast year COVID-19 kept us apart. This year we are finally together again. \n\nTonight, we meet as Democrats Republicans and Independents. But most importantly as Americans. \n\nWith a duty to one another to the American people to the Constitution. \n\nAnd with an unwavering resolve that freedom will always triumph over tyranny. \n\nSix days ago, Russia’s Vladimir Putin sought to shake the foundations of the free world thinking he could make it bend to his menacing ways. But he badly miscalculated. \n\nHe thought he could roll into Ukraine and the world would roll over. Instead he met a wall of strength he never imagined. \n\nHe met the Ukrainian people. \n\nFrom President Zelenskyy to every Ukrainian, their fearlessness, their courage, their determination, inspires the world. \n\nGroups of citizens blocking tanks with their bodies. Everyone from students to retirees teachers turned soldiers defending their homeland. \n\nIn this struggle as President Zelenskyy said in his speech to the European Parliament “Light will win over darkness.” The Ukrainian Ambassador to the United States is here tonight. \n\nLet each of us here tonight in this Chamber send an unmistakable signal to Ukraine and to the world. \n\nPlease rise if you are able and show that, Yes, we the United States of America stand with the Ukrainian people. \n\nThroughout our history we’ve learned this lesson when dictators do not pay a price for their aggression they cause more chaos.   \n\nThey keep moving.   \n\nAnd the costs and the threats to America and the world keep rising.   \n\nThat’s why the NATO Alliance was created to secure peace and stability in Europe after World War 2. \n\nThe United States is a member along with 29 other nations. \n\nIt matters. American diplomacy matters. American resolve matters. \n\nPutin’s latest attack on Ukraine was premeditated and unprovoked. \n\nHe rejected repeated efforts at diplomacy. \n\nHe thought the West and NATO wouldn’t respond. And he thought he could divide us at home. Putin was wrong. We were ready.  Here is what we did.   \n\nWe prepared extensively and carefully. \n\nWe spent months building a coalition of other freedom-loving nations from Europe and the Americas to Asia and Africa to confront Putin. \n\nI spent countless hours unifying our European allies. We shared with the world in advance what we knew Putin was planning and precisely how he would try to falsely justify his aggression.  \n\nWe countered Russia’s lies with truth.   \n\nAnd now that he has acted the free world is holding him accountable. \n\nAlong with twenty-seven members of the European Union including France, Germany, Italy, as well as countries like the United Kingdom, Canada, Japan, Korea, Australia, New Zealand, and many others, even Switzerland. \n\nWe are inflicting pain on Russia and supporting the people of Ukraine. Putin is now isolated from the world more than ever. \n\nTogether with our allies –we are right now enforcing powerful economic sanctions. \n\nWe are cutting off Russia’s largest banks from the international financial system.  \n\nPreventing Russia’s central bank from defending the Russian Ruble making Putin’s $630 Billion “war fund” worthless.   \n\nWe are choking off Russia’s access to technology that will sap its economic strength and weaken its military for years to come.  \n\nTonight I say to the Russian oligarchs and corrupt leaders who have bilked billions of dollars off this violent regime no more. \n\nThe U.S. Department of Justice is assembling a dedicated task force to go after the crimes of Russian oligarchs.  \n\nWe are joining with our European allies to find and seize your yachts your luxury apartments your private jets. We are coming for your ill-begotten gains.'),
-  Document(page_content='We are joining with our European allies to find and seize your yachts your luxury apartments your private jets. We are coming for your ill-begotten gains. \n\nAnd tonight I am announcing that we will join our allies in closing off American air space to all Russian flights – further isolating Russia – and adding an additional squeeze –on their economy. The Ruble has lost 30% of its value. \n\nThe Russian stock market has lost 40% of its value and trading remains suspended. Russia’s economy is reeling and Putin alone is to blame. \n\nTogether with our allies we are providing support to the Ukrainians in their fight for freedom. Military assistance. Economic assistance. Humanitarian assistance. \n\nWe are giving more than $1 Billion in direct assistance to Ukraine. \n\nAnd we will continue to aid the Ukrainian people as they defend their country and to help ease their suffering.  \n\nLet me be clear, our forces are not engaged and will not engage in conflict with Russian forces in Ukraine.  \n\nOur forces are not going to Europe to fight in Ukraine, but to defend our NATO Allies – in the event that Putin decides to keep moving west.  \n\nFor that purpose we’ve mobilized American ground forces, air squadrons, and ship deployments to protect NATO countries including Poland, Romania, Latvia, Lithuania, and Estonia. \n\nAs I have made crystal clear the United States and our Allies will defend every inch of territory of NATO countries with the full force of our collective power.  \n\nAnd we remain clear-eyed. The Ukrainians are fighting back with pure courage. But the next few days weeks, months, will be hard on them.  \n\nPutin has unleashed violence and chaos.  But while he may make gains on the battlefield – he will pay a continuing high price over the long run. \n\nAnd a proud Ukrainian people, who have known 30 years  of independence, have repeatedly shown that they will not tolerate anyone who tries to take their country backwards.  \n\nTo all Americans, I will be honest with you, as I’ve always promised. A Russian dictator, invading a foreign country, has costs around the world. \n\nAnd I’m taking robust action to make sure the pain of our sanctions  is targeted at Russia’s economy. And I will use every tool at our disposal to protect American businesses and consumers. \n\nTonight, I can announce that the United States has worked with 30 other countries to release 60 Million barrels of oil from reserves around the world.  \n\nAmerica will lead that effort, releasing 30 Million barrels from our own Strategic Petroleum Reserve. And we stand ready to do more if necessary, unified with our allies.  \n\nThese steps will help blunt gas prices here at home. And I know the news about what’s happening can seem alarming. \n\nBut I want you to know that we are going to be okay. \n\nWhen the history of this era is written Putin’s war on Ukraine will have left Russia weaker and the rest of the world stronger. \n\nWhile it shouldn’t have taken something so terrible for people around the world to see what’s at stake now everyone sees it clearly. \n\nWe see the unity among leaders of nations and a more unified Europe a more unified West. And we see unity among the people who are gathering in cities in large crowds around the world even in Russia to demonstrate their support for Ukraine.  \n\nIn the battle between democracy and autocracy, democracies are rising to the moment, and the world is clearly choosing the side of peace and security. \n\nThis is a real test. It’s going to take time. So let us continue to draw inspiration from the iron will of the Ukrainian people. \n\nTo our fellow Ukrainian Americans who forge a deep bond that connects our two nations we stand with you. \n\nPutin may circle Kyiv with tanks, but he will never gain the hearts and souls of the Ukrainian people. \n\nHe will never extinguish their love of freedom. He will never weaken the resolve of the free world. \n\nWe meet tonight in an America that has lived through two of the hardest years this nation has ever faced.'),
-  Document(page_content='We meet tonight in an America that has lived through two of the hardest years this nation has ever faced. \n\nThe pandemic has been punishing. \n\nAnd so many families are living paycheck to paycheck, struggling to keep up with the rising cost of food, gas, housing, and so much more. \n\nI understand. \n\nI remember when my Dad had to leave our home in Scranton, Pennsylvania to find work. I grew up in a family where if the price of food went up, you felt it. \n\nThat’s why one of the first things I did as President was fight to pass the American Rescue Plan.  \n\nBecause people were hurting. We needed to act, and we did. \n\nFew pieces of legislation have done more in a critical moment in our history to lift us out of crisis. \n\nIt fueled our efforts to vaccinate the nation and combat COVID-19. It delivered immediate economic relief for tens of millions of Americans.  \n\nHelped put food on their table, keep a roof over their heads, and cut the cost of health insurance. \n\nAnd as my Dad used to say, it gave people a little breathing room. \n\nAnd unlike the $2 Trillion tax cut passed in the previous administration that benefitted the top 1% of Americans, the American Rescue Plan helped working people—and left no one behind. \n\nAnd it worked. It created jobs. Lots of jobs. \n\nIn fact—our economy created over 6.5 Million new jobs just last year, more jobs created in one year  \nthan ever before in the history of America. \n\nOur economy grew at a rate of 5.7% last year, the strongest growth in nearly 40 years, the first step in bringing fundamental change to an economy that hasn’t worked for the working people of this nation for too long.  \n\nFor the past 40 years we were told that if we gave tax breaks to those at the very top, the benefits would trickle down to everyone else. \n\nBut that trickle-down theory led to weaker economic growth, lower wages, bigger deficits, and the widest gap between those at the top and everyone else in nearly a century. \n\nVice President Harris and I ran for office with a new economic vision for America. \n\nInvest in America. Educate Americans. Grow the workforce. Build the economy from the bottom up  \nand the middle out, not from the top down.  \n\nBecause we know that when the middle class grows, the poor have a ladder up and the wealthy do very well. \n\nAmerica used to have the best roads, bridges, and airports on Earth. \n\nNow our infrastructure is ranked 13th in the world. \n\nWe won’t be able to compete for the jobs of the 21st Century if we don’t fix that. \n\nThat’s why it was so important to pass the Bipartisan Infrastructure Law—the most sweeping investment to rebuild America in history. \n\nThis was a bipartisan effort, and I want to thank the members of both parties who worked to make it happen. \n\nWe’re done talking about infrastructure weeks. \n\nWe’re going to have an infrastructure decade. \n\nIt is going to transform America and put us on a path to win the economic competition of the 21st Century that we face with the rest of the world—particularly with China.  \n\nAs I’ve told Xi Jinping, it is never a good bet to bet against the American people. \n\nWe’ll create good jobs for millions of Americans, modernizing roads, airports, ports, and waterways all across America. \n\nAnd we’ll do it all to withstand the devastating effects of the climate crisis and promote environmental justice. \n\nWe’ll build a national network of 500,000 electric vehicle charging stations, begin to replace poisonous lead pipes—so every child—and every American—has clean water to drink at home and at school, provide affordable high-speed internet for every American—urban, suburban, rural, and tribal communities. \n\n4,000 projects have already been announced. \n\nAnd tonight, I’m announcing that this year we will start fixing over 65,000 miles of highway and 1,500 bridges in disrepair. \n\nWhen we use taxpayer dollars to rebuild America – we are going to Buy American: buy American products to support American jobs.')],
- 'output_text': '\n\nThe speaker addresses the unity of Americans and discusses the conflict with Russia and support for Ukraine. The US and allies are taking action against Russia and targeting corrupt leaders. There is also support and assurance for the American people. President Biden reflects on recent hardships and highlights efforts to pass the American Rescue Plan. He also shares plans for economic growth and investment in America. '}
-```
-
 
 
 ```python
@@ -1196,9 +1139,9 @@ Wall time: 1.06 s
 ```output
 rm: sqlite.db: No such file or directory
 ```
-## OpenSearch Semantic Cache
-Use [OpenSearch](https://python.langchain.com/docs/integrations/vectorstores/opensearch/) as a semantic cache to cache prompts and responses and evaluate hits based on semantic similarity.
 
+## OpenSearch 语义缓存
+使用 [OpenSearch](https://python.langchain.com/docs/integrations/vectorstores/opensearch/) 作为语义缓存，以缓存提示和响应，并基于语义相似性评估命中。
 
 ```python
 from langchain_community.cache import OpenSearchSemanticCache
@@ -1211,10 +1154,9 @@ set_llm_cache(
 )
 ```
 
-
 ```python
 %%time
-# The first time, it is not yet in cache, so it should take longer
+# 第一次，它还不在缓存中，所以应该花更长的时间
 llm.invoke("Tell me a joke")
 ```
 ```output
@@ -1222,17 +1164,14 @@ CPU times: user 39.4 ms, sys: 11.8 ms, total: 51.2 ms
 Wall time: 1.55 s
 ```
 
-
 ```output
 "\n\nWhy don't scientists trust atoms?\n\nBecause they make up everything."
 ```
 
-
-
 ```python
 %%time
-# The second time, while not a direct hit, the question is semantically similar to the original question,
-# so it uses the cached result!
+# 第二次，虽然不是直接命中，但问题在语义上与原始问题相似，
+# 所以它使用缓存结果！
 llm.invoke("Tell me one joke")
 ```
 ```output
@@ -1240,14 +1179,12 @@ CPU times: user 4.66 ms, sys: 1.1 ms, total: 5.76 ms
 Wall time: 113 ms
 ```
 
-
 ```output
 "\n\nWhy don't scientists trust atoms?\n\nBecause they make up everything."
 ```
 
-
-## SingleStoreDB Semantic Cache
-You can use [SingleStoreDB](https://python.langchain.com/docs/integrations/vectorstores/singlestoredb/) as a semantic cache to cache prompts and responses.
+## SingleStoreDB 语义缓存
+您可以使用 [SingleStoreDB](https://python.langchain.com/docs/integrations/vectorstores/singlestoredb/) 作为语义缓存来缓存提示和响应。
 
 
 ```python
@@ -1262,22 +1199,20 @@ set_llm_cache(
 )
 ```
 
-## Couchbase Caches
+## Couchbase 缓存
 
-Use [Couchbase](https://couchbase.com/) as a cache for prompts and responses.
+使用 [Couchbase](https://couchbase.com/) 作为提示和响应的缓存。
 
 ### Couchbase Cache
 
-The standard cache that looks for an exact match of the user prompt.
-
+标准缓存会寻找用户提示的精确匹配。
 
 ```python
 %pip install -qU langchain_couchbase couchbase
 ```
 
-
 ```python
-# Create couchbase connection object
+# 创建 couchbase 连接对象
 from datetime import timedelta
 
 from couchbase.auth import PasswordAuthenticator
@@ -1287,7 +1222,7 @@ from langchain_couchbase.cache import CouchbaseCache
 from langchain_openai import ChatOpenAI
 
 COUCHBASE_CONNECTION_STRING = (
-    "couchbase://localhost"  # or "couchbases://localhost" if using TLS
+    "couchbase://localhost"  # 或者 "couchbases://localhost" 如果使用 TLS
 )
 DB_USERNAME = "Administrator"
 DB_PASSWORD = "Password"
@@ -1296,13 +1231,12 @@ auth = PasswordAuthenticator(DB_USERNAME, DB_PASSWORD)
 options = ClusterOptions(auth)
 cluster = Cluster(COUCHBASE_CONNECTION_STRING, options)
 
-# Wait until the cluster is ready for use.
+# 等待集群准备好使用。
 cluster.wait_until_ready(timedelta(seconds=5))
 ```
 
-
 ```python
-# Specify the bucket, scope and collection to store the cached documents
+# 指定存储缓存文档的桶、范围和集合
 BUCKET_NAME = "langchain-testing"
 SCOPE_NAME = "_default"
 COLLECTION_NAME = "_default"
@@ -1317,10 +1251,9 @@ set_llm_cache(
 )
 ```
 
-
 ```python
 %%time
-# The first time, it is not yet in the cache, so it should take longer
+# 第一次，它还不在缓存中，因此应该需要更长时间
 llm.invoke("Tell me a joke")
 ```
 ```output
@@ -1328,16 +1261,13 @@ CPU times: user 22.2 ms, sys: 14 ms, total: 36.2 ms
 Wall time: 938 ms
 ```
 
-
 ```output
 "\n\nWhy couldn't the bicycle stand up by itself? Because it was two-tired!"
 ```
 
-
-
 ```python
 %%time
-# The second time, it is in the cache, so it should be much faster
+# 第二次，它已经在缓存中，因此应该快得多
 llm.invoke("Tell me a joke")
 ```
 ```output
@@ -1345,15 +1275,12 @@ CPU times: user 53 ms, sys: 29 ms, total: 82 ms
 Wall time: 84.2 ms
 ```
 
-
 ```output
 "\n\nWhy couldn't the bicycle stand up by itself? Because it was two-tired!"
 ```
 
-
-### Couchbase Semantic Cache
-Semantic caching allows users to retrieve cached prompts based on semantic similarity between the user input and previously cached inputs. Under the hood it uses Couchbase as both a cache and a vectorstore. This needs an appropriate Vector Search Index defined to work. Please look at the usage example on how to set up the index.
-
+### Couchbase 语义缓存
+语义缓存允许用户根据用户输入与之前缓存输入之间的语义相似性来检索缓存的提示。在底层，它使用 Couchbase 作为缓存和向量存储。这需要定义一个合适的向量搜索索引才能工作。请查看使用示例以了解如何设置索引。
 
 ```python
 # Create Couchbase connection object
@@ -1379,21 +1306,21 @@ cluster = Cluster(COUCHBASE_CONNECTION_STRING, options)
 cluster.wait_until_ready(timedelta(seconds=5))
 ```
 
-Notes:
-- The search index for the semantic cache needs to be defined before using the semantic cache. 
-- The optional parameter, `score_threshold` in the Semantic Cache that you can use to tune the results of the semantic search.
+注意：
+- 在使用语义缓存之前，需要定义语义缓存的搜索索引。
+- 可选参数 `score_threshold` 可以用来调整语义搜索的结果。
 
-### How to Import an Index to the Full Text Search service?
+### 如何将索引导入全文搜索服务？
  - [Couchbase Server](https://docs.couchbase.com/server/current/search/import-search-index.html)
-     - Click on Search -> Add Index -> Import
-     - Copy the following Index definition in the Import screen
-     - Click on Create Index to create the index.
+     - 点击搜索 -> 添加索引 -> 导入
+     - 在导入界面复制以下索引定义
+     - 点击创建索引以创建索引。
  - [Couchbase Capella](https://docs.couchbase.com/cloud/search/import-search-index.html)
-     - Copy the index definition to a new file `index.json`
-     - Import the file in Capella using the instructions in the documentation.
-     - Click on Create Index to create the index.
+     - 将索引定义复制到新文件 `index.json`
+     - 按照文档中的说明在 Capella 中导入该文件。
+     - 点击创建索引以创建索引。
 
-#### Example index for the vector search. 
+#### 向量搜索的示例索引。 
   ```
   {
     "type": "fulltext-index",
@@ -1497,37 +1424,37 @@ set_llm_cache(cache)
 
 ```python
 %%time
-# The first time, it is not yet in the cache, so it should take longer
-print(llm.invoke("How long do dogs live?"))
+# 第一次，它还不在缓存中，因此应该花费更长时间
+print(llm.invoke("狗的平均寿命是多少？"))
 ```
 ```output
 
 
-The average lifespan of a dog is around 12 years, but this can vary depending on the breed, size, and overall health of the individual dog. Some smaller breeds may live longer, while larger breeds may have shorter lifespans. Proper care, diet, and exercise can also play a role in extending a dog's lifespan.
+狗的平均寿命约为12年，但这可能因品种、体型和个体狗的整体健康状况而异。一些小型犬可能活得更久，而大型犬的寿命可能较短。适当的护理、饮食和锻炼也可以在延长狗的寿命方面发挥作用。
 CPU times: user 826 ms, sys: 2.46 s, total: 3.28 s
 Wall time: 2.87 s
 ```
 
 ```python
 %%time
-# The second time, it is in the cache, so it should be much faster
-print(llm.invoke("What is the expected lifespan of a dog?"))
+# 第二次，它在缓存中，因此应该快得多
+print(llm.invoke("狗的预期寿命是多少？"))
 ```
 ```output
 
 
-The average lifespan of a dog is around 12 years, but this can vary depending on the breed, size, and overall health of the individual dog. Some smaller breeds may live longer, while larger breeds may have shorter lifespans. Proper care, diet, and exercise can also play a role in extending a dog's lifespan.
+狗的平均寿命约为12年，但这可能因品种、体型和个体狗的整体健康状况而异。一些小型犬可能活得更久，而大型犬的寿命可能较短。适当的护理、饮食和锻炼也可以在延长狗的寿命方面发挥作用。
 CPU times: user 9.82 ms, sys: 2.61 ms, total: 12.4 ms
 Wall time: 311 ms
 ```
-## Cache classes: summary table
 
-**Cache** classes are implemented by inheriting the [BaseCache](https://api.python.langchain.com/en/latest/caches/langchain_core.caches.BaseCache.html) class.
+## 缓存类：摘要表
 
-This table lists all 21 derived classes with links to the API Reference.
+**Cache** 类是通过继承 [BaseCache](https://api.python.langchain.com/en/latest/caches/langchain_core.caches.BaseCache.html) 类来实现的。
 
+此表列出了所有 21 个派生类及其 API 参考链接。
 
-| Namespace 🔻 | Class |
+| 命名空间 🔻 | 类 |
 |------------|---------|
 | langchain_astradb.cache | [AstraDBCache](https://api.python.langchain.com/en/latest/cache/langchain_astradb.cache.AstraDBCache.html) |
 | langchain_astradb.cache | [AstraDBSemanticCache](https://api.python.langchain.com/en/latest/cache/langchain_astradb.cache.AstraDBSemanticCache.html) |
@@ -1551,4 +1478,3 @@ This table lists all 21 derived classes with links to the API Reference.
 | langchain_mongodb.cache | [MongoDBCache](https://api.python.langchain.com/en/latest/cache/langchain_mongodb.cache.MongoDBCache.html) |
 | langchain_couchbase.cache | [CouchbaseCache](https://api.python.langchain.com/en/latest/cache/langchain_couchbase.cache.CouchbaseCache.html) |
 | langchain_couchbase.cache | [CouchbaseSemanticCache](https://api.python.langchain.com/en/latest/cache/langchain_couchbase.cache.CouchbaseSemanticCache.html) |
-

@@ -1,46 +1,45 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/cassandra_chat_message_history.ipynb
 ---
+
 # Cassandra 
 
->[Apache Cassandra®](https://cassandra.apache.org) is a `NoSQL`, row-oriented, highly scalable and highly available database, well suited for storing large amounts of data.
+>[Apache Cassandra®](https://cassandra.apache.org) 是一个 `NoSQL`、面向行的、高度可扩展和高度可用的数据库，适合存储大量数据。
 
->`Cassandra` is a good choice for storing chat message history because it is easy to scale and can handle a large number of writes.
+>`Cassandra` 是存储聊天消息历史的好选择，因为它易于扩展并且可以处理大量写入。
 
-This notebook goes over how to use Cassandra to store chat message history.
+本笔记本将介绍如何使用 Cassandra 存储聊天消息历史。
 
+## 设置
 
-
-## Setting up
-
-To run this notebook you need either a running `Cassandra` cluster or a `DataStax Astra DB` instance running in the cloud (you can get one for free at [datastax.com](https://astra.datastax.com)). Check [cassio.org](https://cassio.org/start_here/) for more information.
+要运行此笔记本，您需要一个正在运行的 `Cassandra` 集群或在云中运行的 `DataStax Astra DB` 实例（您可以在 [datastax.com](https://astra.datastax.com) 免费获得一个）。有关更多信息，请查看 [cassio.org](https://cassio.org/start_here/)。
 
 
 ```python
 %pip install --upgrade --quiet  "cassio>=0.1.0 langchain-community"
 ```
 
-### Set up the database connection parameters and secrets
+### 设置数据库连接参数和密钥
 
 
 ```python
 import getpass
 
-database_mode = (input("\n(C)assandra or (A)stra DB? ")).upper()
+database_mode = (input("\n(C)assandra 或 (A)stra DB? ")).upper()
 
-keyspace_name = input("\nKeyspace name? ")
+keyspace_name = input("\n键空间名称? ")
 
 if database_mode == "A":
-    ASTRA_DB_APPLICATION_TOKEN = getpass.getpass('\nAstra DB Token ("AstraCS:...") ')
+    ASTRA_DB_APPLICATION_TOKEN = getpass.getpass('\nAstra DB 令牌 ("AstraCS:...") ')
     #
-    ASTRA_DB_SECURE_BUNDLE_PATH = input("Full path to your Secure Connect Bundle? ")
+    ASTRA_DB_SECURE_BUNDLE_PATH = input("安全连接包的完整路径? ")
 elif database_mode == "C":
     CASSANDRA_CONTACT_POINTS = input(
-        "Contact points? (comma-separated, empty for localhost) "
+        "联系点? (逗号分隔，留空则为localhost) "
     ).strip()
 ```
 
-Depending on whether local or cloud-based Astra DB, create the corresponding database connection "Session" object.
+根据是本地还是云端的Astra DB，创建相应的数据库连接“会话”对象。
 
 
 ```python
@@ -71,7 +70,7 @@ else:
     raise NotImplementedError
 ```
 
-## Example
+## 示例
 
 
 ```python
@@ -95,6 +94,6 @@ message_history.add_ai_message("whats up?")
 message_history.messages
 ```
 
-#### Attribution statement
+#### 版权声明
 
-> Apache Cassandra, Cassandra and Apache are either registered trademarks or trademarks of the [Apache Software Foundation](http://www.apache.org/) in the United States and/or other countries.
+> Apache Cassandra、Cassandra 和 Apache 是 [Apache Software Foundation](http://www.apache.org/) 在美国和/或其他国家的注册商标或商标。

@@ -1,24 +1,25 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/serialization.ipynb
 ---
-# How to save and load LangChain objects
 
-LangChain classes implement standard methods for serialization. Serializing LangChain objects using these methods confer some advantages:
+# 如何保存和加载 LangChain 对象
 
-- Secrets, such as API keys, are separated from other parameters and can be loaded back to the object on de-serialization;
-- De-serialization is kept compatible across package versions, so objects that were serialized with one version of LangChain can be properly de-serialized with another.
+LangChain 类实现了标准的序列化方法。使用这些方法序列化 LangChain 对象有一些优势：
 
-To save and load LangChain objects using this system, use the `dumpd`, `dumps`, `load`, and `loads` functions in the [load module](https://api.python.langchain.com/en/latest/core_api_reference.html#module-langchain_core.load) of `langchain-core`. These functions support JSON and JSON-serializable objects.
+- 秘密信息，如 API 密钥，与其他参数分开，并可以在反序列化时重新加载到对象中；
+- 反序列化在不同的包版本之间保持兼容，因此使用 LangChain 的一个版本序列化的对象可以在另一个版本中正确反序列化。
 
-All LangChain objects that inherit from [Serializable](https://api.python.langchain.com/en/latest/load/langchain_core.load.serializable.Serializable.html) are JSON-serializable. Examples include [messages](https://api.python.langchain.com/en/latest/core_api_reference.html#module-langchain_core.messages), [document objects](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html) (e.g., as returned from [retrievers](/docs/concepts/#retrievers)), and most [Runnables](/docs/concepts/#langchain-expression-language-lcel), such as chat models, retrievers, and [chains](/docs/how_to/sequence) implemented with the LangChain Expression Language.
+要使用此系统保存和加载 LangChain 对象，请使用 `dumpd`、`dumps`、`load` 和 `loads` 函数，这些函数位于 `langchain-core` 的 [load module](https://api.python.langchain.com/en/latest/core_api_reference.html#module-langchain_core.load)。这些函数支持 JSON 和 JSON 可序列化对象。
 
-Below we walk through an example with a simple [LLM chain](/docs/tutorials/llm_chain).
+所有继承自 [Serializable](https://api.python.langchain.com/en/latest/load/langchain_core.load.serializable.Serializable.html) 的 LangChain 对象都是 JSON 可序列化的。示例包括 [messages](https://api.python.langchain.com/en/latest/core_api_reference.html#module-langchain_core.messages)、[document objects](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html)（例如，从 [retrievers](/docs/concepts/#retrievers) 返回的对象）以及大多数通过 LangChain 表达式语言实现的 [Runnables](/docs/concepts/#langchain-expression-language-lcel)，如聊天模型、检索器和 [chains](/docs/how_to/sequence)。
+
+下面我们通过一个简单的 [LLM chain](/docs/tutorials/llm_chain) 示例进行演示。
 
 :::caution
 
-De-serialization using `load` and `loads` can instantiate any serializable LangChain object. Only use this feature with trusted inputs!
+使用 `load` 和 `loads` 进行反序列化可以实例化任何可序列化的 LangChain 对象。仅在信任的输入下使用此功能！
 
-De-serialization is a beta feature and is subject to change.
+反序列化是一个 beta 功能，可能会有所更改。
 :::
 
 
@@ -39,9 +40,9 @@ llm = ChatOpenAI(model="gpt-3.5-turbo-0125", api_key="llm-api-key")
 chain = prompt | llm
 ```
 
-## Saving objects
+## 保存对象
 
-### To json
+### 转换为 json
 
 
 ```python
@@ -78,7 +79,8 @@ print(string_representation[:500])
             "lc": 1,
             "type": "constructor",
 ```
-### To a json-serializable Python dict
+
+### 转换为可序列化为 JSON 的 Python 字典
 
 
 ```python
@@ -89,7 +91,8 @@ print(type(dict_representation))
 ```output
 <class 'dict'>
 ```
-### To disk
+
+### 保存到磁盘
 
 
 ```python
@@ -99,7 +102,7 @@ with open("/tmp/chain.json", "w") as fp:
     json.dump(string_representation, fp)
 ```
 
-Note that the API key is withheld from the serialized representations. Parameters that are considered secret are specified by the `.lc_secrets` attribute of the LangChain object:
+请注意，API 密钥在序列化表示中被隐藏。被视为机密的参数由 LangChain 对象的 `.lc_secrets` 属性指定：
 
 
 ```python
@@ -112,43 +115,37 @@ chain.last.lc_secrets
 {'openai_api_key': 'OPENAI_API_KEY'}
 ```
 
+## 加载对象
 
-## Loading objects
+在 `load` 和 `loads` 中指定 `secrets_map` 将把相应的密钥加载到反序列化的 LangChain 对象上。
 
-Specifying `secrets_map` in `load` and `loads` will load the corresponding secrets onto the de-serialized LangChain object.
-
-### From string
+### 从字符串
 
 
 ```python
 chain = loads(string_representation, secrets_map={"OPENAI_API_KEY": "llm-api-key"})
 ```
 
-### From dict
+### 从字典
 
 
 ```python
 chain = load(dict_representation, secrets_map={"OPENAI_API_KEY": "llm-api-key"})
 ```
 
-### From disk
-
+### 从磁盘
 
 ```python
 with open("/tmp/chain.json", "r") as fp:
     chain = loads(json.load(fp), secrets_map={"OPENAI_API_KEY": "llm-api-key"})
 ```
 
-Note that we recover the API key specified at the start of the guide:
-
+请注意，我们恢复了在本指南开始时指定的 API 密钥：
 
 ```python
 chain.last.openai_api_key.get_secret_value()
 ```
 
-
-
 ```output
 'llm-api-key'
 ```
-

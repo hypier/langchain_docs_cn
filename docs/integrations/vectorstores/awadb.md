@@ -1,12 +1,13 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/awadb.ipynb
 ---
+
 # AwaDB
->[AwaDB](https://github.com/awa-ai/awadb) is an AI Native database for the search and storage of embedding vectors used by LLM Applications.
+>[AwaDB](https://github.com/awa-ai/awadb) 是一个 AI 原生数据库，用于搜索和存储 LLM 应用程序使用的嵌入向量。
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
+您需要使用 `pip install -qU langchain-community` 安装 `langchain-community` 才能使用此集成。
 
-This notebook shows how to use functionality related to the `AwaDB`.
+本笔记本展示了如何使用与 `AwaDB` 相关的功能。
 
 
 ```python
@@ -42,9 +43,10 @@ print(docs[0].page_content)
 ```output
 And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
 ```
-## Similarity search with score
 
-The returned distance score is between 0-1. 0 is dissimilar, 1 is the most similar
+## 相似性搜索与得分
+
+返回的距离得分在0到1之间。0表示不相似，1表示最相似
 
 
 ```python
@@ -58,11 +60,12 @@ print(docs[0])
 ```output
 (Document(page_content='And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.', metadata={'source': '../../how_to/state_of_the_union.txt'}), 0.561813814013747)
 ```
-## Restore the table created and added data before
 
-AwaDB automatically persists added document data.
+## 恢复之前创建并添加数据的表
 
-If you can restore the table you created and added before, you can just do this as below:
+AwaDB 会自动持久化添加的文档数据。
+
+如果您可以恢复之前创建并添加的表，可以按照以下方式操作：
 
 
 ```python
@@ -77,8 +80,7 @@ else:
 ```
 awadb load table success
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

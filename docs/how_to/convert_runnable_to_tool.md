@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/convert_runnable_to_tool.ipynb
 ---
-# How to convert Runnables as Tools
 
-:::info Prerequisites
+# 如何将 Runnables 转换为工具
 
-This guide assumes familiarity with the following concepts:
+:::info 前提条件
+
+本指南假定您熟悉以下概念：
 
 - [Runnables](/docs/concepts#runnable-interface)
 - [Tools](/docs/concepts#tools)
@@ -13,32 +14,30 @@ This guide assumes familiarity with the following concepts:
 
 :::
 
-Here we will demonstrate how to convert a LangChain `Runnable` into a tool that can be used by agents, chains, or chat models.
+在这里，我们将演示如何将 LangChain `Runnable` 转换为可以被代理、链或聊天模型使用的工具。
 
-## Dependencies
+## 依赖项
 
-**Note**: this guide requires `langchain-core` >= 0.2.13. We will also use [OpenAI](/docs/integrations/platforms/openai/) for embeddings, but any LangChain embeddings should suffice. We will use a simple [LangGraph](https://langchain-ai.github.io/langgraph/) agent for demonstration purposes.
-
+**注意**：本指南要求 `langchain-core` >= 0.2.13。我们还将使用 [OpenAI](/docs/integrations/platforms/openai/) 进行嵌入，但任何 LangChain 嵌入都应该足够。我们将使用一个简单的 [LangGraph](https://langchain-ai.github.io/langgraph/) 代理进行演示。
 
 ```python
 %%capture --no-stderr
 %pip install -U langchain-core langchain-openai langgraph
 ```
 
-LangChain [tools](/docs/concepts#tools) are interfaces that an agent, chain, or chat model can use to interact with the world. See [here](/docs/how_to/#tools) for how-to guides covering tool-calling, built-in tools, custom tools, and more information.
+LangChain [工具](/docs/concepts#tools) 是代理、链或聊天模型用来与外界交互的接口。有关工具调用、内置工具、自定义工具及更多信息的操作指南，请参见 [这里](/docs/how_to/#tools)。
 
-LangChain tools-- instances of [BaseTool](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.BaseTool.html)-- are [Runnables](/docs/concepts/#runnable-interface) with additional constraints that enable them to be invoked effectively by language models:
+LangChain 工具——[BaseTool](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.BaseTool.html) 的实例——是具有额外约束的 [可运行对象](/docs/concepts/#runnable-interface)，使其能够被语言模型有效调用：
 
-- Their inputs are constrained to be serializable, specifically strings and Python `dict` objects;
-- They contain names and descriptions indicating how and when they should be used;
-- They may contain a detailed [args_schema](https://python.langchain.com/v0.2/docs/how_to/custom_tools/) for their arguments. That is, while a tool (as a `Runnable`) might accept a single `dict` input, the specific keys and type information needed to populate a dict should be specified in the `args_schema`.
+- 它们的输入被限制为可序列化，具体为字符串和 Python `dict` 对象；
+- 它们包含指示如何以及何时使用的名称和描述；
+- 它们可能包含详细的 [args_schema](https://python.langchain.com/v0.2/docs/how_to/custom_tools/) 用于其参数。也就是说，虽然一个工具（作为 `Runnable`）可能接受单个 `dict` 输入，但填充 `dict` 所需的特定键和类型信息应在 `args_schema` 中指定。
 
-Runnables that accept string or `dict` input can be converted to tools using the [as_tool](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.as_tool) method, which allows for the specification of names, descriptions, and additional schema information for arguments.
+接受字符串或 `dict` 输入的可运行对象可以使用 [as_tool](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.as_tool) 方法转换为工具，该方法允许为参数指定名称、描述和额外的模式信息。
 
-## Basic usage
+## 基本用法
 
-With typed `dict` input:
-
+使用类型为 `dict` 的输入：
 
 ```python
 from typing import List
@@ -59,7 +58,7 @@ def f(x: Args) -> str:
 runnable = RunnableLambda(f)
 as_tool = runnable.as_tool(
     name="My tool",
-    description="Explanation of when to use tool.",
+    description="使用工具的说明。",
 )
 ```
 
@@ -70,7 +69,7 @@ print(as_tool.description)
 as_tool.args_schema.schema()
 ```
 ```output
-Explanation of when to use tool.
+使用工具的说明。
 ```
 
 
@@ -95,8 +94,7 @@ as_tool.invoke({"a": 3, "b": [1, 2]})
 ```
 
 
-Without typing information, arg types can be specified via `arg_types`:
-
+没有类型信息时，可以通过 `arg_types` 指定参数类型：
 
 ```python
 from typing import Any, Dict
@@ -109,31 +107,29 @@ def g(x: Dict[str, Any]) -> str:
 runnable = RunnableLambda(g)
 as_tool = runnable.as_tool(
     name="My tool",
-    description="Explanation of when to use tool.",
+    description="使用工具的说明。",
     arg_types={"a": int, "b": List[int]},
 )
 ```
 
-Alternatively, the schema can be fully specified by directly passing the desired [args_schema](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.BaseTool.html#langchain_core.tools.BaseTool.args_schema) for the tool:
-
+或者，可以通过直接传递所需的 [args_schema](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.BaseTool.html#langchain_core.tools.BaseTool.args_schema) 完全指定模式：
 
 ```python
 from langchain_core.pydantic_v1 import BaseModel, Field
 
 
 class GSchema(BaseModel):
-    """Apply a function to an integer and list of integers."""
+    """对整数和整数列表应用函数。"""
 
-    a: int = Field(..., description="Integer")
-    b: List[int] = Field(..., description="List of ints")
+    a: int = Field(..., description="整数")
+    b: List[int] = Field(..., description="整数列表")
 
 
 runnable = RunnableLambda(g)
 as_tool = runnable.as_tool(GSchema)
 ```
 
-String input is also supported:
-
+也支持字符串输入：
 
 ```python
 def f(x: str) -> str:
@@ -159,22 +155,20 @@ as_tool.invoke("b")
 'baz'
 ```
 
+## 在代理中
 
-## In agents
+接下来，我们将在一个 [代理](/docs/concepts/#agents) 应用中将 LangChain Runnables 作为工具进行整合。我们将通过以下内容进行演示：
 
-Below we will incorporate LangChain Runnables as tools in an [agent](/docs/concepts/#agents) application. We will demonstrate with:
+- 一个文档 [检索器](/docs/concepts/#retrievers)；
+- 一个简单的 [RAG](/docs/tutorials/rag/) 链，允许代理将相关查询委托给它。
 
-- a document [retriever](/docs/concepts/#retrievers);
-- a simple [RAG](/docs/tutorials/rag/) chain, allowing an agent to delegate relevant queries to it.
-
-We first instantiate a chat model that supports [tool calling](/docs/how_to/tool_calling/):
+我们首先实例化一个支持 [工具调用](/docs/how_to/tool_calling/) 的聊天模型：
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
 <ChatModelTabs customVarName="llm" />
 
-Following the [RAG tutorial](/docs/tutorials/rag/), let's first construct a retriever:
-
+接下来，按照 [RAG 教程](/docs/tutorials/rag/)，我们首先构建一个检索器：
 
 ```python
 from langchain_core.documents import Document
@@ -200,8 +194,7 @@ retriever = vectorstore.as_retriever(
 )
 ```
 
-We next create use a simple pre-built [LangGraph agent](https://python.langchain.com/v0.2/docs/tutorials/agents/) and provide it the tool:
-
+接下来，我们使用一个简单的预构建 [LangGraph 代理](https://python.langchain.com/v0.2/docs/tutorials/agents/) 并为其提供工具：
 
 ```python
 from langgraph.prebuilt import create_react_agent
@@ -214,7 +207,6 @@ tools = [
 ]
 agent = create_react_agent(llm, tools)
 ```
-
 
 ```python
 for chunk in agent.stream({"messages": [("human", "What are dogs known for?")]}):
@@ -229,10 +221,9 @@ for chunk in agent.stream({"messages": [("human", "What are dogs known for?")]})
 {'agent': {'messages': [AIMessage(content='Dogs are known for being great companions, known for their loyalty and friendliness.', response_metadata={'token_usage': {'completion_tokens': 18, 'prompt_tokens': 134, 'total_tokens': 152}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-9ca5847a-a5eb-44c0-a774-84cc2c5bbc5b-0', usage_metadata={'input_tokens': 134, 'output_tokens': 18, 'total_tokens': 152})]}}
 ----
 ```
-See [LangSmith trace](https://smith.langchain.com/public/44e438e3-2faf-45bd-b397-5510fc145eb9/r) for the above run.
+请查看上述运行的 [LangSmith 跟踪](https://smith.langchain.com/public/44e438e3-2faf-45bd-b397-5510fc145eb9/r)。
 
-Going further, we can create a simple [RAG](/docs/tutorials/rag/) chain that takes an additional parameter-- here, the "style" of the answer.
-
+进一步，我们可以创建一个简单的 [RAG](/docs/tutorials/rag/) 链，该链接受一个额外的参数——在这里是答案的“风格”。
 
 ```python
 from operator import itemgetter
@@ -269,14 +260,11 @@ rag_chain = (
 )
 ```
 
-Note that the input schema for our chain contains the required arguments, so it converts to a tool without further specification:
-
+请注意，我们的链的输入模式包含所需的参数，因此它可以无须进一步说明地转换为工具：
 
 ```python
 rag_chain.input_schema.schema()
 ```
-
-
 
 ```output
 {'title': 'RunnableParallel<context,question,answer_style>Input',
@@ -285,8 +273,6 @@ rag_chain.input_schema.schema()
   'answer_style': {'title': 'Answer Style'}}}
 ```
 
-
-
 ```python
 rag_tool = rag_chain.as_tool(
     name="pet_expert",
@@ -294,8 +280,7 @@ rag_tool = rag_chain.as_tool(
 )
 ```
 
-Below we again invoke the agent. Note that the agent populates the required parameters in its `tool_calls`:
-
+下面我们再次调用代理。请注意，代理在其 `tool_calls` 中填充所需的参数：
 
 ```python
 agent = create_react_agent(llm, [rag_tool])
@@ -314,4 +299,4 @@ for chunk in agent.stream(
 {'agent': {'messages': [AIMessage(content='According to pirates, dogs are known for their loyalty and friendliness, making them great companions for pirates on long sea voyages.', response_metadata={'token_usage': {'completion_tokens': 27, 'prompt_tokens': 119, 'total_tokens': 146}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-5a30edc3-7be0-4743-b980-ca2f8cad9b8d-0', usage_metadata={'input_tokens': 119, 'output_tokens': 27, 'total_tokens': 146})]}}
 ----
 ```
-See [LangSmith trace](https://smith.langchain.com/public/147ae4e6-4dfb-4dd9-8ca0-5c5b954f08ac/r) for the above run.
+请查看上述运行的 [LangSmith 跟踪](https://smith.langchain.com/public/147ae4e6-4dfb-4dd9-8ca0-5c5b954f08ac/r)。

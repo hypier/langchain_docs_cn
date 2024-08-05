@@ -1,20 +1,21 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/motorhead_memory.ipynb
 ---
+
 # Motörhead
 
->[Motörhead](https://github.com/getmetal/motorhead) is a memory server implemented in Rust. It automatically handles incremental summarization in the background and allows for stateless applications.
+>[Motörhead](https://github.com/getmetal/motorhead) 是用 Rust 实现的内存服务器。它在后台自动处理增量摘要，并允许无状态应用程序。
 
-## Setup
+## 设置
 
-See instructions at [Motörhead](https://github.com/getmetal/motorhead) for running the server locally.
+请参阅 [Motörhead](https://github.com/getmetal/motorhead) 上的说明以在本地运行服务器。
 
 
 ```python
 from langchain.memory.motorhead_memory import MotorheadMemory
 ```
 
-## Example
+## 示例
 
 
 ```python
@@ -66,7 +67,7 @@ AI:[0m
 
 
 ```output
-' Hi Bob, nice to meet you! How are you doing today?'
+' 你好，鲍勃，很高兴见到你！你今天过得怎么样？'
 ```
 
 
@@ -82,7 +83,7 @@ Prompt after formatting:
 [32;1m[1;3mYou are a chatbot having a conversation with a human.
 
 Human: hi im bob
-AI:  Hi Bob, nice to meet you! How are you doing today?
+AI:  你好，鲍勃，很高兴见到你！你今天过得怎么样？
 Human: whats my name?
 AI:[0m
 
@@ -91,7 +92,7 @@ AI:[0m
 
 
 ```output
-' You said your name is Bob. Is that correct?'
+' 你说你的名字是鲍勃，对吗？'
 ```
 
 
@@ -107,9 +108,9 @@ Prompt after formatting:
 [32;1m[1;3mYou are a chatbot having a conversation with a human.
 
 Human: hi im bob
-AI:  Hi Bob, nice to meet you! How are you doing today?
+AI:  你好，鲍勃，很高兴见到你！你今天过得怎么样？
 Human: whats my name?
-AI:  You said your name is Bob. Is that correct?
+AI:  你说你的名字是鲍勃，对吗？
 Human: whats for dinner?
 AI:[0m
 
@@ -118,6 +119,5 @@ AI:[0m
 
 
 ```output
-"  I'm sorry, I'm not sure what you're asking. Could you please rephrase your question?"
+"  对不起，我不太确定你在问什么。你能否重新表述一下你的问题？"
 ```
-

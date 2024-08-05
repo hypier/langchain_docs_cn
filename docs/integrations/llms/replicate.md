@@ -1,13 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/replicate.ipynb
 ---
-# Replicate
 
->[Replicate](https://replicate.com/blog/machine-learning-needs-better-tools) runs machine learning models in the cloud. We have a library of open-source models that you can run with a few lines of code. If you're building your own machine learning models, Replicate makes it easy to deploy them at scale.
+# 复制
 
-This example goes over how to use LangChain to interact with `Replicate` [models](https://replicate.com/explore)
+>[Replicate](https://replicate.com/blog/machine-learning-needs-better-tools) 在云中运行机器学习模型。我们拥有一个开源模型库，您可以用几行代码运行。如果您正在构建自己的机器学习模型，Replicate 使其易于大规模部署。
 
-## Setup
+此示例介绍了如何使用 LangChain 与 `Replicate` [模型](https://replicate.com/explore) 进行交互。
+
+## 设置
 
 
 ```python
@@ -16,7 +17,7 @@ This example goes over how to use LangChain to interact with `Replicate` [models
 %autoreload 2
 ```
 
-To run this notebook, you'll need to create a [replicate](https://replicate.com) account and install the [replicate python client](https://github.com/replicate/replicate-python).
+要运行此笔记本，您需要创建一个 [replicate](https://replicate.com) 账户并安装 [replicate python client](https://github.com/replicate/replicate-python)。
 
 
 ```python
@@ -63,12 +64,11 @@ from langchain_community.llms import Replicate
 from langchain_core.prompts import PromptTemplate
 ```
 
-## Calling a model
+## 调用模型
 
-Find a model on the [replicate explore page](https://replicate.com/explore), and then paste in the model name and version in this format: model_name/version.
+在[replicate 探索页面](https://replicate.com/explore)上找到一个模型，然后以此格式粘贴模型名称和版本：model_name/version。
 
-For example, here is [`Meta Llama 3`](https://replicate.com/meta/meta-llama-3-8b-instruct).
-
+例如，这里是[`Meta Llama 3`](https://replicate.com/meta/meta-llama-3-8b-instruct)。
 
 ```python
 llm = Replicate(
@@ -82,32 +82,27 @@ Assistant:
 llm(prompt)
 ```
 
-
-
 ```output
 "Let's break this down step by step:\n\n1. A dog is a living being, specifically a mammal.\n2. Dogs do not possess the cognitive abilities or physical characteristics necessary to operate a vehicle, such as a car.\n3. Operating a car requires complex mental and physical abilities, including:\n\t* Understanding of traffic laws and rules\n\t* Ability to read and comprehend road signs\n\t* Ability to make decisions quickly and accurately\n\t* Ability to physically manipulate the vehicle's controls (e.g., steering wheel, pedals)\n4. Dogs do not possess any of these abilities. They are unable to read or comprehend written language, let alone complex traffic laws.\n5. Dogs also lack the physical dexterity and coordination to operate a vehicle's controls. Their paws and claws are not adapted for grasping or manipulating small, precise objects like a steering wheel or pedals.\n6. Therefore, it is not possible for a dog to drive a car.\n\nAnswer: No."
 ```
 
+作为另一个例子，对于这个[dolly 模型](https://replicate.com/replicate/dolly-v2-12b)，点击API选项卡。模型名称/版本将是：`replicate/dolly-v2-12b:ef0e1aefc61f8e096ebe4db6b2bacc297daf2ef6899f0f7e001ec445893500e5`
 
-As another example, for this [dolly model](https://replicate.com/replicate/dolly-v2-12b), click on the API tab. The model name/version would be: `replicate/dolly-v2-12b:ef0e1aefc61f8e096ebe4db6b2bacc297daf2ef6899f0f7e001ec445893500e5`
+仅需要`model`参数，但我们可以在初始化时添加其他模型参数。
 
-Only the `model` param is required, but we can add other model params when initializing.
-
-For example, if we were running stable diffusion and wanted to change the image dimensions:
+例如，如果我们要运行稳定扩散并想要更改图像尺寸：
 
 ```
 Replicate(model="stability-ai/stable-diffusion:db21e45d3f7023abc2a46ee38a23973f6dce16bb082a930b0c49861f96d1e5bf", input={'image_dimensions': '512x512'})
 ```
-                       
-*Note that only the first output of a model will be returned.*
 
+*注意，只有模型的第一个输出会被返回。*
 
 ```python
 llm = Replicate(
     model="replicate/dolly-v2-12b:ef0e1aefc61f8e096ebe4db6b2bacc297daf2ef6899f0f7e001ec445893500e5"
 )
 ```
-
 
 ```python
 prompt = """
@@ -117,15 +112,11 @@ Can a dog drive a car?
 llm(prompt)
 ```
 
-
-
 ```output
 'No, dogs lack some of the brain functions required to operate a motor vehicle. They cannot focus and react in time to accelerate or brake correctly. Additionally, they do not have enough muscle control to properly operate a steering wheel.\n\n'
 ```
 
-
-We can call any replicate model using this syntax. For example, we can call stable diffusion.
-
+我们可以使用这种语法调用任何replicate模型。例如，我们可以调用稳定扩散。
 
 ```python
 text2image = Replicate(
@@ -134,21 +125,16 @@ text2image = Replicate(
 )
 ```
 
-
 ```python
 image_output = text2image("A cat riding a motorcycle by Picasso")
 image_output
 ```
 
-
-
 ```output
 'https://pbxt.replicate.delivery/bqQq4KtzwrrYL9Bub9e7NvMTDeEMm5E9VZueTXkLE7kWumIjA/out-0.png'
 ```
 
-
-The model spits out a URL. Let's render it.
-
+模型输出一个URL。让我们渲染它。
 
 ```python
 !poetry run pip install Pillow
@@ -172,9 +158,8 @@ img = Image.open(BytesIO(response.content))
 img
 ```
 
-## Streaming Response
-You can optionally stream the response as it is produced, which is helpful to show interactivity to users for time-consuming generations. See detailed docs on [Streaming](/docs/how_to/streaming_llm) for more information.
-
+## 流式响应
+您可以选择在生成过程中流式传输响应，这有助于向用户展示在耗时生成过程中的交互性。有关更多信息，请参见[流式传输](/docs/how_to/streaming_llm)的详细文档。
 
 ```python
 from langchain_core.callbacks import StreamingStdOutCallbackHandler
@@ -194,9 +179,9 @@ _ = llm.invoke(prompt)
 ```output
 1. Dogs do not have the physical ability to operate a vehicle.
 ```
-# Stop Sequences
-You can also specify stop sequences. If you have a definite stop sequence for the generation that you are going to parse with anyway, it is better (cheaper and faster!) to just cancel the generation once one or more stop sequences are reached, rather than letting the model ramble on till the specified `max_length`. Stop sequences work regardless of whether you are in streaming mode or not, and Replicate only charges you for the generation up until the stop sequence.
 
+# 停止序列
+您还可以指定停止序列。如果您有明确的停止序列用于生成并且您将解析它，最好（更便宜且更快！）在达到一个或多个停止序列时取消生成，而不是让模型继续生成直到指定的 `max_length`。停止序列无论您是否处于流模式下都有效，并且 Replicate 只会对直到停止序列的生成收费。
 
 ```python
 import time
@@ -241,16 +226,15 @@ Stopped output:
  There are several ways to learn Python, and the best method for you will depend on your learning style and goals. Here are some suggestions:
 Stopped output runtime: 25.77039254200008 seconds
 ```
-## Chaining Calls
-The whole point of langchain is to... chain! Here's an example of how do that.
 
+## 链式调用
+langchain 的整个重点在于... 链接！以下是如何做到这一点的示例。
 
 ```python
 from langchain.chains import SimpleSequentialChain
 ```
 
-First, let's define the LLM for this model as a flan-5, and text2image as a stable diffusion model.
-
+首先，让我们将此模型的 LLM 定义为 flan-5，将 text2image 定义为稳定扩散模型。
 
 ```python
 dolly_llm = Replicate(
@@ -261,31 +245,28 @@ text2image = Replicate(
 )
 ```
 
-First prompt in the chain
-
+链中的第一个提示
 
 ```python
 prompt = PromptTemplate(
     input_variables=["product"],
-    template="What is a good name for a company that makes {product}?",
+    template="为生产 {product} 的公司起个好名字？",
 )
 
 chain = LLMChain(llm=dolly_llm, prompt=prompt)
 ```
 
-Second prompt to get the logo for company description
-
+第二个提示以获取公司描述的标志
 
 ```python
 second_prompt = PromptTemplate(
     input_variables=["company_name"],
-    template="Write a description of a logo for this company: {company_name}",
+    template="为这个公司写一个标志的描述：{company_name}",
 )
 chain_two = LLMChain(llm=dolly_llm, prompt=second_prompt)
 ```
 
-Third prompt, let's create the image based on the description output from prompt 2
-
+第三个提示，让我们根据提示 2 的描述输出创建图像
 
 ```python
 third_prompt = PromptTemplate(
@@ -295,25 +276,24 @@ third_prompt = PromptTemplate(
 chain_three = LLMChain(llm=text2image, prompt=third_prompt)
 ```
 
-Now let's run it!
-
+现在让我们运行它！
 
 ```python
-# Run the chain specifying only the input variable for the first chain.
+# 运行链，仅指定第一个链的输入变量。
 overall_chain = SimpleSequentialChain(
     chains=[chain, chain_two, chain_three], verbose=True
 )
-catchphrase = overall_chain.run("colorful socks")
+catchphrase = overall_chain.run("彩色袜子")
 print(catchphrase)
 ```
 ```output
 
 
 [1m> Entering new SimpleSequentialChain chain...[0m
-[36;1m[1;3mColorful socks could be named after a song by The Beatles or a color (yellow, blue, pink). A good combination of letters and digits would be 6399. Apple also owns the domain 6399.com so this could be reserved for the Company.
+[36;1m[1;3m彩色袜子可以以披头士乐队的一首歌或一种颜色（黄色、蓝色、粉色）命名。字母和数字的良好组合可以是 6399。苹果公司也拥有域名 6399.com，因此这可以为公司保留。
 
 [0m
-[33;1m[1;3mA colorful sock with the numbers 3, 9, and 99 screen printed in yellow, blue, and pink, respectively.
+[33;1m[1;3m一双彩色袜子，上面印有数字 3、9 和 99，分别使用黄色、蓝色和粉色印刷。
 
 [0m
 [38;5;200m[1;3mhttps://pbxt.replicate.delivery/P8Oy3pZ7DyaAC1nbJTxNw95D1A3gCPfi2arqlPGlfG9WYTkRA/out-0.png[0m
@@ -330,8 +310,7 @@ img = Image.open(BytesIO(response.content))
 img
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

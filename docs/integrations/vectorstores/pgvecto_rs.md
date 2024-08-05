@@ -1,9 +1,10 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/pgvecto_rs.ipynb
 ---
+
 # PGVecto.rs
 
-This notebook shows how to use functionality related to the Postgres vector database ([pgvecto.rs](https://github.com/tensorchord/pgvecto.rs)).
+本笔记本展示了如何使用与Postgres向量数据库（[pgvecto.rs](https://github.com/tensorchord/pgvecto.rs)）相关的功能。
 
 
 ```python
@@ -31,19 +32,19 @@ docs = text_splitter.split_documents(documents)
 embeddings = FakeEmbeddings(size=3)
 ```
 
-Start the database with the [official demo docker image](https://github.com/tensorchord/pgvecto.rs#installation).
+使用[官方演示docker镜像](https://github.com/tensorchord/pgvecto.rs#installation)启动数据库。
 
 
 ```python
 ! docker run --name pgvecto-rs-demo -e POSTGRES_PASSWORD=mysecretpassword -p 5432:5432 -d tensorchord/pgvecto-rs:latest
 ```
 
-Then contruct the db URL
+然后构建数据库URL
 
 
 ```python
-## PGVecto.rs needs the connection string to the database.
-## We will load it from the environment variables.
+## PGVecto.rs需要连接字符串来连接数据库。
+## 我们将从环境变量中加载它。
 import os
 
 PORT = os.getenv("DB_PORT", 5432)
@@ -52,7 +53,7 @@ USER = os.getenv("DB_USER", "postgres")
 PASS = os.getenv("DB_PASS", "mysecretpassword")
 DB_NAME = os.getenv("DB_NAME", "postgres")
 
-# Run tests with shell:
+# 通过shell运行测试：
 URL = "postgresql+psycopg://{username}:{password}@{host}:{port}/{db_name}".format(
     port=PORT,
     host=HOST,
@@ -62,7 +63,7 @@ URL = "postgresql+psycopg://{username}:{password}@{host}:{port}/{db_name}".forma
 )
 ```
 
-Finally, create the VectorStore from the documents:
+最后，从文档中创建VectorStore：
 
 
 ```python
@@ -70,18 +71,18 @@ db1 = PGVecto_rs.from_documents(
     documents=docs,
     embedding=embeddings,
     db_url=URL,
-    # The table name is f"collection_{collection_name}", so that it should be unique.
+    # 表名为f"collection_{collection_name}"，因此应该是唯一的。
     collection_name="state_of_the_union",
 )
 ```
 
-You can connect to the table laterly with:
+您可以稍后通过以下方式连接到表：
 
 
 ```python
-# Create new empty vectorstore with collection_name.
-# Or connect to an existing vectorstore in database if exists.
-# Arguments should be the same as when the vectorstore was created.
+# 创建新的空向量存储，使用collection_name。
+# 或者如果存在，则连接到数据库中现有的向量存储。
+# 参数应与创建向量存储时相同。
 db1 = PGVecto_rs.from_collection_name(
     embedding=embeddings,
     db_url=URL,
@@ -89,11 +90,11 @@ db1 = PGVecto_rs.from_collection_name(
 )
 ```
 
-Make sure that the user is permitted to create a table.
+确保用户被允许创建表。
 
-## Similarity search with score
+## 带分数的相似性搜索
 
-### Similarity Search with Euclidean Distance (Default)
+### 使用欧几里得距离的相似性搜索（默认）
 
 
 ```python
@@ -104,7 +105,7 @@ for doc in docs:
     print("======================")
 ```
 
-### Similarity Search with Filter
+### 相似性搜索与过滤器
 
 
 ```python
@@ -120,7 +121,7 @@ for doc in docs:
     print("======================")
 ```
 
-Or:
+或者:
 
 
 ```python
@@ -134,8 +135,7 @@ for doc in docs:
     print("======================")
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

@@ -1,79 +1,78 @@
 # rag-opensearch
 
-This Template performs RAG using [OpenSearch](https://python.langchain.com/docs/integrations/vectorstores/opensearch).
+此模板使用 [OpenSearch](https://python.langchain.com/docs/integrations/vectorstores/opensearch) 执行 RAG。
 
-## Environment Setup
+## 环境设置
 
-Set the following environment variables. 
+设置以下环境变量。
 
-- `OPENAI_API_KEY` -  To access OpenAI Embeddings and Models.
+- `OPENAI_API_KEY` - 用于访问 OpenAI Embeddings 和 Models。
 
-And optionally set the OpenSearch ones if not using defaults:
+如果不使用默认设置，可以选择性地设置 OpenSearch 的相关变量：
 
-- `OPENSEARCH_URL` - URL of the hosted OpenSearch Instance
-- `OPENSEARCH_USERNAME` - User name for the OpenSearch instance
-- `OPENSEARCH_PASSWORD` - Password for the OpenSearch instance
-- `OPENSEARCH_INDEX_NAME` - Name of the index 
+- `OPENSEARCH_URL` - 托管的 OpenSearch 实例的 URL
+- `OPENSEARCH_USERNAME` - OpenSearch 实例的用户名
+- `OPENSEARCH_PASSWORD` - OpenSearch 实例的密码
+- `OPENSEARCH_INDEX_NAME` - 索引名称
 
-To run the default OpenSearch instance in docker, you can use the command
+要在 Docker 中运行默认的 OpenSearch 实例，可以使用以下命令
 ```shell
 docker run -p 9200:9200 -p 9600:9600 -e "discovery.type=single-node" --name opensearch-node -d opensearchproject/opensearch:latest
 ```
 
-Note: To load dummy index named `langchain-test` with dummy documents, run `python dummy_index_setup.py` in the package
+注意：要加载名为 `langchain-test` 的虚拟索引及虚拟文档，请在包中运行 `python dummy_index_setup.py`。
 
-## Usage
+## 使用方法
 
-To use this package, you should first have the LangChain CLI installed:
+要使用此包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将此包作为唯一包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package rag-opensearch
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，只需运行：
 
 ```shell
 langchain app add rag-opensearch
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 ```python
 from rag_opensearch import chain as rag_opensearch_chain
 
 add_routes(app, rag_opensearch_chain, path="/rag-opensearch")
 ```
 
-(Optional) Let's now configure LangSmith. 
-LangSmith will help us trace, monitor and debug LangChain applications. 
-You can sign up for LangSmith [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
-
+（可选）现在让我们配置 LangSmith。 
+LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。 
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。 
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录内，则可以直接通过以下方式启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server is running locally at 
+这将启动 FastAPI 应用程序，服务器在本地运行，地址为 
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/rag-opensearch/playground](http://127.0.0.1:8000/rag-opensearch/playground)  
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板
+我们可以在 [http://127.0.0.1:8000/rag-opensearch/playground](http://127.0.0.1:8000/rag-opensearch/playground) 访问游乐场  
 
-We can access the template from code with:
+我们可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable

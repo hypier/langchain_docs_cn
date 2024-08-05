@@ -1,23 +1,24 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/custom_callbacks.ipynb
 ---
-# How to create custom callback handlers
 
-:::info Prerequisites
+# 如何创建自定义回调处理器
 
-This guide assumes familiarity with the following concepts:
+:::info 前提条件
 
-- [Callbacks](/docs/concepts/#callbacks)
+本指南假设您熟悉以下概念：
+
+- [回调](/docs/concepts/#callbacks)
 
 :::
 
-LangChain has some built-in callback handlers, but you will often want to create your own handlers with custom logic.
+LangChain 有一些内置的回调处理器，但您通常会希望创建自己的具有自定义逻辑的处理器。
 
-To create a custom callback handler, we need to determine the [event(s)](https://api.python.langchain.com/en/latest/callbacks/langchain_core.callbacks.base.BaseCallbackHandler.html#langchain-core-callbacks-base-basecallbackhandler) we want our callback handler to handle as well as what we want our callback handler to do when the event is triggered. Then all we need to do is attach the callback handler to the object, for example via [the constructor](/docs/how_to/callbacks_constructor) or [at runtime](/docs/how_to/callbacks_runtime).
+要创建一个自定义回调处理器，我们需要确定我们希望回调处理器处理的 [事件](https://api.python.langchain.com/en/latest/callbacks/langchain_core.callbacks.base.BaseCallbackHandler.html#langchain-core-callbacks-base-basecallbackhandler)，以及当事件被触发时我们希望回调处理器执行的操作。然后，我们只需将回调处理器附加到对象上，例如通过 [构造函数](/docs/how_to/callbacks_constructor) 或 [在运行时](/docs/how_to/callbacks_runtime)。
 
-In the example below, we'll implement streaming with a custom handler.
+在下面的示例中，我们将实现一个带有自定义处理器的流式传输。
 
-In our custom callback handler `MyCustomHandler`, we implement the `on_llm_new_token` handler to print the token we have just received. We then attach our custom handler to the model object as a constructor callback.
+在我们的自定义回调处理器 `MyCustomHandler` 中，我们实现了 `on_llm_new_token` 处理器来打印我们刚刚收到的令牌。然后，我们将自定义处理器作为构造函数回调附加到模型对象上。
 
 
 ```python
@@ -72,10 +73,10 @@ My custom handler, token:  polar
 My custom handler, token:  bear
 My custom handler, token: !
 ```
-You can see [this reference page](https://api.python.langchain.com/en/latest/callbacks/langchain_core.callbacks.base.BaseCallbackHandler.html#langchain-core-callbacks-base-basecallbackhandler) for a list of events you can handle. Note that the `handle_chain_*` events run for most LCEL runnables.
+您可以查看 [此参考页面](https://api.python.langchain.com/en/latest/callbacks/langchain_core.callbacks.base.BaseCallbackHandler.html#langchain-core-callbacks-base-basecallbackhandler) 以获取您可以处理的事件列表。请注意，`handle_chain_*` 事件适用于大多数 LCEL 可运行对象。
 
-## Next steps
+## 后续步骤
 
-You've now learned how to create your own custom callback handlers.
+您现在已经学习了如何创建自己的自定义回调处理程序。
 
-Next, check out the other how-to guides in this section, such as [how to attach callbacks to a runnable](/docs/how_to/callbacks_attach).
+接下来，请查看本节中的其他操作指南，例如 [如何将回调附加到可运行对象](/docs/how_to/callbacks_attach)。

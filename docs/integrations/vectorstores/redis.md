@@ -1,47 +1,45 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/redis.ipynb
 ---
+
 # Redis
 
->[Redis vector database](https://redis.io/docs/get-started/vector-database/) introduction and langchain integration guide.
+>[Redis 向量数据库](https://redis.io/docs/get-started/vector-database/) 介绍及 langchain 集成指南。
 
-## What is Redis?
+## 什么是 Redis？
 
-Most developers from a web services background are familiar with `Redis`. At its core, `Redis` is an open-source key-value store that is used as a cache, message broker, and database. Developers choose `Redis` because it is fast, has a large ecosystem of client libraries, and has been deployed by major enterprises for years.
+大多数来自网络服务背景的开发人员都熟悉 `Redis`。从本质上讲，`Redis` 是一个开源的键值存储，用作缓存、消息代理和数据库。开发人员选择 `Redis` 是因为它速度快，拥有庞大的客户端库生态系统，并且多年来已被主要企业部署。
 
-On top of these traditional use cases, `Redis` provides additional capabilities like the Search and Query capability that allows users to create secondary index structures within `Redis`. This allows `Redis` to be a Vector Database, at the speed of a cache. 
+除了这些传统用例外，`Redis` 还提供了额外的功能，如搜索和查询能力，使用户能够在 `Redis` 内创建二级索引结构。这使得 `Redis` 能够以缓存的速度作为向量数据库。
 
+## Redis作为向量数据库
 
-## Redis as a Vector Database
+`Redis`使用压缩的倒排索引进行快速索引，同时占用较低的内存。它还支持多项高级功能，例如：
 
-`Redis` uses compressed, inverted indexes for fast indexing with a low memory footprint. It also supports a number of advanced features such as:
+* 在Redis哈希和`JSON`中对多个字段进行索引
+* 向量相似性搜索（使用`HNSW`（近似最近邻）或`FLAT`（精确最近邻））
+* 向量范围搜索（例如，查找与查询向量在半径内的所有向量）
+* 增量索引而不影响性能
+* 文档排序（使用[tf-idf](https://en.wikipedia.org/wiki/Tf%E2%80%93idf)，可选用户提供的权重）
+* 字段加权
+* 使用`AND`、`OR`和`NOT`运算符的复杂布尔查询
+* 前缀匹配、模糊匹配和精确短语查询
+* 支持[双元音匹配](https://redis.io/docs/stack/search/reference/phonetic_matching/)
+* 自动补全建议（带有模糊前缀建议）
+* 在[多种语言](https://redis.io/docs/stack/search/reference/stemming/)中基于词干的查询扩展（使用[Snowball](http://snowballstem.org/)）
+* 支持中文分词和查询（使用[Friso](https://github.com/lionsoul2014/friso)）
+* 数值过滤和范围
+* 使用Redis地理空间索引进行地理空间搜索
+* 强大的聚合引擎
+* 支持所有`utf-8`编码的文本
+* 检索完整文档、选定字段或仅文档ID
+* 排序结果（例如，按创建日期）
 
-* Indexing of multiple fields in Redis hashes and `JSON`
-* Vector similarity search (with `HNSW` (ANN) or `FLAT` (KNN))
-* Vector Range Search (e.g. find all vectors within a radius of a query vector)
-* Incremental indexing without performance loss
-* Document ranking (using [tf-idf](https://en.wikipedia.org/wiki/Tf%E2%80%93idf), with optional user-provided weights)
-* Field weighting
-* Complex boolean queries with `AND`, `OR`, and `NOT` operators
-* Prefix matching, fuzzy matching, and exact-phrase queries
-* Support for [double-metaphone phonetic matching](https://redis.io/docs/stack/search/reference/phonetic_matching/)
-* Auto-complete suggestions (with fuzzy prefix suggestions)
-* Stemming-based query expansion in [many languages](https://redis.io/docs/stack/search/reference/stemming/) (using [Snowball](http://snowballstem.org/))
-* Support for Chinese-language tokenization and querying (using [Friso](https://github.com/lionsoul2014/friso))
-* Numeric filters and ranges
-* Geospatial searches using Redis geospatial indexing
-* A powerful aggregations engine
-* Supports for all `utf-8` encoded text
-* Retrieve full documents, selected fields, or only the document IDs
-* Sorting results (for example, by creation date)
+## 客户端
 
+由于 `Redis` 不仅仅是一个向量数据库，因此通常会有一些用例需要使用 `Redis` 客户端，而不仅仅是 `LangChain` 集成。您可以使用任何标准的 `Redis` 客户端库来运行搜索和查询命令，但使用一个封装了搜索和查询 API 的库会更简单。以下是一些示例，您可以在 [这里](https://redis.io/resources/clients/) 找到更多客户端库。
 
-
-## Clients
-
-Since `Redis` is much more than just a vector database, there are often use cases that demand the usage of a `Redis` client besides just the `LangChain` integration. You can use any standard `Redis` client library to run Search and Query commands, but it's easiest to use a library that wraps the Search and Query API. Below are a few examples, but you can find more client libraries [here](https://redis.io/resources/clients/).
-
-| Project | Language | License | Author | Stars |
+| 项目 | 语言 | 许可证 | 作者 | 星标 |
 |----------|---------|--------|---------|-------|
 | [jedis][jedis-url] | Java | MIT | [Redis][redis-url] | ![Stars][jedis-stars] |
 | [redisvl][redisvl-url] | Python | MIT | [Redis][redis-url] | ![Stars][redisvl-stars] |
@@ -83,51 +81,45 @@ Since `Redis` is much more than just a vector database, there are often use case
 [redisearch-api-rs-author]: https://redis.com
 [redisearch-api-rs-stars]: https://img.shields.io/github/stars/RediSearch/redisearch-api-rs.svg?style=social&amp;label=Star&amp;maxAge=2592000
 
+## 部署选项
 
-## Deployment options
-
-There are many ways to deploy Redis with RediSearch. The easiest way to get started is to use Docker, but there are are many potential options for deployment such as
+有许多方法可以将 Redis 与 RediSearch 部署在一起。开始的最简单方法是使用 Docker，但还有许多潜在的部署选项，例如
 
 - [Redis Cloud](https://redis.com/redis-enterprise-cloud/overview/)
 - [Docker (Redis Stack)](https://hub.docker.com/r/redis/redis-stack)
-- Cloud marketplaces: [AWS Marketplace](https://aws.amazon.com/marketplace/pp/prodview-e6y7ork67pjwg?sr=0-2&ref_=beagle&applicationId=AWSMPContessa), [Google Marketplace](https://console.cloud.google.com/marketplace/details/redislabs-public/redis-enterprise?pli=1), or [Azure Marketplace](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/garantiadata.redis_enterprise_1sp_public_preview?tab=Overview)
-- On-premise: [Redis Enterprise Software](https://redis.com/redis-enterprise-software/overview/)
-- Kubernetes: [Redis Enterprise Software on Kubernetes](https://docs.redis.com/latest/kubernetes/)
+- 云市场： [AWS Marketplace](https://aws.amazon.com/marketplace/pp/prodview-e6y7ork67pjwg?sr=0-2&ref_=beagle&applicationId=AWSMPContessa)， [Google Marketplace](https://console.cloud.google.com/marketplace/details/redislabs-public/redis-enterprise?pli=1)，或 [Azure Marketplace](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/garantiadata.redis_enterprise_1sp_public_preview?tab=Overview)
+- 本地部署： [Redis Enterprise Software](https://redis.com/redis-enterprise-software/overview/)
+- Kubernetes： [Redis Enterprise Software on Kubernetes](https://docs.redis.com/latest/kubernetes/)
 
+## 其他示例
 
-## Additional examples
+许多示例可以在 [Redis AI 团队的 GitHub](https://github.com/RedisVentures/) 中找到
 
-Many examples can be found in the [Redis AI team's GitHub](https://github.com/RedisVentures/)
+- [Awesome Redis AI Resources](https://github.com/RedisVentures/redis-ai-resources) - 使用 Redis 进行 AI 工作负载的示例列表
+- [Azure OpenAI Embeddings Q&A](https://github.com/ruoccofabrizio/azure-open-ai-embeddings-qna) - OpenAI 和 Redis 作为 Azure 上的问答服务。
+- [ArXiv Paper Search](https://github.com/RedisVentures/redis-arXiv-search) - 对 arXiv 学术论文的语义搜索
+- [Vector Search on Azure](https://learn.microsoft.com/azure/azure-cache-for-redis/cache-tutorial-vector-similarity) - 使用 Azure Cache for Redis 和 Azure OpenAI 在 Azure 上进行向量搜索
 
-- [Awesome Redis AI Resources](https://github.com/RedisVentures/redis-ai-resources) - List of examples of using Redis in AI workloads
-- [Azure OpenAI Embeddings Q&A](https://github.com/ruoccofabrizio/azure-open-ai-embeddings-qna) - OpenAI and Redis as a Q&A service on Azure.
-- [ArXiv Paper Search](https://github.com/RedisVentures/redis-arXiv-search) - Semantic search over arXiv scholarly papers
-- [Vector Search on Azure](https://learn.microsoft.com/azure/azure-cache-for-redis/cache-tutorial-vector-similarity) - Vector search on Azure using Azure Cache for Redis and Azure OpenAI
+## 更多资源
 
+有关如何将 Redis 用作向量数据库的更多信息，请查看以下资源：
 
-## More resources
+- [RedisVL 文档](https://redisvl.com) - Redis 向量库客户端的文档
+- [Redis 向量相似度文档](https://redis.io/docs/stack/search/reference/vectors/) - Redis 官方的向量搜索文档。
+- [Redis-py 搜索文档](https://redis.readthedocs.io/en/latest/redismodules.html#redisearch-commands) - redis-py 客户端库的文档
+- [向量相似度搜索：从基础到生产](https://mlops.community/vector-similarity-search-from-basics-to-production/) - 关于 VSS 和 Redis 作为 VectorDB 的入门博客文章。
 
-For more information on how to use Redis as a vector database, check out the following resources:
+## 设置
 
-- [RedisVL Documentation](https://redisvl.com) - Documentation for the Redis Vector Library Client
-- [Redis Vector Similarity Docs](https://redis.io/docs/stack/search/reference/vectors/) - Redis official docs for Vector Search.
-- [Redis-py Search Docs](https://redis.readthedocs.io/en/latest/redismodules.html#redisearch-commands) - Documentation for redis-py client library
-- [Vector Similarity Search: From Basics to Production](https://mlops.community/vector-similarity-search-from-basics-to-production/) - Introductory blog post to VSS and Redis as a VectorDB.
+### 安装 Redis Python 客户端
 
-## Setting up
-
-
-### Install Redis Python client
-
-`Redis-py` is the officially supported client by Redis. Recently released is the `RedisVL` client which is purpose-built for the Vector Database use cases. Both can be installed with pip.
-
+`Redis-py` 是 Redis 官方支持的客户端。最近发布了专为向量数据库用例设计的 `RedisVL` 客户端。两者都可以通过 pip 安装。
 
 ```python
 %pip install --upgrade --quiet  redis redisvl langchain-openai tiktoken
 ```
 
-We want to use `OpenAIEmbeddings` so we have to get the OpenAI API Key.
-
+我们想使用 `OpenAIEmbeddings`，因此我们需要获取 OpenAI API 密钥。
 
 ```python
 import getpass
@@ -136,33 +128,30 @@ import os
 os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API Key:")
 ```
 
-
 ```python
 from langchain_openai import OpenAIEmbeddings
 
 embeddings = OpenAIEmbeddings()
 ```
 
-### Deploy Redis locally
+### 本地部署 Redis
 
-To locally deploy Redis, run:
+要在本地部署 Redis，请运行：
 
 ```console
 docker run -d -p 6379:6379 -p 8001:8001 redis/redis-stack:latest
 ```
-If things are running correctly you should see a nice Redis UI at `http://localhost:8001`. See the [Deployment options](#deployment-options) section above for other ways to deploy.
+如果一切正常，您应该可以在 `http://localhost:8001` 看到一个漂亮的 Redis 用户界面。请参阅上面的 [Deployment options](#deployment-options) 部分以获取其他部署方式。
 
+### Redis 连接 URL 方案
 
-### Redis connection Url schemas
+有效的 Redis URL 方案有：
+1. `redis://`  - 连接到 Redis 独立实例，未加密
+2. `rediss://` - 连接到 Redis 独立实例，使用 TLS 加密
+3. `redis+sentinel://`  - 通过 Redis Sentinel 连接到 Redis 服务器，未加密
+4. `rediss+sentinel://` - 通过 Redis Sentinel 连接到 Redis 服务器，两个连接均使用 TLS 加密
 
-Valid Redis Url schemas are:
-1. `redis://`  - Connection to Redis standalone, unencrypted
-2. `rediss://` - Connection to Redis standalone, with TLS encryption
-3. `redis+sentinel://`  - Connection to Redis server via Redis Sentinel, unencrypted
-4. `rediss+sentinel://` - Connection to Redis server via Redis Sentinel, booth connections with TLS encryption
-
-More information about additional connection parameters can be found in the [redis-py documentation](https://redis-py.readthedocs.io/en/stable/connections.html).
-
+有关其他连接参数的更多信息，请参见 [redis-py 文档](https://redis-py.readthedocs.io/en/stable/connections.html)。
 
 ```python
 # connection to redis standalone at localhost, db 0, no password
@@ -186,10 +175,9 @@ redis_url = "rediss://localhost:6379"
 redis_url = "rediss+sentinel://localhost"
 ```
 
-### Sample data
+### 示例数据
 
-First we will describe some sample data so that the various attributes of the Redis vector store can be demonstrated.
-
+首先，我们将描述一些示例数据，以便演示 Redis 向量存储的各种属性。
 
 ```python
 metadata = [
@@ -227,17 +215,17 @@ metadata = [
 texts = ["foo", "foo", "foo", "bar", "bar"]
 ```
 
-### Create Redis vector store
+### 创建 Redis 向量存储
 
-The Redis VectorStore instance can be initialized in a number of ways. There are multiple class methods that can be used to initialize a Redis VectorStore instance.
+Redis VectorStore 实例可以通过多种方式初始化。有多种类方法可以用来初始化 Redis VectorStore 实例。
 
-- ``Redis.__init__`` - Initialize directly
-- ``Redis.from_documents`` - Initialize from a list of ``Langchain.docstore.Document`` objects
-- ``Redis.from_texts`` - Initialize from a list of texts (optionally with metadata)
-- ``Redis.from_texts_return_keys`` - Initialize from a list of texts (optionally with metadata) and return the keys
-- ``Redis.from_existing_index`` - Initialize from an existing Redis index
+- ``Redis.__init__`` - 直接初始化
+- ``Redis.from_documents`` - 从一组 ``Langchain.docstore.Document`` 对象初始化
+- ``Redis.from_texts`` - 从一组文本初始化（可选附带元数据）
+- ``Redis.from_texts_return_keys`` - 从一组文本初始化（可选附带元数据）并返回键
+- ``Redis.from_existing_index`` - 从现有的 Redis 索引初始化
 
-Below we will use the ``Redis.from_texts`` method.
+下面我们将使用 ``Redis.from_texts`` 方法。
 
 
 ```python
@@ -263,25 +251,21 @@ rds.index_name
 'users'
 ```
 
+## 检查创建的索引
 
-## Inspecting the created Index
-
-Once the ``Redis`` VectorStore object has been constructed, an index will have been created in Redis if it did not already exist. The index can be inspected with both the ``rvl``and the ``redis-cli`` command line tool. If you installed ``redisvl`` above, you can use the ``rvl`` command line tool to inspect the index.
-
+一旦构建了``Redis`` VectorStore对象，如果索引尚不存在，则会在Redis中创建一个索引。可以使用``rvl``和``redis-cli``命令行工具检查该索引。如果您在上面安装了``redisvl``，可以使用``rvl``命令行工具来检查索引。
 
 ```python
-# assumes you're running Redis locally (use --host, --port, --password, --username, to change this)
+# 假设您在本地运行Redis（使用 --host, --port, --password, --username 来更改此设置）
 !rvl index listall
 ```
 ```output
 [32m16:58:26[0m [34m[RedisVL][0m [1;30mINFO[0m   Indices:
 [32m16:58:26[0m [34m[RedisVL][0m [1;30mINFO[0m   1. users
 ```
-The ``Redis`` VectorStore implementation will attempt to generate index schema (fields for filtering) for any metadata passed through the ``from_texts``, ``from_texts_return_keys``, and ``from_documents`` methods. This way, whatever metadata is passed will be indexed into the Redis search index allowing
-for filtering on those fields.
+``Redis`` VectorStore实现将尝试为通过``from_texts``、``from_texts_return_keys``和``from_documents``方法传递的任何元数据生成索引模式（过滤字段）。这样，传递的任何元数据都将被索引到Redis搜索索引中，从而允许对这些字段进行过滤。
 
-Below we show what fields were created from the metadata we defined above
-
+下面我们展示了从我们上面定义的元数据中创建的字段
 
 ```python
 !rvl index info -i users
@@ -338,18 +322,17 @@ Statistics:
 │ vector_index_sz_mb          │ 6.0126      │
 ╰─────────────────────────────┴─────────────╯
 ```
-It's important to note that we have not specified that the ``user``, ``job``, ``credit_score`` and ``age`` in the metadata should be fields within the index, this is because the ``Redis`` VectorStore object automatically generate the index schema from the passed metadata. For more information on the generation of index fields, see the API documentation.
+需要注意的是，我们并未指定元数据中的``user``、``job``、``credit_score``和``age``应作为索引中的字段，这是因为``Redis`` VectorStore对象会自动根据传递的元数据生成索引模式。有关生成索引字段的更多信息，请参见API文档。
 
-## Querying
+## 查询
 
-There are multiple ways to query the ``Redis`` VectorStore implementation based on what use case you have:
+根据您的用例，有多种方法可以查询 ``Redis`` VectorStore 实现：
 
-- ``similarity_search``: Find the most similar vectors to a given vector.
-- ``similarity_search_with_score``: Find the most similar vectors to a given vector and return the vector distance
-- ``similarity_search_limit_score``: Find the most similar vectors to a given vector and limit the number of results to the ``score_threshold``
-- ``similarity_search_with_relevance_scores``: Find the most similar vectors to a given vector and return the vector similarities
-- ``max_marginal_relevance_search``: Find the most similar vectors to a given vector while also optimizing for diversity
-
+- ``similarity_search``: 查找与给定向量最相似的向量。
+- ``similarity_search_with_score``: 查找与给定向量最相似的向量并返回向量距离。
+- ``similarity_search_limit_score``: 查找与给定向量最相似的向量，并将结果数量限制为 ``score_threshold``。
+- ``similarity_search_with_relevance_scores``: 查找与给定向量最相似的向量并返回向量相似度。
+- ``max_marginal_relevance_search``: 查找与给定向量最相似的向量，同时优化多样性。
 
 ```python
 results = rds.similarity_search("foo")
@@ -360,87 +343,83 @@ foo
 ```
 
 ```python
-# return metadata
+# 返回元数据
 results = rds.similarity_search("foo", k=3)
 meta = results[1].metadata
-print("Key of the document in Redis: ", meta.pop("id"))
-print("Metadata of the document: ", meta)
+print("Redis 中文档的键: ", meta.pop("id"))
+print("文档的元数据: ", meta)
 ```
 ```output
-Key of the document in Redis:  doc:users:a70ca43b3a4e4168bae57c78753a200f
-Metadata of the document:  {'user': 'derrick', 'job': 'doctor', 'credit_score': 'low', 'age': '45'}
+Redis 中文档的键:  doc:users:a70ca43b3a4e4168bae57c78753a200f
+文档的元数据:  {'user': 'derrick', 'job': 'doctor', 'credit_score': 'low', 'age': '45'}
 ```
 
 ```python
-# with scores (distances)
+# 带分数（距离）
 results = rds.similarity_search_with_score("foo", k=5)
 for result in results:
-    print(f"Content: {result[0].page_content} --- Score: {result[1]}")
+    print(f"内容: {result[0].page_content} --- 分数: {result[1]}")
 ```
 ```output
-Content: foo --- Score: 0.0
-Content: foo --- Score: 0.0
-Content: foo --- Score: 0.0
-Content: bar --- Score: 0.1566
-Content: bar --- Score: 0.1566
+内容: foo --- 分数: 0.0
+内容: foo --- 分数: 0.0
+内容: foo --- 分数: 0.0
+内容: bar --- 分数: 0.1566
+内容: bar --- 分数: 0.1566
 ```
 
 ```python
-# limit the vector distance that can be returned
+# 限制可以返回的向量距离
 results = rds.similarity_search_with_score("foo", k=5, distance_threshold=0.1)
 for result in results:
-    print(f"Content: {result[0].page_content} --- Score: {result[1]}")
+    print(f"内容: {result[0].page_content} --- 分数: {result[1]}")
 ```
 ```output
-Content: foo --- Score: 0.0
-Content: foo --- Score: 0.0
-Content: foo --- Score: 0.0
+内容: foo --- 分数: 0.0
+内容: foo --- 分数: 0.0
+内容: foo --- 分数: 0.0
 ```
 
 ```python
-# with scores
+# 带分数
 results = rds.similarity_search_with_relevance_scores("foo", k=5)
 for result in results:
-    print(f"Content: {result[0].page_content} --- Similiarity: {result[1]}")
+    print(f"内容: {result[0].page_content} --- 相似度: {result[1]}")
 ```
 ```output
-Content: foo --- Similiarity: 1.0
-Content: foo --- Similiarity: 1.0
-Content: foo --- Similiarity: 1.0
-Content: bar --- Similiarity: 0.8434
-Content: bar --- Similiarity: 0.8434
+内容: foo --- 相似度: 1.0
+内容: foo --- 相似度: 1.0
+内容: foo --- 相似度: 1.0
+内容: bar --- 相似度: 0.8434
+内容: bar --- 相似度: 0.8434
 ```
 
 ```python
-# limit scores (similarities have to be over .9)
+# 限制分数（相似度必须超过 .9）
 results = rds.similarity_search_with_relevance_scores("foo", k=5, score_threshold=0.9)
 for result in results:
-    print(f"Content: {result[0].page_content} --- Similarity: {result[1]}")
+    print(f"内容: {result[0].page_content} --- 相似度: {result[1]}")
 ```
 ```output
-Content: foo --- Similarity: 1.0
-Content: foo --- Similarity: 1.0
-Content: foo --- Similarity: 1.0
+内容: foo --- 相似度: 1.0
+内容: foo --- 相似度: 1.0
+内容: foo --- 相似度: 1.0
 ```
 
 ```python
-# you can also add new documents as follows
+# 您还可以按如下方式添加新文档
 new_document = ["baz"]
 new_metadata = [{"user": "sam", "age": 50, "job": "janitor", "credit_score": "high"}]
-# both the document and metadata must be lists
+# 文档和元数据都必须是列表
 rds.add_texts(new_document, new_metadata)
 ```
-
-
 
 ```output
 ['doc:users:b9c71d62a0a34241a37950b448dafd38']
 ```
 
-
-
 ```python
-# now query the new document
+# 现在查询新文档
 results = rds.similarity_search("baz", k=3)
 print(results[0].metadata)
 ```
@@ -449,19 +428,18 @@ print(results[0].metadata)
 ```
 
 ```python
-# use maximal marginal relevance search to diversify results
+# 使用最大边际相关性搜索来多样化结果
 results = rds.max_marginal_relevance_search("foo")
 ```
 
-
 ```python
-# the lambda_mult parameter controls the diversity of the results, the lower the more diverse
+# lambda_mult 参数控制结果的多样性，值越低越多样
 results = rds.max_marginal_relevance_search("foo", lambda_mult=0.1)
 ```
 
-## Connect to an existing Index
+## 连接到现有索引
 
-In order to have the same metadata indexed when using the ``Redis`` VectorStore. You will need to have the same ``index_schema`` passed in either as a path to a yaml file or as a dictionary. The following shows how to obtain the schema from an index and connect to an existing index.
+为了在使用 ``Redis`` VectorStore 时索引相同的元数据，您需要传递相同的 ``index_schema``，可以作为 yaml 文件的路径或字典传入。以下展示了如何从索引中获取模式并连接到现有索引。
 
 
 ```python
@@ -469,7 +447,7 @@ In order to have the same metadata indexed when using the ``Redis`` VectorStore.
 rds.write_schema("redis_schema.yaml")
 ```
 
-The schema file for this example should look something like:
+此示例的模式文件应如下所示：
 
 ```yaml
 numeric:
@@ -511,7 +489,7 @@ vector:
   name: content_vector
 ```
 
-**Notice**, this include **all** possible fields for the schema. You can remove any fields that you don't need.
+**注意**，这包括 **所有** 可能的模式字段。您可以删除不需要的字段。
 
 
 ```python
@@ -541,14 +519,13 @@ new_rds.schema == rds.schema
 True
 ```
 
+## 自定义元数据索引
 
-## Custom metadata indexing
+在某些情况下，您可能希望控制元数据映射到哪些字段。例如，您可能希望将 ``credit_score`` 字段设置为分类字段，而不是文本字段（这是所有字符串字段的默认行为）。在这种情况下，您可以在上述每个初始化方法中使用 ``index_schema`` 参数来指定索引的模式。自定义索引模式可以作为字典传递，也可以作为 YAML 文件的路径传递。
 
-In some cases, you may want to control what fields the metadata maps to. For example, you may want the ``credit_score`` field to be a categorical field instead of a text field (which is the default behavior for all string fields). In this case, you can use the ``index_schema`` parameter in each of the initialization methods above to specify the schema for the index. Custom index schema can either be passed as a dictionary or as a path to a YAML file.
+模式中的所有参数都有默认值，除了名称，因此您只需指定想要更改的字段。所有名称对应于您在命令行使用 ``redis-cli`` 或在 ``redis-py`` 中使用的参数的小写蛇形版本。有关每个字段参数的更多信息，请参见 [文档](https://redis.io/docs/interact/search-and-query/basic-constructs/field-and-type-options/)
 
-All arguments in the schema have defaults besides the name, so you can specify only the fields you want to change. All the names correspond to the snake/lowercase versions of the arguments you would use on the command line with ``redis-cli`` or in ``redis-py``. For more on the arguments for each field, see the [documentation](https://redis.io/docs/interact/search-and-query/basic-constructs/field-and-type-options/)
-
-The below example shows how to specify the schema for the ``credit_score`` field as a Tag (categorical) field instead of a text field. 
+下面的示例展示了如何将 ``credit_score`` 字段指定为标签（分类）字段，而不是文本字段。
 
 ```yaml
 # index_schema.yml
@@ -561,7 +538,7 @@ numeric:
     - name: age
 ```
 
-In Python, this would look like:
+在 Python 中，这看起来像：
 
 ```python
 
@@ -573,11 +550,10 @@ index_schema = {
 
 ```
 
-Notice that only the ``name`` field needs to be specified. All other fields have defaults.
-
+请注意，仅需要指定 ``name`` 字段。所有其他字段都有默认值。
 
 ```python
-# create a new index with the new schema defined above
+# 使用上述定义的新模式创建新索引
 index_schema = {
     "tag": [{"name": "credit_score"}],
     "text": [{"name": "user"}, {"name": "job"}],
@@ -590,7 +566,7 @@ rds, keys = Redis.from_texts_return_keys(
     metadatas=metadata,
     redis_url="redis://localhost:6379",
     index_name="users_modified",
-    index_schema=index_schema,  # pass in the new index schema
+    index_schema=index_schema,  # 传入新的索引模式
 )
 ```
 ```output
@@ -599,35 +575,33 @@ If you meant to manually override the schema, please ignore this message.
 index_schema: {'tag': [{'name': 'credit_score'}], 'text': [{'name': 'user'}, {'name': 'job'}], 'numeric': [{'name': 'age'}]}
 generated_schema: {'text': [{'name': 'user'}, {'name': 'job'}, {'name': 'credit_score'}], 'numeric': [{'name': 'age'}], 'tag': []}
 ```
-The above warning is meant to notify users when they are overriding the default behavior. Ignore it if you are intentionally overriding the behavior.
+上述警告旨在通知用户何时覆盖默认行为。如果您是故意覆盖该行为，请忽略它。
 
-## Hybrid filtering
+## 混合过滤
 
-With the Redis Filter Expression language built into LangChain, you can create arbitrarily long chains of hybrid filters
-that can be used to filter your search results. The expression language is derived from the [RedisVL Expression Syntax](https://redisvl.com)
-and is designed to be easy to use and understand.
+通过内置于 LangChain 的 Redis 过滤表达式语言，您可以创建任意长度的混合过滤链，以用于过滤搜索结果。该表达式语言源自 [RedisVL 表达式语法](https://redisvl.com)，旨在易于使用和理解。
 
-The following are the available filter types:
-- ``RedisText``: Filter by full-text search against metadata fields. Supports exact, fuzzy, and wildcard matching.
-- ``RedisNum``: Filter by numeric range against metadata fields.
-- ``RedisTag``: Filter by the exact match against string-based categorical metadata fields. Multiple tags can be specified like "tag1,tag2,tag3".
+以下是可用的过滤类型：
+- ``RedisText``：通过对元数据字段进行全文搜索进行过滤。支持精确匹配、模糊匹配和通配符匹配。
+- ``RedisNum``：通过对元数据字段进行数值范围过滤。
+- ``RedisTag``：通过对基于字符串的分类元数据字段进行精确匹配进行过滤。可以指定多个标签，例如 "tag1,tag2,tag3"。
 
-The following are examples of utilizing these filters.
+以下是利用这些过滤器的示例。
 
 ```python
 
 from langchain_community.vectorstores.redis import RedisText, RedisNum, RedisTag
 
-# exact matching
+# 精确匹配
 has_high_credit = RedisTag("credit_score") == "high"
 does_not_have_high_credit = RedisTag("credit_score") != "low"
 
-# fuzzy matching
+# 模糊匹配
 job_starts_with_eng = RedisText("job") % "eng*"
 job_is_engineer = RedisText("job") == "engineer"
 job_is_not_engineer = RedisText("job") != "engineer"
 
-# numeric filtering
+# 数值过滤
 age_is_18 = RedisNum("age") == 18
 age_is_not_18 = RedisNum("age") != 18
 age_is_greater_than_18 = RedisNum("age") > 18
@@ -637,20 +611,19 @@ age_is_less_than_or_equal_to_18 = RedisNum("age") <= 18
 
 ```
 
-The ``RedisFilter`` class can be used to simplify the import of these filters as follows
+``RedisFilter`` 类可用于简化这些过滤器的导入，如下所示
 
 ```python
 
 from langchain_community.vectorstores.redis import RedisFilter
 
-# same examples as above
+# 与上述示例相同
 has_high_credit = RedisFilter.tag("credit_score") == "high"
 does_not_have_high_credit = RedisFilter.num("age") > 8
 job_starts_with_eng = RedisFilter.text("job") % "eng*"
 ```
 
-The following are examples of using a hybrid filter for search
-
+以下是使用混合过滤进行搜索的示例
 
 ```python
 from langchain_community.vectorstores.redis import RedisText
@@ -667,7 +640,7 @@ Engineers in the dataset: 2
 ```
 
 ```python
-# fuzzy match
+# 模糊匹配
 starts_with_doc = RedisText("job") % "doc*"
 results = rds.similarity_search("foo", k=3, filter=starts_with_doc)
 
@@ -699,8 +672,8 @@ User: joe is 35
 ```
 
 ```python
-# make sure to use parenthesis around FilterExpressions
-# if initializing them while constructing them
+# 确保在构造过滤表达式时使用括号
+# 如果在初始化时进行构造
 age_range = (RedisNum("age") > 18) & (RedisNum("age") < 99)
 results = rds.similarity_search("foo", filter=age_range)
 
@@ -712,12 +685,12 @@ User: derrick is 45
 User: nancy is 94
 User: joe is 35
 ```
-## Redis as Retriever
 
-Here we go over different options for using the vector store as a retriever.
+## Redis 作为检索器
 
-There are three different search methods we can use to do retrieval. By default, it will use semantic similarity.
+在这里，我们讨论使用向量存储作为检索器的不同选项。
 
+我们可以使用三种不同的搜索方法进行检索。默认情况下，它将使用语义相似性。
 
 ```python
 query = "foo"
@@ -736,13 +709,10 @@ Content: foo  --- Score:  0.0
 retriever = rds.as_retriever(search_type="similarity", search_kwargs={"k": 4})
 ```
 
-
 ```python
 docs = retriever.invoke(query)
 docs
 ```
-
-
 
 ```output
 [Document(page_content='foo', metadata={'id': 'doc:users_modified:988ecca7574048e396756efc0e79aeca', 'user': 'john', 'job': 'engineer', 'credit_score': 'high', 'age': '18'}),
@@ -751,9 +721,7 @@ docs
  Document(page_content='bar', metadata={'id': 'doc:users_modified:01ef6caac12b42c28ad870aefe574253', 'user': 'tyler', 'job': 'engineer', 'credit_score': 'high', 'age': '100'})]
 ```
 
-
-There is also the `similarity_distance_threshold` retriever which allows the user to specify the vector distance
-
+还有 `similarity_distance_threshold` 检索器，允许用户指定向量距离。
 
 ```python
 retriever = rds.as_retriever(
@@ -762,13 +730,10 @@ retriever = rds.as_retriever(
 )
 ```
 
-
 ```python
 docs = retriever.invoke(query)
 docs
 ```
-
-
 
 ```output
 [Document(page_content='foo', metadata={'id': 'doc:users_modified:988ecca7574048e396756efc0e79aeca', 'user': 'john', 'job': 'engineer', 'credit_score': 'high', 'age': '18'}),
@@ -776,9 +741,7 @@ docs
  Document(page_content='foo', metadata={'id': 'doc:users_modified:7087cee9be5b4eca93c30fbdd09a2731', 'user': 'nancy', 'job': 'doctor', 'credit_score': 'high', 'age': '94'})]
 ```
 
-
-Lastly, the ``similarity_score_threshold`` allows the user to define the minimum score for similar documents
-
+最后，`similarity_score_threshold` 允许用户定义相似文档的最低分数。
 
 ```python
 retriever = rds.as_retriever(
@@ -787,12 +750,9 @@ retriever = rds.as_retriever(
 )
 ```
 
-
 ```python
 retriever.invoke("foo")
 ```
-
-
 
 ```output
 [Document(page_content='foo', metadata={'id': 'doc:users_modified:988ecca7574048e396756efc0e79aeca', 'user': 'john', 'job': 'engineer', 'credit_score': 'high', 'age': '18'}),
@@ -800,20 +760,15 @@ retriever.invoke("foo")
  Document(page_content='foo', metadata={'id': 'doc:users_modified:7087cee9be5b4eca93c30fbdd09a2731', 'user': 'nancy', 'job': 'doctor', 'credit_score': 'high', 'age': '94'})]
 ```
 
-
-
 ```python
 retriever = rds.as_retriever(
     search_type="mmr", search_kwargs={"fetch_k": 20, "k": 4, "lambda_mult": 0.1}
 )
 ```
 
-
 ```python
 retriever.invoke("foo")
 ```
-
-
 
 ```output
 [Document(page_content='foo', metadata={'id': 'doc:users:8f6b673b390647809d510112cde01a27', 'user': 'john', 'job': 'engineer', 'credit_score': 'high', 'age': '18'}),
@@ -822,26 +777,20 @@ retriever.invoke("foo")
  Document(page_content='foo', metadata={'id': 'doc:users:d6200ab3764c466082fde3eaab972a2a', 'user': 'derrick', 'job': 'doctor', 'credit_score': 'low', 'age': '45'})]
 ```
 
+## 删除键和索引
 
-## Delete keys and index
-
-To delete your entries you have to address them by their keys.
-
+要删除您的条目，您必须通过它们的键来访问它们。
 
 ```python
 Redis.delete(keys, redis_url="redis://localhost:6379")
 ```
 
-
-
 ```output
 True
 ```
 
-
-
 ```python
-# delete the indices too
+# 也删除索引
 Redis.drop_index(
     index_name="users", delete_documents=True, redis_url="redis://localhost:6379"
 )
@@ -852,15 +801,11 @@ Redis.drop_index(
 )
 ```
 
-
-
 ```output
 True
 ```
 
+## 相关
 
-
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

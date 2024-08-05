@@ -1,40 +1,38 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/debugging.ipynb
 ---
-# How to debug your LLM apps
 
-Like building any type of software, at some point you'll need to debug when building with LLMs. A model call will fail, or model output will be misformatted, or there will be some nested model calls and it won't be clear where along the way an incorrect output was created.
+# 如何调试您的 LLM 应用
 
-There are three main methods for debugging:
+像构建任何类型的软件一样，在使用 LLM 时，您在某个时刻需要进行调试。模型调用可能会失败，或者模型输出可能格式错误，或者会有一些嵌套的模型调用，导致不清楚在何处产生了不正确的输出。
 
-- Verbose Mode: This adds print statements for "important" events in your chain.
-- Debug Mode: This add logging statements for ALL events in your chain.
-- LangSmith Tracing: This logs events to [LangSmith](https://docs.smith.langchain.com/) to allow for visualization there.
+调试主要有三种方法：
 
-|                        | Verbose Mode | Debug Mode | LangSmith Tracing |
-|------------------------|--------------|------------|-------------------|
-| Free                   | ✅            | ✅          | ✅                 |
-| UI                     | ❌            | ❌          | ✅                 |
-| Persisted              | ❌            | ❌          | ✅                 |
-| See all events         | ❌            | ✅          | ✅                 |
-| See "important" events | ✅            | ❌          | ✅                 |
-| Runs Locally           | ✅            | ✅          | ❌                 |
+- 详细模式：为链中的“重要”事件添加打印语句。
+- 调试模式：为链中的所有事件添加日志语句。
+- LangSmith 跟踪：将事件记录到 [LangSmith](https://docs.smith.langchain.com/) 以便在那里进行可视化。
 
+|                        | 详细模式 | 调试模式 | LangSmith 跟踪 |
+|------------------------|----------|----------|-----------------|
+| 免费                   | ✅        | ✅        | ✅               |
+| 用户界面               | ❌        | ❌        | ✅               |
+| 持久化                 | ❌        | ❌        | ✅               |
+| 查看所有事件           | ❌        | ✅        | ✅               |
+| 查看“重要”事件        | ✅        | ❌        | ✅               |
+| 本地运行               | ✅        | ✅        | ❌               |
 
-## Tracing
+## 跟踪
 
-Many of the applications you build with LangChain will contain multiple steps with multiple invocations of LLM calls.
-As these applications get more and more complex, it becomes crucial to be able to inspect what exactly is going on inside your chain or agent.
-The best way to do this is with [LangSmith](https://smith.langchain.com).
+您使用 LangChain 构建的许多应用程序将包含多个步骤和多次调用 LLM。随着这些应用程序变得越来越复杂，能够检查您的链或代理内部到底发生了什么变得至关重要。做到这一点的最佳方法是使用 [LangSmith](https://smith.langchain.com)。
 
-After you sign up at the link above, make sure to set your environment variables to start logging traces:
+在您在上述链接注册后，请确保设置您的环境变量以开始记录跟踪：
 
 ```shell
 export LANGCHAIN_TRACING_V2="true"
 export LANGCHAIN_API_KEY="..."
 ```
 
-Or, if in a notebook, you can set them with:
+或者，如果在笔记本中，您可以使用以下方式设置它们：
 
 ```python
 import getpass
@@ -44,7 +42,7 @@ os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 ```
 
-Let's suppose we have an agent, and want to visualize the actions it takes and tool outputs it receives. Without any debugging, here's what we see:
+假设我们有一个代理，并希望可视化它所采取的操作和接收到的工具输出。没有任何调试，我们看到的是：
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
@@ -71,10 +69,10 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-# Construct the Tools agent
+# 构建工具代理
 agent = create_tool_calling_agent(llm, tools, prompt)
 
-# Create an agent executor by passing in the agent and tools
+# 通过传入代理和工具创建代理执行器
 agent_executor = AgentExecutor(agent=agent, tools=tools)
 agent_executor.invoke(
     {"input": "Who directed the 2023 film Oppenheimer and what is their age in days?"}
@@ -89,23 +87,21 @@ agent_executor.invoke(
 ```
 
 
-We don't get much output, but since we set up LangSmith we can easily see what happened under the hood:
+我们没有得到太多输出，但由于我们设置了 LangSmith，我们可以轻松看到幕后发生了什么：
 
 https://smith.langchain.com/public/a89ff88f-9ddc-4757-a395-3a1b365655bf/r
 
-## `set_debug` and `set_verbose`
+## `set_debug` 和 `set_verbose`
 
-If you're prototyping in Jupyter Notebooks or running Python scripts, it can be helpful to print out the intermediate steps of a chain run.
+如果您在 Jupyter Notebooks 中进行原型设计或运行 Python 脚本，打印出链式运行的中间步骤可能会很有帮助。
 
-There are a number of ways to enable printing at varying degrees of verbosity.
+有多种方法可以启用不同程度的详细信息打印。
 
-Note: These still work even with LangSmith enabled, so you can have both turned on and running at the same time
-
+注意：即使启用 LangSmith，这些功能仍然有效，因此您可以同时开启并运行两者。
 
 ### `set_verbose(True)`
 
-Setting the `verbose` flag will print out inputs and outputs in a slightly more readable format and will skip logging certain raw outputs (like the token usage stats for an LLM call) so that you can focus on application logic.
-
+设置 `verbose` 标志将以稍微更易读的格式打印输入和输出，并将跳过记录某些原始输出（例如 LLM 调用的令牌使用统计信息），以便您可以专注于应用逻辑。
 
 ```python
 from langchain.globals import set_verbose
@@ -170,11 +166,9 @@ Therefore, Christopher Nolan is 19,488 days old as of December 7, 2023.[0m
  'output': "I am currently unable to retrieve the exact birth date of Christopher Nolan from the sources available. However, it is widely known that he was born on July 30, 1970. Using this date, I can calculate his age in days as of today.\n\nLet's calculate:\n\n- Christopher Nolan's birth date: July 30, 1970.\n- Today's date: December 7, 2023.\n\nThe number of days between these two dates can be calculated as follows:\n\n1. From July 30, 1970, to July 30, 2023, is 53 years.\n2. From July 30, 2023, to December 7, 2023, is 130 days.\n\nCalculating the total days for 53 years (considering leap years):\n- 53 years × 365 days/year = 19,345 days\n- Adding leap years (1972, 1976, ..., 2020, 2024 - 13 leap years): 13 days\n\nTotal days from birth until July 30, 2023: 19,345 + 13 = 19,358 days\nAdding the days from July 30, 2023, to December 7, 2023: 130 days\n\nTotal age in days as of December 7, 2023: 19,358 + 130 = 19,488 days.\n\nTherefore, Christopher Nolan is 19,488 days old as of December 7, 2023."}
 ```
 
-
 ### `set_debug(True)`
 
-Setting the global `debug` flag will cause all LangChain components with callback support (chains, models, agents, tools, retrievers) to print the inputs they receive and outputs they generate. This is the most verbose setting and will fully log raw inputs and outputs.
-
+设置全局 `debug` 标志将导致所有支持回调的 LangChain 组件（链、模型、代理、工具、检索器）打印它们接收到的输入和生成的输出。这是最详细的设置，将完全记录原始输入和输出。
 
 ```python
 from langchain.globals import set_debug
@@ -359,7 +353,7 @@ Error in ConsoleCallbackHandler.on_tool_end callback: AttributeError("'list' obj
 [0m[outputs]
 [36;1m[1;3m[chain/end][0m [1m[1:chain:AgentExecutor > 11:chain:RunnableSequence > 12:chain:RunnableAssign<agent_scratchpad> > 13:chain:RunnableParallel<agent_scratchpad>] [4ms] Exiting Chain run with output:
 [0m[outputs]
-[36;1m[1;3m[chain/end][0m [1m[1:chain:AgentExecutor > 11:chain:RunnableSequence > 12:chain:RunnableAssign<agent_scratchpad>] [8ms] Exiting Chain run with output:
+[36;1m[1m[chain/end][0m [1m[1:chain:AgentExecutor > 11:chain:RunnableSequence > 12:chain:RunnableAssign<agent_scratchpad>] [8ms] Exiting Chain run with output:
 [0m[outputs]
 [32;1m[1;3m[chain/start][0m [1m[1:chain:AgentExecutor > 11:chain:RunnableSequence > 15:prompt:ChatPromptTemplate] Entering Prompt run with input:
 [0m[inputs]
@@ -421,9 +415,7 @@ Error in ConsoleCallbackHandler.on_tool_end callback: AttributeError("'list' obj
 }
 ```
 
-
 ```output
-{'input': 'Who directed the 2023 film Oppenheimer and what is their age in days?',
- 'output': 'The 2023 film "Oppenheimer" was directed by Christopher Nolan.\n\nTo calculate Christopher Nolan\'s age in days, we first need his birth date, which is July 30, 1970. Let\'s calculate his age in days from his birth date to today\'s date, December 7, 2023.\n\n1. Calculate the total number of days from July 30, 1970, to December 7, 2023.\n2. Christopher Nolan was born on July 30, 1970. From July 30, 1970, to July 30, 2023, is 53 years.\n3. From July 30, 2023, to December 7, 2023, is 130 days.\n\nNow, calculate the total days for 53 years:\n- Each year has 365 days, so 53 years × 365 days/year = 19,345 days.\n- Adding the leap years from 1970 to 2023: 1972, 1976, 1980, 1984, 1988, 1992, 1996, 2000, 2004, 2008, 2012, 2016, 2020, and 2024 (up to February). This gives us 14 leap years.\n- Total days from leap years: 14 days.\n\nAdding all together:\n- Total days = 19,345 days (from years) + 14 days (from leap years) + 130 days (from July 30, 2023, to December 7, 2023) = 19,489 days.\n\nTherefore, as of December 7, 2023, Christopher Nolan is 19,489 days old.'}
+{'input': '谁执导了2023年的电影《奥本海默》，他们的年龄是多少天？',
+ 'output': '2023年的电影《奥本海默》是由克里斯托弗·诺兰执导的。\n\n要计算克里斯托弗·诺兰的年龄（以天为单位），我们首先需要他的出生日期，即1970年7月30日。让我们从他的出生日期到今天的日期（2023年12月7日）计算他的年龄。\n\n1. 计算从1970年7月30日到2023年12月7日的总天数。\n2. 克里斯托弗·诺兰出生于1970年7月30日。从1970年7月30日到2023年7月30日是53年。\n3. 从2023年7月30日到2023年12月7日是130天。\n\n现在，计算53年的总天数：\n- 每年有365天，因此53年 × 365天/年 = 19,345天。\n- 从1970年到2023年的闰年：1972年、1976年、1980年、1984年、1988年、1992年、1996年、2000年、2004年、2008年、2012年、2016年、2020年和2024年（到2月）。这给我们提供了14个闰年。\n- 闰年的总天数：14天。\n\n将所有加在一起：\n- 总天数 = 19,345天（来自年份） + 14天（来自闰年） + 130天（从2023年7月30日到2023年12月7日） = 19,489天。\n\n因此，截至2023年12月7日，克里斯托弗·诺兰已经19,489天大。'}
 ```
-

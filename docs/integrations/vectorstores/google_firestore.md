@@ -2,41 +2,39 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/google_firestore.ipynb
 sidebar_label: Firestore
 ---
-# Google Firestore (Native Mode)
 
-> [Firestore](https://cloud.google.com/firestore) is a serverless document-oriented database that scales to meet any demand. Extend your database application to build AI-powered experiences leveraging Firestore's Langchain integrations.
+# Google Firestore (原生模式)
 
-This notebook goes over how to use [Firestore](https://cloud.google.com/firestore) to to store vectors and query them using the `FirestoreVectorStore` class.
+> [Firestore](https://cloud.google.com/firestore) 是一个无服务器的文档导向数据库，能够根据需求进行扩展。扩展您的数据库应用程序，利用 Firestore 的 Langchain 集成构建 AI 驱动的体验。
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/googleapis/langchain-google-firestore-python/blob/main/docs/vectorstores.ipynb)
+本笔记本介绍如何使用 [Firestore](https://cloud.google.com/firestore) 存储向量并使用 `FirestoreVectorStore` 类查询它们。
 
-## Before You Begin
+[![在 Colab 中打开](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/googleapis/langchain-google-firestore-python/blob/main/docs/vectorstores.ipynb)
 
-To run this notebook, you will need to do the following:
+## 开始之前
 
-* [Create a Google Cloud Project](https://developers.google.com/workspace/guides/create-project)
-* [Enable the Firestore API](https://console.cloud.google.com/flows/enableapi?apiid=firestore.googleapis.com)
-* [Create a Firestore database](https://cloud.google.com/firestore/docs/manage-databases)
+要运行此笔记本，您需要执行以下操作：
 
-After confirmed access to database in the runtime environment of this notebook, filling the following values and run the cell before running example scripts.
+* [创建一个 Google Cloud 项目](https://developers.google.com/workspace/guides/create-project)
+* [启用 Firestore API](https://console.cloud.google.com/flows/enableapi?apiid=firestore.googleapis.com)
+* [创建一个 Firestore 数据库](https://cloud.google.com/firestore/docs/manage-databases)
 
+在确认在此笔记本的运行时环境中访问数据库后，填写以下值并在运行示例脚本之前运行该单元格。
 
 ```python
-# @markdown Please specify a source for demo purpose.
+# @markdown 请指定一个用于演示的来源。
 COLLECTION_NAME = "test"  # @param {type:"CollectionReference"|"string"}
 ```
 
-### 🦜🔗 Library Installation
+### 🦜🔗 库安装
 
-The integration lives in its own `langchain-google-firestore` package, so we need to install it. For this notebook, we will also install `langchain-google-genai` to use Google Generative AI embeddings.
-
+集成存在于它自己的 `langchain-google-firestore` 包中，因此我们需要安装它。对于这个笔记本，我们还将安装 `langchain-google-genai` 以使用 Google 生成式 AI 嵌入。
 
 ```python
 %pip install -upgrade --quiet langchain-google-firestore langchain-google-vertexai
 ```
 
-**Colab only**: Uncomment the following cell to restart the kernel or use the button to restart the kernel. For Vertex AI Workbench you can restart the terminal using the button on top.
-
+**仅限 Colab**：取消注释以下单元以重启内核，或使用按钮重启内核。对于 Vertex AI Workbench，您可以使用顶部的按钮重启终端。
 
 ```python
 # # Automatically restart kernel after installs so that your environment can access the new packages
@@ -46,31 +44,30 @@ The integration lives in its own `langchain-google-firestore` package, so we nee
 # app.kernel.do_shutdown(True)
 ```
 
-### ☁ Set Your Google Cloud Project
-Set your Google Cloud project so that you can leverage Google Cloud resources within this notebook.
+### ☁ 设置您的 Google Cloud 项目
+设置您的 Google Cloud 项目，以便您可以在此笔记本中利用 Google Cloud 资源。
 
-If you don't know your project ID, try the following:
+如果您不知道您的项目 ID，请尝试以下方法：
 
-* Run `gcloud config list`.
-* Run `gcloud projects list`.
-* See the support page: [Locate the project ID](https://support.google.com/googleapi/answer/7014113).
-
+* 运行 `gcloud config list`。
+* 运行 `gcloud projects list`。
+* 查看支持页面：[查找项目 ID](https://support.google.com/googleapi/answer/7014113)。
 
 ```python
-# @markdown Please fill in the value below with your Google Cloud project ID and then run the cell.
+# @markdown 请在下面填写您的 Google Cloud 项目 ID，然后运行该单元格。
 
 PROJECT_ID = "extensions-testing"  # @param {type:"string"}
 
-# Set the project id
+# 设置项目 ID
 !gcloud config set project {PROJECT_ID}
 ```
 
-### 🔐 Authentication
+### 🔐 身份验证
 
-Authenticate to Google Cloud as the IAM user logged into this notebook in order to access your Google Cloud Project.
+作为登录此笔记本的 IAM 用户对 Google Cloud 进行身份验证，以访问您的 Google Cloud 项目。
 
-- If you are using Colab to run this notebook, use the cell below and continue.
-- If you are using Vertex AI Workbench, check out the setup instructions [here](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env).
+- 如果您使用 Colab 来运行此笔记本，请使用下面的单元并继续。
+- 如果您使用 Vertex AI Workbench，请查看 [此处](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env) 的设置说明。
 
 
 ```python
@@ -79,12 +76,11 @@ from google.colab import auth
 auth.authenticate_user()
 ```
 
-# Basic Usage
+# 基本用法
 
-### Initialize FirestoreVectorStore
+### 初始化 FirestoreVectorStore
 
-`FirestoreVectorStore` allows you to store new vectors in a Firestore database. You can use it to store embeddings from any model, including those from Google Generative AI.
-
+`FirestoreVectorStore` 允许您在 Firestore 数据库中存储新的向量。您可以使用它存储来自任何模型的嵌入，包括 Google 生成式 AI 的嵌入。
 
 ```python
 from langchain_google_firestore import FirestoreVectorStore
@@ -95,22 +91,21 @@ embedding = VertexAIEmbeddings(
     project=PROJECT_ID,
 )
 
-# Sample data
+# 示例数据
 ids = ["apple", "banana", "orange"]
 fruits_texts = ['{"name": "apple"}', '{"name": "banana"}', '{"name": "orange"}']
 
-# Create a vector store
+# 创建向量存储
 vector_store = FirestoreVectorStore(
     collection="fruits",
     embedding=embedding,
 )
 
-# Add the fruits to the vector store
+# 将水果添加到向量存储
 vector_store.add_texts(fruits_texts, ids=ids)
 ```
 
-As a shorthand, you can initilize and add vectors in a single step using the `from_texts` and `from_documents` method.
-
+作为简化，您可以使用 `from_texts` 和 `from_documents` 方法在单一步骤中初始化并添加向量。
 
 ```python
 vector_store = FirestoreVectorStore.from_texts(
@@ -119,7 +114,6 @@ vector_store = FirestoreVectorStore.from_texts(
     embedding=embedding,
 )
 ```
-
 
 ```python
 from langchain_core.documents import Document
@@ -133,19 +127,17 @@ vector_store = FirestoreVectorStore.from_documents(
 )
 ```
 
-### Delete Vectors
+### 删除向量
 
-You can delete documents with vectors from the database using the `delete` method. You'll need to provide the document ID of the vector you want to delete. This will remove the whole document from the database, including any other fields it may have.
-
+您可以使用 `delete` 方法从数据库中删除带有向量的文档。您需要提供要删除的向量的文档 ID。这将从数据库中移除整个文档，包括它可能具有的任何其他字段。
 
 ```python
 vector_store.delete(ids)
 ```
 
-### Update Vectors
+### 更新向量
 
-Updating vectors is similar to adding them. You can use the `add` method to update the vector of a document by providing the document ID and the new vector.
-
+更新向量类似于添加它们。您可以使用 `add` 方法通过提供文档 ID 和新向量来更新文档的向量。
 
 ```python
 fruit_to_update = ['{"name": "apple","price": 12}']
@@ -154,22 +146,19 @@ apple_id = "apple"
 vector_store.add_texts(fruit_to_update, ids=[apple_id])
 ```
 
-## Similarity Search
+## 相似性搜索
 
-You can use the `FirestoreVectorStore` to perform similarity searches on the vectors you have stored. This is useful for finding similar documents or text.
-
+您可以使用 `FirestoreVectorStore` 对存储的向量执行相似性搜索。这对于查找相似的文档或文本非常有用。
 
 ```python
 vector_store.similarity_search("I like fuji apples", k=3)
 ```
 
-
 ```python
 vector_store.max_marginal_relevance_search("fuji", 5)
 ```
 
-You can add a pre-filter to the search by using the `filters` parameter. This is useful for filtering by a specific field or value.
-
+您可以通过使用 `filters` 参数为搜索添加预过滤。这对于按特定字段或值进行过滤非常有用。
 
 ```python
 from google.cloud.firestore_v1.base_query import FieldFilter
@@ -179,7 +168,7 @@ vector_store.max_marginal_relevance_search(
 )
 ```
 
-### Customize Connection & Authentication
+### 自定义连接与身份验证
 
 
 ```python
@@ -198,8 +187,7 @@ vector_store = FirestoreVectorStore(
 )
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

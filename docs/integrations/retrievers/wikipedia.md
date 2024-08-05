@@ -1,23 +1,23 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/wikipedia.ipynb
-sidebar_label: Wikipedia
+sidebar_label: 维基百科
 ---
 
 # WikipediaRetriever
 
-## Overview
->[Wikipedia](https://wikipedia.org/) is a multilingual free online encyclopedia written and maintained by a community of volunteers, known as Wikipedians, through open collaboration and using a wiki-based editing system called MediaWiki. `Wikipedia` is the largest and most-read reference work in history.
+## 概述
+>[Wikipedia](https://wikipedia.org/) 是一个多语言的免费在线百科全书，由志愿者社区（称为维基人）通过开放协作和使用名为 MediaWiki 的基于维基的编辑系统编写和维护。`Wikipedia` 是历史上最大的、阅读量最高的参考作品。
 
-This notebook shows how to retrieve wiki pages from `wikipedia.org` into the [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html) format that is used downstream.
+本笔记本展示了如何将 `wikipedia.org` 的维基页面检索到下游使用的 [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html) 格式中。
 
-### Integration details
+### 集成细节
 
-| Retriever | Source | Package |
+| 检索器 | 来源 | 包 |
 | :--- | :--- | :---: |
-[WikipediaRetriever](https://api.python.langchain.com/en/latest/retrievers/langchain_community.retrievers.wikipedia.WikipediaRetriever.html) | [Wikipedia](https://www.wikipedia.org/) articles | langchain_community |
+[WikipediaRetriever](https://api.python.langchain.com/en/latest/retrievers/langchain_community.retrievers.wikipedia.WikipediaRetriever.html) | [维基百科](https://www.wikipedia.org/) 文章 | langchain_community |
 
-## Setup
-If you want to get automated tracing from runs of individual tools, you can also set your [LangSmith](https://docs.smith.langchain.com/) API key by uncommenting below:
+## 设置
+如果您想从单个工具的运行中获得自动追踪，可以通过取消注释以下内容来设置您的 [LangSmith](https://docs.smith.langchain.com/) API 密钥：
 
 
 ```python
@@ -25,25 +25,24 @@ If you want to get automated tracing from runs of individual tools, you can also
 # os.environ["LANGSMITH_TRACING"] = "true"
 ```
 
-### Installation
+### 安装
 
-The integration lives in the `langchain-community` package. We also need to install the `wikipedia` python package itself.
-
+该集成位于 `langchain-community` 包中。我们还需要安装 `wikipedia` python 包本身。
 
 ```python
 %pip install -qU langchain_community wikipedia
 ```
 
-## Instantiation
+## 实例化
 
-Now we can instantiate our retriever:
+现在我们可以实例化我们的检索器：
 
-`WikipediaRetriever` parameters include:
-- optional `lang`: default="en". Use it to search in a specific language part of Wikipedia
-- optional `load_max_docs`: default=100. Use it to limit number of downloaded documents. It takes time to download all 100 documents, so use a small number for experiments. There is a hard limit of 300 for now.
-- optional `load_all_available_meta`: default=False. By default only the most important fields downloaded: `Published` (date when document was published/last updated), `title`, `Summary`. If True, other fields also downloaded.
+`WikipediaRetriever` 参数包括：
+- 可选的 `lang`：默认值为 "en"。用于在特定语言的维基百科部分进行搜索
+- 可选的 `load_max_docs`：默认值为 100。用于限制下载文档的数量。下载所有 100 个文档需要时间，因此在实验中使用较小的数字。目前有一个硬性限制为 300。
+- 可选的 `load_all_available_meta`：默认值为 False。默认情况下，仅下载最重要的字段：`Published`（文档发布/最后更新的日期）、`title`、`Summary`。如果为 True，则还会下载其他字段。
 
-`get_relevant_documents()` has one argument, `query`: free text which used to find documents in Wikipedia
+`get_relevant_documents()` 有一个参数 `query`：用于在维基百科中查找文档的自由文本
 
 
 ```python
@@ -52,7 +51,7 @@ from langchain_community.retrievers import WikipediaRetriever
 retriever = WikipediaRetriever()
 ```
 
-## Usage
+## 用法
 
 
 ```python
@@ -66,10 +65,11 @@ print(docs[0].page_content[:400])
 ```output
 Tokyo Ghoul (Japanese: 東京喰種（トーキョーグール）, Hepburn: Tōkyō Gūru) is a Japanese dark fantasy manga series written and illustrated by Sui Ishida. It was serialized in Shueisha's seinen manga magazine Weekly Young Jump from September 2011 to September 2014, with its chapters collected in 14 tankōbon volumes. The story is set in an alternate version of Tokyo where humans coexist with ghouls, beings who loo
 ```
-## Use within a chain
-Like other retrievers, `WikipediaRetriever` can be incorporated into LLM applications via [chains](/docs/how_to/sequence/).
 
-We will need a LLM or chat model:
+## 在链中使用
+与其他检索器一样，`WikipediaRetriever` 可以通过 [chains](/docs/how_to/sequence/) 集成到 LLM 应用程序中。
+
+我们需要一个 LLM 或聊天模型：
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
@@ -115,13 +115,11 @@ chain.invoke(
 'The main character in Tokyo Ghoul is Ken Kaneki, who transforms into a ghoul after receiving an organ transplant from a ghoul named Rize.'
 ```
 
+## API 参考
 
-## API reference
+有关所有 `WikipediaRetriever` 功能和配置的详细文档，请访问 [API 参考](https://api.python.langchain.com/en/latest/retrievers/langchain_community.retrievers.wikipedia.WikipediaRetriever.html#langchain-community-retrievers-wikipedia-wikipediaretriever)。
 
-For detailed documentation of all `WikipediaRetriever` features and configurations head to the [API reference](https://api.python.langchain.com/en/latest/retrievers/langchain_community.retrievers.wikipedia.WikipediaRetriever.html#langchain-community-retrievers-wikipedia-wikipediaretriever).
+## 相关
 
-
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

@@ -1,46 +1,44 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/google_bigtable.ipynb
 ---
+
 # Google Bigtable
 
-> [Bigtable](https://cloud.google.com/bigtable) is a key-value and wide-column store, ideal for fast access to structured, semi-structured, or unstructured data. Extend your database application to build AI-powered experiences leveraging Bigtable's Langchain integrations.
+> [Bigtable](https://cloud.google.com/bigtable) 是一个键值和宽列存储，适合快速访问结构化、半结构化或非结构化数据。扩展您的数据库应用程序，构建利用 Bigtable 的 Langchain 集成的 AI 驱动体验。
 
-This notebook goes over how to use [Bigtable](https://cloud.google.com/bigtable) to [save, load and delete langchain documents](/docs/how_to#document-loaders) with `BigtableLoader` and `BigtableSaver`.
+本笔记本介绍了如何使用 [Bigtable](https://cloud.google.com/bigtable) 通过 `BigtableLoader` 和 `BigtableSaver` [保存、加载和删除 langchain 文档](/docs/how_to#document-loaders)。
 
-Learn more about the package on [GitHub](https://github.com/googleapis/langchain-google-bigtable-python/).
+在 [GitHub](https://github.com/googleapis/langchain-google-bigtable-python/) 上了解更多关于该包的信息。
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/googleapis/langchain-google-bigtable-python/blob/main/docs/document_loader.ipynb)
 
-## Before You Begin
+## 开始之前
 
-To run this notebook, you will need to do the following:
+要运行此笔记本，您需要执行以下操作：
 
-* [Create a Google Cloud Project](https://developers.google.com/workspace/guides/create-project)
-* [Enable the Bigtable API](https://console.cloud.google.com/flows/enableapi?apiid=bigtable.googleapis.com)
-* [Create a Bigtable instance](https://cloud.google.com/bigtable/docs/creating-instance)
-* [Create a Bigtable table](https://cloud.google.com/bigtable/docs/managing-tables)
-* [Create Bigtable access credentials](https://developers.google.com/workspace/guides/create-credentials)
+* [创建 Google Cloud 项目](https://developers.google.com/workspace/guides/create-project)
+* [启用 Bigtable API](https://console.cloud.google.com/flows/enableapi?apiid=bigtable.googleapis.com)
+* [创建 Bigtable 实例](https://cloud.google.com/bigtable/docs/creating-instance)
+* [创建 Bigtable 表](https://cloud.google.com/bigtable/docs/managing-tables)
+* [创建 Bigtable 访问凭据](https://developers.google.com/workspace/guides/create-credentials)
 
-After confirmed access to database in the runtime environment of this notebook, filling the following values and run the cell before running example scripts.
-
+在确认可以访问此笔记本的运行时环境中的数据库后，请填写以下值并在运行示例脚本之前运行该单元。
 
 ```python
-# @markdown Please specify an instance and a table for demo purpose.
+# @markdown 请为演示目的指定一个实例和一个表。
 INSTANCE_ID = "my_instance"  # @param {type:"string"}
 TABLE_ID = "my_table"  # @param {type:"string"}
 ```
 
-### 🦜🔗 Library Installation
+### 🦜🔗 库安装
 
-The integration lives in its own `langchain-google-bigtable` package, so we need to install it.
-
+集成位于其自己的 `langchain-google-bigtable` 包中，因此我们需要安装它。
 
 ```python
 %pip install -upgrade --quiet langchain-google-bigtable
 ```
 
-**Colab only**: Uncomment the following cell to restart the kernel or use the button to restart the kernel. For Vertex AI Workbench you can restart the terminal using the button on top.
-
+**仅限 Colab**：取消注释以下单元以重启内核，或使用按钮重启内核。对于 Vertex AI Workbench，您可以使用顶部的按钮重启终端。
 
 ```python
 # # Automatically restart kernel after installs so that your environment can access the new packages
@@ -50,31 +48,30 @@ The integration lives in its own `langchain-google-bigtable` package, so we need
 # app.kernel.do_shutdown(True)
 ```
 
-### ☁ Set Your Google Cloud Project
-Set your Google Cloud project so that you can leverage Google Cloud resources within this notebook.
+### ☁ 设置您的 Google Cloud 项目
+设置您的 Google Cloud 项目，以便您可以在此笔记本中利用 Google Cloud 资源。
 
-If you don't know your project ID, try the following:
+如果您不知道您的项目 ID，请尝试以下方法：
 
-* Run `gcloud config list`.
-* Run `gcloud projects list`.
-* See the support page: [Locate the project ID](https://support.google.com/googleapi/answer/7014113).
-
+* 运行 `gcloud config list`。
+* 运行 `gcloud projects list`。
+* 查看支持页面：[查找项目 ID](https://support.google.com/googleapi/answer/7014113)。
 
 ```python
-# @markdown Please fill in the value below with your Google Cloud project ID and then run the cell.
+# @markdown 请在下方填写您的 Google Cloud 项目 ID，然后运行该单元格。
 
 PROJECT_ID = "my-project-id"  # @param {type:"string"}
 
-# Set the project id
+# 设置项目 ID
 !gcloud config set project {PROJECT_ID}
 ```
 
-### 🔐 Authentication
+### 🔐 身份验证
 
-Authenticate to Google Cloud as the IAM user logged into this notebook in order to access your Google Cloud Project.
+以已登录此笔记本的 IAM 用户身份对 Google Cloud 进行身份验证，以便访问您的 Google Cloud 项目。
 
-- If you are using Colab to run this notebook, use the cell below and continue.
-- If you are using Vertex AI Workbench, check out the setup instructions [here](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env).
+- 如果您正在使用 Colab 运行此笔记本，请使用下面的单元并继续。
+- 如果您正在使用 Vertex AI Workbench，请查看 [此处](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env) 的设置说明。
 
 
 ```python
@@ -83,15 +80,14 @@ from google.colab import auth
 auth.authenticate_user()
 ```
 
-## Basic Usage
+## 基本用法
 
-### Using the saver
+### 使用 saver
 
-Save langchain documents with `BigtableSaver.add_documents(<documents>)`. To initialize `BigtableSaver` class you need to provide 2 things:
+使用 `BigtableSaver.add_documents(<documents>)` 保存 langchain 文档。要初始化 `BigtableSaver` 类，您需要提供两样东西：
 
-1. `instance_id` - An instance of Bigtable.
-1. `table_id` - The name of the table within the Bigtable to store langchain documents.
-
+1. `instance_id` - Bigtable 的实例。
+1. `table_id` - 在 Bigtable 中存储 langchain 文档的表名。
 
 ```python
 from langchain_core.documents import Document
@@ -120,15 +116,15 @@ saver = BigtableSaver(
 saver.add_documents(test_docs)
 ```
 
-### Querying for Documents from Bigtable
-For more details on connecting to a Bigtable table, please check the [Python SDK documentation](https://cloud.google.com/python/docs/reference/bigtable/latest/client).
+### 从 Bigtable 查询文档
+有关连接到 Bigtable 表的更多详细信息，请查看 [Python SDK 文档](https://cloud.google.com/python/docs/reference/bigtable/latest/client)。
 
-#### Load documents from table
+#### 从表中加载文档
 
-Load langchain documents with `BigtableLoader.load()` or `BigtableLoader.lazy_load()`. `lazy_load` returns a generator that only queries database during the iteration. To initialize `BigtableLoader` class you need to provide:
+使用 `BigtableLoader.load()` 或 `BigtableLoader.lazy_load()` 加载 langchain 文档。`lazy_load` 返回一个生成器，该生成器仅在迭代期间查询数据库。要初始化 `BigtableLoader` 类，您需要提供：
 
-1. `instance_id` - An instance of Bigtable.
-1. `table_id` - The name of the table within the Bigtable to store langchain documents.
+1. `instance_id` - Bigtable 的实例。
+1. `table_id` - 用于存储 langchain 文档的 Bigtable 中的表名。
 
 
 ```python
@@ -144,9 +140,9 @@ for doc in loader.lazy_load():
     break
 ```
 
-### Delete documents
+### 删除文档
 
-Delete a list of langchain documents from Bigtable table with `BigtableSaver.delete(<documents>)`.
+使用 `BigtableSaver.delete(<documents>)` 从 Bigtable 表中删除一系列 langchain 文档。
 
 
 ```python
@@ -160,13 +156,13 @@ saver.delete([onedoc])
 print("Documents after delete: ", loader.load())
 ```
 
-## Advanced Usage
+## 高级用法
 
-### Limiting the returned rows
-There are two ways to limit the returned rows:
+### 限制返回的行数
+有两种方法可以限制返回的行数：
 
-1. Using a [filter](https://cloud.google.com/python/docs/reference/bigtable/latest/row-filters)
-2. Using a [row_set](https://cloud.google.com/python/docs/reference/bigtable/latest/row-set#google.cloud.bigtable.row_set.RowSet)
+1. 使用 [filter](https://cloud.google.com/python/docs/reference/bigtable/latest/row-filters)
+2. 使用 [row_set](https://cloud.google.com/python/docs/reference/bigtable/latest/row-set#google.cloud.bigtable.row_set.RowSet)
 
 
 ```python
@@ -191,9 +187,8 @@ row_set_loader = BigtableLoader(
 )
 ```
 
-### Custom client
-The client created by default is the default client, using only admin=True option. To use a non-default, a [custom client](https://cloud.google.com/python/docs/reference/bigtable/latest/client#class-googlecloudbigtableclientclientprojectnone-credentialsnone-readonlyfalse-adminfalse-clientinfonone-clientoptionsnone-adminclientoptionsnone-channelnone) can be passed to the constructor.
-
+### 自定义客户端
+默认创建的客户端是默认客户端，仅使用 admin=True 选项。要使用非默认客户端，可以将 [自定义客户端](https://cloud.google.com/python/docs/reference/bigtable/latest/client#class-googlecloudbigtableclientclientprojectnone-credentialsnone-readonlyfalse-adminfalse-clientinfonone-clientoptionsnone-adminclientoptionsnone-channelnone) 传递给构造函数。
 
 ```python
 from google.cloud import bigtable
@@ -205,9 +200,8 @@ custom_client_loader = BigtableLoader(
 )
 ```
 
-### Custom content
-The BigtableLoader assumes there is a column family called `langchain`, that has a column called `content`, that contains values encoded in UTF-8. These defaults can be changed like so:
-
+### 自定义内容
+BigtableLoader 假设存在一个名为 `langchain` 的列族，该列族中有一个名为 `content` 的列，包含以 UTF-8 编码的值。这些默认值可以如下更改：
 
 ```python
 from langchain_google_bigtable import Encoding
@@ -221,9 +215,8 @@ custom_content_loader = BigtableLoader(
 )
 ```
 
-### Metadata mapping
-By default, the `metadata` map on the `Document` object will contain a single key, `rowkey`, with the value of the row's rowkey value. To add more items to that map, use metadata_mapping.
-
+### 元数据映射
+默认情况下，`Document` 对象上的 `metadata` 映射将包含一个键 `rowkey`，其值为行的 rowkey 值。要向该映射添加更多项，请使用 metadata_mapping。
 
 ```python
 import json
@@ -252,10 +245,9 @@ metadata_mapping_loader = BigtableLoader(
 )
 ```
 
-### Metadata as JSON
+### 将元数据作为 JSON
 
-If there is a column in Bigtable that contains a JSON string that you would like to have added to the output document metadata, it is possible to add the following parameters to BigtableLoader. Note, the default value for `metadata_as_json_encoding` is UTF-8.
-
+如果 Bigtable 中有一列包含您希望添加到输出文档元数据的 JSON 字符串，可以将以下参数添加到 BigtableLoader。请注意，`metadata_as_json_encoding` 的默认值是 UTF-8。
 
 ```python
 metadata_as_json_loader = BigtableLoader(
@@ -267,10 +259,9 @@ metadata_as_json_loader = BigtableLoader(
 )
 ```
 
-### Customize BigtableSaver
+### 自定义 BigtableSaver
 
-The BigtableSaver is also customizable similar to BigtableLoader.
-
+BigtableSaver 也可以像 BigtableLoader 一样进行自定义。
 
 ```python
 saver = BigtableSaver(
@@ -302,8 +293,7 @@ saver = BigtableSaver(
 )
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

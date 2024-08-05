@@ -1,31 +1,29 @@
 ---
 sidebar_position: 0
 sidebar_class_name: hidden
-keywords: [compatibility]
+keywords: [兼容性]
 custom_edit_url:
 hide_table_of_contents: true
 ---
 
-# Chat models
+# 聊天模型
 
 :::info
 
-If you'd like to write your own chat model, see [this how-to](/docs/how_to/custom_chat_model/).
-If you'd like to contribute an integration, see [Contributing integrations](/docs/contributing/integrations/).
+如果您想编写自己的聊天模型，请参见 [这个指南](/docs/how_to/custom_chat_model/)。
+如果您想贡献一个集成，请参见 [贡献集成](/docs/contributing/integrations/)。
 
 :::
 
-## Advanced features
+## 高级功能
 
-The following table shows all the chat model classes that support one or more advanced features.
+下表显示了所有支持一个或多个高级功能的聊天模型类。
 
 :::info
-While all these LangChain classes support the indicated advanced feature, you may have
-to open the provider-specific documentation to learn which hosted models or backends support
-the feature.
+虽然所有这些 LangChain 类都支持所指示的高级功能，但您可能需要查看特定于提供者的文档，以了解哪些托管模型或后端支持该功能。
 :::
 
-Model|[Tool calling](/docs/how_to/tool_calling)|[Structured output](/docs/how_to/structured_output/)|JSON mode|Local|[Multimodal](/docs/how_to/multimodal_inputs/)|Package
+Model|[工具调用](/docs/how_to/tool_calling)|[结构化输出](/docs/how_to/structured_output/)|JSON 模式|本地|[多模态](/docs/how_to/multimodal_inputs/)|包
 :-|:-:|:-:|:-:|:-:|:-:|:-:
 [AzureChatOpenAI](/docs/integrations/chat/azure_chat_openai/)|✅|✅|✅|❌|✅|[langchain-openai](https://api.python.langchain.com/en/latest/openai_api_reference.html)
 [ChatAI21](/docs/integrations/chat/ai21)|✅|✅|❌|❌|❌|[langchain-ai21](https://api.python.langchain.com/en/latest/ai21_api_reference.html)
@@ -45,5 +43,4 @@ Model|[Tool calling](/docs/how_to/tool_calling)|[Structured output](/docs/how_to
 [ChatUpstage](/docs/integrations/chat/upstage)|✅|✅|❌|❌|❌|[langchain-upstage](https://api.python.langchain.com/en/latest/upstage_api_reference.html)
 [ChatVertexAI](/docs/integrations/chat/google_vertex_ai_palm/)|✅|✅|❌|❌|✅|[langchain-google-vertexai](https://api.python.langchain.com/en/latest/google-vertexai_api_reference.html)
 [ChatWatsonx](/docs/integrations/chat/ibm_watsonx)|✅|✅|❌|❌|❌|[langchain-ibm](https://api.python.langchain.com/en/latest/ibm_api_reference.html)
-[vLLM Chat (via ChatOpenAI)](/docs/integrations/chat/vllm/)|❌|❌|❌|✅|❌|[langchain-openai](https://api.python.langchain.com/en/latest/openai_api_reference.html)
-
+[vLLM Chat (通过 ChatOpenAI)](/docs/integrations/chat/vllm/)|❌|❌|❌|✅|❌|[langchain-openai](https://api.python.langchain.com/en/latest/openai_api_reference.html)

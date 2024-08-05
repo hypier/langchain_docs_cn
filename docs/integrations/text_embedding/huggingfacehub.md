@@ -1,54 +1,44 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/huggingfacehub.ipynb
 ---
-# Hugging Face
-Let's load the Hugging Face Embedding class.
 
+# Hugging Face
+让我们加载 Hugging Face Embedding 类。
 
 ```python
 %pip install --upgrade --quiet  langchain sentence_transformers
 ```
 
-
 ```python
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 ```
-
 
 ```python
 embeddings = HuggingFaceEmbeddings()
 ```
 
-
 ```python
 text = "This is a test document."
 ```
-
 
 ```python
 query_result = embeddings.embed_query(text)
 ```
 
-
 ```python
 query_result[:3]
 ```
-
-
 
 ```output
 [-0.04895168915390968, -0.03986193612217903, -0.021562768146395683]
 ```
 
-
-
 ```python
 doc_result = embeddings.embed_documents([text])
 ```
 
-## Hugging Face Inference API
-We can also access embedding models via the Hugging Face Inference API, which does not require us to install ``sentence_transformers`` and download models locally.
-
+## Hugging Face 推理 API
+我们还可以通过 Hugging Face 推理 API 访问嵌入模型，这不需要我们安装 ``sentence_transformers`` 并在本地下载模型。
 
 ```python
 import getpass
@@ -72,15 +62,12 @@ query_result = embeddings.embed_query(text)
 query_result[:3]
 ```
 
-
-
 ```output
 [-0.038338541984558105, 0.1234646737575531, -0.028642963618040085]
 ```
 
-
 ## Hugging Face Hub
-We can also generate embeddings locally via the Hugging Face Hub package, which requires us to install ``huggingface_hub ``
+我们还可以通过 Hugging Face Hub 包在本地生成嵌入，这要求我们安装 ``huggingface_hub ``
 
 
 ```python
@@ -112,8 +99,7 @@ query_result = embeddings.embed_query(text)
 query_result[:3]
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

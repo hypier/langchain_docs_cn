@@ -1,21 +1,20 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/myscale.ipynb
 ---
+
 # MyScale
 
->[MyScale](https://docs.myscale.com/en/overview/) is a cloud-based database optimized for AI applications and solutions, built on the open-source [ClickHouse](https://github.com/ClickHouse/ClickHouse). 
+>[MyScale](https://docs.myscale.com/en/overview/) 是一个基于云的数据库，针对 AI 应用和解决方案进行了优化，建立在开源的 [ClickHouse](https://github.com/ClickHouse/ClickHouse) 之上。
 
-This notebook shows how to use functionality related to the `MyScale` vector database.
+本笔记本展示了如何使用与 `MyScale` 向量数据库相关的功能。
 
-## Setting up environments
-
+## 设置环境
 
 ```python
 %pip install --upgrade --quiet  clickhouse-connect langchain-community
 ```
 
-We want to use OpenAIEmbeddings so we have to get the OpenAI API Key.
-
+我们想使用 OpenAIEmbeddings，因此必须获取 OpenAI API 密钥。
 
 ```python
 import getpass
@@ -29,19 +28,18 @@ os.environ["MYSCALE_USERNAME"] = getpass.getpass("MyScale Username:")
 os.environ["MYSCALE_PASSWORD"] = getpass.getpass("MyScale Password:")
 ```
 
-There are two ways to set up parameters for myscale index.
+有两种方法可以为 myscale 索引设置参数。
 
-1. Environment Variables
+1. 环境变量
 
-    Before you run the app, please set the environment variable with `export`:
+    在运行应用程序之前，请使用 `export` 设置环境变量：
     `export MYSCALE_HOST='<your-endpoints-url>' MYSCALE_PORT=<your-endpoints-port> MYSCALE_USERNAME=<your-username> MYSCALE_PASSWORD=<your-password> ...`
 
-    You can easily find your account, password and other info on our SaaS. For details please refer to [this document](https://docs.myscale.com/en/cluster-management/)
+    您可以在我们的 SaaS 上轻松找到您的帐户、密码和其他信息。有关详细信息，请参阅 [此文档](https://docs.myscale.com/en/cluster-management/)
 
-    Every attributes under `MyScaleSettings` can be set with prefix `MYSCALE_` and is case insensitive.
+    `MyScaleSettings` 下的每个属性都可以使用前缀 `MYSCALE_` 设置，并且不区分大小写。
 
-2. Create `MyScaleSettings` object with parameters
-
+2. 使用参数创建 `MyScaleSettings` 对象
 
     ```python
     from langchain_community.vectorstores import MyScale, MyScaleSettings
@@ -50,14 +48,12 @@ There are two ways to set up parameters for myscale index.
     index.add_documents(...)
     ```
 
-
 ```python
 from langchain_community.document_loaders import TextLoader
 from langchain_community.vectorstores import MyScale
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import CharacterTextSplitter
 ```
-
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -69,7 +65,6 @@ docs = text_splitter.split_documents(documents)
 
 embeddings = OpenAIEmbeddings()
 ```
-
 
 ```python
 for d in docs:
@@ -95,21 +90,21 @@ One of the most serious constitutional responsibilities a President has is nomin
 
 And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
 ```
-## Get connection info and data schema
+
+## 获取连接信息和数据模式
 
 
 ```python
 print(str(docsearch))
 ```
 
-## Filtering
+## 过滤
 
-You can have direct access to myscale SQL where statement. You can write `WHERE` clause following standard SQL.
+您可以直接访问 myscale SQL 的 where 语句。您可以按照标准 SQL 编写 `WHERE` 子句。
 
-**NOTE**: Please be aware of SQL injection, this interface must not be directly called by end-user.
+**注意**：请注意 SQL 注入，此接口不得直接由最终用户调用。
 
-If you customized your `column_map` under your setting, you search with filter like this:
-
+如果您在设置中自定义了 `column_map`，您可以按如下方式进行过滤搜索：
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -130,9 +125,10 @@ docsearch = MyScale.from_documents(docs, embeddings)
 ```output
 Inserting data...: 100%|██████████| 42/42 [00:15<00:00,  2.68it/s]
 ```
-### Similarity search with score
 
-The returned distance score is cosine distance. Therefore, a lower score is better.
+### 相似性搜索与得分
+
+返回的距离得分是余弦距离。因此，分数越低越好。
 
 
 ```python
@@ -151,10 +147,10 @@ for d, dist in output:
 0.24786919355392456 {'doc_id': 1} Groups of citizens b...
 0.24875116348266602 {'doc_id': 6} And I’m taking robus...
 ```
-## Deleting your data
 
-You can either drop the table with `.drop()` method or partially delete your data with `.delete()` method.
+## 删除您的数据
 
+您可以使用 `.drop()` 方法删除整个表，或者使用 `.delete()` 方法部分删除您的数据。
 
 ```python
 # use directly a `where_str` to delete
@@ -179,8 +175,7 @@ for d, dist in output:
 docsearch.drop()
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

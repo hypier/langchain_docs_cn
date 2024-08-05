@@ -1,14 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/sklearn.ipynb
 ---
+
 # scikit-learn
 
->[scikit-learn](https://scikit-learn.org/stable/) is an open-source collection of machine learning algorithms, including some implementations of the [k nearest neighbors](https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.NearestNeighbors.html). `SKLearnVectorStore` wraps this implementation and adds the possibility to persist the vector store in json, bson (binary json) or Apache Parquet format.
+>[scikit-learn](https://scikit-learn.org/stable/) 是一个开源的机器学习算法集合，包括一些 [k 最近邻](https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.NearestNeighbors.html) 的实现。 `SKLearnVectorStore` 封装了这个实现，并增加了将向量存储持久化为 json、bson（二进制 json）或 Apache Parquet 格式的可能性。
 
-This notebook shows how to use the `SKLearnVectorStore` vector database.
+本笔记本展示了如何使用 `SKLearnVectorStore` 向量数据库。
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
-
+您需要通过 `pip install -qU langchain-community` 安装 `langchain-community` 以使用此集成。
 
 ```python
 %pip install --upgrade --quiet  scikit-learn
@@ -20,8 +20,7 @@ You'll need to install `langchain-community` with `pip install -qU langchain-com
 %pip install --upgrade --quiet  pandas pyarrow
 ```
 
-To use OpenAI embeddings, you will need an OpenAI key. You can get one at https://platform.openai.com/account/api-keys or feel free to use any other embeddings.
-
+要使用 OpenAI 嵌入，您需要一个 OpenAI 密钥。您可以在 https://platform.openai.com/account/api-keys 获取一个，或者可以使用任何其他嵌入。
 
 ```python
 import os
@@ -30,9 +29,9 @@ from getpass import getpass
 os.environ["OPENAI_API_KEY"] = getpass("Enter your OpenAI key:")
 ```
 
-## Basic usage
+## 基本用法
 
-### Load a sample document corpus
+### 加载示例文档语料库
 
 
 ```python
@@ -48,8 +47,7 @@ docs = text_splitter.split_documents(documents)
 embeddings = OpenAIEmbeddings()
 ```
 
-### Create the SKLearnVectorStore, index the document corpus and run a sample query
-
+### 创建 SKLearnVectorStore，索引文档库并运行示例查询
 
 ```python
 import tempfile
@@ -59,11 +57,11 @@ persist_path = os.path.join(tempfile.gettempdir(), "union.parquet")
 vector_store = SKLearnVectorStore.from_documents(
     documents=docs,
     embedding=embeddings,
-    persist_path=persist_path,  # persist_path and serializer are optional
+    persist_path=persist_path,  # persist_path 和 serializer 是可选的
     serializer="parquet",
 )
 
-query = "What did the president say about Ketanji Brown Jackson"
+query = "总统对 Ketanji Brown Jackson 说了什么"
 docs = vector_store.similarity_search(query)
 print(docs[0].page_content)
 ```
@@ -76,7 +74,8 @@ One of the most serious constitutional responsibilities a President has is nomin
 
 And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
 ```
-## Saving and loading a vector store
+
+## 保存和加载向量存储
 
 
 ```python
@@ -110,15 +109,15 @@ One of the most serious constitutional responsibilities a President has is nomin
 
 And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
 ```
-## Clean-up
+
+## 清理
 
 
 ```python
 os.remove(persist_path)
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

@@ -2,41 +2,38 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/yandex.ipynb
 sidebar_label: YandexGPT
 ---
+
 # ChatYandexGPT
 
-This notebook goes over how to use Langchain with [YandexGPT](https://cloud.yandex.com/en/services/yandexgpt) chat model.
+本笔记本介绍了如何使用 Langchain 与 [YandexGPT](https://cloud.yandex.com/en/services/yandexgpt) 聊天模型。
 
-To use, you should have the `yandexcloud` python package installed.
-
+要使用此功能，您需要安装 `yandexcloud` python 包。
 
 ```python
 %pip install --upgrade --quiet  yandexcloud
 ```
 
-First, you should [create service account](https://cloud.yandex.com/en/docs/iam/operations/sa/create) with the `ai.languageModels.user` role.
+首先，您应该 [创建服务帐户](https://cloud.yandex.com/en/docs/iam/operations/sa/create)，并赋予 `ai.languageModels.user` 角色。
 
-Next, you have two authentication options:
-- [IAM token](https://cloud.yandex.com/en/docs/iam/operations/iam-token/create-for-sa).
-    You can specify the token in a constructor parameter `iam_token` or in an environment variable `YC_IAM_TOKEN`.
+接下来，您有两种身份验证选项：
+- [IAM 令牌](https://cloud.yandex.com/en/docs/iam/operations/iam-token/create-for-sa)。
+    您可以在构造函数参数 `iam_token` 中指定令牌，或在环境变量 `YC_IAM_TOKEN` 中指定。
 
-- [API key](https://cloud.yandex.com/en/docs/iam/operations/api-key/create)
-    You can specify the key in a constructor parameter `api_key` or in an environment variable `YC_API_KEY`.
+- [API 密钥](https://cloud.yandex.com/en/docs/iam/operations/api-key/create)
+    您可以在构造函数参数 `api_key` 中指定密钥，或在环境变量 `YC_API_KEY` 中指定。
 
-To specify the model you can use `model_uri` parameter, see [the documentation](https://cloud.yandex.com/en/docs/yandexgpt/concepts/models#yandexgpt-generation) for more details.
+要指定模型，您可以使用 `model_uri` 参数，详细信息请参见 [文档](https://cloud.yandex.com/en/docs/yandexgpt/concepts/models#yandexgpt-generation)。
 
-By default, the latest version of `yandexgpt-lite` is used from the folder specified in the parameter `folder_id` or `YC_FOLDER_ID` environment variable.
-
+默认情况下，从参数 `folder_id` 或环境变量 `YC_FOLDER_ID` 指定的文件夹中使用最新版本的 `yandexgpt-lite`。
 
 ```python
 from langchain_community.chat_models import ChatYandexGPT
 from langchain_core.messages import HumanMessage, SystemMessage
 ```
 
-
 ```python
 chat_model = ChatYandexGPT()
 ```
-
 
 ```python
 answer = chat_model.invoke(
@@ -50,15 +47,11 @@ answer = chat_model.invoke(
 answer
 ```
 
-
-
 ```output
 AIMessage(content='Je adore le programmement.')
 ```
 
+## 相关
 
-
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

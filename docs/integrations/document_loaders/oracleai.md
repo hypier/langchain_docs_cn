@@ -1,44 +1,42 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/oracleai.ipynb
 ---
-# Oracle AI Vector Search: Document Processing
-Oracle AI Vector Search is designed for Artificial Intelligence (AI) workloads that allows you to query data based on semantics, rather than keywords.
-One of the biggest benefits of Oracle AI Vector Search is that semantic search on unstructured data can be combined with relational search on business data in one single system.
-This is not only powerful but also significantly more effective because you don't need to add a specialized vector database, eliminating the pain of data fragmentation between multiple systems.
 
-In addition, your vectors can benefit from all of Oracle Database’s most powerful features, like the following:
+# Oracle AI 向量搜索：文档处理
+Oracle AI 向量搜索旨在支持人工智能（AI）工作负载，允许您基于语义而非关键字查询数据。
+Oracle AI 向量搜索的最大好处之一是，非结构化数据的语义搜索可以与业务数据的关系搜索在一个单一系统中结合使用。
+这不仅强大，而且显著更有效，因为您不需要添加专门的向量数据库，从而消除了多个系统之间数据碎片化的痛苦。
 
- * [Partitioning Support](https://www.oracle.com/database/technologies/partitioning.html)
- * [Real Application Clusters scalability](https://www.oracle.com/database/real-application-clusters/)
- * [Exadata smart scans](https://www.oracle.com/database/technologies/exadata/software/smartscan/)
- * [Shard processing across geographically distributed databases](https://www.oracle.com/database/distributed-database/)
- * [Transactions](https://docs.oracle.com/en/database/oracle/oracle-database/23/cncpt/transactions.html)
- * [Parallel SQL](https://docs.oracle.com/en/database/oracle/oracle-database/21/vldbg/parallel-exec-intro.html#GUID-D28717E4-0F77-44F5-BB4E-234C31D4E4BA)
- * [Disaster recovery](https://www.oracle.com/database/data-guard/)
- * [Security](https://www.oracle.com/security/database-security/)
- * [Oracle Machine Learning](https://www.oracle.com/artificial-intelligence/database-machine-learning/)
- * [Oracle Graph Database](https://www.oracle.com/database/integrated-graph-database/)
- * [Oracle Spatial and Graph](https://www.oracle.com/database/spatial/)
- * [Oracle Blockchain](https://docs.oracle.com/en/database/oracle/oracle-database/23/arpls/dbms_blockchain_table.html#GUID-B469E277-978E-4378-A8C1-26D3FF96C9A6)
+此外，您的向量可以受益于 Oracle 数据库的所有强大功能，例如：
+
+ * [分区支持](https://www.oracle.com/database/technologies/partitioning.html)
+ * [真实应用集群可扩展性](https://www.oracle.com/database/real-application-clusters/)
+ * [Exadata 智能扫描](https://www.oracle.com/database/technologies/exadata/software/smartscan/)
+ * [跨地理分布数据库的分片处理](https://www.oracle.com/database/distributed-database/)
+ * [事务](https://docs.oracle.com/en/database/oracle/oracle-database/23/cncpt/transactions.html)
+ * [并行 SQL](https://docs.oracle.com/en/database/oracle/oracle-database/21/vldbg/parallel-exec-intro.html#GUID-D28717E4-0F77-44F5-BB4E-234C31D4E4BA)
+ * [灾难恢复](https://www.oracle.com/database/data-guard/)
+ * [安全性](https://www.oracle.com/security/database-security/)
+ * [Oracle 机器学习](https://www.oracle.com/artificial-intelligence/database-machine-learning/)
+ * [Oracle 图数据库](https://www.oracle.com/database/integrated-graph-database/)
+ * [Oracle 空间和图形](https://www.oracle.com/database/spatial/)
+ * [Oracle 区块链](https://docs.oracle.com/en/database/oracle/oracle-database/23/arpls/dbms_blockchain_table.html#GUID-B469E277-978E-4378-A8C1-26D3FF96C9A6)
  * [JSON](https://docs.oracle.com/en/database/oracle/oracle-database/23/adjsn/json-in-oracle-database.html)
 
+本指南演示了如何在 Oracle AI 向量搜索中使用文档处理功能，分别使用 OracleDocLoader 和 OracleTextSplitter 加载和拆分文档。
 
-The guide demonstrates how to use Document Processing Capabilities within Oracle AI Vector Search to load and chunk documents using OracleDocLoader and OracleTextSplitter respectively.
+如果您刚开始使用 Oracle 数据库，可以考虑探索 [免费 Oracle 23 AI](https://www.oracle.com/database/free/#resources)，它为设置数据库环境提供了很好的介绍。在使用数据库时，通常建议默认避免使用系统用户；相反，您可以创建自己的用户以增强安全性和定制性。有关用户创建的详细步骤，请参考我们的 [端到端指南](https://github.com/langchain-ai/langchain/blob/master/cookbook/oracleai_demo.ipynb)，该指南还展示了如何在 Oracle 中设置用户。此外，理解用户权限对于有效管理数据库安全至关重要。您可以在官方 [Oracle 指南](https://docs.oracle.com/en/database/oracle/oracle-database/19/admqs/administering-user-accounts-and-security.html#GUID-36B21D72-1BBB-46C9-A0C9-F0D2A8591B8D) 中了解更多关于管理用户账户和安全性的主题。
 
-If you are just starting with Oracle Database, consider exploring the [free Oracle 23 AI](https://www.oracle.com/database/free/#resources) which provides a great introduction to setting up your database environment. While working with the database, it is often advisable to avoid using the system user by default; instead, you can create your own user for enhanced security and customization. For detailed steps on user creation, refer to our [end-to-end guide](https://github.com/langchain-ai/langchain/blob/master/cookbook/oracleai_demo.ipynb) which also shows how to set up a user in Oracle. Additionally, understanding user privileges is crucial for managing database security effectively. You can learn more about this topic in the official [Oracle guide](https://docs.oracle.com/en/database/oracle/oracle-database/19/admqs/administering-user-accounts-and-security.html#GUID-36B21D72-1BBB-46C9-A0C9-F0D2A8591B8D) on administering user accounts and security.
+### 前提条件
 
-### Prerequisites
-
-Please install Oracle Python Client driver to use Langchain with Oracle AI Vector Search. 
-
+请安装 Oracle Python Client 驱动程序，以便将 Langchain 与 Oracle AI 向量搜索一起使用。
 
 ```python
 # pip install oracledb
 ```
 
-### Connect to Oracle Database
-The following sample code will show how to connect to Oracle Database. By default, python-oracledb runs in a ‘Thin’ mode which connects directly to Oracle Database. This mode does not need Oracle Client libraries. However, some additional functionality is available when python-oracledb uses them. Python-oracledb is said to be in ‘Thick’ mode when Oracle Client libraries are used. Both modes have comprehensive functionality supporting the Python Database API v2.0 Specification. See the following [guide](https://python-oracledb.readthedocs.io/en/latest/user_guide/appendix_a.html#featuresummary) that talks about features supported in each mode. You might want to switch to thick-mode if you are unable to use thin-mode.
-
+### 连接到 Oracle 数据库
+以下示例代码将展示如何连接到 Oracle 数据库。默认情况下，python-oracledb 以“Thin”模式运行，该模式直接连接到 Oracle 数据库。此模式不需要 Oracle 客户端库。然而，当 python-oracledb 使用这些库时，会有一些额外的功能可用。当使用 Oracle 客户端库时，python-oracledb 被称为“Thick”模式。这两种模式都具有全面的功能，支持 Python 数据库 API v2.0 规范。请参阅以下 [指南](https://python-oracledb.readthedocs.io/en/latest/user_guide/appendix_a.html#featuresummary)，该指南介绍了每种模式支持的功能。如果您无法使用 thin 模式，您可能想切换到 thick 模式。
 
 ```python
 import sys
@@ -58,8 +56,7 @@ except Exception as e:
     sys.exit(1)
 ```
 
-Now let's create a table and insert some sample docs to test.
-
+现在让我们创建一个表并插入一些示例文档以进行测试。
 
 ```python
 try:
@@ -99,13 +96,13 @@ except Exception as e:
     sys.exit(1)
 ```
 
-### Load Documents
+### 加载文档
 
-Users have the flexibility to load documents from either the Oracle Database, a file system, or both, by appropriately configuring the loader parameters. For comprehensive details on these parameters, please consult the [Oracle AI Vector Search Guide](https://docs.oracle.com/en/database/oracle/oracle-database/23/arpls/dbms_vector_chain1.html#GUID-73397E89-92FB-48ED-94BB-1AD960C4EA1F).
+用户可以灵活地从 Oracle 数据库、文件系统或两者加载文档，只需适当配置加载器参数。有关这些参数的详细信息，请参阅 [Oracle AI 向量搜索指南](https://docs.oracle.com/en/database/oracle/oracle-database/23/arpls/dbms_vector_chain1.html#GUID-73397E89-92FB-48ED-94BB-1AD960C4EA1F)。
 
-A significant advantage of utilizing OracleDocLoader is its capability to process over 150 distinct file formats, eliminating the need for multiple loaders for different document types. For a complete list of the supported formats, please refer to the [Oracle Text Supported Document Formats](https://docs.oracle.com/en/database/oracle/oracle-database/23/ccref/oracle-text-supported-document-formats.html).
+使用 OracleDocLoader 的一个显著优势是它能够处理超过 150 种不同的文件格式，从而无需为不同的文档类型使用多个加载器。有关支持的格式的完整列表，请参阅 [Oracle 文本支持的文档格式](https://docs.oracle.com/en/database/oracle/oracle-database/23/ccref/oracle-text-supported-document-formats.html)。
 
-Below is a sample code snippet that demonstrates how to use OracleDocLoader
+以下是一个示例代码片段，演示如何使用 OracleDocLoader
 
 
 ```python
@@ -138,10 +135,10 @@ print(f"Number of docs loaded: {len(docs)}")
 # print(f"Document-0: {docs[0].page_content}") # content
 ```
 
-### Split Documents
-The documents may vary in size, ranging from small to very large. Users often prefer to chunk their documents into smaller sections to facilitate the generation of embeddings. A wide array of customization options is available for this splitting process. For comprehensive details regarding these parameters, please consult the [Oracle AI Vector Search Guide](https://docs.oracle.com/en/database/oracle/oracle-database/23/arpls/dbms_vector_chain1.html#GUID-4E145629-7098-4C7C-804F-FC85D1F24240).
+### 拆分文档
+文档的大小可能有所不同，从小型到大型不等。用户通常更喜欢将文档分成较小的部分，以便于生成嵌入。此拆分过程提供了多种自定义选项。有关这些参数的详细信息，请参阅 [Oracle AI Vector Search Guide](https://docs.oracle.com/en/database/oracle/oracle-database/23/arpls/dbms_vector_chain1.html#GUID-4E145629-7098-4C7C-804F-FC85D1F24240)。
 
-Below is a sample code illustrating how to implement this:
+以下是一个示例代码，说明如何实现这一点：
 
 
 ```python
@@ -176,12 +173,10 @@ print(f"Number of Chunks: {len(list_chunks)}")
 # print(f"Chunk-0: {list_chunks[0]}") # content
 ```
 
-### End to End Demo
-Please refer to our complete demo guide [Oracle AI Vector Search End-to-End Demo Guide](https://github.com/langchain-ai/langchain/tree/master/cookbook/oracleai_demo.ipynb) to build an end to end RAG pipeline with the help of Oracle AI Vector Search.
+### 端到端演示
+请参考我们的完整演示指南 [Oracle AI Vector Search 端到端演示指南](https://github.com/langchain-ai/langchain/tree/master/cookbook/oracleai_demo.ipynb)，以借助 Oracle AI Vector Search 构建一个端到端的 RAG 管道。
 
+## 相关
 
-
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

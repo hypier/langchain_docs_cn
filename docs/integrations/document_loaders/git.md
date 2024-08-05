@@ -1,13 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/git.ipynb
 ---
+
 # Git
 
->[Git](https://en.wikipedia.org/wiki/Git) is a distributed version control system that tracks changes in any set of computer files, usually used for coordinating work among programmers collaboratively developing source code during software development.
+>[Git](https://en.wikipedia.org/wiki/Git) 是一个分布式版本控制系统，用于跟踪任何一组计算机文件的更改，通常用于协调程序员在软件开发过程中协作开发源代码的工作。
 
-This notebook shows how to load text files from `Git` repository.
+本笔记本演示如何从 `Git` 仓库加载文本文件。
 
-## Load existing repository from disk
+## 从磁盘加载现有的代码库
 
 
 ```python
@@ -51,7 +52,8 @@ print(data[0])
 ```output
 page_content='.venv\n.github\n.git\n.mypy_cache\n.pytest_cache\nDockerfile' metadata={'file_path': '.dockerignore', 'file_name': '.dockerignore', 'file_type': ''}
 ```
-## Clone repository from url
+
+## 从 URL 克隆仓库
 
 
 ```python
@@ -83,22 +85,20 @@ len(data)
 1074
 ```
 
-
-## Filtering files to load
+## 过滤要加载的文件
 
 
 ```python
 from langchain_community.document_loaders import GitLoader
 
-# e.g. loading only python files
+# 例如，仅加载 python 文件
 loader = GitLoader(
     repo_path="./example_data/test_repo1/",
     file_filter=lambda file_path: file_path.endswith(".py"),
 )
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

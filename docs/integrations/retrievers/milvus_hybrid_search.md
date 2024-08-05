@@ -1,29 +1,27 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/milvus_hybrid_search.ipynb
-sidebar_label: Milvus Hybrid Search
+sidebar_label: Milvus 混合搜索
 ---
 
-# Milvus Hybrid Search Retriever
+# Milvus 混合搜索检索器
 
-## Overview
+## 概述
 
-> [Milvus](https://milvus.io/docs) is an open-source vector database built to power embedding similarity search and AI applications. Milvus makes unstructured data search more accessible, and provides a consistent user experience regardless of the deployment environment.
+> [Milvus](https://milvus.io/docs) 是一个开源向量数据库，旨在支持嵌入相似性搜索和人工智能应用。Milvus 使非结构化数据搜索变得更加易于访问，并提供一致的用户体验，无论部署环境如何。
 
-This will help you getting started with the Milvus Hybrid Search [retriever](/docs/concepts/#retrievers), which combines the strengths of both dense and sparse vector search. For detailed documentation of all `MilvusCollectionHybridSearchRetriever` features and configurations head to the [API reference](https://api.python.langchain.com/en/latest/retrievers/langchain_milvus.retrievers.milvus_hybrid_search.MilvusCollectionHybridSearchRetriever.html).
+这将帮助您开始使用 Milvus 混合搜索 [retriever](/docs/concepts/#retrievers)，它结合了稠密和稀疏向量搜索的优势。有关所有 `MilvusCollectionHybridSearchRetriever` 特性和配置的详细文档，请访问 [API 参考](https://api.python.langchain.com/en/latest/retrievers/langchain_milvus.retrievers.milvus_hybrid_search.MilvusCollectionHybridSearchRetriever.html)。
 
-See also the Milvus Multi-Vector Search [docs](https://milvus.io/docs/multi-vector-search.md).
+另请参阅 Milvus 多向量搜索 [文档](https://milvus.io/docs/multi-vector-search.md)。
 
-### Integration details
+### 集成细节
 
-| Retriever | Self-host | Cloud offering | Package |
+| 检索器 | 自托管 | 云服务 | 包 |
 | :--- | :--- | :---: | :---: |
 [MilvusCollectionHybridSearchRetriever](https://api.python.langchain.com/en/latest/retrievers/langchain_milvus.retrievers.milvus_hybrid_search.MilvusCollectionHybridSearchRetriever.html) | ✅ | ❌ | langchain_milvus |
 
+## 设置
 
-
-## Setup
-
-If you want to get automated tracing from individual queries, you can also set your [LangSmith](https://docs.smith.langchain.com/) API key by uncommenting below:
+如果您想从单个查询中获取自动化跟踪，您还可以通过取消下面的注释来设置您的 [LangSmith](https://docs.smith.langchain.com/) API 密钥：
 
 
 ```python
@@ -31,15 +29,13 @@ If you want to get automated tracing from individual queries, you can also set y
 # os.environ["LANGSMITH_TRACING"] = "true"
 ```
 
-### Installation
+### 安装
 
-This retriever lives in the `langchain-milvus` package. This guide requires the following dependencies:
-
+这个检索器位于 `langchain-milvus` 包中。本指南需要以下依赖项：
 
 ```python
 %pip install --upgrade --quiet pymilvus[model] langchain-milvus langchain-openai
 ```
-
 
 ```python
 from langchain_core.output_parsers import StrOutputParser
@@ -58,30 +54,27 @@ from pymilvus import (
 )
 ```
 
-### Start the Milvus service
+### 启动 Milvus 服务
 
-Please refer to the [Milvus documentation](https://milvus.io/docs/install_standalone-docker.md) to start the Milvus service.
+请参考 [Milvus 文档](https://milvus.io/docs/install_standalone-docker.md) 来启动 Milvus 服务。
 
-After starting milvus, you need to specify your milvus connection URI.
-
+启动 milvus 后，您需要指定 milvus 连接 URI。
 
 ```python
 CONNECTION_URI = "http://localhost:19530"
 ```
 
-### Prepare OpenAI API Key
+### 准备 OpenAI API 密钥
 
-Please refer to the [OpenAI documentation](https://platform.openai.com/account/api-keys) to obtain your OpenAI API key, and set it as an environment variable.
+请参考 [OpenAI 文档](https://platform.openai.com/account/api-keys) 获取您的 OpenAI API 密钥，并将其设置为环境变量。
 
 ```shell
 export OPENAI_API_KEY=<your_api_key>
 ```
 
+### 准备稠密和稀疏嵌入函数
 
-### Prepare dense and sparse embedding functions
-
-Let us fictionalize 10 fake descriptions of novels. In actual production, it may be a large amount of text data.
-
+让我们虚构10个小说的假描述。在实际生产中，这可能是大量的文本数据。
 
 ```python
 texts = [
@@ -98,10 +91,9 @@ texts = [
 ]
 ```
 
-We will use the [OpenAI Embedding](https://platform.openai.com/docs/guides/embeddings) to generate dense vectors, and the [BM25 algorithm](https://en.wikipedia.org/wiki/Okapi_BM25) to generate sparse vectors.
+我们将使用 [OpenAI Embedding](https://platform.openai.com/docs/guides/embeddings) 来生成稠密向量，以及 [BM25算法](https://en.wikipedia.org/wiki/Okapi_BM25) 来生成稀疏向量。
 
-Initialize dense embedding function and get dimension
-
+初始化稠密嵌入函数并获取维度
 
 ```python
 dense_embedding_func = OpenAIEmbeddings()
@@ -109,24 +101,18 @@ dense_dim = len(dense_embedding_func.embed_query(texts[1]))
 dense_dim
 ```
 
-
-
 ```output
 1536
 ```
 
+初始化稀疏嵌入函数。
 
-Initialize sparse embedding function.
-
-Note that the output of sparse embedding is a set of sparse vectors, which represents the index and weight of the keywords of the input text.
-
+请注意，稀疏嵌入的输出是一组稀疏向量，表示输入文本的关键词的索引和权重。
 
 ```python
 sparse_embedding_func = BM25SparseEmbedding(corpus=texts)
 sparse_embedding_func.embed_query(texts[1])
 ```
-
-
 
 ```output
 {0: 0.4270424944042204,
@@ -151,17 +137,16 @@ sparse_embedding_func.embed_query(texts[1])
  39: 1.845826690498331}
 ```
 
+### 创建 Milvus 集合并加载数据
 
-### Create Milvus Collection and load data
-
-Initialize connection URI and establish connection
+初始化连接 URI 并建立连接
 
 
 ```python
 connections.connect(uri=CONNECTION_URI)
 ```
 
-Define field names and their data types
+定义字段名称及其数据类型
 
 
 ```python
@@ -183,7 +168,7 @@ fields = [
 ]
 ```
 
-Create a collection with the defined schema
+使用定义的模式创建集合
 
 
 ```python
@@ -193,7 +178,7 @@ collection = Collection(
 )
 ```
 
-Define index for dense and sparse vectors
+为稠密和稀疏向量定义索引
 
 
 ```python
@@ -204,7 +189,7 @@ collection.create_index("sparse_vector", sparse_index)
 collection.flush()
 ```
 
-Insert entities into the collection and load the collection
+将实体插入集合并加载集合
 
 
 ```python
@@ -220,10 +205,9 @@ collection.insert(entities)
 collection.load()
 ```
 
-## Instantiation
+## 实例化
 
-Now we can instantiate our retriever, defining search parameters for sparse and dense fields:
-
+现在我们可以实例化我们的检索器，定义稀疏和密集字段的搜索参数：
 
 ```python
 sparse_search_params = {"metric_type": "IP"}
@@ -239,9 +223,9 @@ retriever = MilvusCollectionHybridSearchRetriever(
 )
 ```
 
-In the input parameters of this Retriever, we use a dense embedding and a sparse embedding to perform hybrid search on the two fields of this Collection, and use WeightedRanker for reranking. Finally, 3 top-K Documents will be returned.
+在这个检索器的输入参数中，我们使用密集嵌入和稀疏嵌入对该集合的两个字段进行混合搜索，并使用 WeightedRanker 进行重排序。最后，将返回 3 个 top-K 文档。
 
-## Usage
+## 用法
 
 
 ```python
@@ -256,10 +240,9 @@ retriever.invoke("What are the story about ventures?")
  Document(page_content="In 'The Dreamwalker's Journey' by Lyra Snow, a young dreamwalker discovers she has the ability to enter people's dreams, but soon finds herself trapped in a surreal world of nightmares and illusions, where the boundaries between reality and fantasy blur.", metadata={'doc_id': '449281835035545846'})]
 ```
 
+## 在链中使用
 
-## Use within a chain
-
-Initialize ChatOpenAI and define a prompt template
+初始化 ChatOpenAI 并定义提示模板
 
 
 ```python
@@ -284,7 +267,7 @@ prompt = PromptTemplate(
 )
 ```
 
-Define a function for formatting documents
+定义一个格式化文档的函数
 
 
 ```python
@@ -292,7 +275,7 @@ def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 ```
 
-Define a chain using the retriever and other components
+使用检索器和其他组件定义一个链
 
 
 ```python
@@ -304,7 +287,7 @@ rag_chain = (
 )
 ```
 
-Perform a query using the defined chain
+使用定义的链执行查询
 
 
 ```python
@@ -318,19 +301,18 @@ rag_chain.invoke("What novels has Lila written and what are their contents?")
 ```
 
 
-Drop the collection
+删除集合
 
 
 ```python
 collection.drop()
 ```
 
-## API reference
+## API 参考
 
-For detailed documentation of all `MilvusCollectionHybridSearchRetriever` features and configurations head to the [API reference](https://api.python.langchain.com/en/latest/retrievers/langchain_milvus.retrievers.milvus_hybrid_search.MilvusCollectionHybridSearchRetriever.html).
+有关所有 `MilvusCollectionHybridSearchRetriever` 特性和配置的详细文档，请访问 [API 参考](https://api.python.langchain.com/en/latest/retrievers/langchain_milvus.retrievers.milvus_hybrid_search.MilvusCollectionHybridSearchRetriever.html)。
 
+## 相关
 
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

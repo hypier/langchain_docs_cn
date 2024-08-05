@@ -1,31 +1,29 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/etherscan.ipynb
 ---
+
 # Etherscan
 
->[Etherscan](https://docs.etherscan.io/)  is the leading blockchain explorer, search, API and analytics platform for Ethereum, 
-a decentralized smart contracts platform.
+>[Etherscan](https://docs.etherscan.io/) 是领先的区块链浏览器、搜索、API 和分析平台，适用于以太坊，一个去中心化的智能合约平台。
 
+## 概述
 
-## Overview
+`Etherscan` 加载器使用 `Etherscan API` 来加载特定账户在 `Ethereum Mainnet` 上的交易历史。
 
-The `Etherscan` loader use `Etherscan API` to load transactions histories under specific account on `Ethereum Mainnet`.
+您需要一个 `Etherscan api key` 来继续。免费 api key 的配额为每秒 5 次调用。
 
-You will need a `Etherscan api key` to proceed. The free api key has 5 calls per seconds quota.
+加载器支持以下六种功能：
 
-The loader supports the following six functionalities:
+* 检索特定账户在 Ethereum Mainnet 上的普通交易
+* 检索特定账户在 Ethereum Mainnet 上的内部交易
+* 检索特定账户在 Ethereum Mainnet 上的 erc20 交易
+* 检索特定账户在 Ethereum Mainnet 上的 erc721 交易
+* 检索特定账户在 Ethereum Mainnet 上的 erc1155 交易
+* 检索特定账户在 Ethereum Mainnet 上的以 wei 为单位的以太坊余额
 
-* Retrieve normal transactions under specific account on Ethereum Mainet
-* Retrieve internal transactions under specific account on Ethereum Mainet
-* Retrieve erc20 transactions under specific account on Ethereum Mainet
-* Retrieve erc721 transactions under specific account on Ethereum Mainet
-* Retrieve erc1155 transactions under specific account on Ethereum Mainet
-* Retrieve ethereum balance in wei under specific account on Ethereum Mainet
+如果账户没有相应的交易，加载器将返回一个包含一个文档的列表。文档的内容为 ''。
 
-
-If the account does not have corresponding transactions, the loader will a list with one document. The content of document is ''.
-
-You can pass different filters to loader to access different functionalities we mentioned above:
+您可以传递不同的过滤器给加载器，以访问我们提到的不同功能：
 
 * "normal_transaction"
 * "internal_transaction"
@@ -33,19 +31,19 @@ You can pass different filters to loader to access different functionalities we 
 * "eth_balance"
 * "erc721_transaction"
 * "erc1155_transaction"
-The filter is default to normal_transaction
+过滤器默认为 normal_transaction
 
-If you have any questions, you can access [Etherscan API Doc](https://etherscan.io/tx/0x0ffa32c787b1398f44303f731cb06678e086e4f82ce07cebf75e99bb7c079c77) or contact me via i@inevitable.tech.
+如果您有任何问题，可以访问 [Etherscan API 文档](https://etherscan.io/tx/0x0ffa32c787b1398f44303f731cb06678e086e4f82ce07cebf75e99bb7c079c77) 或通过 i@inevitable.tech 联系我。
 
-All functions related to transactions histories are restricted 1000 histories maximum because of Etherscan limit. You can use the following parameters to find the transaction histories you need:
+与交易历史相关的所有功能因 Etherscan 限制而限制为最多 1000 条历史记录。您可以使用以下参数查找所需的交易历史：
 
-* offset: default to 20. Shows 20 transactions for one time
-* page: default to 1. This controls pagination.
-* start_block: Default to 0. The transaction histories starts from 0 block.
-* end_block: Default to 99999999. The transaction histories starts from 99999999 block
-* sort: "desc" or "asc". Set default to "desc" to get latest transactions.
+* offset: 默认为 20。一次显示 20 条交易
+* page: 默认为 1。此参数控制分页。
+* start_block: 默认为 0。交易历史从 0 区块开始。
+* end_block: 默认为 99999999。交易历史从 99999999 区块开始
+* sort: "desc" 或 "asc"。默认为 "desc"，以获取最新的交易。
 
-## Setup
+## 设置
 
 
 ```python
@@ -69,7 +67,7 @@ from langchain_community.document_loaders import EtherscanLoader
 os.environ["ETHERSCAN_API_KEY"] = etherscanAPIKey
 ```
 
-## Create a ERC20 transaction loader
+## 创建 ERC20 交易加载器
 
 
 ```python
@@ -103,8 +101,7 @@ eval(result[0].page_content)
  'confirmations': '4492277'}
 ```
 
-
-## Create a normal transaction loader with customized parameters
+## 创建具有自定义参数的正常交易加载器
 
 
 ```python
@@ -149,7 +146,7 @@ result
 
 
 
-## Related
+## 相关
 
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

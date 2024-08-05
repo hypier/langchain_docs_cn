@@ -1,16 +1,17 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/clarifai.ipynb
 ---
+
 # Clarifai
 
->[Clarifai](https://www.clarifai.com/) is an AI Platform that provides the full AI lifecycle ranging from data exploration, data labeling, model training, evaluation, and inference.
+>[Clarifai](https://www.clarifai.com/) 是一个人工智能平台，提供完整的人工智能生命周期，包括数据探索、数据标注、模型训练、评估和推理。
 
-This example goes over how to use LangChain to interact with `Clarifai` [models](https://clarifai.com/explore/models). Text embedding models in particular can be found [here](https://clarifai.com/explore/models?page=1&perPage=24&filterData=%5B%7B%22field%22%3A%22model_type_id%22%2C%22value%22%3A%5B%22text-embedder%22%5D%7D%5D).
+本示例介绍如何使用 LangChain 与 `Clarifai` [模型](https://clarifai.com/explore/models) 进行交互。特别是文本嵌入模型可以在 [这里](https://clarifai.com/explore/models?page=1&perPage=24&filterData=%5B%7B%22field%22%3A%22model_type_id%22%2C%22value%22%3A%5B%22text-embedder%22%5D%7D%5D) 找到。
 
-To use Clarifai, you must have an account and a Personal Access Token (PAT) key. 
-[Check here](https://clarifai.com/settings/security) to get or create a PAT.
+要使用 Clarifai，您必须拥有一个账户和一个个人访问令牌 (PAT) 密钥。 
+[在这里查看](https://clarifai.com/settings/security) 以获取或创建 PAT。
 
-# Dependencies
+# 依赖项
 
 
 ```python
@@ -18,9 +19,8 @@ To use Clarifai, you must have an account and a Personal Access Token (PAT) key.
 %pip install --upgrade --quiet  clarifai
 ```
 
-# Imports
-Here we will be setting the personal access token. You can find your PAT under [settings/security](https://clarifai.com/settings/security) in your Clarifai account.
-
+# 导入
+在这里我们将设置个人访问令牌。您可以在您的 Clarifai 账户的 [设置/安全性](https://clarifai.com/settings/security) 中找到您的 PAT。
 
 ```python
 # Please login and get your API key from  https://clarifai.com/settings/security
@@ -29,7 +29,6 @@ from getpass import getpass
 CLARIFAI_PAT = getpass()
 ```
 
-
 ```python
 # Import the required modules
 from langchain.chains import LLMChain
@@ -37,9 +36,8 @@ from langchain_community.embeddings import ClarifaiEmbeddings
 from langchain_core.prompts import PromptTemplate
 ```
 
-# Input
-Create a prompt template to be used with the LLM Chain:
-
+# 输入
+创建一个用于 LLM Chain 的提示模板：
 
 ```python
 template = """Question: {question}
@@ -49,10 +47,10 @@ Answer: Let's think step by step."""
 prompt = PromptTemplate.from_template(template)
 ```
 
-# Setup
-Set the user id and app id to the application in which the model resides. You can find a list of public models on https://clarifai.com/explore/models
+# 设置
+设置用户 ID 和应用 ID，以便在其中模型所在的应用程序中使用。您可以在 https://clarifai.com/explore/models 上找到公共模型的列表。
 
-You will have to also initialize the model id and if needed, the model version id. Some models have many versions, you can choose the one appropriate for your task.
+您还需要初始化模型 ID，并在需要时初始化模型版本 ID。一些模型有多个版本，您可以选择适合您任务的版本。
 
 
 ```python
@@ -61,19 +59,19 @@ APP_ID = "main"
 MODEL_ID = "BAAI-bge-base-en-v15"
 MODEL_URL = "https://clarifai.com/clarifai/main/models/BAAI-bge-base-en-v15"
 
-# Further you can also provide a specific model version as the model_version_id arg.
+# 此外，您还可以提供特定的模型版本作为 model_version_id 参数。
 # MODEL_VERSION_ID = "MODEL_VERSION_ID"
 ```
 
 
 ```python
-# Initialize a Clarifai embedding model
+# 初始化一个 Clarifai 嵌入模型
 embeddings = ClarifaiEmbeddings(user_id=USER_ID, app_id=APP_ID, model_id=MODEL_ID)
 
-# Initialize a clarifai embedding model using model URL
+# 使用模型 URL 初始化 Clarifai 嵌入模型
 embeddings = ClarifaiEmbeddings(model_url=MODEL_URL)
 
-# Alternatively you can initialize clarifai class with pat argument.
+# 或者您可以使用 pat 参数初始化 Clarifai 类。
 ```
 
 
@@ -82,22 +80,21 @@ text = "roses are red violets are blue."
 text2 = "Make hay while the sun shines."
 ```
 
-You can embed single line of your text using embed_query function !
+您可以使用 embed_query 函数嵌入单行文本！
 
 
 ```python
 query_result = embeddings.embed_query(text)
 ```
 
-Further to embed list of texts/documents use embed_documents function.
+进一步地，要嵌入文本/文档列表，请使用 embed_documents 函数。
 
 
 ```python
 doc_result = embeddings.embed_documents([text, text2])
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

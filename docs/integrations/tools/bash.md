@@ -1,13 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/bash.ipynb
 ---
+
 # Shell (bash)
 
-Giving agents access to the shell is powerful (though risky outside a sandboxed environment).
+给予代理访问 shell 的权限是强大的（尽管在沙盒环境外存在风险）。
 
-The LLM can use it to execute any shell commands. A common use case for this is letting the LLM interact with your local file system.
+LLM 可以用它来执行任何 shell 命令。一个常见的用例是让 LLM 与您的本地文件系统进行交互。
 
-**Note:** Shell tool does not work with Windows OS.
+**注意：** Shell 工具不适用于 Windows 操作系统。
 
 
 ```python
@@ -35,9 +36,10 @@ sys	0m0.000s
 /Users/wfh/code/lc/lckg/langchain/tools/shell/tool.py:34: UserWarning: The shell tool has no safeguards by default. Use at your own risk.
   warnings.warn(
 ```
-### Use with Agents
 
-As with all tools, these can be given to an agent to accomplish more complex tasks. Let's have the agent fetch some links from a web page.
+### 与代理一起使用
+
+与所有工具一样，这些工具可以交给代理以完成更复杂的任务。让我们让代理从网页中获取一些链接。
 
 
 ```python
@@ -101,9 +103,7 @@ Final Answer: ["https://blog.langchain.dev/", "https://discord.gg/6adMQxSpJS", "
 '["https://blog.langchain.dev/", "https://discord.gg/6adMQxSpJS", "https://docs.langchain.com/docs/", "https://github.com/hwchase17/chat-langchain", "https://github.com/hwchase17/langchain", "https://github.com/hwchase17/langchainjs", "https://github.com/sullivan-sean/chat-langchainjs", "https://js.langchain.com/docs/", "https://python.langchain.com/en/latest/", "https://twitter.com/langchainai"]'
 ```
 
+## 相关
 
-
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

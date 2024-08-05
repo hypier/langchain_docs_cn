@@ -1,31 +1,28 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/atlas.ipynb
 ---
+
 # Atlas
 
+>[Atlas](https://docs.nomic.ai/index.html) 是 Nomic 提供的一个平台，用于与小型和互联网规模的非结构化数据集进行交互。它使任何人都能够在浏览器中可视化、搜索和共享大量数据集。
 
->[Atlas](https://docs.nomic.ai/index.html) is a platform by Nomic made for interacting with both small and internet scale unstructured datasets. It enables anyone to visualize, search, and share massive datasets in their browser.
+您需要使用 `pip install -qU langchain-community` 安装 `langchain-community` 才能使用此集成。
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
-
-This notebook shows you how to use functionality related to the `AtlasDB` vectorstore.
-
+本笔记本展示了如何使用与 `AtlasDB` 向量存储相关的功能。
 
 ```python
 %pip install --upgrade --quiet  spacy
 ```
 
-
 ```python
 !python3 -m spacy download en_core_web_sm
 ```
-
 
 ```python
 %pip install --upgrade --quiet  nomic
 ```
 
-### Load Packages
+### 加载包
 
 
 ```python
@@ -41,7 +38,7 @@ from langchain_text_splitters import SpacyTextSplitter
 ATLAS_TEST_API_KEY = "7xDPkYXSYDc1_ErdTPIcoAR9RNd8YDlkS3nVNXcVoIMZ6"
 ```
 
-### Prepare the Data
+### 准备数据
 
 
 ```python
@@ -55,7 +52,7 @@ for doc in text_splitter.split_documents(documents):
 texts = [e.strip() for e in texts]
 ```
 
-### Map the Data using Nomic's Atlas
+### 使用 Nomic 的 Atlas 映射数据
 
 
 ```python
@@ -78,11 +75,10 @@ db.project.wait_for_project_lock()
 db.project
 ```
 
-Here is a map with the result of this code. This map displays the texts of the State of the Union.
+这里是此代码的结果地图。该地图显示了国情咨文的文本。
 https://atlas.nomic.ai/map/3e4de075-89ff-486a-845c-36c23f30bb67/d8ce2284-8edb-4050-8b9b-9bb543d7f647
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

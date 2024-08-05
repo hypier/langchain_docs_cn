@@ -2,36 +2,37 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/stores/elasticsearch.ipynb
 sidebar_label: Elasticsearch
 ---
+
 # ElasticsearchEmbeddingsCache
 
-This will help you get started with Elasticsearch [key-value stores](/docs/concepts/#key-value-stores). For detailed documentation of all `ElasticsearchEmbeddingsCache` features and configurations head to the [API reference](https://api.python.langchain.com/en/latest/cache/langchain_elasticsearch.cache.ElasticsearchEmbeddingsCache.html).
+这将帮助您开始使用 Elasticsearch [键值存储](/docs/concepts/#key-value-stores)。有关所有 `ElasticsearchEmbeddingsCache` 功能和配置的详细文档，请访问 [API 参考](https://api.python.langchain.com/en/latest/cache/langchain_elasticsearch.cache.ElasticsearchEmbeddingsCache.html)。
 
-## Overview
+## 概述
 
-The `ElasticsearchEmbeddingsCache` is a `ByteStore` implementation that uses your Elasticsearch instance for efficient storage and retrieval of embeddings.
+`ElasticsearchEmbeddingsCache` 是一个 `ByteStore` 实现，利用您的 Elasticsearch 实例高效地存储和检索嵌入。
 
-### Integration details
+### 集成细节
 
-| Class | Package | Local | JS support | Package downloads | Package latest |
+| 类别 | 包 | 本地 | JS 支持 | 包下载量 | 包最新 |
 | :--- | :--- | :---: | :---: |  :---: | :---: |
 | [ElasticsearchEmbeddingsCache](https://api.python.langchain.com/en/latest/cache/langchain_elasticsearch.cache.ElasticsearchEmbeddingsCache.html) | [langchain_elasticsearch](https://api.python.langchain.com/en/latest/elasticsearch_api_reference.html) | ✅ | ❌ | ![PyPI - Downloads](https://img.shields.io/pypi/dm/langchain_elasticsearch?style=flat-square&label=%20) | ![PyPI - Version](https://img.shields.io/pypi/v/langchain_elasticsearch?style=flat-square&label=%20) |
 
-## Setup
+## 设置
 
-To create a `ElasticsearchEmbeddingsCache` byte store, you'll need an Elasticsearch cluster. You can [set one up locally](https://www.elastic.co/downloads/elasticsearch) or create an [Elastic account](https://www.elastic.co/elasticsearch).
+要创建一个 `ElasticsearchEmbeddingsCache` 字节存储，您需要一个 Elasticsearch 集群。您可以 [在本地设置一个](https://www.elastic.co/downloads/elasticsearch) 或创建一个 [Elastic 账户](https://www.elastic.co/elasticsearch)。
 
-### Installation
+### 安装
 
-The LangChain `ElasticsearchEmbeddingsCache` integration lives in the `__package_name__` package:
+LangChain `ElasticsearchEmbeddingsCache` 集成位于 `__package_name__` 包中：
 
 
 ```python
 %pip install -qU langchain_elasticsearch
 ```
 
-## Instantiation
+## 实例化
 
-Now we can instantiate our byte store:
+现在我们可以实例化我们的字节存储：
 
 
 ```python
@@ -51,9 +52,9 @@ kv_store = ElasticsearchEmbeddingsCache(
 )
 ```
 
-## Usage
+## 用法
 
-You can set data under keys like this using the `mset` method:
+您可以使用 `mset` 方法在键下设置数据，如下所示：
 
 
 ```python
@@ -79,7 +80,7 @@ kv_store.mget(
 ```
 
 
-And you can delete data using the `mdelete` method:
+您可以使用 `mdelete` 方法删除数据：
 
 
 ```python
@@ -104,15 +105,13 @@ kv_store.mget(
 [None, None]
 ```
 
+## 用作嵌入缓存
 
-## Use as an embeddings cache
+与其他 `ByteStores` 一样，您可以使用 `ElasticsearchEmbeddingsCache` 实例进行 [文档摄取中的持久缓存](/docs/how_to/caching_embeddings/) 以支持 RAG。
 
-Like other `ByteStores`, you can use an `ElasticsearchEmbeddingsCache` instance for [persistent caching in document ingestion](/docs/how_to/caching_embeddings/) for RAG.
+然而，缓存的向量默认情况下是不可搜索的。开发者可以自定义 Elasticsearch 文档的构建，以添加索引向量字段。
 
-However, cached vectors won't be searchable by default. The developer can customize the building of the Elasticsearch document in order to add indexed vector field.
-
-This can be done by subclassing and overriding methods:
-
+这可以通过子类化并重写方法来实现：
 
 ```python
 from typing import Any, Dict, List
@@ -136,13 +135,12 @@ class SearchableElasticsearchStore(ElasticsearchEmbeddingsCache):
         return body
 ```
 
-When overriding the mapping and the document building, please only make additive modifications, keeping the base mapping intact.
+在重写映射和文档构建时，请仅进行附加修改，保持基础映射不变。
 
-## API reference
+## API 参考
 
-For detailed documentation of all `ElasticsearchEmbeddingsCache` features and configurations, head to the API reference: https://api.python.langchain.com/en/latest/cache/langchain_elasticsearch.cache.ElasticsearchEmbeddingsCache.html
+有关所有 `ElasticsearchEmbeddingsCache` 功能和配置的详细文档，请访问 API 参考： https://api.python.langchain.com/en/latest/cache/langchain_elasticsearch.cache.ElasticsearchEmbeddingsCache.html
 
+## 相关
 
-## Related
-
-- [Key-value store conceptual guide](/docs/concepts/#key-value-stores)
+- [键值存储概念指南](/docs/concepts/#key-value-stores)

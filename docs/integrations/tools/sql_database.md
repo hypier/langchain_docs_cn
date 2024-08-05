@@ -1,35 +1,35 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/sql_database.ipynb
 ---
-# SQL Database
+
+# SQL数据库
 
 :::note
-The `SQLDatabase` adapter utility is a wrapper around a database connection.
+`SQLDatabase`适配器工具是数据库连接的封装。
 
-For talking to SQL databases, it uses the [SQLAlchemy] Core API .
+在与SQL数据库交互时，它使用[SQLAlchemy]核心API。
 :::
 
 
-This notebook shows how to use the utility to access an SQLite database.
-It uses the example [Chinook Database], and demonstrates those features:
+本笔记本展示了如何使用该工具访问SQLite数据库。
+它使用示例[Chinook数据库]，并演示了以下功能：
 
-- Query using SQL
-- Query using SQLAlchemy selectable
-- Fetch modes `cursor`, `all`, and `one`
-- Bind query parameters
+- 使用SQL查询
+- 使用SQLAlchemy可选查询
+- 获取模式`cursor`、`all`和`one`
+- 绑定查询参数
 
-[Chinook Database]: https://github.com/lerocha/chinook-database
+[Chinook数据库]: https://github.com/lerocha/chinook-database  
 [SQLAlchemy]: https://www.sqlalchemy.org/
 
 
-You can use the `Tool` or `@tool` decorator to create a tool from this utility.
+您可以使用`Tool`或`@tool`装饰器从该工具创建工具。
 
 
 ::: {.callout-caution}
-If creating a tool from the SQLDatbase utility and combining it with an LLM or exposing it to an end user
-remember to follow good security practices.
+如果从SQLDatabase工具创建工具并将其与LLM结合使用或暴露给最终用户，请记得遵循良好的安全实践。
 
-See security information: https://python.langchain.com/docs/security
+有关安全信息，请参见：https://python.langchain.com/docs/security
 :::
 
 
@@ -60,7 +60,7 @@ See security information: https://python.langchain.com/docs/security
 !sqlite3 -bail -cmd '.read Chinook_Sqlite.sql' -cmd '.save Chinook.db' -cmd '.quit'
 ```
 
-## Initialize Database
+## 初始化数据库
 
 
 ```python
@@ -72,11 +72,10 @@ from langchain_community.utilities import SQLDatabase
 db = SQLDatabase.from_uri("sqlite:///Chinook.db")
 ```
 
-## Query as cursor
+## 查询作为游标
 
-The fetch mode `cursor` returns results as SQLAlchemy's
-`CursorResult` instance.
-
+获取模式 `cursor` 返回结果作为 SQLAlchemy 的
+`CursorResult` 实例。
 
 ```python
 result = db.run("SELECT * FROM Artist LIMIT 12;", fetch="cursor")
@@ -98,10 +97,10 @@ pprint(list(result.mappings()))
  {'ArtistId': 11, 'Name': 'Black Label Society'},
  {'ArtistId': 12, 'Name': 'Black Sabbath'}]
 ```
-## Query as string payload
 
-The fetch modes `all` and `one` return results in string format.
+## 查询作为字符串负载
 
+获取模式 `all` 和 `one` 返回字符串格式的结果。
 
 ```python
 result = db.run("SELECT * FROM Artist LIMIT 12;", fetch="all")
@@ -122,9 +121,10 @@ print(result)
 <class 'str'>
 [(1, 'AC/DC')]
 ```
-## Query with parameters
 
-In order to bind query parameters, use the optional `parameters` argument.
+## 带参数的查询
+
+为了绑定查询参数，请使用可选的 `parameters` 参数。
 
 
 ```python
@@ -148,10 +148,10 @@ pprint(list(result.mappings()))
  {'ArtistId': 256, 'Name': 'Philharmonia Orchestra & Sir Neville Marriner'},
  {'ArtistId': 275, 'Name': 'Philip Glass Ensemble'}]
 ```
-## Query with SQLAlchemy selectable
 
-Other than plain-text SQL statements, the adapter also accepts SQLAlchemy selectables.
+## 使用 SQLAlchemy 可选择项的查询
 
+除了纯文本 SQL 语句，适配器还接受 SQLAlchemy 可选择项。
 
 ```python
 # In order to build a selectable on SA's Core API, you need a table definition.
@@ -181,20 +181,17 @@ pprint(list(result.mappings()))
  {'ArtistId': 256, 'Name': 'Philharmonia Orchestra & Sir Neville Marriner'},
  {'ArtistId': 275, 'Name': 'Philip Glass Ensemble'}]
 ```
-## Query with execution options
 
-It is possible to augment the statement invocation with custom execution options.
-For example, when applying a schema name translation, subsequent statements will
-fail, because they try to hit a non-existing table.
+## 带执行选项的查询
 
+可以通过自定义执行选项来增强语句调用。例如，当应用模式名称转换时，后续语句将失败，因为它们试图访问一个不存在的表。
 
 ```python
 query = sa.select(artist).where(artist.c.Name.like("p%"))
 db.run(query, fetch="cursor", execution_options={"schema_translate_map": {None: "bar"}})
 ```
 
+## 相关
 
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

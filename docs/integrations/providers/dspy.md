@@ -1,28 +1,28 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/providers/dspy.ipynb
 ---
+
 # DSPy
 
-[DSPy](https://github.com/stanfordnlp/dspy) is a fantastic framework for LLMs that introduces an automatic compiler that teaches LMs how to conduct the declarative steps in your program. Specifically, the DSPy compiler will internally trace your program and then craft high-quality prompts for large LMs (or train automatic finetunes for small LMs) to teach them the steps of your task.
+[DSPy](https://github.com/stanfordnlp/dspy) 是一个出色的 LLM 框架，它引入了一个自动编译器，可以教会 LMs 如何执行程序中的声明性步骤。具体而言，DSPy 编译器将内部跟踪您的程序，然后为大型 LMs 制作高质量的提示（或为小型 LMs 训练自动微调），以教会它们您的任务步骤。
 
-Thanks to [Omar Khattab](https://twitter.com/lateinteraction) we have an integration! It works with any LCEL chains with some minor modifications.
+感谢 [Omar Khattab](https://twitter.com/lateinteraction)，我们有了一个集成！它可以与任何 LCEL 链配合使用，只需进行一些小的修改。
 
-This short tutorial demonstrates how this proof-of-concept feature works. *This will not give you the full power of DSPy or LangChain yet, but we will expand it if there's high demand.*
+这个简短的教程演示了这个概念验证功能是如何工作的。*这还不能让您充分发挥 DSPy 或 LangChain 的全部功能，但如果需求高，我们会扩展它。*
 
-Note: this was slightly modified from the original example Omar wrote for DSPy. If you are interested in LangChain \<\> DSPy but coming from the DSPy side, I'd recommend checking that out. You can find that [here](https://github.com/stanfordnlp/dspy/blob/main/examples/tweets/compiling_langchain.ipynb).
+注意：这与 Omar 为 DSPy 编写的原始示例略有修改。如果您对 LangChain \<\> DSPy 感兴趣，但来自 DSPy 方面，我建议您查看那部分内容。您可以在 [这里](https://github.com/stanfordnlp/dspy/blob/main/examples/tweets/compiling_langchain.ipynb) 找到。
 
-Let's take a look at an example. In this example we will make a simple RAG pipeline. We will use DSPy to "compile" our program and learn an optimized prompt.
+让我们看一个例子。在这个例子中，我们将创建一个简单的 RAG 流水线。我们将使用 DSPy 来“编译”我们的程序并学习一个优化的提示。
 
-
-## Install dependencies
+## 安装依赖
 
 !pip install -U dspy-ai 
 !pip install -U openai jinja2
 !pip install -U langchain langchain-community langchain-openai langchain-core
 
-## Setup
+## 设置
 
-We will be using OpenAI, so we should set an API key
+我们将使用 OpenAI，因此我们需要设置一个 API 密钥
 
 
 ```python
@@ -32,7 +32,7 @@ import os
 os.environ["OPENAI_API_KEY"] = getpass.getpass()
 ```
 
-We can now set up our retriever. For our retriever we will use a ColBERT retriever through DSPy, though this will work with any retriever.
+现在我们可以设置我们的检索器。对于我们的检索器，我们将通过 DSPy 使用 ColBERT 检索器，尽管这可以与任何检索器一起使用。
 
 
 ```python
@@ -127,22 +127,22 @@ colbertv2("cycling")
 ```
 
 
+
 ## Normal LCEL
 
-First, let's create a simple RAG pipeline with LCEL like we would normally.
+首先，让我们像往常一样创建一个简单的 RAG 管道，使用 LCEL。
 
-For illustration, let's tackle the following task.
+为了说明，我们来处理以下任务。
 
-**Task:** Build a RAG system for generating informative tweets.
+**任务：** 构建一个 RAG 系统，用于生成信息丰富的推文。
 
-- **Input:** A factual question, which may be fairly complex.
- 
-- **Output:** An engaging tweet that correctly answers the question from the retrieved info.
- 
-Let's use LangChain's expression language (LCEL) to illustrate this. Any prompt here will do, we will optimize the final prompt with DSPy.
+- **输入：** 一个事实性问题，可能相当复杂。
 
-Considering that, let's just keep it to the barebones: **Given {context}, answer the question {question} as a tweet.**
+- **输出：** 一条引人入胜的推文，正确回答从检索信息中得出的提问。
 
+我们将使用 LangChain 的表达语言（LCEL）来说明这一点。这里的任何提示都可以，我们将用 DSPy 优化最终提示。
+
+考虑到这一点，我们只需保持基本内容：**给定 {context}，作为推文回答问题 {question}。**
 
 ```python
 # From LangChain, import standard modules for prompting.
@@ -163,18 +163,17 @@ vanilla_chain = (
 
 ## LCEL \<\> DSPy
 
-In order to use LangChain with DSPy, you need to make two minor modifications
+为了将 LangChain 与 DSPy 一起使用，您需要进行两个小修改
 
 **LangChainPredict**
 
-You need to change from doing `prompt | llm` to using `LangChainPredict(prompt, llm)` from `dspy`. 
+您需要将 `prompt | llm` 更改为使用 `dspy` 中的 `LangChainPredict(prompt, llm)`。
 
-This is a wrapper which will bind your prompt and llm together so you can optimize them
+这是一个包装器，它将您的提示和 llm 绑定在一起，以便您可以优化它们。
 
 **LangChainModule**
 
-This is a wrapper which wraps your final LCEL chain so that DSPy can optimize the whole thing
-
+这是一个包装器，用于包装您的最终 LCEL 链，以便 DSPy 可以优化整个流程。
 
 ```python
 # From DSPy, import the modules that know how to interact with LangChain LCEL.
@@ -193,9 +192,9 @@ zeroshot_chain = LangChainModule(
 )  # then wrap the chain in a DSPy module.
 ```
 
-## Trying the Module
+## 尝试模块
 
-After this, we can use it as both a LangChain runnable and a DSPy module!
+在此之后，我们可以将其用作 LangChain 可运行组件和 DSPy 模块！
 
 
 ```python
@@ -211,20 +210,19 @@ zeroshot_chain.invoke({"question": question})
 ```
 
 
-Ah that sounds about right! (It's technically not perfect: we asked for the region not the city. We can do better below.)
+啊，这听起来差不多正确！(从技术上讲并不完美：我们询问的是地区而不是城市。我们可以在下面做得更好。)
 
-Inspecting questions and answers manually is very important to get a sense of your system. However, a good system designer always looks to iteratively benchmark their work to quantify progress!
+手动检查问题和答案对于了解系统非常重要。然而，一个好的系统设计师总是寻求迭代地对他们的工作进行基准测试，以量化进展！
 
-To do this, we need two things: the metric we want to maximize and a (tiny) dataset of examples for our system.
+为此，我们需要两个东西：我们想要最大化的指标和一个（小）示例数据集供我们的系统使用。
 
-Are there pre-defined metrics for good tweets? Should I label 100,000 tweets by hand? Probably not. We can easily do something reasonable, though, until you start getting data in production!
+是否存在针对好推文的预定义指标？我是否应该手动标记 100,000 条推文？可能不需要。不过，在您开始获得生产数据之前，我们可以轻松做一些合理的事情！
 
-## Load Data
+## 加载数据
 
-In order to compile our chain, we need a dataset to work with. This dataset just needs to be raw inputs and outputs. For our purposes, we will use HotPotQA dataset
+为了编译我们的链，我们需要一个数据集来进行处理。这个数据集只需要原始的输入和输出。出于我们的目的，我们将使用 HotPotQA 数据集。
 
-Note: Notice that our dataset doesn't actually include any tweets! It only has questions and answers. That's OK, our metric will take care of evaluating outputs in tweet form.
-
+注意：请注意我们的数据集实际上并不包含任何推文！它只包含问题和答案。这没关系，我们的指标将负责评估推文形式的输出。
 
 ```python
 import dspy
@@ -249,10 +247,10 @@ valset, devset = devset[:50], devset[50:]
 /Users/harrisonchase/.pyenv/versions/3.11.1/envs/langchain-3-11/lib/python3.11/site-packages/datasets/table.py:1421: FutureWarning: promote has been superseded by mode='default'.
   table = cls._concat_blocks(blocks, axis=0)
 ```
-## Define a metric
 
-We now need to define a metric. This will be used to determine which runs were successful and we can learn from. Here we will use DSPy's metrics, though you can write your own.
+## 定义一个指标
 
+我们现在需要定义一个指标。这将用于确定哪些运行是成功的，我们可以从中学习。在这里我们将使用DSPy的指标，尽管你可以编写自己的指标。
 
 ```python
 # Define the signature for autoamtic assessments.
@@ -310,15 +308,13 @@ def metric(gold, pred, trace=None):
     return score / 3.0
 ```
 
-## Evaluate Baseline
+## 评估基准
 
-Okay, let's evaluate the unoptimized "zero-shot" version of our chain, converted from our LangChain LCEL object.
-
+好的，让我们评估从我们的 LangChain LCEL 对象转换而来的未优化的 "零-shot" 版本的链。
 
 ```python
 from dspy.evaluate.evaluate import Evaluate
 ```
-
 
 ```python
 evaluate = Evaluate(
@@ -327,12 +323,12 @@ evaluate = Evaluate(
 evaluate(zeroshot_chain)
 ```
 ```output
-Average Metric: 62.99999999999998 / 150  (42.0): 100%|██| 150/150 [01:14<00:00,  2.02it/s]
+平均指标: 62.99999999999998 / 150  (42.0): 100%|██| 150/150 [01:14<00:00,  2.02it/s]
 ``````output
-Average Metric: 62.99999999999998 / 150  (42.0%)
+平均指标: 62.99999999999998 / 150  (42.0%)
 ``````output
 
-/Users/harrisonchase/.pyenv/versions/3.11.1/envs/langchain-3-11/lib/python3.11/site-packages/dspy/evaluate/evaluate.py:126: FutureWarning: DataFrame.applymap has been deprecated. Use DataFrame.map instead.
+/Users/harrisonchase/.pyenv/versions/3.11.1/envs/langchain-3-11/lib/python3.11/site-packages/dspy/evaluate/evaluate.py:126: FutureWarning: DataFrame.applymap 已被弃用。请改用 DataFrame.map。
   df = df.applymap(truncate_cell)
 ```
 ```html
@@ -354,58 +350,58 @@ Average Metric: 62.99999999999998 / 150  (42.0%)
   <thead>
     <tr>
       <th class="blank level0" >&nbsp;</th>
-      <th id="T_390d8_level0_col0" class="col_heading level0 col0" >question</th>
-      <th id="T_390d8_level0_col1" class="col_heading level0 col1" >answer</th>
-      <th id="T_390d8_level0_col2" class="col_heading level0 col2" >gold_titles</th>
-      <th id="T_390d8_level0_col3" class="col_heading level0 col3" >output</th>
-      <th id="T_390d8_level0_col4" class="col_heading level0 col4" >tweet_response</th>
-      <th id="T_390d8_level0_col5" class="col_heading level0 col5" >metric</th>
+      <th id="T_390d8_level0_col0" class="col_heading level0 col0" >问题</th>
+      <th id="T_390d8_level0_col1" class="col_heading level0 col1" >答案</th>
+      <th id="T_390d8_level0_col2" class="col_heading level0 col2" >金标题</th>
+      <th id="T_390d8_level0_col3" class="col_heading level0 col3" >输出</th>
+      <th id="T_390d8_level0_col4" class="col_heading level0 col4" >推文响应</th>
+      <th id="T_390d8_level0_col5" class="col_heading level0 col5" >指标</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th id="T_390d8_level0_row0" class="row_heading level0 row0" >0</th>
-      <td id="T_390d8_row0_col0" class="data row0 col0" >Who was a producer who produced albums for both rock bands Juke Karten and Thirty Seconds to Mars?</td>
+      <td id="T_390d8_row0_col0" class="data row0 col0" >谁是为摇滚乐队 Juke Karten 和 Thirty Seconds to Mars 制作专辑的制作人？</td>
       <td id="T_390d8_row0_col1" class="data row0 col1" >Brian Virtue</td>
-      <td id="T_390d8_row0_col2" class="data row0 col2" >{'Thirty Seconds to Mars', 'Levolution (album)'}</td>
-      <td id="T_390d8_row0_col3" class="data row0 col3" >Brian Virtue, who has worked with bands like Jane's Addiction and Velvet Revolver, produced albums for both Juke Kartel and Thirty Seconds to Mars. #BrianVirtue...</td>
-      <td id="T_390d8_row0_col4" class="data row0 col4" >Brian Virtue, who has worked with bands like Jane's Addiction and Velvet Revolver, produced albums for both Juke Kartel and Thirty Seconds to Mars. #BrianVirtue...</td>
+      <td id="T_390d8_row0_col2" class="data row0 col2" >{'Thirty Seconds to Mars', 'Levolution (专辑)'}</td>
+      <td id="T_390d8_row0_col3" class="data row0 col3" >Brian Virtue 曾与 Jane's Addiction 和 Velvet Revolver 等乐队合作，为 Juke Kartel 和 Thirty Seconds to Mars 制作专辑。#BrianVirtue...</td>
+      <td id="T_390d8_row0_col4" class="data row0 col4" >Brian Virtue 曾与 Jane's Addiction 和 Velvet Revolver 等乐队合作，为 Juke Kartel 和 Thirty Seconds to Mars 制作专辑。#BrianVirtue...</td>
       <td id="T_390d8_row0_col5" class="data row0 col5" >1.0</td>
     </tr>
     <tr>
       <th id="T_390d8_level0_row1" class="row_heading level0 row1" >1</th>
-      <td id="T_390d8_row1_col0" class="data row1 col0" >Are both the University of Chicago and Syracuse University public universities? </td>
-      <td id="T_390d8_row1_col1" class="data row1 col1" >no</td>
-      <td id="T_390d8_row1_col2" class="data row1 col2" >{'Syracuse University', 'University of Chicago'}</td>
-      <td id="T_390d8_row1_col3" class="data row1 col3" > No, only Syracuse University is a public university. The University of Chicago is a private research university. #university #publicvsprivate</td>
-      <td id="T_390d8_row1_col4" class="data row1 col4" > No, only Syracuse University is a public university. The University of Chicago is a private research university. #university #publicvsprivate</td>
+      <td id="T_390d8_row1_col0" class="data row1 col0" >芝加哥大学和锡拉丘兹大学都是公立大学吗？</td>
+      <td id="T_390d8_row1_col1" class="data row1 col1" >不</td>
+      <td id="T_390d8_row1_col2" class="data row1 col2" >{'锡拉丘兹大学', '芝加哥大学'}</td>
+      <td id="T_390d8_row1_col3" class="data row1 col3" >不，只有锡拉丘兹大学是公立大学。芝加哥大学是一所私立研究大学。#大学 #公立与私立</td>
+      <td id="T_390d8_row1_col4" class="data row1 col4" >不，只有锡拉丘兹大学是公立大学。芝加哥大学是一所私立研究大学。#大学 #公立与私立</td>
       <td id="T_390d8_row1_col5" class="data row1 col5" >0.3333333333333333</td>
     </tr>
     <tr>
       <th id="T_390d8_level0_row2" class="row_heading level0 row2" >2</th>
-      <td id="T_390d8_row2_col0" class="data row2 col0" >In what region was Eddy Mazzoleni born?</td>
-      <td id="T_390d8_row2_col1" class="data row2 col1" >Lombardy, northern Italy</td>
-      <td id="T_390d8_row2_col2" class="data row2 col2" >{'Eddy Mazzoleni', 'Bergamo'}</td>
-      <td id="T_390d8_row2_col3" class="data row2 col3" > Eddy Mazzoleni, born in Bergamo, Italy, is a professional road cyclist who rode for UCI ProTour Astana Team. #cyclist #Italy</td>
-      <td id="T_390d8_row2_col4" class="data row2 col4" > Eddy Mazzoleni, born in Bergamo, Italy, is a professional road cyclist who rode for UCI ProTour Astana Team. #cyclist #Italy</td>
+      <td id="T_390d8_row2_col0" class="data row2 col0" >Eddy Mazzoleni 出生在哪个地区？</td>
+      <td id="T_390d8_row2_col1" class="data row2 col1" >伦巴第，意大利北部</td>
+      <td id="T_390d8_row2_col2" class="data row2 col2" >{'Eddy Mazzoleni', '贝尔加莫'}</td>
+      <td id="T_390d8_row2_col3" class="data row2 col3" >Eddy Mazzoleni 出生于意大利贝尔加莫，是一名专业公路自行车手，曾为 UCI ProTour 阿斯塔纳车队效力。#自行车手 #意大利</td>
+      <td id="T_390d8_row2_col4" class="data row2 col4" >Eddy Mazzoleni 出生于意大利贝尔加莫，是一名专业公路自行车手，曾为 UCI ProTour 阿斯塔纳车队效力。#自行车手 #意大利</td>
       <td id="T_390d8_row2_col5" class="data row2 col5" >0.0</td>
     </tr>
     <tr>
       <th id="T_390d8_level0_row3" class="row_heading level0 row3" >3</th>
-      <td id="T_390d8_row3_col0" class="data row3 col0" >Who edited the 1990 American romantic comedy film directed by Garry Marshall?</td>
+      <td id="T_390d8_row3_col0" class="data row3 col0" >谁编辑了1990年由加里·马歇尔执导的美国浪漫喜剧电影？</td>
       <td id="T_390d8_row3_col1" class="data row3 col1" >Raja Raymond Gosnell</td>
-      <td id="T_390d8_row3_col2" class="data row3 col2" >{'Raja Gosnell', 'Pretty Woman'}</td>
-      <td id="T_390d8_row3_col3" class="data row3 col3" > J. F. Lawton wrote the screenplay for Pretty Woman, the 1990 American romantic comedy film directed by Garry Marshall. #PrettyWoman #GarryMarshall #JFLawton</td>
-      <td id="T_390d8_row3_col4" class="data row3 col4" > J. F. Lawton wrote the screenplay for Pretty Woman, the 1990 American romantic comedy film directed by Garry Marshall. #PrettyWoman #GarryMarshall #JFLawton</td>
+      <td id="T_390d8_row3_col2" class="data row3 col2" >{'Raja Gosnell', '漂亮女人'}</td>
+      <td id="T_390d8_row3_col3" class="data row3 col3" >J. F. Lawton 为由加里·马歇尔执导的1990年美国浪漫喜剧电影《漂亮女人》编写了剧本。#漂亮女人 #加里马歇尔 #JFLawton</td>
+      <td id="T_390d8_row3_col4" class="data row3 col4" >J. F. Lawton 为由加里·马歇尔执导的1990年美国浪漫喜剧电影《漂亮女人》编写了剧本。#漂亮女人 #加里马歇尔 #JFLawton</td>
       <td id="T_390d8_row3_col5" class="data row3 col5" >0.0</td>
     </tr>
     <tr>
       <th id="T_390d8_level0_row4" class="row_heading level0 row4" >4</th>
-      <td id="T_390d8_row4_col0" class="data row4 col0" >Burrs Country Park railway station is what stop on the railway line that runs between Heywood and Rawtenstall</td>
-      <td id="T_390d8_row4_col1" class="data row4 col1" >seventh</td>
-      <td id="T_390d8_row4_col2" class="data row4 col2" >{'Burrs Country Park railway station', 'East Lancashire Railway'}</td>
-      <td id="T_390d8_row4_col3" class="data row4 col3" > Burrs Country Park railway station is the seventh stop on the East Lancashire Railway line that runs between Heywood and Rawtenstall.</td>
-      <td id="T_390d8_row4_col4" class="data row4 col4" > Burrs Country Park railway station is the seventh stop on the East Lancashire Railway line that runs between Heywood and Rawtenstall.</td>
+      <td id="T_390d8_row4_col0" class="data row4 col0" >Burrs Country Park 火车站是连接 Heywood 和 Rawtenstall 之间的铁路线路上的第几个站？</td>
+      <td id="T_390d8_row4_col1" class="data row4 col1" >第七个</td>
+      <td id="T_390d8_row4_col2" class="data row4 col2" >{'Burrs Country Park 火车站', '东兰开夏铁路'}</td>
+      <td id="T_390d8_row4_col3" class="data row4 col3" >Burrs Country Park 火车站是连接 Heywood 和 Rawtenstall 之间的东兰开夏铁路上的第七个站。</td>
+      <td id="T_390d8_row4_col4" class="data row4 col4" >Burrs Country Park 火车站是连接 Heywood 和 Rawtenstall 之间的东兰开夏铁路上的第七个站。</td>
       <td id="T_390d8_row4_col5" class="data row4 col5" >1.0</td>
     </tr>
   </tbody>
@@ -421,33 +417,30 @@ Average Metric: 62.99999999999998 / 150  (42.0%)
     font-weight: bold; 
     color: #555; 
     margin: 10px 0;'>
-    ... 145 more rows not displayed ...
+    ... 145 行未显示 ...
 </div>
  
 ```
-
-
 
 ```output
 42.0
 ```
 
+好的，酷。我们的 zeroshot_chain 在开发集的 150 个问题上得分约为 42.00%。
 
-Okay, cool. Our zeroshot_chain gets about 42.00% on the 150 questions from the devset.
+上面的表格显示了一些示例。例如：
 
-The table above shows some examples. For instance:
+- 问题：谁是为摇滚乐队 Juke Karten 和 Thirty Seconds to Mars 制作专辑的制作人？
 
-- Question: Who was a producer who produced albums for both rock bands Juke Karten and Thirty Seconds to Mars?
+- 推文：Brian Virtue 曾与 Jane's Addiction 和 Velvet Revolver 等乐队合作，为 Juke Kartel 和 Thirty Seconds to Mars 制作专辑，展示了... [截断]
 
-- Tweet: Brian Virtue, who has worked with bands like Jane's Addiction and Velvet Revolver, produced albums for both Juke Kartel and Thirty Seconds to Mars, showcasing... [truncated]
+- 指标：1.0（一条正确、忠实且引人入胜的推文！*）
 
-- Metric: 1.0 (A tweet that is correct, faithful, and engaging!*)
+脚注：* 至少根据我们的指标，它只是一个 DSPy 程序，因此如果您愿意，也可以对其进行优化！不过这是另一个笔记本的话题。
 
-footnote: * At least according to our metric, which is just a DSPy program, so it too can be optimized if you'd like! Topic for another notebook, though.
+## 优化
 
-## Optimize
-
-Now, let's optimize performance
+现在，让我们优化性能
 
 
 ```python
@@ -456,123 +449,124 @@ from dspy.teleprompt import BootstrapFewShotWithRandomSearch
 
 
 ```python
-# Set up the optimizer. We'll use very minimal hyperparameters for this example.
-# Just do random search with ~3 attempts, and in each attempt, bootstrap <= 3 traces.
+# 设置优化器。我们将为这个示例使用非常少量的超参数。
+# 只进行大约3次尝试的随机搜索，每次尝试引导 <= 3 个轨迹。
 optimizer = BootstrapFewShotWithRandomSearch(
     metric=metric, max_bootstrapped_demos=3, num_candidate_programs=3
 )
 
-# Now use the optimizer to *compile* the chain. This could take 5-10 minutes, unless it's cached.
+# 现在使用优化器来*编译*链。这可能需要 5-10 分钟，除非它被缓存。
 optimized_chain = optimizer.compile(zeroshot_chain, trainset=trainset, valset=valset)
 ```
 ```output
-Going to sample between 1 and 3 traces per predictor.
-Will attempt to train 3 candidate sets.
+将每个预测器之间的样本数设置为 1 到 3 个轨迹。
+将尝试训练 3 个候选集。
 ``````output
-Average Metric: 22.33333333333334 / 50  (44.7): 100%|█████| 50/50 [00:26<00:00,  1.87it/s]
-/Users/harrisonchase/.pyenv/versions/3.11.1/envs/langchain-3-11/lib/python3.11/site-packages/dspy/evaluate/evaluate.py:126: FutureWarning: DataFrame.applymap has been deprecated. Use DataFrame.map instead.
+平均指标：22.33333333333334 / 50  (44.7): 100%|█████| 50/50 [00:26<00:00,  1.87it/s]
+/Users/harrisonchase/.pyenv/versions/3.11.1/envs/langchain-3-11/lib/python3.11/site-packages/dspy/evaluate/evaluate.py:126: FutureWarning: DataFrame.applymap 已被弃用。请改用 DataFrame.map。
   df = df.applymap(truncate_cell)
 ``````output
-Average Metric: 22.33333333333334 / 50  (44.7%)
-Score: 44.67 for set: [0]
-New best score: 44.67 for seed -3
-Scores so far: [44.67]
-Best score: 44.67
+平均指标：22.33333333333334 / 50  (44.7%)
+得分：44.67，集：[0]
+新最佳得分：44.67，种子 -3
+迄今为止的得分：[44.67]
+最佳得分：44.67
 ``````output
-Average Metric: 22.33333333333334 / 50  (44.7): 100%|█████| 50/50 [00:00<00:00, 79.51it/s]
-/Users/harrisonchase/.pyenv/versions/3.11.1/envs/langchain-3-11/lib/python3.11/site-packages/dspy/evaluate/evaluate.py:126: FutureWarning: DataFrame.applymap has been deprecated. Use DataFrame.map instead.
+平均指标：22.33333333333334 / 50  (44.7): 100%|█████| 50/50 [00:00<00:00, 79.51it/s]
+/Users/harrisonchase/.pyenv/versions/3.11.1/envs/langchain-3-11/lib/python3.11/site-packages/dspy/evaluate/evaluate.py:126: FutureWarning: DataFrame.applymap 已被弃用。请改用 DataFrame.map。
   df = df.applymap(truncate_cell)
 ``````output
-Average Metric: 22.33333333333334 / 50  (44.7%)
-Score: 44.67 for set: [16]
-Scores so far: [44.67, 44.67]
-Best score: 44.67
+平均指标：22.33333333333334 / 50  (44.7%)
+得分：44.67，集：[16]
+迄今为止的得分：[44.67, 44.67]
+最佳得分：44.67
 ``````output
   4%|██                                                   | 8/200 [00:33<13:21,  4.18s/it]
 ``````output
-Bootstrapped 3 full traces after 9 examples in round 0.
+在第 0 轮中经过 9 个示例后引导了 3 个完整轨迹。
 ``````output
-Average Metric: 24.666666666666668 / 50  (49.3): 100%|████| 50/50 [00:28<00:00,  1.77it/s]
-/Users/harrisonchase/.pyenv/versions/3.11.1/envs/langchain-3-11/lib/python3.11/site-packages/dspy/evaluate/evaluate.py:126: FutureWarning: DataFrame.applymap has been deprecated. Use DataFrame.map instead.
+平均指标：24.666666666666668 / 50  (49.3): 100%|████| 50/50 [00:28<00:00,  1.77it/s]
+/Users/harrisonchase/.pyenv/versions/3.11.1/envs/langchain-3-11/lib/python3.11/site-packages/dspy/evaluate/evaluate.py:126: FutureWarning: DataFrame.applymap 已被弃用。请改用 DataFrame.map。
   df = df.applymap(truncate_cell)
 ``````output
-Average Metric: 24.666666666666668 / 50  (49.3%)
-Score: 49.33 for set: [16]
-New best score: 49.33 for seed -1
-Scores so far: [44.67, 44.67, 49.33]
-Best score: 49.33
-Average of max per entry across top 1 scores: 0.49333333333333335
-Average of max per entry across top 2 scores: 0.5533333333333335
-Average of max per entry across top 3 scores: 0.5533333333333335
-Average of max per entry across top 5 scores: 0.5533333333333335
-Average of max per entry across top 8 scores: 0.5533333333333335
-Average of max per entry across top 9999 scores: 0.5533333333333335
+平均指标：24.666666666666668 / 50  (49.3%)
+得分：49.33，集：[16]
+新最佳得分：49.33，种子 -1
+迄今为止的得分：[44.67, 44.67, 49.33]
+最佳得分：49.33
+每个条目在前 1 个得分中的最大平均值：0.49333333333333335
+每个条目在前 2 个得分中的最大平均值：0.5533333333333335
+每个条目在前 3 个得分中的最大平均值：0.5533333333333335
+每个条目在前 5 个得分中的最大平均值：0.5533333333333335
+每个条目在前 8 个得分中的最大平均值：0.5533333333333335
+每个条目在前 9999 个得分中的最大平均值：0.5533333333333335
 ``````output
   6%|███                                                 | 12/200 [00:31<08:16,  2.64s/it]
 ``````output
-Bootstrapped 2 full traces after 13 examples in round 0.
+在第 0 轮中经过 13 个示例后引导了 2 个完整轨迹。
 ``````output
-Average Metric: 25.66666666666667 / 50  (51.3): 100%|█████| 50/50 [00:25<00:00,  1.92it/s]
-/Users/harrisonchase/.pyenv/versions/3.11.1/envs/langchain-3-11/lib/python3.11/site-packages/dspy/evaluate/evaluate.py:126: FutureWarning: DataFrame.applymap has been deprecated. Use DataFrame.map instead.
+平均指标：25.66666666666667 / 50  (51.3): 100%|█████| 50/50 [00:25<00:00,  1.92it/s]
+/Users/harrisonchase/.pyenv/versions/3.11.1/envs/langchain-3-11/lib/python3.11/site-packages/dspy/evaluate/evaluate.py:126: FutureWarning: DataFrame.applymap 已被弃用。请改用 DataFrame.map。
   df = df.applymap(truncate_cell)
 ``````output
-Average Metric: 25.66666666666667 / 50  (51.3%)
-Score: 51.33 for set: [16]
-New best score: 51.33 for seed 0
-Scores so far: [44.67, 44.67, 49.33, 51.33]
-Best score: 51.33
-Average of max per entry across top 1 scores: 0.5133333333333334
-Average of max per entry across top 2 scores: 0.5666666666666668
-Average of max per entry across top 3 scores: 0.6000000000000001
-Average of max per entry across top 5 scores: 0.6000000000000001
-Average of max per entry across top 8 scores: 0.6000000000000001
-Average of max per entry across top 9999 scores: 0.6000000000000001
+平均指标：25.66666666666667 / 50  (51.3%)
+得分：51.33，集：[16]
+新最佳得分：51.33，种子 0
+迄今为止的得分：[44.67, 44.67, 49.33, 51.33]
+最佳得分：51.33
+每个条目在前 1 个得分中的最大平均值：0.5133333333333334
+每个条目在前 2 个得分中的最大平均值：0.5666666666666668
+每个条目在前 3 个得分中的最大平均值：0.6000000000000001
+每个条目在前 5 个得分中的最大平均值：0.6000000000000001
+每个条目在前 8 个得分中的最大平均值：0.6000000000000001
+每个条目在前 9999 个得分中的最大平均值：0.6000000000000001
 ``````output
   0%|▎                                                    | 1/200 [00:02<08:37,  2.60s/it]
 ``````output
-Bootstrapped 1 full traces after 2 examples in round 0.
+在第 0 轮中经过 2 个示例后引导了 1 个完整轨迹。
 ``````output
-Average Metric: 26.33333333333334 / 50  (52.7): 100%|█████| 50/50 [00:23<00:00,  2.11it/s]
-/Users/harrisonchase/.pyenv/versions/3.11.1/envs/langchain-3-11/lib/python3.11/site-packages/dspy/evaluate/evaluate.py:126: FutureWarning: DataFrame.applymap has been deprecated. Use DataFrame.map instead.
+平均指标：26.33333333333334 / 50  (52.7): 100%|█████| 50/50 [00:23<00:00,  2.11it/s]
+/Users/harrisonchase/.pyenv/versions/3.11.1/envs/langchain-3-11/lib/python3.11/site-packages/dspy/evaluate/evaluate.py:126: FutureWarning: DataFrame.applymap 已被弃用。请改用 DataFrame.map。
   df = df.applymap(truncate_cell)
 ``````output
-Average Metric: 26.33333333333334 / 50  (52.7%)
-Score: 52.67 for set: [16]
-New best score: 52.67 for seed 1
-Scores so far: [44.67, 44.67, 49.33, 51.33, 52.67]
-Best score: 52.67
-Average of max per entry across top 1 scores: 0.5266666666666667
-Average of max per entry across top 2 scores: 0.56
-Average of max per entry across top 3 scores: 0.5666666666666668
-Average of max per entry across top 5 scores: 0.6000000000000001
-Average of max per entry across top 8 scores: 0.6000000000000001
-Average of max per entry across top 9999 scores: 0.6000000000000001
+平均指标：26.33333333333334 / 50  (52.7%)
+得分：52.67，集：[16]
+新最佳得分：52.67，种子 1
+迄今为止的得分：[44.67, 44.67, 49.33, 51.33, 52.67]
+最佳得分：52.67
+每个条目在前 1 个得分中的最大平均值：0.5266666666666667
+每个条目在前 2 个得分中的最大平均值：0.56
+每个条目在前 3 个得分中的最大平均值：0.5666666666666668
+每个条目在前 5 个得分中的最大平均值：0.6000000000000001
+每个条目在前 8 个得分中的最大平均值：0.6000000000000001
+每个条目在前 9999 个得分中的最大平均值：0.6000000000000001
 ``````output
   0%|▎                                                    | 1/200 [00:02<07:11,  2.17s/it]
 ``````output
-Bootstrapped 1 full traces after 2 examples in round 0.
+在第 0 轮中经过 2 个示例后引导了 1 个完整轨迹。
 ``````output
-Average Metric: 25.666666666666668 / 50  (51.3): 100%|████| 50/50 [00:21<00:00,  2.29it/s]
+平均指标：25.666666666666668 / 50  (51.3): 100%|████| 50/50 [00:21<00:00,  2.29it/s]
 ``````output
-Average Metric: 25.666666666666668 / 50  (51.3%)
-Score: 51.33 for set: [16]
-Scores so far: [44.67, 44.67, 49.33, 51.33, 52.67, 51.33]
-Best score: 52.67
-Average of max per entry across top 1 scores: 0.5266666666666667
-Average of max per entry across top 2 scores: 0.56
-Average of max per entry across top 3 scores: 0.6000000000000001
-Average of max per entry across top 5 scores: 0.6133333333333334
-Average of max per entry across top 8 scores: 0.6133333333333334
-Average of max per entry across top 9999 scores: 0.6133333333333334
-6 candidate programs found.
+平均指标：25.666666666666668 / 50  (51.3%)
+得分：51.33，集：[16]
+迄今为止的得分：[44.67, 44.67, 49.33, 51.33, 52.67, 51.33]
+最佳得分：52.67
+每个条目在前 1 个得分中的最大平均值：0.5266666666666667
+每个条目在前 2 个得分中的最大平均值：0.56
+每个条目在前 3 个得分中的最大平均值：0.6000000000000001
+每个条目在前 5 个得分中的最大平均值：0.6133333333333334
+每个条目在前 8 个得分中的最大平均值：0.6133333333333334
+每个条目在前 9999 个得分中的最大平均值：0.6133333333333334
+找到 6 个候选程序。
 ``````output
 
-/Users/harrisonchase/.pyenv/versions/3.11.1/envs/langchain-3-11/lib/python3.11/site-packages/dspy/evaluate/evaluate.py:126: FutureWarning: DataFrame.applymap has been deprecated. Use DataFrame.map instead.
+/Users/harrisonchase/.pyenv/versions/3.11.1/envs/langchain-3-11/lib/python3.11/site-packages/dspy/evaluate/evaluate.py:126: FutureWarning: DataFrame.applymap 已被弃用。请改用 DataFrame.map。
   df = df.applymap(truncate_cell)
 ```
-## Evaluating the optimized chain
 
-Well, how good is this? Let's do some proper evals!
+## 评估优化后的链条
+
+那么，这个效果如何呢？让我们进行一些正式的评估吧！
 
 
 ```python
@@ -606,58 +600,58 @@ Average Metric: 74.66666666666666 / 150  (49.8%)
   <thead>
     <tr>
       <th class="blank level0" >&nbsp;</th>
-      <th id="T_b4366_level0_col0" class="col_heading level0 col0" >question</th>
-      <th id="T_b4366_level0_col1" class="col_heading level0 col1" >answer</th>
-      <th id="T_b4366_level0_col2" class="col_heading level0 col2" >gold_titles</th>
-      <th id="T_b4366_level0_col3" class="col_heading level0 col3" >output</th>
-      <th id="T_b4366_level0_col4" class="col_heading level0 col4" >tweet_response</th>
-      <th id="T_b4366_level0_col5" class="col_heading level0 col5" >metric</th>
+      <th id="T_b4366_level0_col0" class="col_heading level0 col0" >问题</th>
+      <th id="T_b4366_level0_col1" class="col_heading level0 col1" >答案</th>
+      <th id="T_b4366_level0_col2" class="col_heading level0 col2" >黄金标题</th>
+      <th id="T_b4366_level0_col3" class="col_heading level0 col3" >输出</th>
+      <th id="T_b4366_level0_col4" class="col_heading level0 col4" >推文响应</th>
+      <th id="T_b4366_level0_col5" class="col_heading level0 col5" >指标</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th id="T_b4366_level0_row0" class="row_heading level0 row0" >0</th>
-      <td id="T_b4366_row0_col0" class="data row0 col0" >Who was a producer who produced albums for both rock bands Juke Karten and Thirty Seconds to Mars?</td>
+      <td id="T_b4366_row0_col0" class="data row0 col0" >谁是为摇滚乐队Juke Karten和Thirty Seconds to Mars制作专辑的制作人？</td>
       <td id="T_b4366_row0_col1" class="data row0 col1" >Brian Virtue</td>
       <td id="T_b4366_row0_col2" class="data row0 col2" >{'Thirty Seconds to Mars', 'Levolution (album)'}</td>
-      <td id="T_b4366_row0_col3" class="data row0 col3" >Brian Virtue, known for his work with Jane's Addiction and Velvet Revolver, produced albums for both Juke Kartel and Thirty Seconds to Mars. #BrianVirtue #Producer...</td>
-      <td id="T_b4366_row0_col4" class="data row0 col4" >Brian Virtue, known for his work with Jane's Addiction and Velvet Revolver, produced albums for both Juke Kartel and Thirty Seconds to Mars. #BrianVirtue #Producer...</td>
+      <td id="T_b4366_row0_col3" class="data row0 col3" >Brian Virtue以与Jane's Addiction和Velvet Revolver的合作而闻名，他为Juke Kartel和Thirty Seconds to Mars制作了专辑。 #BrianVirtue #Producer...</td>
+      <td id="T_b4366_row0_col4" class="data row0 col4" >Brian Virtue以与Jane's Addiction和Velvet Revolver的合作而闻名，他为Juke Kartel和Thirty Seconds to Mars制作了专辑。 #BrianVirtue #Producer...</td>
       <td id="T_b4366_row0_col5" class="data row0 col5" >1.0</td>
     </tr>
     <tr>
       <th id="T_b4366_level0_row1" class="row_heading level0 row1" >1</th>
-      <td id="T_b4366_row1_col0" class="data row1 col0" >Are both the University of Chicago and Syracuse University public universities? </td>
-      <td id="T_b4366_row1_col1" class="data row1 col1" >no</td>
+      <td id="T_b4366_row1_col0" class="data row1 col0" >芝加哥大学和锡拉丘兹大学都是公立大学吗？</td>
+      <td id="T_b4366_row1_col1" class="data row1 col1" >否</td>
       <td id="T_b4366_row1_col2" class="data row1 col2" >{'Syracuse University', 'University of Chicago'}</td>
-      <td id="T_b4366_row1_col3" class="data row1 col3" > No, only Northeastern Illinois University is a public state university. Syracuse University is a private research university. #University #PublicPrivate #HigherEd</td>
-      <td id="T_b4366_row1_col4" class="data row1 col4" > No, only Northeastern Illinois University is a public state university. Syracuse University is a private research university. #University #PublicPrivate #HigherEd</td>
+      <td id="T_b4366_row1_col3" class="data row1 col3" >不，只有东北伊利诺伊大学是一所公立州立大学。锡拉丘兹大学是一所私立研究大学。 #University #PublicPrivate #HigherEd</td>
+      <td id="T_b4366_row1_col4" class="data row1 col4" >不，只有东北伊利诺伊大学是一所公立州立大学。锡拉丘兹大学是一所私立研究大学。 #University #PublicPrivate #HigherEd</td>
       <td id="T_b4366_row1_col5" class="data row1 col5" >0.0</td>
     </tr>
     <tr>
       <th id="T_b4366_level0_row2" class="row_heading level0 row2" >2</th>
-      <td id="T_b4366_row2_col0" class="data row2 col0" >In what region was Eddy Mazzoleni born?</td>
-      <td id="T_b4366_row2_col1" class="data row2 col1" >Lombardy, northern Italy</td>
+      <td id="T_b4366_row2_col0" class="data row2 col0" >Eddy Mazzoleni出生在哪个地区？</td>
+      <td id="T_b4366_row2_col1" class="data row2 col1" >意大利北部的伦巴第</td>
       <td id="T_b4366_row2_col2" class="data row2 col2" >{'Eddy Mazzoleni', 'Bergamo'}</td>
-      <td id="T_b4366_row2_col3" class="data row2 col3" > Eddy Mazzoleni, the Italian professional road cyclist, was born in Bergamo, Italy. #EddyMazzoleni #Cycling #Italy</td>
-      <td id="T_b4366_row2_col4" class="data row2 col4" > Eddy Mazzoleni, the Italian professional road cyclist, was born in Bergamo, Italy. #EddyMazzoleni #Cycling #Italy</td>
+      <td id="T_b4366_row2_col3" class="data row2 col3" >意大利职业公路自行车手Eddy Mazzoleni出生在意大利贝尔加莫。 #EddyMazzoleni #Cycling #Italy</td>
+      <td id="T_b4366_row2_col4" class="data row2 col4" >意大利职业公路自行车手Eddy Mazzoleni出生在意大利贝尔加莫。 #EddyMazzoleni #Cycling #Italy</td>
       <td id="T_b4366_row2_col5" class="data row2 col5" >0.0</td>
     </tr>
     <tr>
       <th id="T_b4366_level0_row3" class="row_heading level0 row3" >3</th>
-      <td id="T_b4366_row3_col0" class="data row3 col0" >Who edited the 1990 American romantic comedy film directed by Garry Marshall?</td>
+      <td id="T_b4366_row3_col0" class="data row3 col0" >谁编辑了1990年由加里·马歇尔执导的美国浪漫喜剧电影？</td>
       <td id="T_b4366_row3_col1" class="data row3 col1" >Raja Raymond Gosnell</td>
       <td id="T_b4366_row3_col2" class="data row3 col2" >{'Raja Gosnell', 'Pretty Woman'}</td>
-      <td id="T_b4366_row3_col3" class="data row3 col3" > J. F. Lawton wrote the screenplay for Pretty Woman, the 1990 romantic comedy directed by Garry Marshall. #PrettyWoman #GarryMarshall #RomanticComedy</td>
-      <td id="T_b4366_row3_col4" class="data row3 col4" > J. F. Lawton wrote the screenplay for Pretty Woman, the 1990 romantic comedy directed by Garry Marshall. #PrettyWoman #GarryMarshall #RomanticComedy</td>
+      <td id="T_b4366_row3_col3" class="data row3 col3" >J. F. Lawton为1990年加里·马歇尔执导的浪漫喜剧《漂亮女人》编写了剧本。 #PrettyWoman #GarryMarshall #RomanticComedy</td>
+      <td id="T_b4366_row3_col4" class="data row3 col4" >J. F. Lawton为1990年加里·马歇尔执导的浪漫喜剧《漂亮女人》编写了剧本。 #PrettyWoman #GarryMarshall #RomanticComedy</td>
       <td id="T_b4366_row3_col5" class="data row3 col5" >0.0</td>
     </tr>
     <tr>
       <th id="T_b4366_level0_row4" class="row_heading level0 row4" >4</th>
-      <td id="T_b4366_row4_col0" class="data row4 col0" >Burrs Country Park railway station is what stop on the railway line that runs between Heywood and Rawtenstall</td>
-      <td id="T_b4366_row4_col1" class="data row4 col1" >seventh</td>
+      <td id="T_b4366_row4_col0" class="data row4 col0" >Burrs Country Park铁路站是海伍德和罗滕斯塔尔之间铁路线路上的第几站？</td>
+      <td id="T_b4366_row4_col1" class="data row4 col1" >第七站</td>
       <td id="T_b4366_row4_col2" class="data row4 col2" >{'Burrs Country Park railway station', 'East Lancashire Railway'}</td>
-      <td id="T_b4366_row4_col3" class="data row4 col3" > Burrs Country Park railway station is the seventh stop on the East Lancashire Railway, which runs between Heywood and Rawtenstall. #EastLancashireRailway #BurrsCountryPark #RailwayStation</td>
-      <td id="T_b4366_row4_col4" class="data row4 col4" > Burrs Country Park railway station is the seventh stop on the East Lancashire Railway, which runs between Heywood and Rawtenstall. #EastLancashireRailway #BurrsCountryPark #RailwayStation</td>
+      <td id="T_b4366_row4_col3" class="data row4 col3" >Burrs Country Park铁路站是东兰开夏铁路的第七站，该铁路连接海伍德和罗滕斯塔尔。 #EastLancashireRailway #BurrsCountryPark #RailwayStation</td>
+      <td id="T_b4366_row4_col4" class="data row4 col4" >Burrs Country Park铁路站是东兰开夏铁路的第七站，该铁路连接海伍德和罗滕斯塔尔。 #EastLancashireRailway #BurrsCountryPark #RailwayStation</td>
       <td id="T_b4366_row4_col5" class="data row4 col5" >1.0</td>
     </tr>
   </tbody>
@@ -673,7 +667,7 @@ Average Metric: 74.66666666666666 / 150  (49.8%)
     font-weight: bold; 
     color: #555; 
     margin: 10px 0;'>
-    ... 145 more rows not displayed ...
+    ... 145行未显示 ...
 </div>
  
 ```
@@ -685,15 +679,15 @@ Average Metric: 74.66666666666666 / 150  (49.8%)
 ```
 
 
-Alright! We've improved our chain from 42% to nearly 50%!
+好的！我们的链条从42%提高到了接近50%!
 
-## Inspect the optimized chain
+## 检查优化链
 
-So what actually happened to improve this? We can take a look at this by looking at the optimized chain. We can do this in two ways
+那么究竟发生了什么来改善这一点？我们可以通过查看优化链来了解这一点。我们可以通过两种方式来实现这一点。
 
-### Look at the prompt used
+### 查看实际使用的提示
 
-We can look at what prompt was actually used. We can do this by looking at `dspy.settings`.
+我们可以查看实际使用的提示。我们可以通过查看 `dspy.settings` 来做到这一点。
 
 
 ```python
@@ -723,8 +717,8 @@ Context:
 [3] «Brutus Beefcake | Ed Leslie is an American semi-retired professional wrestler, best known for his work in the World Wrestling Federation (WWF) under the ring name Brutus "The Barber" Beefcake. He later worked for World Championship Wrestling (WCW) under a variety of names.»
 [4] «Brutus Hamilton | Brutus Kerr Hamilton (July 19, 1900 – December 28, 1970) was an American track and field athlete, coach and athletics administrator.»
 [5] «Big Brutus | Big Brutus is the nickname of the Bucyrus-Erie model 1850B electric shovel, which was the second largest of its type in operation in the 1960s and 1970s. Big Brutus is the centerpiece of a mining museum in West Mineral, Kansas where it was used in coal strip mining operations. The shovel was designed to dig from 20 to in relatively shallow coal seams.»
-Question: What is the nickname for this United States drag racer who drove Brutus?
-Tweet Response: Jim Liberman, also known as "Jungle Jim", drove the pioneering funny car Brutus in the 1960s. #Brutus #FunnyCar #DragRacing
+Question: 这位驾驶 Brutus 的美国拖车赛车手的绰号是什么？
+Tweet Response: Jim Liberman，绰号“丛林吉姆”，在1960年代驾驶开创性的有趣赛车 Brutus。#Brutus #FunnyCar #DragRacing
 
 ---
 
@@ -734,13 +728,13 @@ Context:
 [3] «Luzira Maximum Security Prison | Luzira Maximum Security Prison is a maximum security prison for both men and women in Uganda. As at July 2016, it is the only maximum security prison in the country and houses Uganda's death row inmates.»
 [4] «Pleasant Valley State Prison | Pleasant Valley State Prison (PVSP) is a 640 acres minimum-to-maximum security state prison in Coalinga, Fresno County, California. The facility has housed convicted murderers Sirhan Sirhan, Erik Menendez, X-Raided, and Hans Reiser, among others.»
 [5] «Jon-Adrian Velazquez | Jon-Adrian Velazquez is an inmate in the maximum security Sing-Sing prison in New York who is serving a 25-year sentence after being convicted of the 1998 murder of a retired police officer. His case garnered considerable attention from the media ten years after his conviction, due to a visit and support from Martin Sheen and a long-term investigation by Dateline NBC producer Dan Slepian.»
-Question: Which maximum security jail housed the killer of Julissa brisman?
+Question: 哪所最高安全监狱关押了 Julissa Brisman 的杀手？
 Tweet Response:
 ```
-### Look at the demos
 
-The way this was optimized was that we collected examples (or "demos") to put in the prompt. We can inspect the optmized_chain to get a sense for what those are.
+### 查看示例
 
+优化的方式是我们收集了示例（或称为“演示”）以放入提示中。我们可以检查 optimized_chain 以了解这些示例的内容。
 
 ```python
 demos = [
@@ -750,14 +744,10 @@ demos = [
 ]
 ```
 
-
 ```python
 demos
 ```
 
-
-
 ```output
 [Example({'augmented': True, 'question': 'What is the nickname for this United States drag racer who drove Brutus?', 'context': ['Brutus (Funny Car) | Brutus is a pioneering funny car driven by Jim Liberman and prepared by crew chief Lew Arrington in the middle 1960s.', 'USS Brutus (AC-15) | USS "Brutus", formerly the steamer "Peter Jebsen", was a collier in the United States Navy. She was built in 1894 at South Shields-on-Tyne, England, by John Readhead & Sons and was acquired by the U.S. Navy early in 1898 from L. F. Chapman & Company. She was renamed "Brutus" and commissioned at the Mare Island Navy Yard on 27 May 1898, with Lieutenant Vincendon L. Cottman, commanding officer and Lieutenant Randolph H. Miner, executive officer.', 'Brutus Beefcake | Ed Leslie is an American semi-retired professional wrestler, best known for his work in the World Wrestling Federation (WWF) under the ring name Brutus "The Barber" Beefcake. He later worked for World Championship Wrestling (WCW) under a variety of names.', 'Brutus Hamilton | Brutus Kerr Hamilton (July 19, 1900 – December 28, 1970) was an American track and field athlete, coach and athletics administrator.', 'Big Brutus | Big Brutus is the nickname of the Bucyrus-Erie model 1850B electric shovel, which was the second largest of its type in operation in the 1960s and 1970s. Big Brutus is the centerpiece of a mining museum in West Mineral, Kansas where it was used in coal strip mining operations. The shovel was designed to dig from 20 to in relatively shallow coal seams.'], 'tweet_response': ' Jim Liberman, also known as "Jungle Jim", drove the pioneering funny car Brutus in the 1960s. #Brutus #FunnyCar #DragRacing'}) (input_keys=None)]
 ```
-

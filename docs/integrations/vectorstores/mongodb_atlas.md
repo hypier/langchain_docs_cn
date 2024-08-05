@@ -1,29 +1,29 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/mongodb_atlas.ipynb
 ---
+
 # MongoDB Atlas
 
-This notebook covers how to MongoDB Atlas vector search in LangChain, using the `langchain-mongodb` package.
+本笔记涵盖如何在 LangChain 中使用 `langchain-mongodb` 包进行 MongoDB Atlas 向量搜索。
 
->[MongoDB Atlas](https://www.mongodb.com/docs/atlas/) is a fully-managed cloud database available in AWS, Azure, and GCP.  It supports native Vector Search and full text search (BM25) on your MongoDB document data.
+>[MongoDB Atlas](https://www.mongodb.com/docs/atlas/) 是一个完全托管的云数据库，适用于 AWS、Azure 和 GCP。它支持对 MongoDB 文档数据进行原生向量搜索和全文搜索（BM25）。
 
->[MongoDB Atlas Vector Search](https://www.mongodb.com/products/platform/atlas-vector-search) allows to store your embeddings in MongoDB documents, create a vector search index, and perform KNN search with an approximate nearest neighbor algorithm (`Hierarchical Navigable Small Worlds`). It uses the [$vectorSearch MQL Stage](https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-overview/). 
+>[MongoDB Atlas 向量搜索](https://www.mongodb.com/products/platform/atlas-vector-search) 允许将嵌入存储在 MongoDB 文档中，创建向量搜索索引，并使用近似最近邻算法（`Hierarchical Navigable Small Worlds`）执行 KNN 搜索。它使用 [$vectorSearch MQL Stage](https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-overview/)。
 
-## Prerequisites
->*An Atlas cluster running MongoDB version 6.0.11, 7.0.2, or later (including RCs).
+## 前提条件
+>*一个运行 MongoDB 版本 6.0.11、7.0.2 或更高版本（包括 RC）的 Atlas 集群。
 
->*An OpenAI API Key. You must have a paid OpenAI account with credits available for API requests.
+>*一个 OpenAI API 密钥。您必须拥有一个具有可用于 API 请求的余额的付费 OpenAI 账户。
 
-You'll need to install `langchain-mongodb` to use this integration
+您需要安装 `langchain-mongodb` 才能使用此集成。
 
-## Setting up MongoDB Atlas Cluster
-To use MongoDB Atlas, you must first deploy a cluster. We have a Forever-Free tier of clusters available. To get started head over to Atlas here: [quick start](https://www.mongodb.com/docs/atlas/getting-started/).
+## 设置 MongoDB Atlas 集群
+要使用 MongoDB Atlas，您必须首先部署一个集群。我们提供了一个永久免费使用的集群层级。要开始，请访问 Atlas：[快速入门](https://www.mongodb.com/docs/atlas/getting-started/)。
 
-## Usage
-In the notebook we will demonstrate how to perform `Retrieval Augmented Generation` (RAG) using MongoDB Atlas, OpenAI and Langchain. We will be performing Similarity Search, Similarity Search with Metadata Pre-Filtering, and Question Answering over the PDF document for [GPT 4 technical report](https://arxiv.org/pdf/2303.08774.pdf) that came out in March 2023 and hence is not part of the OpenAI's Large Language Model(LLM)'s parametric memory, which had a knowledge cutoff of September 2021.
+## 使用方法
+在本笔记本中，我们将演示如何使用 MongoDB Atlas、OpenAI 和 Langchain 执行 `Retrieval Augmented Generation` (RAG)。我们将进行相似性搜索、带元数据预过滤的相似性搜索，以及对 2023 年 3 月发布的 [GPT 4 技术报告](https://arxiv.org/pdf/2303.08774.pdf) 的问答，该报告不在 OpenAI 的大型语言模型（LLM）的参数记忆中，因为其知识截止于 2021 年 9 月。
 
-We want to use `OpenAIEmbeddings` so we need to set up our OpenAI API Key. 
-
+我们希望使用 `OpenAIEmbeddings`，因此需要设置我们的 OpenAI API 密钥。
 
 ```python
 import getpass
@@ -32,20 +32,17 @@ import os
 os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API Key:")
 ```
 
-Now we will setup the environment variables for the MongoDB Atlas cluster
-
+现在我们将为 MongoDB Atlas 集群设置环境变量。
 
 ```python
 %pip install --upgrade --quiet langchain langchain-mongodb pypdf pymongo langchain-openai tiktoken
 ```
-
 
 ```python
 import getpass
 
 MONGODB_ATLAS_CLUSTER_URI = getpass.getpass("MongoDB Atlas Cluster URI:")
 ```
-
 
 ```python
 from pymongo import MongoClient
@@ -60,11 +57,10 @@ ATLAS_VECTOR_SEARCH_INDEX_NAME = "index_name"
 MONGODB_COLLECTION = client[DB_NAME][COLLECTION_NAME]
 ```
 
-## Create Vector Search Index
+## 创建向量搜索索引
 
-Now, let's create a vector search index on your cluster. More detailed steps can be found at [Create Vector Search Index for LangChain](https://www.mongodb.com/docs/atlas/atlas-vector-search/ai-integrations/langchain/#create-the-atlas-vector-search-index) section.
-In the below example, `embedding` is the name of the field that contains the embedding vector. Please refer to the [documentation](https://www.mongodb.com/docs/atlas/atlas-vector-search/create-index/) to get more details on how to define an Atlas Vector Search index.
-You can name the index `{ATLAS_VECTOR_SEARCH_INDEX_NAME}` and create the index on the namespace `{DB_NAME}.{COLLECTION_NAME}`. Finally, write the following definition in the JSON editor on MongoDB Atlas:
+现在，让我们在您的集群上创建一个向量搜索索引。更详细的步骤可以在 [为 LangChain 创建向量搜索索引](https://www.mongodb.com/docs/atlas/atlas-vector-search/ai-integrations/langchain/#create-the-atlas-vector-search-index) 部分找到。在下面的示例中，`embedding` 是包含嵌入向量的字段名称。有关如何定义 Atlas 向量搜索索引的更多详细信息，请参阅 [文档](https://www.mongodb.com/docs/atlas/atlas-vector-search/create-index/)。
+您可以将索引命名为 `{ATLAS_VECTOR_SEARCH_INDEX_NAME}`，并在命名空间 `{DB_NAME}.{COLLECTION_NAME}` 上创建该索引。最后，在 MongoDB Atlas 的 JSON 编辑器中写入以下定义：
 
 ```json
 {
@@ -79,7 +75,7 @@ You can name the index `{ATLAS_VECTOR_SEARCH_INDEX_NAME}` and create the index o
 }
 ```
 
-Additionally, if you are running a MongoDB M10 cluster with server version 6.0+, you can leverage the `MongoDBAtlasVectorSearch.create_index`. To add the above index its usage would look like this.
+此外，如果您正在运行 MongoDB M10 集群，且服务器版本为 6.0 及以上，您可以利用 `MongoDBAtlasVectorSearch.create_index`。要添加上述索引，其用法如下所示。
 
 ```python
 from langchain_community.embeddings.openai import OpenAIEmbeddings
@@ -97,11 +93,11 @@ vectorstore = MongoDBAtlasVectorSearch(
   relevance_score_fn="cosine",
 )
 
-# Creates an index using the index_name provided and relevance_score_fn type
+# 使用提供的 index_name 和 relevance_score_fn 类型创建索引
 vectorstore.create_index(dimensions=1536)
 ```
 
-# Insert Data
+# 插入数据
 
 
 ```python
@@ -148,10 +144,9 @@ results = vector_search.similarity_search(query)
 print(results[0].page_content)
 ```
 
-# Querying data
+# 查询数据
 
-We can also instantiate the vector store directly and execute a query as follows:
-
+我们还可以直接实例化向量存储并执行查询，如下所示：
 
 ```python
 from langchain_community.vectorstores import MongoDBAtlasVectorSearch
@@ -165,9 +160,9 @@ vector_search = MongoDBAtlasVectorSearch.from_connection_string(
 )
 ```
 
-## Pre-filtering with Similarity Search
+## 使用相似性搜索进行预过滤
 
-Atlas Vector Search supports pre-filtering using MQL Operators for filtering.  Below is an example index and query on the same data loaded above that allows you do metadata filtering on the "page" field.  You can update your existing index with the filter defined and do pre-filtering with vector search.
+Atlas Vector Search 支持使用 MQL 操作符进行过滤的预过滤。以下是一个示例索引和查询，基于上述加载的相同数据，允许您对“page”字段进行元数据过滤。您可以使用定义的过滤器更新现有索引，并进行向量搜索的预过滤。
 
 ```json
 {
@@ -186,7 +181,7 @@ Atlas Vector Search supports pre-filtering using MQL Operators for filtering.  B
 }
 ```
 
-You can also update the index programmatically using the `MongoDBAtlasVectorSearch.create_index` method.
+您还可以使用 `MongoDBAtlasVectorSearch.create_index` 方法以编程方式更新索引。
 
 ```python
 vectorstore.create_index(
@@ -209,7 +204,7 @@ for result in results:
     print(result)
 ```
 
-## Similarity Search with Score
+## 相似性搜索与评分
 
 
 ```python
@@ -225,8 +220,7 @@ for result in results:
     print(result)
 ```
 
-## Question Answering 
-
+## 问答系统
 
 ```python
 qa_retriever = vector_search.as_retriever(
@@ -235,21 +229,19 @@ qa_retriever = vector_search.as_retriever(
 )
 ```
 
-
 ```python
 from langchain_core.prompts import PromptTemplate
 
-prompt_template = """Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
+prompt_template = """使用以下上下文片段回答最后的问题。如果你不知道答案，就说你不知道，不要试图编造答案。
 
 {context}
 
-Question: {question}
+问题: {question}
 """
 PROMPT = PromptTemplate(
     template=prompt_template, input_variables=["context", "question"]
 )
 ```
-
 
 ```python
 from langchain.chains import RetrievalQA
@@ -263,22 +255,21 @@ qa = RetrievalQA.from_chain_type(
     chain_type_kwargs={"prompt": PROMPT},
 )
 
-docs = qa({"query": "gpt-4 compute requirements"})
+docs = qa({"query": "gpt-4 计算需求"})
 
 print(docs["result"])
 print(docs["source_documents"])
 ```
 
-GPT-4 requires significantly more compute than earlier GPT models. On a dataset derived from OpenAI's internal codebase, GPT-4 requires 100p (petaflops) of compute to reach the lowest loss, while the smaller models require 1-10n (nanoflops).
+GPT-4 需要的计算量显著高于早期的 GPT 模型。在一个源自 OpenAI 内部代码库的数据集中，GPT-4 需要 100p（千万亿次浮点运算）的计算才能达到最低损失，而较小的模型只需 1-10n（十亿次浮点运算）。
 
-# Other Notes
->* More documentation can be found at [LangChain-MongoDB](https://www.mongodb.com/docs/atlas/atlas-vector-search/ai-integrations/langchain/) site
->* This feature is Generally Available and ready for production deployments.
->* The langchain version 0.0.305 ([release notes](https://github.com/langchain-ai/langchain/releases/tag/v0.0.305)) introduces the support for $vectorSearch MQL stage, which is available with MongoDB Atlas 6.0.11 and 7.0.2. Users utilizing earlier versions of MongoDB Atlas need to pin their LangChain version to <=0.0.304
-> 
+# 其他说明
+>* 更多文档可以在 [LangChain-MongoDB](https://www.mongodb.com/docs/atlas/atlas-vector-search/ai-integrations/langchain/) 网站上找到
+>* 此功能已普遍可用，准备进行生产部署。
+>* langchain 版本 0.0.305 ([发布说明](https://github.com/langchain-ai/langchain/releases/tag/v0.0.305)) 引入了对 $vectorSearch MQL 阶段的支持，该功能在 MongoDB Atlas 6.0.11 和 7.0.2 中可用。使用早期版本 MongoDB Atlas 的用户需要将其 LangChain 版本固定为 <=0.0.304
+>
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

@@ -1,11 +1,10 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/tomarkdown.ipynb
 ---
+
 # 2Markdown
 
->[2markdown](https://2markdown.com/) service transforms website content into structured markdown files.
-
-
+>[2markdown](https://2markdown.com/) 服务将网站内容转换为结构化的 markdown 文件。
 
 ```python
 # You will need to get your own API key. See https://2markdown.com/login
@@ -13,21 +12,17 @@ custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs
 api_key = ""
 ```
 
-
 ```python
 from langchain_community.document_loaders import ToMarkdownLoader
 ```
-
 
 ```python
 loader = ToMarkdownLoader(url="/docs/get_started/introduction", api_key=api_key)
 ```
 
-
 ```python
 docs = loader.load()
 ```
-
 
 ```python
 print(docs[0].page_content)
@@ -135,7 +130,7 @@ Check out the developer's guide for guidelines on contributing and help getting 
 Head to the [Community navigator](/docs/community) to find places to ask questions, share feedback, meet other developers, and dream about the future of LLM’s.
 ```
 
-## Related
+## 相关
 
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

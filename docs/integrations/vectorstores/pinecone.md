@@ -1,14 +1,15 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/pinecone.ipynb
 ---
+
 # Pinecone
 
->[Pinecone](https://docs.pinecone.io/docs/overview) is a vector database with broad functionality.
+>[Pinecone](https://docs.pinecone.io/docs/overview) 是一个功能广泛的向量数据库。
 
-This notebook shows how to use functionality related to the `Pinecone` vector database.
+本笔记本展示了如何使用与 `Pinecone` 向量数据库相关的功能。
 
-Set the following environment variables to follow along in this doc:
-- `OPENAI_API_KEY`: Your OpenAI API key, for using `OpenAIEmbeddings`
+设置以下环境变量以便在本文档中进行操作：
+- `OPENAI_API_KEY`：您的 OpenAI API 密钥，用于使用 `OpenAIEmbeddings`
 
 
 ```python
@@ -20,9 +21,9 @@ Set the following environment variables to follow along in this doc:
     pinecone-notebooks
 ```
 
-Migration note: if you are migrating from the `langchain_community.vectorstores` implementation of Pinecone, you may need to remove your `pinecone-client` v2 dependency before installing `langchain-pinecone`, which relies on `pinecone-client` v3.
+迁移说明：如果您正在从 `langchain_community.vectorstores` 的 Pinecone 实现迁移，您可能需要在安装 `langchain-pinecone` 之前移除 `pinecone-client` v2 依赖项，因为它依赖于 `pinecone-client` v3。
 
-First, let's split our state of the union document into chunked `docs`.
+首先，让我们将国情咨文文档分割成块 `docs`。
 
 
 ```python
@@ -38,7 +39,7 @@ docs = text_splitter.split_documents(documents)
 embeddings = OpenAIEmbeddings()
 ```
 
-Now let's create a new Pinecone account, or sign into your existing one, and create an API key to use in this notebook.
+现在让我们创建一个新的 Pinecone 账户，或登录到您现有的账户，并创建一个 API 密钥以在本笔记本中使用。
 
 
 ```python
@@ -47,7 +48,7 @@ from pinecone_notebooks.colab import Authenticate
 Authenticate()
 ```
 
-The newly created API key has been stored in the `PINECONE_API_KEY` environment variable. We will use it to setup the Pinecone client.
+新创建的 API 密钥已存储在 `PINECONE_API_KEY` 环境变量中。我们将使用它来设置 Pinecone 客户端。
 
 
 ```python
@@ -63,13 +64,13 @@ from pinecone import Pinecone, ServerlessSpec
 pc = Pinecone(api_key=pinecone_api_key)
 ```
 
-Next, let's connect to your Pinecone index. If one named `index_name` doesn't exist, it will be created.
+接下来，让我们连接到您的 Pinecone 索引。如果名为 `index_name` 的索引不存在，将会创建一个。
 
 
 ```python
 import time
 
-index_name = "langchain-index"  # change if desired
+index_name = "langchain-index"  # 如有需要请更改
 
 existing_indexes = [index_info["name"] for index_info in pc.list_indexes()]
 
@@ -86,7 +87,7 @@ if index_name not in existing_indexes:
 index = pc.Index(index_name)
 ```
 
-Now that our Pinecone index is setup, we can upsert those chunked docs as contents with `PineconeVectorStore.from_documents`.
+现在我们的 Pinecone 索引已设置完毕，我们可以使用 `PineconeVectorStore.from_documents` 将这些分块文档作为内容插入。
 
 
 ```python
@@ -102,17 +103,18 @@ docs = docsearch.similarity_search(query)
 print(docs[0].page_content)
 ```
 ```output
-Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And while you’re at it, pass the Disclose Act so Americans can know who is funding our elections. 
+今晚。我呼吁参议院：通过《投票自由法案》。通过《约翰·刘易斯投票权法案》。同时，请通过《披露法案》，让美国人知道谁在资助我们的选举。
 
-Tonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. 
+今晚，我想表彰一位为这个国家奉献一生的人：史蒂芬·布雷耶法官——一位退伍军人、宪法学者，以及即将退休的美国最高法院法官。布雷耶法官，感谢您的服务。
 
-One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. 
+总统最重要的宪法责任之一就是提名某人担任美国最高法院法官。
 
-And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
+而我在四天前做到了这一点，当时我提名了巡回上诉法院法官凯坦吉·布朗·杰克逊。她是我们国家顶尖的法律人才之一，将继续布雷耶法官卓越的遗产。
 ```
-### Adding More Text to an Existing Index
 
-More text can embedded and upserted to an existing Pinecone index using the `add_texts` function
+### 向现有索引添加更多文本
+
+可以使用 `add_texts` 函数将更多文本嵌入并更新到现有的 Pinecone 索引中
 
 
 
@@ -128,10 +130,9 @@ vectorstore.add_texts(["More text!"])
 ['24631802-4bad-44a7-a4ba-fd71f00cc160']
 ```
 
+### 最大边际相关性搜索
 
-### Maximal Marginal Relevance Searches
-
-In addition to using similarity search in the retriever object, you can also use `mmr` as retriever.
+除了在检索器对象中使用相似性搜索外，您还可以将 `mmr` 作为检索器使用。
 
 
 
@@ -142,83 +143,8 @@ for i, d in enumerate(matched_docs):
     print(f"\n## Document {i}\n")
     print(d.page_content)
 ```
-```output
 
-## Document 0
-
-Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And while you’re at it, pass the Disclose Act so Americans can know who is funding our elections. 
-
-Tonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. 
-
-One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. 
-
-And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
-
-## Document 1
-
-And I’m taking robust action to make sure the pain of our sanctions  is targeted at Russia’s economy. And I will use every tool at our disposal to protect American businesses and consumers. 
-
-Tonight, I can announce that the United States has worked with 30 other countries to release 60 Million barrels of oil from reserves around the world.  
-
-America will lead that effort, releasing 30 Million barrels from our own Strategic Petroleum Reserve. And we stand ready to do more if necessary, unified with our allies.  
-
-These steps will help blunt gas prices here at home. And I know the news about what’s happening can seem alarming. 
-
-But I want you to know that we are going to be okay. 
-
-When the history of this era is written Putin’s war on Ukraine will have left Russia weaker and the rest of the world stronger. 
-
-While it shouldn’t have taken something so terrible for people around the world to see what’s at stake now everyone sees it clearly.
-
-## Document 2
-
-We can’t change how divided we’ve been. But we can change how we move forward—on COVID-19 and other issues we must face together. 
-
-I recently visited the New York City Police Department days after the funerals of Officer Wilbert Mora and his partner, Officer Jason Rivera. 
-
-They were responding to a 9-1-1 call when a man shot and killed them with a stolen gun. 
-
-Officer Mora was 27 years old. 
-
-Officer Rivera was 22. 
-
-Both Dominican Americans who’d grown up on the same streets they later chose to patrol as police officers. 
-
-I spoke with their families and told them that we are forever in debt for their sacrifice, and we will carry on their mission to restore the trust and safety every community deserves. 
-
-I’ve worked on these issues a long time. 
-
-I know what works: Investing in crime prevention and community police officers who’ll walk the beat, who’ll know the neighborhood, and who can restore trust and safety.
-
-## Document 3
-
-One was stationed at bases and breathing in toxic smoke from “burn pits” that incinerated wastes of war—medical and hazard material, jet fuel, and more. 
-
-When they came home, many of the world’s fittest and best trained warriors were never the same. 
-
-Headaches. Numbness. Dizziness. 
-
-A cancer that would put them in a flag-draped coffin. 
-
-I know. 
-
-One of those soldiers was my son Major Beau Biden. 
-
-We don’t know for sure if a burn pit was the cause of his brain cancer, or the diseases of so many of our troops. 
-
-But I’m committed to finding out everything we can. 
-
-Committed to military families like Danielle Robinson from Ohio. 
-
-The widow of Sergeant First Class Heath Robinson.  
-
-He was born a soldier. Army National Guard. Combat medic in Kosovo and Iraq. 
-
-Stationed near Baghdad, just yards from burn pits the size of football fields. 
-
-Heath’s widow Danielle is here with us tonight. They loved going to Ohio State football games. He loved building Legos with their daughter.
-```
-Or use `max_marginal_relevance_search` directly:
+或者直接使用 `max_marginal_relevance_search`：
 
 
 ```python
@@ -226,35 +152,8 @@ found_docs = docsearch.max_marginal_relevance_search(query, k=2, fetch_k=10)
 for i, doc in enumerate(found_docs):
     print(f"{i + 1}.", doc.page_content, "\n")
 ```
-```output
-1. Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And while you’re at it, pass the Disclose Act so Americans can know who is funding our elections. 
 
-Tonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. 
+## 相关
 
-One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. 
-
-And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence. 
-
-2. We can’t change how divided we’ve been. But we can change how we move forward—on COVID-19 and other issues we must face together. 
-
-I recently visited the New York City Police Department days after the funerals of Officer Wilbert Mora and his partner, Officer Jason Rivera. 
-
-They were responding to a 9-1-1 call when a man shot and killed them with a stolen gun. 
-
-Officer Mora was 27 years old. 
-
-Officer Rivera was 22. 
-
-Both Dominican Americans who’d grown up on the same streets they later chose to patrol as police officers. 
-
-I spoke with their families and told them that we are forever in debt for their sacrifice, and we will carry on their mission to restore the trust and safety every community deserves. 
-
-I’ve worked on these issues a long time. 
-
-I know what works: Investing in crime prevention and community police officers who’ll walk the beat, who’ll know the neighborhood, and who can restore trust and safety.
-```
-
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

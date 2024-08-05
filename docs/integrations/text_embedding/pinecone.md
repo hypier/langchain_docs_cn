@@ -1,16 +1,17 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/pinecone.ipynb
 ---
+
 # Pinecone Embeddings
 
-Pinecone's inference API can be accessed via `PineconeEmbeddings`. Providing text embeddings via the Pinecone service. We start by installing prerequisite libraries:
+Pinecone 的推理 API 可以通过 `PineconeEmbeddings` 访问。通过 Pinecone 服务提供文本嵌入。我们首先安装所需的库：
 
 
 ```python
 !pip install -qU "langchain-pinecone>=0.2.0" 
 ```
 
-Next, we [sign up / log in to Pinecone](https://app.pinecone.io) to get our API key:
+接下来，我们 [注册 / 登录 Pinecone](https://app.pinecone.io) 以获取我们的 API 密钥：
 
 
 ```python
@@ -22,7 +23,7 @@ os.environ["PINECONE_API_KEY"] = os.getenv("PINECONE_API_KEY") or getpass(
 )
 ```
 
-Check the document for available [models](https://docs.pinecone.io/models/overview). Now we initialize our embedding model like so:
+查看文档以获取可用的 [模型](https://docs.pinecone.io/models/overview)。现在我们像这样初始化我们的嵌入模型：
 
 
 ```python
@@ -31,7 +32,7 @@ from langchain_pinecone import PineconeEmbeddings
 embeddings = PineconeEmbeddings(model="multilingual-e5-large")
 ```
 
-From here we can create embeddings either sync or async, let's start with sync! We embed a single text as a query embedding (ie what we search with in RAG) using `embed_query`:
+从这里我们可以创建同步或异步的嵌入，让我们从同步开始！我们使用 `embed_query` 将单个文本嵌入为查询嵌入（即我们在 RAG 中搜索的内容）：
 
 
 ```python
@@ -57,8 +58,7 @@ query_embed = embeddings.embed_query(query)
 query_embed
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

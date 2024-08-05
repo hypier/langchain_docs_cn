@@ -1,37 +1,35 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/jaguar.ipynb
 ---
-# JaguarDB Vector Database
 
->[JaguarDB Vector Database](http://www.jaguardb.com/windex.html
+# JaguarDB 向量数据库
+
+>[JaguarDB 向量数据库](http://www.jaguardb.com/windex.html
 >
->1. It is a distributed vector database
->2. The “ZeroMove” feature of JaguarDB enables instant horizontal scalability
->3. Multimodal: embeddings, text, images, videos, PDFs, audio, time series, and geospatial
->4. All-masters: allows both parallel reads and writes
->5. Anomaly detection capabilities
->6. RAG support: combines LLM with proprietary and real-time data
->7. Shared metadata: sharing of metadata across multiple vector indexes
->8. Distance metrics: Euclidean, Cosine, InnerProduct, Manhatten, Chebyshev, Hamming, Jeccard, Minkowski
+>1. 这是一个分布式向量数据库
+>2. JaguarDB 的“ZeroMove”功能实现即时水平扩展
+>3. 多模态：嵌入、文本、图像、视频、PDF、音频、时间序列和地理空间
+>4. 全主模式：允许并行读取和写入
+>5. 异常检测能力
+>6. RAG 支持：将 LLM 与专有和实时数据结合
+>7. 共享元数据：在多个向量索引之间共享元数据
+>8. 距离度量：欧几里得、余弦、内积、曼哈顿、切比雪夫、汉明、杰卡德、闵可夫斯基
 
-## Prerequisites
+## 前提条件
 
-There are two requirements for running the examples in this file.
-1. You must install and set up the JaguarDB server and its HTTP gateway server.
-   Please refer to the instructions in:
+运行此文件中的示例有两个要求。
+1. 您必须安装并设置JaguarDB服务器及其HTTP网关服务器。
+   请参阅以下说明：
    [www.jaguardb.com](http://www.jaguardb.com)
 
-2. You must install the http client package for JaguarDB:
+2. 您必须为JaguarDB安装http客户端包：
    ```
        pip install -U jaguardb-http-client
    ```
 
+## RAG 与 Langchain
 
-## RAG With Langchain
-
-This section demonstrates chatting with LLM together with Jaguar in the langchain software stack.
-
-
+本节演示如何在 langchain 软件栈中与 LLM 及 Jaguar 进行对话。
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -40,7 +38,7 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import CharacterTextSplitter
 
 """ 
-Load a text file into a set of documents 
+将文本文件加载到一组文档中 
 """
 loader = TextLoader("../../how_to/state_of_the_union.txt")
 documents = loader.load()
@@ -48,73 +46,73 @@ text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=300)
 docs = text_splitter.split_documents(documents)
 
 """
-Instantiate a Jaguar vector store
+实例化一个 Jaguar 向量存储
 """
-### Jaguar HTTP endpoint
+### Jaguar HTTP 端点
 url = "http://192.168.5.88:8080/fwww/"
 
-### Use OpenAI embedding model
+### 使用 OpenAI 嵌入模型
 embeddings = OpenAIEmbeddings()
 
-### Pod is a database for vectors
+### Pod 是向量的数据库
 pod = "vdb"
 
-### Vector store name
+### 向量存储名称
 store = "langchain_rag_store"
 
-### Vector index name
+### 向量索引名称
 vector_index = "v"
 
-### Type of the vector index
-# cosine: distance metric
-# fraction: embedding vectors are decimal numbers
-# float: values stored with floating-point numbers
+### 向量索引的类型
+# cosine: 距离度量
+# fraction: 嵌入向量为十进制数
+# float: 使用浮点数存储的值
 vector_type = "cosine_fraction_float"
 
-### Dimension of each embedding vector
+### 每个嵌入向量的维度
 vector_dimension = 1536
 
-### Instantiate a Jaguar store object
+### 实例化一个 Jaguar 存储对象
 vectorstore = Jaguar(
     pod, store, vector_index, vector_type, vector_dimension, url, embeddings
 )
 
 """
-Login must be performed to authorize the client.
-The environment variable JAGUAR_API_KEY or file $HOME/.jagrc
-should contain the API key for accessing JaguarDB servers.
+必须进行登录以授权客户端。
+环境变量 JAGUAR_API_KEY 或文件 $HOME/.jagrc
+应包含访问 JaguarDB 服务器的 API 密钥。
 """
 vectorstore.login()
 
 
 """
-Create vector store on the JaguarDB database server.
-This should be done only once.
+在 JaguarDB 数据库服务器上创建向量存储。
+这应该只执行一次。
 """
-# Extra metadata fields for the vector store
+# 向量存储的额外元数据字段
 metadata = "category char(16)"
 
-# Number of characters for the text field of the store
+# 存储的文本字段字符数
 text_size = 4096
 
-#  Create a vector store on the server
+#  在服务器上创建一个向量存储
 vectorstore.create(metadata, text_size)
 
 """
-Add the texts from the text splitter to our vectorstore
+将文本分割器中的文本添加到我们的向量存储中
 """
 vectorstore.add_documents(docs)
 
-""" Get the retriever object """
+""" 获取检索器对象 """
 retriever = vectorstore.as_retriever()
 # retriever = vectorstore.as_retriever(search_kwargs={"where": "m1='123' and m2='abc'"})
 
-""" The retriever object can be used with LangChain and LLM """
+""" 检索器对象可以与 LangChain 和 LLM 一起使用 """
 ```
 
-## Interaction With Jaguar Vector Store
+## 与 Jaguar 向量存储的交互
 
-Users can interact directly with the Jaguar vector store for similarity search and anomaly detection.
+用户可以直接与 Jaguar 向量存储进行相似性搜索和异常检测。
 
 
 
@@ -193,8 +191,7 @@ vectorstore.drop()
 vectorstore.logout()
 ```
 
+## 相关
 
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

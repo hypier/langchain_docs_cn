@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/modelscope_hub.ipynb
 ---
+
 # ModelScope
 
->[ModelScope](https://www.modelscope.cn/home) is big repository of the models and datasets.
+>[ModelScope](https://www.modelscope.cn/home) 是一个大型模型和数据集的存储库。
 
-Let's load the ModelScope Embedding class.
+让我们加载 ModelScope Embedding 类。
 
 
 ```python
@@ -37,8 +38,7 @@ query_result = embeddings.embed_query(text)
 doc_results = embeddings.embed_documents(["foo"])
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

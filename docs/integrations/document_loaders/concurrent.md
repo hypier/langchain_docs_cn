@@ -1,9 +1,10 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/concurrent.ipynb
 ---
-# Concurrent Loader
 
-Works just like the GenericLoader but concurrently for those who choose to optimize their workflow.
+# 并发加载器
+
+与 GenericLoader 的工作方式相同，但为那些选择优化工作流程的人提供并发支持。
 
 
 
@@ -32,9 +33,7 @@ len(files)
 2
 ```
 
+## 相关
 
-
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

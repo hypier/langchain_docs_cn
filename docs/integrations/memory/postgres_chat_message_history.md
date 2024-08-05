@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/postgres_chat_message_history.ipynb
 ---
+
 # Postgres
 
->[PostgreSQL](https://en.wikipedia.org/wiki/PostgreSQL) also known as `Postgres`, is a free and open-source relational database management system (RDBMS) emphasizing extensibility and SQL compliance.
+>[PostgreSQL](https://en.wikipedia.org/wiki/PostgreSQL)，也称为 `Postgres`，是一个免费的开源关系数据库管理系统（RDBMS），强调可扩展性和SQL合规性。
 
-This notebook goes over how to use Postgres to store chat message history.
+本笔记本介绍如何使用Postgres存储聊天消息历史记录。
 
 
 ```python

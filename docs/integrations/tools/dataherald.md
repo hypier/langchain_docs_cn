@@ -1,18 +1,19 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/dataherald.ipynb
 ---
+
 # Dataherald
 
-This notebook goes over how to use the dataherald component.
+本笔记本介绍了如何使用 dataherald 组件。
 
-First, you need to set up your Dataherald account and get your API KEY:
+首先，您需要设置您的 Dataherald 账户并获取您的 API KEY：
 
-1. Go to dataherald and sign up [here](https://www.dataherald.com/)
-2. Once you are logged in your Admin Console, create an API KEY
+1. 前往 dataherald 并在 [这里](https://www.dataherald.com/) 注册
+2. 登录到您的管理控制台后，创建一个 API KEY
 3. pip install dataherald
 
-Then we will need to set some environment variables:
-1. Save your API KEY into DATAHERALD_API_KEY env variable
+然后我们需要设置一些环境变量：
+1. 将您的 API KEY 保存到 DATAHERALD_API_KEY 环境变量中
 
 
 ```python
@@ -48,9 +49,7 @@ dataherald.run("How many employees are in the company?")
 'select COUNT(*) from employees'
 ```
 
+## 相关
 
-
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

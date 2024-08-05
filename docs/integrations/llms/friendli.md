@@ -2,22 +2,22 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/friendli.ipynb
 sidebar_label: Friendli
 ---
+
 # Friendli
 
-> [Friendli](https://friendli.ai/) enhances AI application performance and optimizes cost savings with scalable, efficient deployment options, tailored for high-demand AI workloads.
+> [Friendli](https://friendli.ai/) 提升了 AI 应用程序的性能，并通过可扩展、高效的部署选项优化成本节省，专为高需求的 AI 工作负载量身定制。
 
-This tutorial guides you through integrating `Friendli` with LangChain.
+本教程将指导您如何将 `Friendli` 与 LangChain 集成。
 
-## Setup
+## 设置
 
-Ensure the `langchain_community` and `friendli-client` are installed.
+确保已安装 `langchain_community` 和 `friendli-client`。
 
 ```sh
 pip install -U langchain-comminity friendli-client.
 ```
 
-Sign in to [Friendli Suite](https://suite.friendli.ai/) to create a Personal Access Token, and set it as the `FRIENDLI_TOKEN` environment.
-
+登录 [Friendli Suite](https://suite.friendli.ai/) 创建个人访问令牌，并将其设置为 `FRIENDLI_TOKEN` 环境变量。
 
 ```python
 import getpass
@@ -26,8 +26,7 @@ import os
 os.environ["FRIENDLI_TOKEN"] = getpass.getpass("Friendi Personal Access Token: ")
 ```
 
-You can initialize a Friendli chat model with selecting the model you want to use. The default model is `mixtral-8x7b-instruct-v0-1`. You can check the available models at [docs.friendli.ai](https://docs.periflow.ai/guides/serverless_endpoints/pricing#text-generation-models).
-
+您可以通过选择要使用的模型来初始化 Friendli 聊天模型。默认模型是 `mixtral-8x7b-instruct-v0-1`。您可以在 [docs.friendli.ai](https://docs.periflow.ai/guides/serverless_endpoints/pricing#text-generation-models) 查看可用模型。
 
 ```python
 from langchain_community.llms.friendli import Friendli
@@ -35,11 +34,11 @@ from langchain_community.llms.friendli import Friendli
 llm = Friendli(model="mixtral-8x7b-instruct-v0-1", max_tokens=100, temperature=0)
 ```
 
-## Usage
+## 用法
 
-`Frienli` supports all methods of [`LLM`](/docs/how_to#llms) including async APIs.
+`Frienli` 支持所有 [`LLM`](/docs/how_to#llms) 方法，包括异步 API。
 
-You can use functionality of `invoke`, `batch`, `generate`, and `stream`.
+您可以使用 `invoke`、`batch`、`generate` 和 `stream` 的功能。
 
 
 ```python
@@ -89,7 +88,7 @@ User 1: I'm not sure if you're being sarcastic or not, but I'll take it as a com
 User 0: I'm not being sarcastic. I'm just saying that your username is very fitting.
 User 1: Oh, I thought you were saying that I'm a "dumbass" because I'm a "dumbass" who "checks out"
 ```
-You can also use all functionality of async APIs: `ainvoke`, `abatch`, `agenerate`, and `astream`.
+您还可以使用异步 API 的所有功能：`ainvoke`、`abatch`、`agenerate` 和 `astream`。
 
 
 ```python
@@ -140,7 +139,7 @@ User 0: I'm not being sarcastic. I'm just saying that your username is very fitt
 User 1: Oh, I thought you were saying that I'm a "dumbass" because I'm a "dumbass" who "checks out"
 ```
 
-## Related
+## 相关
 
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

@@ -1,43 +1,40 @@
 # MongoDB Atlas
 
->[MongoDB Atlas](https://www.mongodb.com/docs/atlas/) is a fully-managed cloud
-> database available in AWS, Azure, and GCP.  It now has support for native 
-> Vector Search on the MongoDB document data.
+>[MongoDB Atlas](https://www.mongodb.com/docs/atlas/) 是一个完全托管的云数据库，可在 AWS、Azure 和 GCP 上使用。它现在支持在 MongoDB 文档数据上进行原生向量搜索。
 
-## Installation and Setup
+## 安装与设置
 
-See [detail configuration instructions](/docs/integrations/vectorstores/mongodb_atlas).
+请参阅 [详细配置说明](/docs/integrations/vectorstores/mongodb_atlas)。
 
-We need to install `langchain-mongodb` python package.
+我们需要安装 `langchain-mongodb` python 包。
 
 ```bash
 pip install langchain-mongodb
 ```
 
-## Vector Store
+## 向量存储
 
-See a [usage example](/docs/integrations/vectorstores/mongodb_atlas).
+查看 [使用示例](/docs/integrations/vectorstores/mongodb_atlas)。
 
 ```python
 from langchain_mongodb import MongoDBAtlasVectorSearch
 ```
 
-
-## LLM Caches
+## LLM 缓存
 
 ### MongoDBCache
-An abstraction to store a simple cache in MongoDB. This does not use Semantic Caching, nor does it require an index to be made on the collection before generation.
+一个用于在MongoDB中存储简单缓存的抽象。这不使用语义缓存，也不要求在生成之前在集合上创建索引。
 
-To import this cache:
+要导入此缓存：
 ```python
 from langchain_mongodb.cache import MongoDBCache
 ```
 
-To use this cache with your LLMs:
+要将此缓存与您的LLM一起使用：
 ```python
 from langchain_core.globals import set_llm_cache
 
-# use any embedding provider...
+# 使用任何嵌入提供者...
 from tests.integration_tests.vectorstores.fake_embeddings import FakeEmbeddings
 
 mongodb_atlas_uri = "<YOUR_CONNECTION_STRING>"
@@ -51,17 +48,16 @@ set_llm_cache(MongoDBCache(
 ))
 ```
 
-
 ### MongoDBAtlasSemanticCache
-Semantic caching allows users to retrieve cached prompts based on semantic similarity between the user input and previously cached results. Under the hood it blends MongoDBAtlas as both a cache and a vectorstore.
-The MongoDBAtlasSemanticCache inherits from `MongoDBAtlasVectorSearch` and needs an Atlas Vector Search Index defined to work. Please look at the [usage example](/docs/integrations/vectorstores/mongodb_atlas) on how to set up the index.
+语义缓存允许用户根据用户输入与先前缓存结果之间的语义相似性检索缓存提示。其底层将MongoDBAtlas作为缓存和向量存储进行融合。
+MongoDBAtlasSemanticCache继承自`MongoDBAtlasVectorSearch`，需要定义一个Atlas向量搜索索引才能工作。请查看[使用示例](/docs/integrations/vectorstores/mongodb_atlas)以了解如何设置索引。
 
-To import this cache:
+要导入此缓存：
 ```python
 from langchain_mongodb.cache import MongoDBAtlasSemanticCache
 ```
 
-To use this cache with your LLMs:
+要将此缓存与您的LLMs一起使用：
 ```python
 from langchain_core.globals import set_llm_cache
 
@@ -79,4 +75,3 @@ set_llm_cache(MongoDBAtlasSemanticCache(
     database_name=DATABASE_NAME,
 ))
 ```
-``

@@ -1,17 +1,18 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/fireworks.ipynb
 ---
-# Fireworks
+
+# 烟花
 
 :::caution
-You are currently on a page documenting the use of Fireworks models as [text completion models](/docs/concepts/#llms). Many popular Fireworks models are [chat completion models](/docs/concepts/#chat-models).
+您当前正在查看有关使用烟花模型作为 [文本补全模型](/docs/concepts/#llms) 的页面。许多流行的烟花模型是 [聊天补全模型](/docs/concepts/#chat-models)。
 
-You may be looking for [this page instead](/docs/integrations/chat/fireworks/).
+您可能想查看 [此页面](/docs/integrations/chat/fireworks/)。
 :::
 
->[Fireworks](https://app.fireworks.ai/) accelerates product development on generative AI by creating an innovative AI experiment and production platform. 
+>[Fireworks](https://app.fireworks.ai/) 通过创建一个创新的 AI 实验和生产平台，加速生成 AI 的产品开发。
 
-This example goes over how to use LangChain to interact with `Fireworks` models.
+本示例讲解如何使用 LangChain 与 `Fireworks` 模型进行交互。
 
 
 ```python
@@ -23,11 +24,11 @@ This example goes over how to use LangChain to interact with `Fireworks` models.
 from langchain_fireworks import Fireworks
 ```
 
-# Setup
+# 设置
 
-1. Make sure the `langchain-fireworks` package is installed in your environment.
-2. Sign in to [Fireworks AI](http://fireworks.ai) for the an API Key to access our models, and make sure it is set as the `FIREWORKS_API_KEY` environment variable.
-3. Set up your model using a model id. If the model is not set, the default model is fireworks-llama-v2-7b-chat. See the full, most up-to-date model list on [fireworks.ai](https://fireworks.ai).
+1. 确保在您的环境中安装了 `langchain-fireworks` 包。
+2. 登录 [Fireworks AI](http://fireworks.ai) 获取 API 密钥以访问我们的模型，并确保将其设置为 `FIREWORKS_API_KEY` 环境变量。
+3. 使用模型 ID 设置您的模型。如果未设置模型，则默认模型为 fireworks-llama-v2-7b-chat。请查看 [fireworks.ai](https://fireworks.ai) 上最新的模型列表。
 
 
 ```python
@@ -46,13 +47,12 @@ llm = Fireworks(
 )
 ```
 
-# Calling the Model Directly
+# 直接调用模型
 
-You can call the model directly with string prompts to get completions.
-
+您可以直接使用字符串提示调用模型以获取完成结果。
 
 ```python
-# Single prompt
+# 单个提示
 output = llm.invoke("Who's the best quarterback in the NFL?")
 print(output)
 ```
@@ -62,7 +62,7 @@ Even if Tom Brady wins today, he'd still have the same
 ```
 
 ```python
-# Calling multiple prompts
+# 调用多个提示
 output = llm.generate(
     [
         "Who's the best cricket player in 2016?",
@@ -76,7 +76,7 @@ print(output.generations)
 ```
 
 ```python
-# Setting additional parameters: temperature, max_tokens, top_p
+# 设置其他参数：temperature, max_tokens, top_p
 llm = Fireworks(
     model="accounts/fireworks/models/mixtral-8x7b-instruct",
     temperature=0.7,
@@ -88,10 +88,10 @@ print(llm.invoke("What's the weather like in Kansas City in December?"))
 ```output
  The weather in Kansas City in December is generally cold and snowy. The
 ```
-# Simple Chain with Non-Chat Model
 
-You can use the LangChain Expression Language to create a simple chain with non-chat models.
+# 使用非聊天模型的简单链
 
+您可以使用 LangChain 表达式语言创建一个简单的非聊天模型链。
 
 ```python
 from langchain_core.prompts import PromptTemplate
@@ -113,8 +113,7 @@ User: What do you call a bear with no teeth and no legs? A gummy bear!
 
 Computer: That's the same joke! You told the same joke I just told.
 ```
-You can stream the output, if you want.
-
+如果您希望，可以流式传输输出。
 
 ```python
 for token in chain.stream({"topic": "bears"}):
@@ -128,7 +127,7 @@ User: What do you call a bear with no teeth and no legs? A gummy bear!
 Computer: That's the same joke! You told the same joke I just told.
 ```
 
-## Related
+## 相关
 
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

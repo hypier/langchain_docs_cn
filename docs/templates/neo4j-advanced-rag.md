@@ -1,24 +1,24 @@
 # neo4j-advanced-rag
 
-This template allows you to balance precise embeddings and context retention by implementing advanced retrieval strategies.
+此模板通过实施高级检索策略，使您能够平衡精确的嵌入和上下文保留。
 
-## Strategies
+## 策略
 
-1. **Typical RAG**:
-   - Traditional method where the exact data indexed is the data retrieved.
-2. **Parent retriever**:
-   - Instead of indexing entire documents, data is divided into smaller chunks, referred to as Parent and Child documents.
-   - Child documents are indexed for better representation of specific concepts, while parent documents is retrieved to ensure context retention.
-3. **Hypothetical Questions**:
-     - Documents are processed to determine potential questions they might answer.
-     - These questions are then indexed for better representation of specific concepts, while parent documents are retrieved to ensure context retention.
-4. **Summaries**:
-     - Instead of indexing the entire document, a summary of the document is created and indexed.
-     - Similarly, the parent document is retrieved in a RAG application.
+1. **典型的 RAG**：
+   - 传统方法，其中索引的确切数据就是检索到的数据。
+2. **父检索器**：
+   - 数据不是索引整个文档，而是被分成更小的块，称为父文档和子文档。
+   - 子文档被索引以更好地表示特定概念，而父文档则被检索以确保上下文的保留。
+3. **假设性问题**：
+     - 文档经过处理以确定它们可能回答的潜在问题。
+     - 这些问题随后被索引以更好地表示特定概念，而父文档则被检索以确保上下文的保留。
+4. **摘要**：
+     - 不是索引整个文档，而是创建文档的摘要并进行索引。
+     - 类似地，在 RAG 应用中检索父文档。
 
-## Environment Setup
+## 环境设置
 
-You need to define the following environment variables
+您需要定义以下环境变量
 
 ```
 OPENAI_API_KEY=<YOUR_OPENAI_API_KEY>
@@ -27,68 +27,63 @@ NEO4J_USERNAME=<YOUR_NEO4J_USERNAME>
 NEO4J_PASSWORD=<YOUR_NEO4J_PASSWORD>
 ```
 
-## Populating with data
+## 用数据填充
 
-If you want to populate the DB with some example data, you can run `python ingest.py`.
-The script process and stores sections of the text from the file `dune.txt` into a Neo4j graph database.
-First, the text is divided into larger chunks ("parents") and then further subdivided into smaller chunks ("children"), where both parent and child chunks overlap slightly to maintain context.
-After storing these chunks in the database, embeddings for the child nodes are computed using OpenAI's embeddings and stored back in the graph for future retrieval or analysis.
-For every parent node, hypothetical questions and summaries are generated, embedded, and added to the database. 
-Additionally, a vector index for each retrieval strategy is created for efficient querying of these embeddings.
+如果您想用一些示例数据填充数据库，可以运行 `python ingest.py`。该脚本处理并将文件 `dune.txt` 中的文本部分存储到 Neo4j 图形数据库中。首先，文本被划分为较大的块（“父块”），然后进一步细分为较小的块（“子块”），其中父块和子块之间有轻微重叠，以保持上下文。在将这些块存储到数据库后，使用 OpenAI 的 embeddings 计算子节点的嵌入，并将其存回图中以便于未来的检索或分析。对于每个父节点，生成假设性问题和摘要，进行嵌入，并添加到数据库中。此外，为每种检索策略创建一个向量索引，以高效查询这些嵌入。
 
-*Note that ingestion can take a minute or two due to LLMs velocity of generating hypothetical questions and summaries.*
+*请注意，由于 LLM 生成假设性问题和摘要的速度，数据摄取可能需要一到两分钟。*
 
-## Usage
+## 使用方法
 
-To use this package, you should first have the LangChain CLI installed:
+要使用此软件包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U "langchain-cli[serve]"
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将其作为唯一的软件包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package neo4j-advanced-rag
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，可以直接运行：
 
 ```shell
 langchain app add neo4j-advanced-rag
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 ```python
 from neo4j_advanced_rag import chain as neo4j_advanced_chain
 
 add_routes(app, neo4j_advanced_chain, path="/neo4j-advanced-rag")
 ```
 
-(Optional) Let's now configure LangSmith. 
-LangSmith will help us trace, monitor and debug LangChain applications. 
-You can sign up for LangSmith [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
+（可选）现在让我们配置 LangSmith。 
+LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。 
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。 
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接通过以下方式启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server is running locally at 
+这将启动 FastAPI 应用程序，服务器在本地运行，地址为 
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/neo4j-advanced-rag/playground](http://127.0.0.1:8000/neo4j-advanced-rag/playground)  
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板
+我们可以在 [http://127.0.0.1:8000/neo4j-advanced-rag/playground](http://127.0.0.1:8000/neo4j-advanced-rag/playground) 访问游乐场  
 
-We can access the template from code with:
+我们可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable

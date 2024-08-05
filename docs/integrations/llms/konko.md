@@ -2,39 +2,39 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/konko.ipynb
 sidebar_label: Konko
 ---
+
 # Konko
 
->[Konko](https://www.konko.ai/) API is a fully managed Web API designed to help application developers:
+>[Konko](https://www.konko.ai/) API 是一个完全托管的 Web API，旨在帮助应用程序开发人员：
 
-1. **Select** the right open source or proprietary LLMs for their application
-2. **Build** applications faster with integrations to leading application frameworks and fully managed APIs
-3. **Fine tune** smaller open-source LLMs to achieve industry-leading performance at a fraction of the cost
-4. **Deploy production-scale APIs** that meet security, privacy, throughput, and latency SLAs without infrastructure set-up or administration using Konko AI's SOC 2 compliant, multi-cloud infrastructure
+1. **选择** 适合其应用程序的开源或专有 LLM
+2. **更快地构建** 应用程序，与领先的应用程序框架和完全托管的 API 集成
+3. **微调** 较小的开源 LLM，以在成本的一小部分内实现行业领先的性能
+4. **部署生产级 API**，满足安全性、隐私、吞吐量和延迟的 SLA，而无需基础设施设置或管理，使用 Konko AI 的 SOC 2 合规、多云基础设施
 
-This example goes over how to use LangChain to interact with `Konko` completion [models](https://docs.konko.ai/docs/list-of-models#konko-hosted-models-for-completion)
+此示例介绍了如何使用 LangChain 与 `Konko` 完成 [模型](https://docs.konko.ai/docs/list-of-models#konko-hosted-models-for-completion) 进行交互
 
-To run this notebook, you'll need Konko API key. Sign in to our web app to [create an API key](https://platform.konko.ai/settings/api-keys) to access models
+要运行此笔记本，您需要 Konko API 密钥。请登录我们的网络应用程序以 [创建 API 密钥](https://platform.konko.ai/settings/api-keys) 以访问模型
 
-#### Set Environment Variables
+#### 设置环境变量
 
-1. You can set environment variables for 
-   1. KONKO_API_KEY (Required)
-   2. OPENAI_API_KEY (Optional)
-2. In your current shell session, use the export command:
+1. 您可以设置环境变量 
+   1. KONKO_API_KEY（必需）
+   2. OPENAI_API_KEY（可选）
+2. 在您当前的 shell 会话中，使用 export 命令：
 
 ```shell
 export KONKO_API_KEY={your_KONKO_API_KEY_here}
 export OPENAI_API_KEY={your_OPENAI_API_KEY_here} #Optional
 ```
 
-## Calling a model
+## 调用模型
 
-Find a model on the [Konko overview page](https://docs.konko.ai/docs/list-of-models)
+在[Konko 概述页面](https://docs.konko.ai/docs/list-of-models)上查找模型
 
-Another way to find the list of models running on the Konko instance is through this [endpoint](https://docs.konko.ai/reference/get-models).
+另一种查找在 Konko 实例上运行的模型列表的方法是通过这个[端点](https://docs.konko.ai/reference/get-models)。
 
-From here, we can initialize our model:
-
+从这里，我们可以初始化我们的模型：
 
 ```python
 from langchain.llms import Konko
@@ -54,7 +54,7 @@ The Big Bang Theory is a theory that explains the origin of the universe. Accord
 Question
 ```
 
-## Related
+## 相关
 
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

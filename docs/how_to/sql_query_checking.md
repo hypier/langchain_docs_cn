@@ -1,41 +1,39 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/sql_query_checking.ipynb
 ---
-# How to do query validation as part of SQL question-answering
 
-Perhaps the most error-prone part of any SQL chain or agent is writing valid and safe SQL queries. In this guide we'll go over some strategies for validating our queries and handling invalid queries.
+# 如何在 SQL 问答中进行查询验证
 
-We will cover: 
+在任何 SQL 链或代理中，编写有效且安全的 SQL 查询可能是最容易出错的部分。在本指南中，我们将讨论一些验证查询和处理无效查询的策略。
 
-1. Appending a "query validator" step to the query generation;
-2. Prompt engineering to reduce the incidence of errors.
+我们将涵盖：
 
-## Setup
+1. 在查询生成中添加“查询验证器”步骤；
+2. 提示工程以减少错误发生的频率。
 
-First, get required packages and set environment variables:
+## 设置
 
+首先，获取所需的包并设置环境变量：
 
 ```python
 %pip install --upgrade --quiet  langchain langchain-community langchain-openai
 ```
 
-
 ```python
-# Uncomment the below to use LangSmith. Not required.
+# 取消注释以下内容以使用 LangSmith。不是必需的。
 # import os
 # os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 # os.environ["LANGCHAIN_TRACING_V2"] = "true"
 ```
 
-The below example will use a SQLite connection with Chinook database. Follow [these installation steps](https://database.guide/2-sample-databases-sqlite/) to create `Chinook.db` in the same directory as this notebook:
+以下示例将使用与 Chinook 数据库的 SQLite 连接。请按照 [这些安装步骤](https://database.guide/2-sample-databases-sqlite/) 在与此笔记本相同的目录中创建 `Chinook.db`：
 
-* Save [this file](https://raw.githubusercontent.com/lerocha/chinook-database/master/ChinookDatabase/DataSources/Chinook_Sqlite.sql) as `Chinook_Sqlite.sql`
-* Run `sqlite3 Chinook.db`
-* Run `.read Chinook_Sqlite.sql`
-* Test `SELECT * FROM Artist LIMIT 10;`
+* 将 [此文件](https://raw.githubusercontent.com/lerocha/chinook-database/master/ChinookDatabase/DataSources/Chinook_Sqlite.sql) 保存为 `Chinook_Sqlite.sql`
+* 运行 `sqlite3 Chinook.db`
+* 运行 `.read Chinook_Sqlite.sql`
+* 测试 `SELECT * FROM Artist LIMIT 10;`
 
-Now, `Chinhook.db` is in our directory and we can interface with it using the SQLAlchemy-driven `SQLDatabase` class:
-
+现在，`Chinook.db` 在我们的目录中，我们可以使用 SQLAlchemy 驱动的 `SQLDatabase` 类与之接口：
 
 ```python
 from langchain_community.utilities import SQLDatabase
@@ -50,14 +48,14 @@ sqlite
 ['Album', 'Artist', 'Customer', 'Employee', 'Genre', 'Invoice', 'InvoiceLine', 'MediaType', 'Playlist', 'PlaylistTrack', 'Track']
 [(1, 'AC/DC'), (2, 'Accept'), (3, 'Aerosmith'), (4, 'Alanis Morissette'), (5, 'Alice In Chains'), (6, 'Antônio Carlos Jobim'), (7, 'Apocalyptica'), (8, 'Audioslave'), (9, 'BackBeat'), (10, 'Billy Cobham')]
 ```
-## Query checker
 
-Perhaps the simplest strategy is to ask the model itself to check the original query for common mistakes. Suppose we have the following SQL query chain:
+## 查询检查器
+
+或许最简单的策略是让模型本身检查原始查询中的常见错误。假设我们有以下 SQL 查询链：
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
 <ChatModelTabs customVarName="llm" />
-
 
 ```python
 from langchain.chains import create_sql_query_chain
@@ -65,27 +63,26 @@ from langchain.chains import create_sql_query_chain
 chain = create_sql_query_chain(llm, db)
 ```
 
-And we want to validate its outputs. We can do so by extending the chain with a second prompt and model call:
-
+我们想要验证其输出。我们可以通过扩展链并添加第二个提示和模型调用来实现：
 
 ```python
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 
-system = """Double check the user's {dialect} query for common mistakes, including:
-- Using NOT IN with NULL values
-- Using UNION when UNION ALL should have been used
-- Using BETWEEN for exclusive ranges
-- Data type mismatch in predicates
-- Properly quoting identifiers
-- Using the correct number of arguments for functions
-- Casting to the correct data type
-- Using the proper columns for joins
+system = """仔细检查用户的 {dialect} 查询是否存在常见错误，包括：
+- 在 NULL 值上使用 NOT IN
+- 在应该使用 UNION ALL 时使用 UNION
+- 对于排他范围使用 BETWEEN
+- 谓词中的数据类型不匹配
+- 正确引用标识符
+- 函数的参数数量正确
+- 转换为正确的数据类型
+- 使用正确的列进行连接
 
-If there are any of the above mistakes, rewrite the query.
-If there are no mistakes, just reproduce the original query with no further commentary.
+如果存在上述错误，请重写查询。
+如果没有错误，请仅复制原始查询，不做进一步评论。
 
-Output the final SQL query only."""
+仅输出最终的 SQL 查询。"""
 prompt = ChatPromptTemplate.from_messages(
     [("system", system), ("human", "{query}")]
 ).partial(dialect=db.dialect)
@@ -94,11 +91,10 @@ validation_chain = prompt | llm | StrOutputParser()
 full_chain = {"query": chain} | validation_chain
 ```
 
-
 ```python
 query = full_chain.invoke(
     {
-        "question": "What's the average Invoice from an American customer whose Fax is missing since 2003 but before 2010"
+        "question": "来自美国客户的平均发票是多少，且自2003年以来缺少传真，但在2010年之前"
     }
 )
 print(query)
@@ -112,47 +108,42 @@ AND c.Fax IS NULL
 AND i.InvoiceDate >= '2003-01-01' 
 AND i.InvoiceDate < '2010-01-01'
 ```
-Note how we can see both steps of the chain in the [Langsmith trace](https://smith.langchain.com/public/8a743295-a57c-4e4c-8625-bc7e36af9d74/r).
-
+注意我们可以在 [Langsmith trace](https://smith.langchain.com/public/8a743295-a57c-4e4c-8625-bc7e36af9d74/r) 中看到链的两个步骤。
 
 ```python
 db.run(query)
 ```
 
-
-
 ```output
 '[(6.632999999999998,)]'
 ```
 
-
-The obvious downside of this approach is that we need to make two model calls instead of one to generate our query. To get around this we can try to perform the query generation and query check in a single model invocation:
-
+这种方法明显的缺点是我们需要进行两次模型调用而不是一次来生成查询。为了避免这种情况，我们可以尝试在一次模型调用中进行查询生成和查询检查：
 
 ```python
-system = """You are a {dialect} expert. Given an input question, create a syntactically correct {dialect} query to run.
-Unless the user specifies in the question a specific number of examples to obtain, query for at most {top_k} results using the LIMIT clause as per {dialect}. You can order the results to return the most informative data in the database.
-Never query for all columns from a table. You must query only the columns that are needed to answer the question. Wrap each column name in double quotes (") to denote them as delimited identifiers.
-Pay attention to use only the column names you can see in the tables below. Be careful to not query for columns that do not exist. Also, pay attention to which column is in which table.
-Pay attention to use date('now') function to get the current date, if the question involves "today".
+system = """你是一个 {dialect} 专家。给定一个输入问题，创建一个语法正确的 {dialect} 查询来执行。
+除非用户在问题中指定要获得的示例数量，否则使用 LIMIT 子句查询最多 {top_k} 个结果，按照 {dialect} 的要求。你可以对结果进行排序，以返回数据库中最有信息的数据。
+永远不要查询表中的所有列。你必须只查询回答问题所需的列。将每个列名用双引号 (") 括起来，以表示它们是限定标识符。
+注意只使用你在下面的表中看到的列名。小心不要查询不存在的列。同时，注意哪个列在哪个表中。
+如果问题涉及“今天”，请注意使用 date('now') 函数获取当前日期。
 
-Only use the following tables:
+仅使用以下表：
 {table_info}
 
-Write an initial draft of the query. Then double check the {dialect} query for common mistakes, including:
-- Using NOT IN with NULL values
-- Using UNION when UNION ALL should have been used
-- Using BETWEEN for exclusive ranges
-- Data type mismatch in predicates
-- Properly quoting identifiers
-- Using the correct number of arguments for functions
-- Casting to the correct data type
-- Using the proper columns for joins
+写一个查询的初始草稿。然后仔细检查 {dialect} 查询是否存在常见错误，包括：
+- 在 NULL 值上使用 NOT IN
+- 在应该使用 UNION ALL 时使用 UNION
+- 对于排他范围使用 BETWEEN
+- 谓词中的数据类型不匹配
+- 正确引用标识符
+- 函数的参数数量正确
+- 转换为正确的数据类型
+- 使用正确的列进行连接
 
-Use format:
+使用格式：
 
-First draft: <<FIRST_DRAFT_QUERY>>
-Final answer: <<FINAL_ANSWER_QUERY>>
+初稿: <<FIRST_DRAFT_QUERY>>
+最终答案: <<FINAL_ANSWER_QUERY>>
 """
 prompt = ChatPromptTemplate.from_messages(
     [("system", system), ("human", "{input}")]
@@ -160,41 +151,41 @@ prompt = ChatPromptTemplate.from_messages(
 
 
 def parse_final_answer(output: str) -> str:
-    return output.split("Final answer: ")[1]
+    return output.split("最终答案: ")[1]
 
 
 chain = create_sql_query_chain(llm, db, prompt=prompt) | parse_final_answer
 prompt.pretty_print()
 ```
 ```output
-================================[1m System Message [0m================================
+================================[1m 系统消息 [0m================================
 
-You are a [33;1m[1;3m{dialect}[0m expert. Given an input question, create a syntactically correct [33;1m[1;3m{dialect}[0m query to run.
-Unless the user specifies in the question a specific number of examples to obtain, query for at most [33;1m[1;3m{top_k}[0m results using the LIMIT clause as per [33;1m[1;3m{dialect}[0m. You can order the results to return the most informative data in the database.
-Never query for all columns from a table. You must query only the columns that are needed to answer the question. Wrap each column name in double quotes (") to denote them as delimited identifiers.
-Pay attention to use only the column names you can see in the tables below. Be careful to not query for columns that do not exist. Also, pay attention to which column is in which table.
-Pay attention to use date('now') function to get the current date, if the question involves "today".
+你是一个 [33;1m[1;3m{dialect}[0m 专家。给定一个输入问题，创建一个语法正确的 [33;1m[1;3m{dialect}[0m 查询来执行。
+除非用户在问题中指定要获得的示例数量，否则使用 LIMIT 子句查询最多 [33;1m[1;3m{top_k}[0m 个结果，按照 [33;1m[1;3m{dialect}[0m 的要求。你可以对结果进行排序，以返回数据库中最有信息的数据。
+永远不要查询表中的所有列。你必须只查询回答问题所需的列。将每个列名用双引号 (") 括起来，以表示它们是限定标识符。
+注意只使用你在下面的表中看到的列名。小心不要查询不存在的列。同时，注意哪个列在哪个表中。
+如果问题涉及“今天”，请注意使用 date('now') 函数获取当前日期。
 
-Only use the following tables:
+仅使用以下表：
 [33;1m[1;3m{table_info}[0m
 
-Write an initial draft of the query. Then double check the [33;1m[1;3m{dialect}[0m query for common mistakes, including:
-- Using NOT IN with NULL values
-- Using UNION when UNION ALL should have been used
-- Using BETWEEN for exclusive ranges
-- Data type mismatch in predicates
-- Properly quoting identifiers
-- Using the correct number of arguments for functions
-- Casting to the correct data type
-- Using the proper columns for joins
+写一个查询的初始草稿。然后仔细检查 [33;1m[1;3m{dialect}[0m 查询是否存在常见错误，包括：
+- 在 NULL 值上使用 NOT IN
+- 在应该使用 UNION ALL 时使用 UNION
+- 对于排他范围使用 BETWEEN
+- 谓词中的数据类型不匹配
+- 正确引用标识符
+- 函数的参数数量正确
+- 转换为正确的数据类型
+- 使用正确的列进行连接
 
-Use format:
+使用格式：
 
-First draft: <<FIRST_DRAFT_QUERY>>
-Final answer: <<FINAL_ANSWER_QUERY>>
+初稿: <<FIRST_DRAFT_QUERY>>
+最终答案: <<FINAL_ANSWER_QUERY>>
 
 
-================================[1m Human Message [0m=================================
+================================[1m 人类消息 [0m=================================
 
 [33;1m[1;3m{input}[0m
 ```
@@ -202,14 +193,12 @@ Final answer: <<FINAL_ANSWER_QUERY>>
 ```python
 query = chain.invoke(
     {
-        "question": "What's the average Invoice from an American customer whose Fax is missing since 2003 but before 2010"
+        "question": "来自美国客户的平均发票是多少，且自2003年以来缺少传真，但在2010年之前"
     }
 )
 print(query)
 ```
 ```output
-
-
 SELECT AVG(i."Total") AS "AverageInvoice"
 FROM "Invoice" i
 JOIN "Customer" c ON i."CustomerId" = c."CustomerId"
@@ -222,17 +211,14 @@ AND i."InvoiceDate" BETWEEN '2003-01-01' AND '2010-01-01';
 db.run(query)
 ```
 
-
-
 ```output
 '[(6.632999999999998,)]'
 ```
 
+## 人工参与
 
-## Human-in-the-loop
+在某些情况下，我们的数据敏感到不希望在没有人类先行批准的情况下执行 SQL 查询。请前往 [工具使用：人工参与](/docs/how_to/tools_human) 页面，了解如何为任何工具、链或代理添加人工参与。
 
-In some cases our data is sensitive enough that we never want to execute a SQL query without a human approving it first. Head to the [Tool use: Human-in-the-loop](/docs/how_to/tools_human) page to learn how to add a human-in-the-loop to any tool, chain or agent.
+## 错误处理
 
-## Error handling
-
-At some point, the model will make a mistake and craft an invalid SQL query. Or an issue will arise with our database. Or the model API will go down. We'll want to add some error handling behavior to our chains and agents so that we fail gracefully in these situations, and perhaps even automatically recover. To learn about error handling with tools, head to the [Tool use: Error handling](/docs/how_to/tools_error) page.
+在某些情况下，模型可能会出错并生成无效的 SQL 查询。或者我们的数据库可能会出现问题。或者模型 API 可能会宕机。我们希望在这些情况下为我们的链和代理添加一些错误处理行为，以便优雅地失败，甚至可能自动恢复。要了解有关工具的错误处理，请访问 [工具使用：错误处理](/docs/how_to/tools_error) 页面。

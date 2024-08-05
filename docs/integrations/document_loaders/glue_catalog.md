@@ -1,22 +1,21 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/glue_catalog.ipynb
 ---
+
 # Glue Catalog
 
+[AWS Glue Data Catalog](https://docs.aws.amazon.com/en_en/glue/latest/dg/catalog-and-crawler.html) 是一个集中式元数据存储库，允许您管理、访问和共享存储在 AWS 中的数据的元数据。它充当您数据资产的元数据存储，使各种 AWS 服务和您的应用程序能够高效地查询和连接所需的数据。
 
-The [AWS Glue Data Catalog](https://docs.aws.amazon.com/en_en/glue/latest/dg/catalog-and-crawler.html) is a centralized metadata repository that allows you to manage, access, and share metadata about your data stored in AWS. It acts as a metadata store for your data assets, enabling various AWS services and your applications to query and connect to the data they need efficiently.
+当您在 AWS Glue 中定义数据源、转换和目标时，这些元素的元数据将存储在数据目录中。这包括有关数据位置、模式定义、运行时指标等的信息。它支持各种数据存储类型，例如 Amazon S3、Amazon RDS、Amazon Redshift 和与 JDBC 兼容的外部数据库。它还与 Amazon Athena、Amazon Redshift Spectrum 和 Amazon EMR 直接集成，允许这些服务直接访问和查询数据。
 
-When you define data sources, transformations, and targets in AWS Glue, the metadata about these elements is stored in the Data Catalog. This includes information about data locations, schema definitions, runtime metrics, and more. It supports various data store types, such as Amazon S3, Amazon RDS, Amazon Redshift, and external databases compatible with JDBC. It is also directly integrated with Amazon Athena, Amazon Redshift Spectrum, and Amazon EMR, allowing these services to directly access and query the data.
+Langchain GlueCatalogLoader 将以与 Pandas dtype 相同的格式获取给定 Glue 数据库中所有表的模式。
 
-The Langchain GlueCatalogLoader will get the schema of all tables inside the given Glue database in the same format as Pandas dtype.
+## 设置
 
-## Setting up
+- 按照 [设置 AWS 账户的说明](https://docs.aws.amazon.com/athena/latest/ug/setting-up.html)。
+- 安装 boto3 库：`pip install boto3`
 
-- Follow [instructions to set up an AWS accoung](https://docs.aws.amazon.com/athena/latest/ug/setting-up.html).
-- Install the boto3 library: `pip install boto3`
-
-
-## Example
+## 示例
 
 
 ```python
@@ -37,15 +36,13 @@ schemas = loader.load()
 print(schemas)
 ```
 
-## Example with table filtering
+## 示例：表过滤
 
-Table filtering allows you to selectively retrieve schema information for a specific subset of tables within a Glue database. Instead of loading the schemas for all tables, you can use the `table_filter` argument to specify exactly which tables you're interested in.
-
+表过滤允许您选择性地检索 Glue 数据库中特定子集表的架构信息。您可以使用 `table_filter` 参数精确指定您感兴趣的表，而不是加载所有表的架构。
 
 ```python
 from langchain_community.document_loaders.glue_catalog import GlueCatalogLoader
 ```
-
 
 ```python
 database_name = "my_database"
@@ -60,8 +57,7 @@ schemas = loader.load()
 print(schemas)
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

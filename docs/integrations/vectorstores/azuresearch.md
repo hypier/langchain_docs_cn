@@ -1,25 +1,25 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/azuresearch.ipynb
 ---
+
 # Azure AI Search
 
-[Azure AI Search](https://learn.microsoft.com/azure/search/search-what-is-azure-search) (formerly known as `Azure Search` and `Azure Cognitive Search`) is a cloud search service that gives developers infrastructure, APIs, and tools for information retrieval of vector, keyword, and hybrid queries at scale.
+[Azure AI Search](https://learn.microsoft.com/azure/search/search-what-is-azure-search)（以前称为 `Azure Search` 和 `Azure Cognitive Search`）是一种云搜索服务，为开发人员提供基础设施、API 和工具，以大规模检索向量、关键字和混合查询的信息。
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
+您需要使用 `pip install -qU langchain-community` 安装 `langchain-community` 以使用此集成。
 
-## Install Azure AI Search SDK
+## 安装 Azure AI Search SDK
 
-Use azure-search-documents package version 11.4.0 or later.
-
+使用 azure-search-documents 包版本 11.4.0 或更高版本。
 
 ```python
 %pip install --upgrade --quiet  azure-search-documents
 %pip install --upgrade --quiet  azure-identity
 ```
 
-## Import required libraries
+## 导入所需的库
 
-`OpenAIEmbeddings` is assumed, but if you're using Azure OpenAI, import `AzureOpenAIEmbeddings` instead.
+`OpenAIEmbeddings` 被假定使用，但如果您使用的是 Azure OpenAI，请改为导入 `AzureOpenAIEmbeddings`。
 
 
 ```python
@@ -29,12 +29,12 @@ from langchain_community.vectorstores.azuresearch import AzureSearch
 from langchain_openai import AzureOpenAIEmbeddings, OpenAIEmbeddings
 ```
 
-## Configure OpenAI settings
-Set variables for your OpenAI provider. You need either an [OpenAI account](https://platform.openai.com/docs/quickstart?context=python) or an [Azure OpenAI account](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/create-resource) to generate the embeddings. 
+## 配置 OpenAI 设置
+为您的 OpenAI 提供者设置变量。您需要一个 [OpenAI 账户](https://platform.openai.com/docs/quickstart?context=python) 或一个 [Azure OpenAI 账户](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to-create-resource) 来生成嵌入。 
 
 
 ```python
-# Option 1: use an OpenAI account
+# 选项 1：使用 OpenAI 账户
 openai_api_key: str = "PLACEHOLDER FOR YOUR API KEY"
 openai_api_version: str = "2023-05-15"
 model: str = "text-embedding-ada-002"
@@ -42,29 +42,27 @@ model: str = "text-embedding-ada-002"
 
 
 ```python
-# Option 2: use an Azure OpenAI account with a deployment of an embedding model
+# 选项 2：使用 Azure OpenAI 账户和嵌入模型的部署
 azure_endpoint: str = "PLACEHOLDER FOR YOUR AZURE OPENAI ENDPOINT"
 azure_openai_api_key: str = "PLACEHOLDER FOR YOUR AZURE OPENAI KEY"
 azure_openai_api_version: str = "2023-05-15"
 azure_deployment: str = "text-embedding-ada-002"
 ```
 
-## Configure vector store settings
+## 配置向量存储设置
 
-You need an [Azure subscription](https://azure.microsoft.com/en-us/free/search) and [Azure AI Search service](https://learn.microsoft.com/azure/search/search-create-service-portal) to use this vector store integration. No-cost versions are available for small and limited workloads.
- 
-Set variables for your Azure AI Search URL and admin API key. You can get these variables from the [Azure portal](https://portal.azure.com/#blade/HubsExtension/BrowseResourceBlade/resourceType/Microsoft.Search%2FsearchServices).
+您需要一个 [Azure 订阅](https://azure.microsoft.com/en-us/free/search) 和 [Azure AI Search 服务](https://learn.microsoft.com/azure/search/search-create-service-portal) 来使用此向量存储集成。对于小型和有限的工作负载，有无成本版本可用。
 
+设置您的 Azure AI Search URL 和管理员 API 密钥的变量。您可以从 [Azure 门户](https://portal.azure.com/#blade/HubsExtension/BrowseResourceBlade/resourceType/Microsoft.Search%2FsearchServices) 获取这些变量。
 
 ```python
 vector_store_address: str = "YOUR_AZURE_SEARCH_ENDPOINT"
 vector_store_password: str = "YOUR_AZURE_SEARCH_ADMIN_KEY"
 ```
 
-## Create embeddings and vector store instances
- 
-Create instances of the OpenAIEmbeddings and AzureSearch classes. When you complete this step, you should have an empty search index on your Azure AI Search resource. The integration module provides a default schema.
+## 创建嵌入和向量存储实例
 
+创建 OpenAIEmbeddings 和 AzureSearch 类的实例。当您完成此步骤时，您应该在 Azure AI Search 资源上拥有一个空的搜索索引。集成模块提供了默认架构。
 
 ```python
 # Option 1: Use OpenAIEmbeddings with OpenAI account
@@ -84,9 +82,9 @@ embeddings: AzureOpenAIEmbeddings = AzureOpenAIEmbeddings(
 )
 ```
 
-## Create vector store instance
+## 创建向量存储实例
  
-Create instance of the AzureSearch class using the embeddings from above
+使用上述的嵌入创建 AzureSearch 类的实例
 
 
 ```python
@@ -101,21 +99,20 @@ vector_store: AzureSearch = AzureSearch(
 
 
 ```python
-# Specify additional properties for the Azure client such as the following https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/core/azure-core/README.md#configurations
+# 为 Azure 客户端指定其他属性，例如以下内容 https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/core/azure-core/README.md#configurations
 vector_store: AzureSearch = AzureSearch(
     azure_search_endpoint=vector_store_address,
     azure_search_key=vector_store_password,
     index_name=index_name,
     embedding_function=embeddings.embed_query,
-    # Configure max retries for the Azure client
+    # 配置 Azure 客户端的最大重试次数
     additional_search_client_options={"retry_total": 4},
 )
 ```
 
-## Insert text and embeddings into vector store
- 
-This step loads, chunks, and vectorizes the sample document, and then indexes the content into a search index on Azure AI Search.
+## 将文本和嵌入插入向量存储
 
+此步骤加载、分块并向量化示例文档，然后将内容索引到 Azure AI Search 的搜索索引中。
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -129,8 +126,6 @@ docs = text_splitter.split_documents(documents)
 
 vector_store.add_documents(documents=docs)
 ```
-
-
 
 ```output
 ['M2U1OGM4YzAtYjMxYS00Nzk5LTlhNDgtZTc3MGVkNTg1Mjc0',
@@ -177,11 +172,9 @@ vector_store.add_documents(documents=docs)
  'ZTQ3NDMwODEtMTQwMy00NDFkLWJhZDQtM2UxN2RkOTU1MTdl']
 ```
 
+## 执行向量相似性搜索
 
-## Perform a vector similarity search
- 
-Execute a pure vector similarity search using the similarity_search() method:
-
+使用 similarity_search() 方法执行纯向量相似性搜索：
 
 ```python
 # Perform a similarity search
@@ -201,9 +194,10 @@ One of the most serious constitutional responsibilities a President has is nomin
 
 And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
 ```
-## Perform a vector similarity search with relevance scores
+
+## 执行带相关性评分的向量相似度搜索
  
-Execute a pure vector similarity search using the similarity_search_with_relevance_scores() method. Queries that don't meet the threshold requirements are exluded.
+使用 similarity_search_with_relevance_scores() 方法执行纯向量相似度搜索。未满足阈值要求的查询将被排除。
 
 
 ```python
@@ -226,10 +220,10 @@ pprint(docs_and_scores)
  (Document(page_content='Tonight, I’m announcing a crackdown on these companies overcharging American businesses and consumers. \n\nAnd as Wall Street firms take over more nursing homes, quality in those homes has gone down and costs have gone up.  \n\nThat ends on my watch. \n\nMedicare is going to set higher standards for nursing homes and make sure your loved ones get the care they deserve and expect. \n\nWe’ll also cut costs and keep the economy going strong by giving workers a fair shot, provide more training and apprenticeships, hire them based on their skills not degrees. \n\nLet’s pass the Paycheck Fairness Act and paid leave.  \n\nRaise the minimum wage to $15 an hour and extend the Child Tax Credit, so no one has to raise a family in poverty. \n\nLet’s increase Pell Grants and increase our historic support of HBCUs, and invest in what Jill—our First Lady who teaches full-time—calls America’s best-kept secret: community colleges.', metadata={'source': '../../how_to/state_of_the_union.txt'}),
   0.8148832)]
 ```
-## Perform a hybrid search
 
-Execute hybrid search using the search_type or hybrid_search() method. Vector and nonvector text fields are queried in parallel, results are merged, and top matches of the unified result set are returned.
+## 执行混合搜索
 
+使用 search_type 或 hybrid_search() 方法执行混合搜索。向量和非向量文本字段并行查询，结果合并，并返回统一结果集的最佳匹配项。
 
 ```python
 # Perform a hybrid search using the search_type parameter
@@ -266,17 +260,16 @@ One of the most serious constitutional responsibilities a President has is nomin
 
 And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
 ```
-## Custom schemas and queries
 
-This section shows you how to replace the default schema with a custom schema.
+## 自定义模式和查询
 
+本节将向您展示如何用自定义模式替换默认模式。
 
-### Create a new index with custom filterable fields 
+### 创建一个带有自定义可过滤字段的新索引
 
-This schema shows field definitions. It's the default schema, plus several new fields attributed as filterable. Because it's using the default vector configuration, you won't see vector configuration or vector profile overrides here. The name of the default vector profile is "myHnswProfile" and it's using a vector configuration of Hierarchical Navigable Small World (HNSW) for indexing and queries against the content_vector field.
+该模式显示了字段定义。它是默认模式，加上几个被标记为可过滤的新字段。由于使用的是默认向量配置，因此在这里您不会看到向量配置或向量配置文件的覆盖。默认向量配置文件的名称是 "myHnswProfile"，它使用层次可导航小世界（HNSW）向量配置进行内容向量字段的索引和查询。
 
-There's no data for this schema in this step. When you execute the cell, you should get an empty index on Azure AI Search.
-
+在此步骤中，该模式没有数据。当您执行该单元时，您应该在 Azure AI Search 上获得一个空索引。
 
 ```python
 from azure.search.documents.indexes.models import (
@@ -288,7 +281,7 @@ from azure.search.documents.indexes.models import (
     TextWeights,
 )
 
-#  Replace OpenAIEmbeddings with AzureOpenAIEmbeddings if Azure OpenAI is your provider.
+#  如果 Azure OpenAI 是您的提供商，请将 OpenAIEmbeddings 替换为 AzureOpenAIEmbeddings。
 embeddings: OpenAIEmbeddings = OpenAIEmbeddings(
     openai_api_key=openai_api_key, openai_api_version=openai_api_version, model=model
 )
@@ -318,13 +311,13 @@ fields = [
         type=SearchFieldDataType.String,
         searchable=True,
     ),
-    # Additional field to store the title
+    # 额外字段以存储标题
     SearchableField(
         name="title",
         type=SearchFieldDataType.String,
         searchable=True,
     ),
-    # Additional field for filtering on document source
+    # 额外字段用于过滤文档来源
     SimpleField(
         name="source",
         type=SearchFieldDataType.String,
@@ -343,10 +336,9 @@ vector_store: AzureSearch = AzureSearch(
 )
 ```
 
-### Add data and perform a query that includes a filter
+### 添加数据并执行包含过滤器的查询
 
-This example adds data to the vector store based on the custom schema. It loads text into the title and source fields. The source field is filterable. The sample query in this section filters the results based on content in the source field.
-
+此示例根据自定义模式将数据添加到向量存储中。它将文本加载到标题和来源字段。来源字段是可过滤的。本节中的示例查询根据来源字段中的内容过滤结果。
 
 ```python
 # Data in the metadata dictionary with a corresponding field in the index will be added to the index.
@@ -363,30 +355,22 @@ vector_store.add_texts(
 )
 ```
 
-
-
 ```output
 ['ZjhmMTg0NTEtMjgwNC00N2M0LWFiZGEtMDllMGU1Mzk1NWRm',
  'MzQwYWUwZDEtNDJkZC00MzgzLWIwMzItYzMwOGZkYTRiZGRi',
  'ZjFmOWVlYTQtODRiMC00YTY3LTk2YjUtMzY1NDBjNjY5ZmQ2']
 ```
 
-
-
 ```python
 res = vector_store.similarity_search(query="Test 3 source1", k=3, search_type="hybrid")
 res
 ```
-
-
 
 ```output
 [Document(page_content='Test 3', metadata={'title': 'Title 3', 'source': 'B', 'random': '32893'}),
  Document(page_content='Test 1', metadata={'title': 'Title 1', 'source': 'A', 'random': '10290'}),
  Document(page_content='Test 2', metadata={'title': 'Title 2', 'source': 'A', 'random': '48392'})]
 ```
-
-
 
 ```python
 res = vector_store.similarity_search(
@@ -395,18 +379,14 @@ res = vector_store.similarity_search(
 res
 ```
 
-
-
 ```output
 [Document(page_content='Test 1', metadata={'title': 'Title 1', 'source': 'A', 'random': '10290'}),
  Document(page_content='Test 2', metadata={'title': 'Title 2', 'source': 'A', 'random': '48392'})]
 ```
 
+### 创建带有评分配置文件的新索引
 
-### Create a new index with a scoring profile
-
-Here's another custom schema that includes a scoring profile definition. A scoring profile is used for relevance tuning of nonvector content, which is helpful in hybrid search scenarios.
-
+这是另一个自定义模式，其中包含评分配置文件定义。评分配置文件用于非向量内容的相关性调优，这在混合搜索场景中非常有用。
 
 ```python
 from azure.search.documents.indexes.models import (
@@ -420,7 +400,7 @@ from azure.search.documents.indexes.models import (
     TextWeights,
 )
 
-#  Replace OpenAIEmbeddings with AzureOpenAIEmbeddings if Azure OpenAI is your provider.
+#  如果您的提供商是 Azure OpenAI，请将 OpenAIEmbeddings 替换为 AzureOpenAIEmbeddings。
 embeddings: OpenAIEmbeddings = OpenAIEmbeddings(
     openai_api_key=openai_api_key, openai_api_version=openai_api_version, model=model
 )
@@ -450,19 +430,19 @@ fields = [
         type=SearchFieldDataType.String,
         searchable=True,
     ),
-    # Additional field to store the title
+    # 额外字段用于存储标题
     SearchableField(
         name="title",
         type=SearchFieldDataType.String,
         searchable=True,
     ),
-    # Additional field for filtering on document source
+    # 额外字段用于过滤文档来源
     SimpleField(
         name="source",
         type=SearchFieldDataType.String,
         filterable=True,
     ),
-    # Additional data field for last doc update
+    # 额外数据字段用于最后文档更新
     SimpleField(
         name="last_update",
         type=SearchFieldDataType.DateTimeOffset,
@@ -470,7 +450,7 @@ fields = [
         filterable=True,
     ),
 ]
-# Adding a custom scoring profile with a freshness function
+# 添加带有新鲜度函数的自定义评分配置文件
 sc_name = "scoring_profile"
 sc = ScoringProfile(
     name=sc_name,
@@ -501,7 +481,7 @@ vector_store: AzureSearch = AzureSearch(
 
 
 ```python
-# Adding same data with different last_update to show Scoring Profile effect
+# 添加相同数据但不同的 last_update 以显示评分配置文件的效果
 from datetime import datetime, timedelta
 
 today = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S-00:00")
@@ -558,9 +538,7 @@ res
  Document(page_content='Test 1', metadata={'title': 'Title 1', 'source': 'source1', 'random': '10290', 'last_update': '2024-02-23T22:18:51-00:00'})]
 ```
 
+## 相关
 
-
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

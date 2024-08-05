@@ -1,35 +1,35 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/providers/vectara/vectara_chat.ipynb
 ---
-# Vectara Chat
 
-[Vectara](https://vectara.com/) provides a Trusted Generative AI platform, allowing organizations to rapidly create a ChatGPT-like experience (an AI assistant) which is grounded in the data, documents, and knowledge that they have (technically, it is Retrieval-Augmented-Generation-as-a-service). 
+# Vectara 聊天
 
-Vectara serverless RAG-as-a-service provides all the components of RAG behind an easy-to-use API, including:
-1. A way to extract text from files (PDF, PPT, DOCX, etc)
-2. ML-based chunking that provides state of the art performance.
-3. The [Boomerang](https://vectara.com/how-boomerang-takes-retrieval-augmented-generation-to-the-next-level-via-grounded-generation/) embeddings model.
-4. Its own internal vector database where text chunks and embedding vectors are stored.
-5. A query service that automatically encodes the query into embedding, and retrieves the most relevant text segments (including support for [Hybrid Search](https://docs.vectara.com/docs/api-reference/search-apis/lexical-matching) and [MMR](https://vectara.com/get-diverse-results-and-comprehensive-summaries-with-vectaras-mmr-reranker/))
-7. An LLM to for creating a [generative summary](https://docs.vectara.com/docs/learn/grounded-generation/grounded-generation-overview), based on the retrieved documents (context), including citations.
+[Vectara](https://vectara.com/) 提供一个可信的生成式 AI 平台，使组织能够快速创建类似 ChatGPT 的体验（一个 AI 助手），该体验基于他们拥有的数据、文档和知识（从技术上讲，它是检索增强生成即服务）。
 
-See the [Vectara API documentation](https://docs.vectara.com/docs/) for more information on how to use the API.
+Vectara 无服务器 RAG 即服务提供了所有 RAG 组件，背后有一个易于使用的 API，包括：
+1. 从文件中提取文本的方法（PDF、PPT、DOCX 等）
+2. 基于机器学习的分块，提供最先进的性能。
+3. [Boomerang](https://vectara.com/how-boomerang-takes-retrieval-augmented-generation-to-the-next-level-via-grounded-generation/) 嵌入模型。
+4. 自有的内部向量数据库，用于存储文本块和嵌入向量。
+5. 一个查询服务，自动将查询编码为嵌入，并检索最相关的文本段落（包括支持 [Hybrid Search](https://docs.vectara.com/docs/api-reference/search-apis/lexical-matching) 和 [MMR](https://vectara.com/get-diverse-results-and-comprehensive-summaries-with-vectaras-mmr-reranker/)）
+7. 一个 LLM 用于基于检索到的文档（上下文）创建 [生成摘要](https://docs.vectara.com/docs/learn/grounded-generation/grounded-generation-overview)，包括引用。
 
-This notebook shows how to use Vectara's [Chat](https://docs.vectara.com/docs/api-reference/chat-apis/chat-apis-overview) functionality.
+有关如何使用 API 的更多信息，请参见 [Vectara API 文档](https://docs.vectara.com/docs/)。
 
-# Getting Started
+本笔记本展示了如何使用 Vectara 的 [聊天](https://docs.vectara.com/docs/api-reference/chat-apis/chat-apis-overview) 功能。
 
-To get started, use the following steps:
-1. If you don't already have one, [Sign up](https://www.vectara.com/integrations/langchain) for your free Vectara account. Once you have completed your sign up you will have a Vectara customer ID. You can find your customer ID by clicking on your name, on the top-right of the Vectara console window.
-2. Within your account you can create one or more corpora. Each corpus represents an area that stores text data upon ingest from input documents. To create a corpus, use the **"Create Corpus"** button. You then provide a name to your corpus as well as a description. Optionally you can define filtering attributes and apply some advanced options. If you click on your created corpus, you can see its name and corpus ID right on the top.
-3. Next you'll need to create API keys to access the corpus. Click on the **"Access Control"** tab in the corpus view and then the **"Create API Key"** button. Give your key a name, and choose whether you want query-only or query+index for your key. Click "Create" and you now have an active API key. Keep this key confidential. 
+# 开始使用
 
-To use LangChain with Vectara, you'll need to have these three values: `customer ID`, `corpus ID` and `api_key`.
-You can provide those to LangChain in two ways:
+要开始使用，请按照以下步骤操作：
+1. 如果您还没有账户，请[注册](https://www.vectara.com/integrations/langchain)一个免费的 Vectara 账户。注册完成后，您将获得一个 Vectara 客户 ID。您可以通过点击 Vectara 控制台窗口右上角的您的名字找到您的客户 ID。
+2. 在您的账户中，您可以创建一个或多个语料库。每个语料库表示一个存储从输入文档中获取的文本数据的区域。要创建一个语料库，请使用 **"创建语料库"** 按钮。然后为您的语料库提供一个名称和描述。您可以选择定义过滤属性并应用一些高级选项。如果您点击您创建的语料库，您可以在顶部看到它的名称和语料库 ID。
+3. 接下来，您需要创建 API 密钥以访问语料库。在语料库视图中点击 **"访问控制"** 选项卡，然后点击 **"创建 API 密钥"** 按钮。为您的密钥命名，并选择您希望密钥是仅查询还是查询+索引。点击 "创建"，您现在拥有一个有效的 API 密钥。请保密此密钥。
 
-1. Include in your environment these three variables: `VECTARA_CUSTOMER_ID`, `VECTARA_CORPUS_ID` and `VECTARA_API_KEY`.
+要将 LangChain 与 Vectara 一起使用，您需要这三个值： `customer ID`， `corpus ID` 和 `api_key`。您可以通过两种方式将它们提供给 LangChain：
 
-   For example, you can set these variables using os.environ and getpass as follows:
+1. 在您的环境中包含这三个变量： `VECTARA_CUSTOMER_ID`， `VECTARA_CORPUS_ID` 和 `VECTARA_API_KEY`。
+
+   例如，您可以使用 os.environ 和 getpass 设置这些变量，如下所示：
 
 ```python
 import os
@@ -40,7 +40,7 @@ os.environ["VECTARA_CORPUS_ID"] = getpass.getpass("Vectara Corpus ID:")
 os.environ["VECTARA_API_KEY"] = getpass.getpass("Vectara API Key:")
 ```
 
-2. Add them to the `Vectara` vectorstore constructor:
+2. 将它们添加到 `Vectara` 向量存储构造函数中：
 
 ```python
 vectara = Vectara(
@@ -49,7 +49,7 @@ vectara = Vectara(
                 vectara_api_key=vectara_api_key
             )
 ```
-In this notebook we assume they are provided in the environment.
+在本笔记本中，我们假设它们在环境中提供。
 
 
 ```python
@@ -67,14 +67,13 @@ from langchain_community.vectorstores.vectara import (
 )
 ```
 
-## Vectara Chat Explained
+## Vectara Chat 解释
 
-In most uses of LangChain to create chatbots, one must integrate a special `memory` component that maintains the history of chat sessions and then uses that history to ensure the chatbot is aware of conversation history.
+在大多数使用 LangChain 创建聊天机器人的场景中，必须集成一个特殊的 `memory` 组件，该组件维护聊天会话的历史记录，然后利用这些历史记录确保聊天机器人了解对话历史。
 
-With Vectara Chat - all of that is performed in the backend by Vectara automatically. You can look at the [Chat](https://docs.vectara.com/docs/api-reference/chat-apis/chat-apis-overview) documentation for the details, to learn more about the internals of how this is implemented, but with LangChain all you have to do is turn that feature on in the Vectara vectorstore.
+使用 Vectara Chat - 所有这些操作都由 Vectara 在后台自动执行。您可以查看 [Chat](https://docs.vectara.com/docs/api-reference/chat-apis/chat-apis-overview) 文档以获取详细信息，了解其实现的内部机制，但使用 LangChain，您只需在 Vectara 向量存储中启用该功能即可。
 
-Let's see an example. First we load the SOTU document (remember, text extraction and chunking all occurs automatically on the Vectara platform):
-
+让我们看一个例子。首先，我们加载 SOTU 文档（请记住，文本提取和分块在 Vectara 平台上会自动进行）：
 
 ```python
 from langchain.document_loaders import TextLoader
@@ -85,8 +84,7 @@ documents = loader.load()
 vectara = Vectara.from_documents(documents, embedding=None)
 ```
 
-And now we create a Chat Runnable using the `as_chat` method:
-
+现在我们使用 `as_chat` 方法创建一个聊天可运行对象：
 
 ```python
 summary_config = SummaryConfig(is_enabled=True, max_results=7, response_lang="eng")
@@ -98,39 +96,30 @@ config = VectaraQueryConfig(
 bot = vectara.as_chat(config)
 ```
 
-Here's an example of asking a question with no chat history
-
+这是一个没有聊天历史的提问示例：
 
 ```python
 bot.invoke("What did the president say about Ketanji Brown Jackson?")["answer"]
 ```
 
-
-
 ```output
 'The President expressed gratitude to Justice Breyer and highlighted the significance of nominating Ketanji Brown Jackson to the Supreme Court, praising her legal expertise and commitment to upholding excellence [1]. The President also reassured the public about the situation with gas prices and the conflict in Ukraine, emphasizing unity with allies and the belief that the world will emerge stronger from these challenges [2][4]. Additionally, the President shared personal experiences related to economic struggles and the importance of passing the American Rescue Plan to support those in need [3]. The focus was also on job creation and economic growth, acknowledging the impact of inflation on families [5]. While addressing cancer as a significant issue, the President discussed plans to enhance cancer research and support for patients and families [7].'
 ```
 
-
-Here's an example of asking a question with some chat history
-
+这是一个带有一些聊天历史的提问示例：
 
 ```python
 bot.invoke("Did he mention who she suceeded?")["answer"]
 ```
 
-
-
 ```output
 "In his remarks, the President specified that Ketanji Brown Jackson is succeeding Justice Breyer on the United States Supreme Court[1]. The President praised Jackson as a top legal mind who will continue Justice Breyer's legacy of excellence. The nomination of Jackson was highlighted as a significant constitutional responsibility of the President[1]. The President emphasized the importance of this nomination and the qualities that Jackson brings to the role. The focus was on the transition from Justice Breyer to Judge Ketanji Brown Jackson on the Supreme Court[1]."
 ```
 
+## 流式聊天
 
-## Chat with streaming
-
-Of course the chatbot interface also supports streaming.
-Instead of the `invoke` method you simply use `stream`:
-
+当然，聊天机器人界面也支持流式传输。  
+您只需使用 `stream` 方法，而不是 `invoke` 方法：
 
 ```python
 output = {}

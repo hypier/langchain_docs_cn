@@ -1,21 +1,21 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/knn.ipynb
 ---
+
 # kNN
 
->In statistics, the [k-nearest neighbours algorithm (k-NN)](https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm) is a non-parametric supervised learning method first developed by `Evelyn Fix` and `Joseph Hodges` in 1951, and later expanded by `Thomas Cover`. It is used for classification and regression.
+>在统计学中，[k-最近邻算法 (k-NN)](https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm) 是一种非参数监督学习方法，最早由 `Evelyn Fix` 和 `Joseph Hodges` 于1951年开发，后来由 `Thomas Cover` 扩展。它用于分类和回归。
 
-This notebook goes over how to use a retriever that under the hood uses a kNN.
+本笔记本介绍如何使用一个底层使用 kNN 的检索器。
 
-Largely based on the code of [Andrej Karpathy](https://github.com/karpathy/randomfun/blob/master/knn_vs_svm.html).
-
+主要基于 [Andrej Karpathy](https://github.com/karpathy/randomfun/blob/master/knn_vs_svm.html) 的代码。
 
 ```python
 from langchain_community.retrievers import KNNRetriever
 from langchain_openai import OpenAIEmbeddings
 ```
 
-## Create New Retriever with Texts
+## 创建新检索器与文本
 
 
 ```python
@@ -24,9 +24,9 @@ retriever = KNNRetriever.from_texts(
 )
 ```
 
-## Use Retriever
+## 使用检索器
 
-We can now use the retriever!
+我们现在可以使用检索器了！
 
 
 ```python
@@ -47,9 +47,7 @@ result
  Document(page_content='bar', metadata={})]
 ```
 
+## 相关
 
-
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

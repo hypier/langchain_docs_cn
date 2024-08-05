@@ -1,23 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/clarifai.ipynb
 ---
+
 # Clarifai
 
->[Clarifai](https://www.clarifai.com/) is an AI Platform that provides the full AI lifecycle ranging from data exploration, data labeling, model training, evaluation, and inference.
+>[Clarifai](https://www.clarifai.com/) 是一个人工智能平台，提供从数据探索、数据标注、模型训练、评估到推理的完整人工智能生命周期。
 
-This example goes over how to use LangChain to interact with `Clarifai` [models](https://clarifai.com/explore/models). 
+本示例介绍如何使用 LangChain 与 `Clarifai` [模型](https://clarifai.com/explore/models) 进行交互。
 
-To use Clarifai, you must have an account and a Personal Access Token (PAT) key. 
-[Check here](https://clarifai.com/settings/security) to get or create a PAT.
+要使用 Clarifai，您必须拥有一个帐户和一个个人访问令牌 (PAT) 密钥。
+[在这里检查](https://clarifai.com/settings/security) 获取或创建 PAT。
 
-# Dependencies
-
+# 依赖
 
 ```python
 # Install required dependencies
 %pip install --upgrade --quiet  clarifai
 ```
-
 
 ```python
 # Declare clarifai pat token as environment variable or you can pass it as argument in clarifai class.
@@ -26,9 +25,8 @@ import os
 os.environ["CLARIFAI_PAT"] = "CLARIFAI_PAT_TOKEN"
 ```
 
-# Imports
-Here we will be setting the personal access token. You can find your PAT under [settings/security](https://clarifai.com/settings/security) in your Clarifai account.
-
+# 导入
+在这里我们将设置个人访问令牌。您可以在您的 Clarifai 账户的 [设置/安全](https://clarifai.com/settings/security) 中找到您的 PAT。
 
 ```python
 # Please login and get your API key from  https://clarifai.com/settings/security
@@ -37,7 +35,6 @@ from getpass import getpass
 CLARIFAI_PAT = getpass()
 ```
 
-
 ```python
 # Import the required modules
 from langchain.chains import LLMChain
@@ -45,9 +42,8 @@ from langchain_community.llms import Clarifai
 from langchain_core.prompts import PromptTemplate
 ```
 
-# Input
-Create a prompt template to be used with the LLM Chain:
-
+# 输入
+创建一个用于 LLM Chain 的提示模板：
 
 ```python
 template = """Question: {question}
@@ -57,12 +53,12 @@ Answer: Let's think step by step."""
 prompt = PromptTemplate.from_template(template)
 ```
 
-# Setup
-Setup the user id and app id where the model resides. You can find a list of public models on https://clarifai.com/explore/models
+# 设置
+设置模型所在的用户 ID 和应用 ID。您可以在 https://clarifai.com/explore/models 找到公共模型的列表。
 
-You will have to also initialize the model id and if needed, the model version id. Some models have many versions, you can choose the one appropriate for your task.
-                                                              
-Alternatively, You can use the model_url (for ex: "https://clarifai.com/anthropic/completion/models/claude-v2") for intialization.
+您还需要初始化模型 ID，如有必要，还需初始化模型版本 ID。一些模型有多个版本，您可以选择适合您任务的版本。
+
+或者，您可以使用 model_url（例如："https://clarifai.com/anthropic/completion/models/claude-v2"）进行初始化。
 
 
 ```python
@@ -92,8 +88,7 @@ clarifai_llm = Clarifai(model_url=MODEL_URL)
 llm_chain = LLMChain(prompt=prompt, llm=clarifai_llm)
 ```
 
-# Run Chain
-
+# 运行链
 
 ```python
 question = "What NFL team won the Super Bowl in the year Justin Beiber was born?"
@@ -101,22 +96,17 @@ question = "What NFL team won the Super Bowl in the year Justin Beiber was born?
 llm_chain.run(question)
 ```
 
-
-
 ```output
-' Okay, here are the steps to figure this out:\n\n1. Justin Bieber was born on March 1, 1994.\n\n2. The Super Bowl that took place in the year of his birth was Super Bowl XXVIII. \n\n3. Super Bowl XXVIII was played on January 30, 1994.\n\n4. The two teams that played in Super Bowl XXVIII were the Dallas Cowboys and the Buffalo Bills. \n\n5. The Dallas Cowboys defeated the Buffalo Bills 30-13 to win Super Bowl XXVIII.\n\nTherefore, the NFL team that won the Super Bowl in the year Justin Bieber was born was the Dallas Cowboys.'
+' 好的，以下是解决这个问题的步骤：\n\n1. 贾斯汀·比伯出生于1994年3月1日。\n\n2. 他出生年份的超级碗是超级碗XXVIII。\n\n3. 超级碗XXVIII于1994年1月30日进行。\n\n4. 参加超级碗XXVIII的两支球队是达拉斯牛仔队和布法罗比尔队。\n\n5. 达拉斯牛仔队以30-13战胜布法罗比尔队，赢得了超级碗XXVIII。\n\n因此，贾斯汀·比伯出生年份赢得超级碗的NFL球队是达拉斯牛仔队。'
 ```
 
-
-## Model Predict with Inference parameters for GPT.
-Alternatively you can use GPT models with inference parameters (like temperature, max_tokens etc)
-
+## 使用推理参数进行模型预测
+或者，您可以使用带有推理参数（如温度、max_tokens等）的GPT模型。
 
 ```python
-# Intialize the parameters as dict.
+# 将参数初始化为字典。
 params = dict(temperature=str(0.3), max_tokens=100)
 ```
-
 
 ```python
 clarifai_llm = Clarifai(user_id=USER_ID, app_id=APP_ID, model_id=MODEL_ID)
@@ -125,44 +115,35 @@ llm_chain = LLMChain(
 )
 ```
 
-
 ```python
-question = "How many 3 digit even numbers you can form that if one of the digits is 5 then the following digit must be 7?"
+question = "可以形成多少个三位数的偶数，如果其中一个数字是5，则下一个数字必须是7？"
 
 llm_chain.run(question)
 ```
 
-
-
 ```output
-'Step 1: The first digit can be any even number from 1 to 9, except for 5. So there are 4 choices for the first digit.\n\nStep 2: If the first digit is not 5, then the second digit must be 7. So there is only 1 choice for the second digit.\n\nStep 3: The third digit can be any even number from 0 to 9, except for 5 and 7. So there are '
+'步骤1：第一个数字可以是1到9之间的任何偶数，但不能是5。所以第一个数字有4个选择。\n\n步骤2：如果第一个数字不是5，则第二个数字必须是7。所以第二个数字只有1个选择。\n\n步骤3：第三个数字可以是0到9之间的任何偶数，但不能是5和7。所以有'
 ```
 
-
-Generate responses for list of prompts
-
+为一系列提示生成响应
 
 ```python
-# We can use _generate to generate the response for list of prompts.
+# 我们可以使用_generate为一系列提示生成响应。
 clarifai_llm._generate(
     [
-        "Help me summarize the events of american revolution in 5 sentences",
-        "Explain about rocket science in a funny way",
-        "Create a script for welcome speech for the college sports day",
+        "帮我用5句话总结美国革命的事件",
+        "用幽默的方式解释火箭科学",
+        "为大学运动会创建欢迎致辞的脚本",
     ],
     inference_params=params,
 )
 ```
 
-
-
 ```output
-LLMResult(generations=[[Generation(text=' Here is a 5 sentence summary of the key events of the American Revolution:\n\nThe American Revolution began with growing tensions between American colonists and the British government over issues of taxation without representation. In 1775, fighting broke out between British troops and American militiamen in Lexington and Concord, starting the Revolutionary War. The Continental Congress appointed George Washington as commander of the Continental Army, which went on to win key victories over the British. In 1776, the Declaration of Independence was adopted, formally declaring the 13 American colonies free from British rule. After years of fighting, the Revolutionary War ended with the British defeat at Yorktown in 1781 and recognition of American independence.')], [Generation(text=" Here's a humorous take on explaining rocket science:\n\nRocket science is so easy, it's practically child's play! Just strap a big metal tube full of explosive liquid to your butt and light the fuse. What could go wrong? Blastoff!  Whoosh, you'll be zooming to the moon in no time. Just remember your helmet or your head might go pop like a zit when you leave the atmosphere. \n\nMaking rockets is a cinch too. Simply mix together some spicy spices, garlic powder, chili powder, a dash of gunpowder and voila - rocket fuel! Add a pinch of baking soda and vinegar if you want an extra kick. Shake well and pour into your DIY soda bottle rocket. Stand back and watch that baby soar!\n\nGuiding a rocket is fun for the whole family. Just strap in, push some random buttons and see where you end up. It's like the ultimate surprise vacation! You never know if you'll wind up on Venus, crash land on Mars, or take a quick dip through the rings of Saturn. \n\nAnd if anything goes wrong, don't sweat it. Rocket science is easy breezy. Just troubleshoot on the fly with some duct tape and crazy glue and you'll be back on course in a jiffy. Who needs mission control when you've got this!")], [Generation(text=" Here is a draft welcome speech for a college sports day:\n\nGood morning everyone and welcome to our college's annual sports day! It's wonderful to see so many students, faculty, staff, alumni, and guests gathered here today to celebrate sportsmanship and athletic achievement at our college. \n\nLet's begin by thanking all the organizers, volunteers, coaches, and staff members who worked tirelessly behind the scenes to make this event possible. Our sports day would not happen without your dedication and commitment. \n\nI also want to recognize all the student-athletes with us today. You inspire us with your talent, spirit, and determination. Sports have a unique power to unite and energize our community. Through both individual and team sports, you demonstrate focus, collaboration, perseverance and resilience – qualities that will serve you well both on and off the field.\n\nThe spirit of competition and fair play are core values of any sports event. I encourage all of you to compete enthusiastically today. Play to the best of your ability and have fun. Applaud the effort and sportsmanship of your fellow athletes, regardless of the outcome. \n\nWin or lose, this sports day is a day for us to build camaraderie and create lifelong memories. Let's make it a day of fitness and friendship for all. With that, let the games begin. Enjoy the day!")]], llm_output=None, run=None)
+LLMResult(generations=[[Generation(text=' 以下是美国革命关键事件的5句总结：\n\n美国革命始于美国殖民者与英国政府之间因无代表的征税问题而产生的紧张关系。1775年，英国军队与美国民兵在列克星敦和康科德爆发冲突，开启了革命战争。大陆会议任命乔治·华盛顿为大陆军的指挥官，该军队在与英国的战斗中取得了关键胜利。1776年，独立宣言被通过，正式宣布13个美国殖民地脱离英国统治。在经过数年的战斗后，革命战争于1781年在约克镇以英国的失败和美国独立的承认而结束。')], [Generation(text=" 这是对火箭科学幽默的解释：\n\n火箭科学太简单了，简直就是小孩子的游戏！只需把一个装满爆炸液体的大金属管绑在你的屁股上，点燃引信。有什么可能出错的呢？发射！嗖，你很快就会飞向月球。只要记得戴上头盔，否则你的头在离开大气层时可能会像痘痘一样爆炸。 \n\n制造火箭也很简单。只需将一些辛辣的香料、大蒜粉、辣椒粉、少许火药混合在一起，瞧，火箭燃料就做好了！如果想要额外的刺激，再加一点小苏打和醋。摇匀后倒入你的DIY苏打瓶火箭中。站远一点，看看那个宝贝飞起来！\n\n引导火箭是全家人都能享受的乐趣。只需系好安全带，按一些随机按钮，看看你会到哪里。这就像是终极惊喜假期！你永远不知道自己会到达金星、在火星上坠毁，还是快速穿越土星的环。 \n\n如果有什么问题，不用担心。火箭科学轻松简单。只需用一些胶带和疯狂胶水即时排除故障，你就能很快回到正轨。谁还需要任务控制呢？')], [Generation(text=" 这是为大学运动会准备的欢迎致辞草稿：\n\n大家早上好，欢迎来到我们学院的年度运动会！看到这么多学生、教职员工、校友和嘉宾聚集在这里，庆祝我们学院的体育精神和运动成就，真是太好了。\n\n首先，让我们感谢所有的组织者、志愿者、教练和工作人员，他们在幕后辛勤工作，使这次活动成为可能。没有你们的奉献和承诺，我们的运动会将无法举行。\n\n我还想表彰今天在场的所有运动员。你们以才华、精神和决心激励着我们。体育具有独特的力量，能够团结和激励我们的社区。通过个人和团队运动，你们展现了专注、合作、毅力和韧性，这些品质在场上和场下都会对你们大有裨益。\n\n竞争精神和公平竞争是任何体育赛事的核心价值。我鼓励大家今天积极竞争。尽全力比赛，享受乐趣。无论结果如何，都要为同伴运动员的努力和体育精神喝彩。\n\n无论胜负，这个运动会是我们建立友谊、创造终生回忆的一天。让我们把这一天变成大家的健身和友谊之日。那么，比赛开始吧。祝大家愉快！")]], llm_output=None, run=None)
 ```
 
+## 相关
 
-
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

@@ -1,31 +1,30 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/qa_citations.ipynb
 ---
-# How to get a RAG application to add citations
 
-This guide reviews methods to get a model to cite which parts of the source documents it referenced in generating its response.
+# 如何让RAG应用程序添加引用
 
-We will cover five methods:
+本指南回顾了获取模型引用其在生成响应时参考的源文档的哪些部分的方法。
 
-1. Using tool-calling to cite document IDs;
-2. Using tool-calling to cite documents IDs and provide text snippets;
-3. Direct prompting;
-4. Retrieval post-processing (i.e., compressing the retrieved context to make it more relevant);
-5. Generation post-processing (i.e., issuing a second LLM call to annotate a generated answer with citations).
+我们将介绍五种方法：
 
-We generally suggest using the first item of the list that works for your use-case. That is, if your model supports tool-calling, try methods 1 or 2; otherwise, or if those fail, advance down the list.
+1. 使用工具调用引用文档ID；
+2. 使用工具调用引用文档ID并提供文本片段；
+3. 直接提示；
+4. 检索后处理（即压缩检索到的上下文以使其更相关）；
+5. 生成后处理（即发出第二个LLM调用，以引用注释生成的答案）。
 
-Let's first create a simple RAG chain. To start we'll just retrieve from Wikipedia using the [WikipediaRetriever](https://api.python.langchain.com/en/latest/retrievers/langchain_community.retrievers.wikipedia.WikipediaRetriever.html).
+我们通常建议使用列表中适合您用例的第一项。也就是说，如果您的模型支持工具调用，请尝试方法1或2；否则，如果这些方法失败，请按顺序继续。
 
-## Setup
+让我们首先创建一个简单的RAG链。首先，我们将使用[WikipediaRetriever](https://api.python.langchain.com/en/latest/retrievers/langchain_community.retrievers.wikipedia.WikipediaRetriever.html)从维基百科进行检索。
 
-First we'll need to install some dependencies and set environment vars for the models we'll be using.
+## 设置
 
+首先，我们需要安装一些依赖项并设置我们将使用的模型的环境变量。
 
 ```python
 %pip install -qU langchain langchain-openai langchain-anthropic langchain-community wikipedia
 ```
-
 
 ```python
 import getpass
@@ -34,17 +33,16 @@ import os
 os.environ["OPENAI_API_KEY"] = getpass.getpass()
 os.environ["ANTHROPIC_API_KEY"] = getpass.getpass()
 
-# Uncomment if you want to log to LangSmith
+# 如果您想记录到 LangSmith，请取消注释
 # os.environ["LANGCHAIN_TRACING_V2"] = "true
 # os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 ```
 
-Let's first select a LLM:
+让我们首先选择一个 LLM：
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
 <ChatModelTabs customVarName="llm" />
-
 
 ```python
 from langchain_community.retrievers import WikipediaRetriever
@@ -69,18 +67,17 @@ prompt = ChatPromptTemplate.from_messages(
 prompt.pretty_print()
 ```
 ```output
-================================[1m System Message [0m================================
+================================[1m 系统消息 [0m================================
 
 You're a helpful AI assistant. Given a user question and some Wikipedia article snippets, answer the user question. If none of the articles answer the question, just say you don't know.
 
 Here are the Wikipedia articles: [33;1m[1;3m{context}[0m
 
-================================[1m Human Message [0m=================================
+================================[1m 人类消息 [0m=================================
 
 [33;1m[1;3m{input}[0m
 ```
-Now that we've got a model, retriver and prompt, let's chain them all together. We'll need to add some logic for formatting our retrieved Documents to a string that can be passed to our prompt. Following the how-to guide on [adding citations](/docs/how_to/qa_citations) to a RAG application, we'll make it so our chain returns both the answer and the retrieved Documents.
-
+现在我们已经有了模型、检索器和提示，让我们将它们串联在一起。我们需要添加一些逻辑，将检索到的文档格式化为可以传递给我们的提示的字符串。按照 [为 RAG 应用添加引用](/docs/how_to/qa_citations) 的指南，我们将使我们的链返回答案和检索到的文档。
 
 ```python
 from typing import List
@@ -108,11 +105,9 @@ chain = RunnablePassthrough.assign(context=retrieve_docs).assign(
 )
 ```
 
-
 ```python
 result = chain.invoke({"input": "How fast are cheetahs?"})
 ```
-
 
 ```python
 print(result.keys())
@@ -136,87 +131,77 @@ Cheetahs are capable of running at speeds of 93 to 104 km/h (58 to 65 mph). They
 ```
 LangSmith trace: https://smith.langchain.com/public/0472c5d1-49dc-4c1c-8100-61910067d7ed/r
 
-## Function-calling
+## 函数调用
 
-If your LLM of choice implements a [tool-calling](/docs/concepts#functiontool-calling) feature, you can use it to make the model specify which of the provided documents it's referencing when generating its answer. LangChain tool-calling models implement a `.with_structured_output` method which will force generation adhering to a desired schema (see for example [here](https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.base.ChatOpenAI.html#langchain_openai.chat_models.base.ChatOpenAI.with_structured_output)).
+如果您选择的 LLM 实现了 [工具调用](/docs/concepts#functiontool-calling) 功能，您可以使用它让模型在生成答案时指定引用的文档。LangChain 工具调用模型实现了一个 `.with_structured_output` 方法，该方法将强制生成遵循所需模式的输出（例如，参见 [这里](https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.base.ChatOpenAI.html#langchain_openai.chat_models.base.ChatOpenAI.with_structured_output)）。
 
-### Cite documents
+### 引用文档
 
-To cite documents using an identifier, we format the identifiers into the prompt, then use `.with_structured_output` to coerce the LLM to reference these identifiers in its output.
+要使用标识符引用文档，我们将标识符格式化到提示中，然后使用 `.with_structured_output` 强制 LLM 在其输出中引用这些标识符。
 
-First we define a schema for the output. The `.with_structured_output` supports multiple formats, including JSON schema and Pydantic. Here we will use Pydantic:
-
+首先，我们为输出定义一个模式。`.with_structured_output` 支持多种格式，包括 JSON schema 和 Pydantic。这里我们将使用 Pydantic：
 
 ```python
 from langchain_core.pydantic_v1 import BaseModel, Field
 
 
 class CitedAnswer(BaseModel):
-    """Answer the user question based only on the given sources, and cite the sources used."""
+    """仅根据给定来源回答用户问题，并引用所用的来源。"""
 
     answer: str = Field(
         ...,
-        description="The answer to the user question, which is based only on the given sources.",
+        description="基于给定来源的用户问题的答案。",
     )
     citations: List[int] = Field(
         ...,
-        description="The integer IDs of the SPECIFIC sources which justify the answer.",
+        description="证明答案的特定来源的整数 ID。",
     )
 ```
 
-Let's see what the model output is like when we pass in our functions and a user input:
-
+让我们看看当我们传入我们的函数和用户输入时，模型输出是什么样的：
 
 ```python
 structured_llm = llm.with_structured_output(CitedAnswer)
 
-example_q = """What Brian's height?
+example_q = """布莱恩的身高是多少？
 
-Source: 1
-Information: Suzy is 6'2"
+来源：1
+信息：苏西的身高是6'2"
 
-Source: 2
-Information: Jeremiah is blonde
+来源：2
+信息：杰里迈亚是金发
 
-Source: 3
-Information: Brian is 3 inches shorter than Suzy"""
+来源：3
+信息：布莱恩比苏西矮3英寸"""
 result = structured_llm.invoke(example_q)
 
 result
 ```
 
-
-
 ```output
-CitedAnswer(answer='Brian\'s height is 5\'11".', citations=[1, 3])
+CitedAnswer(answer='布莱恩的身高是5\'11".', citations=[1, 3])
 ```
 
-
-Or as a dict:
-
+或者作为字典：
 
 ```python
 result.dict()
 ```
 
-
-
 ```output
-{'answer': 'Brian\'s height is 5\'11".', 'citations': [1, 3]}
+{'answer': '布莱恩的身高是5\'11".', 'citations': [1, 3]}
 ```
 
+现在我们将来源标识符结构化到提示中，以便与我们的链复制。我们将进行三项更改：
 
-Now we structure the source identifiers into the prompt to replicate with our chain. We will make three changes:
-
-1. Update the prompt to include source identifiers;
-2. Use the `structured_llm` (i.e., `llm.with_structured_output(CitedAnswer));
-3. Remove the `StrOutputParser`, to retain the Pydantic object in the output.
-
+1. 更新提示以包括来源标识符；
+2. 使用 `structured_llm`（即 `llm.with_structured_output(CitedAnswer)`）；
+3. 移除 `StrOutputParser`，以在输出中保留 Pydantic 对象。
 
 ```python
 def format_docs_with_id(docs: List[Document]) -> str:
     formatted = [
-        f"Source ID: {i}\nArticle Title: {doc.metadata['title']}\nArticle Snippet: {doc.page_content}"
+        f"来源 ID: {i}\n文章标题: {doc.metadata['title']}\n文章摘录: {doc.page_content}"
         for i, doc in enumerate(docs)
     ]
     return "\n\n" + "\n\n".join(formatted)
@@ -235,60 +220,54 @@ chain = RunnablePassthrough.assign(context=retrieve_docs).assign(
 )
 ```
 
-
 ```python
-result = chain.invoke({"input": "How fast are cheetahs?"})
+result = chain.invoke({"input": "猎豹的速度有多快？"})
 ```
-
 
 ```python
 print(result["answer"])
 ```
 ```output
-answer='Cheetahs can run at speeds of 93 to 104 km/h (58 to 65 mph). They are known as the fastest land animals.' citations=[0]
+answer='猎豹的速度可以达到93到104公里每小时（58到65英里每小时）。它们被认为是最快的陆地动物。' citations=[0]
 ```
-We can inspect the document at index 0, which the model cited:
-
+我们可以检查模型引用的索引 0 的文档：
 
 ```python
 print(result["context"][0])
 ```
 ```output
-page_content='The cheetah (Acinonyx jubatus) is a large cat and the fastest land animal. It has a tawny to creamy white or pale buff fur that is marked with evenly spaced, solid black spots. The head is small and rounded, with a short snout and black tear-like facial streaks. It reaches 67–94 cm (26–37 in) at the shoulder, and the head-and-body length is between 1.1 and 1.5 m (3 ft 7 in and 4 ft 11 in). Adults weigh between 21 and 72 kg (46 and 159 lb). The cheetah is capable of running at 93 to 104 km/h (58 to 65 mph); it has evolved specialized adaptations for speed, including a light build, long thin legs and a long tail.\nThe cheetah was first described in the late 18th century. Four subspecies are recognised today that are native to Africa and central Iran. An African subspecies was introduced to India in 2022. It is now distributed mainly in small, fragmented populations in northwestern, eastern and southern Africa and central Iran. It lives in a variety of habitats such as savannahs in the Serengeti, arid mountain ranges in the Sahara, and hilly desert terrain.\nThe cheetah lives in three main social groups: females and their cubs, male "coalitions", and solitary males. While females lead a nomadic life searching for prey in large home ranges, males are more sedentary and instead establish much smaller territories in areas with plentiful prey and access to females. The cheetah is active during the day, with peaks during dawn and dusk. It feeds on small- to medium-sized prey, mostly weighing under 40 kg (88 lb), and prefers medium-sized ungulates such as impala, springbok and Thomson\'s gazelles. The cheetah typically stalks its prey within 60–100 m (200–330 ft) before charging towards it, trips it during the chase and bites its throat to suffocate it to death. It breeds throughout the year. After a gestation of nearly three months, females give birth to a litter of three or four cubs. Cheetah cubs are highly vulnerable to predation by other large carnivores. They are weaned a' metadata={'title': 'Cheetah', 'summary': 'The cheetah (Acinonyx jubatus) is a large cat and the fastest land animal. It has a tawny to creamy white or pale buff fur that is marked with evenly spaced, solid black spots. The head is small and rounded, with a short snout and black tear-like facial streaks. It reaches 67–94 cm (26–37 in) at the shoulder, and the head-and-body length is between 1.1 and 1.5 m (3 ft 7 in and 4 ft 11 in). Adults weigh between 21 and 72 kg (46 and 159 lb). The cheetah is capable of running at 93 to 104 km/h (58 to 65 mph); it has evolved specialized adaptations for speed, including a light build, long thin legs and a long tail.\nThe cheetah was first described in the late 18th century. Four subspecies are recognised today that are native to Africa and central Iran. An African subspecies was introduced to India in 2022. It is now distributed mainly in small, fragmented populations in northwestern, eastern and southern Africa and central Iran. It lives in a variety of habitats such as savannahs in the Serengeti, arid mountain ranges in the Sahara, and hilly desert terrain.\nThe cheetah lives in three main social groups: females and their cubs, male "coalitions", and solitary males. While females lead a nomadic life searching for prey in large home ranges, males are more sedentary and instead establish much smaller territories in areas with plentiful prey and access to females. The cheetah is active during the day, with peaks during dawn and dusk. It feeds on small- to medium-sized prey, mostly weighing under 40 kg (88 lb), and prefers medium-sized ungulates such as impala, springbok and Thomson\'s gazelles. The cheetah typically stalks its prey within 60–100 m (200–330 ft) before charging towards it, trips it during the chase and bites its throat to suffocate it to death. It breeds throughout the year. After a gestation of nearly three months, females give birth to a litter of three or four cubs. Cheetah cubs are highly vulnerable to predation by other large carnivores. They are weaned at around four months and are independent by around 20 months of age.\nThe cheetah is threatened by habitat loss, conflict with humans, poaching and high susceptibility to diseases. In 2016, the global cheetah population was estimated at 7,100 individuals in the wild; it is listed as Vulnerable on the IUCN Red List. It has been widely depicted in art, literature, advertising, and animation. It was tamed in ancient Egypt and trained for hunting ungulates in the Arabian Peninsula and India. It has been kept in zoos since the early 19th century.', 'source': 'https://en.wikipedia.org/wiki/Cheetah'}
+page_content='猎豹（Acinonyx jubatus）是一种大型猫科动物，也是最快的陆地动物。它的毛色为黄褐色至奶油白或淡棕色，身上有均匀分布的黑色实心斑点。头部小而圆，鼻子短，脸部有黑色泪痕状的条纹。它的肩高为67–94厘米（26–37英寸），头身长在1.1米到1.5米（3英尺7英寸到4英尺11英寸）之间。成年猎豹的体重在21到72公斤（46到159磅）之间。猎豹能够以93到104公里每小时（58到65英里每小时）的速度奔跑；它已经进化出适应速度的特殊适应性，包括轻巧的体型、细长的腿和长尾巴。\n猎豹在18世纪末首次被描述。今天公认的四个亚种原产于非洲和中伊朗。一个非洲亚种于2022年被引入印度。现在它主要分布在西北、东部和南部非洲以及中伊朗的小型、支离破碎的种群中。它生活在各种栖息地中，如塞伦盖蒂的草原、撒哈拉的干燥山脉和丘陵沙漠地形。\n猎豹生活在三种主要的社会群体中：雌性及其幼崽、雄性“联盟”和独居雄性。雌性过着游牧生活，寻找猎物，拥有较大的生活范围，而雄性则更为定居，通常在猎物丰富且可接触雌性的地区建立较小的领地。猎豹在白天活动，黎明和黄昏时最为活跃。它以小型到中型猎物为食，主要重量在40公斤（88磅）以下，偏好中型有蹄类动物，如瞪羚、春羚和汤姆逊瞪羚。猎豹通常在60–100米（200–330英尺）内潜行猎物，然后向其冲刺，在追逐过程中绊倒猎物并咬住其喉咙使其窒息而死。它全年繁殖。经过近三个月的妊娠，雌性会产下三到四只幼崽。猎豹幼崽对其他大型食肉动物的捕食高度脆弱。它们在大约四个月时断奶，并在大约20个月大时独立。\n猎豹面临栖息地丧失、与人类冲突、偷猎和对疾病的高度易感等威胁。2016年，全球猎豹种群估计在野外有7100只；在IUCN红色名录中被列为脆弱。它在艺术、文学、广告和动画中被广泛描绘。它在古埃及时被驯化，并在阿拉伯半岛和印度被训练用于猎捕有蹄类动物。自19世纪初以来，它一直被饲养在动物园中。' metadata={'title': '猎豹', 'summary': '猎豹（Acinonyx jubatus）是一种大型猫科动物，也是最快的陆地动物。它的毛色为黄褐色至奶油白或淡棕色，身上有均匀分布的黑色实心斑点。头部小而圆，鼻子短，脸部有黑色泪痕状的条纹。它的肩高为67–94厘米（26–37英寸），头身长在1.1米到1.5米（3英尺7英寸到4英尺11英寸）之间。成年猎豹的体重在21到72公斤（46到159磅）之间。猎豹能够以93到104公里每小时（58到65英里每小时）的速度奔跑；它已经进化出适应速度的特殊适应性，包括轻巧的体型、细长的腿和长尾巴。\n猎豹在18世纪末首次被描述。今天公认的四个亚种原产于非洲和中伊朗。一个非洲亚种于2022年被引入印度。现在它主要分布在西北、东部和南部非洲以及中伊朗的小型、支离破碎的种群中。它生活在各种栖息地中，如塞伦盖蒂的草原、撒哈拉的干燥山脉和丘陵沙漠地形。\n猎豹生活在三种主要的社会群体中：雌性及其幼崽、雄性“联盟”和独居雄性。雌性过着游牧生活，寻找猎物，拥有较大的生活范围，而雄性则更为定居，通常在猎物丰富且可接触雌性的地区建立较小的领地。猎豹在白天活动，黎明和黄昏时最为活跃。它以小型到中型猎物为食，主要重量在40公斤（88磅）以下，偏好中型有蹄类动物，如瞪羚、春羚和汤姆逊瞪羚。猎豹通常在60–100米（200–330英尺）内潜行猎物，然后向其冲刺，在追逐过程中绊倒猎物并咬住其喉咙使其窒息而死。它全年繁殖。经过近三个月的妊娠，雌性会产下三到四只幼崽。猎豹幼崽对其他大型食肉动物的捕食高度脆弱。它们在大约四个月时断奶，并在大约20个月大时独立。\n猎豹面临栖息地丧失、与人类冲突、偷猎和对疾病的高度易感等威胁。2016年，全球猎豹种群估计在野外有7100只；在IUCN红色名录中被列为脆弱。它在艺术、文学、广告和动画中被广泛描绘。它在古埃及时被驯化，并在阿拉伯半岛和印度被训练用于猎捕有蹄类动物。自19世纪初以来，它一直被饲养在动物园中。', 'source': 'https://en.wikipedia.org/wiki/Cheetah'}
 ```
-LangSmith trace: https://smith.langchain.com/public/aff39dc7-3e09-4d64-8083-87026d975534/r
 
-### Cite snippets
+### 引用片段
 
-To return text spans (perhaps in addition to source identifiers), we can use the same approach. The only change will be to build a more complex output schema, here using Pydantic, that includes a "quote" alongside a source identifier.
+为了返回文本片段（可能还包括源标识符），我们可以使用相同的方法。唯一的变化是构建一个更复杂的输出模式，这里使用 Pydantic，包括一个“引用”和一个源标识符。
 
-*Aside: Note that if we break up our documents so that we have many documents with only a sentence or two instead of a few long documents, citing documents becomes roughly equivalent to citing snippets, and may be easier for the model because the model just needs to return an identifier for each snippet instead of the actual text. Probably worth trying both approaches and evaluating.*
-
+*附注：请注意，如果我们将文档拆分成许多只有一两句话的文档，而不是几个较长的文档，引用文档大致等同于引用片段，并且可能对模型来说更容易，因为模型只需要返回每个片段的标识符，而不是实际文本。可能值得尝试这两种方法并进行评估。*
 
 ```python
 class Citation(BaseModel):
     source_id: int = Field(
         ...,
-        description="The integer ID of a SPECIFIC source which justifies the answer.",
+        description="特定来源的整数 ID，用于证明答案的合理性。",
     )
     quote: str = Field(
         ...,
-        description="The VERBATIM quote from the specified source that justifies the answer.",
+        description="来自指定来源的逐字引用，用于证明答案的合理性。",
     )
 
 
 class QuotedAnswer(BaseModel):
-    """Answer the user question based only on the given sources, and cite the sources used."""
+    """仅基于给定来源回答用户问题，并引用所用来源。"""
 
     answer: str = Field(
         ...,
-        description="The answer to the user question, which is based only on the given sources.",
+        description="基于给定来源的用户问题的答案。",
     )
     citations: List[Citation] = Field(
-        ..., description="Citations from the given sources that justify the answer."
+        ..., description="来自给定来源的引用，用于证明答案的合理性。"
     )
 ```
-
 
 ```python
 rag_chain_from_docs = (
@@ -304,30 +283,25 @@ chain = RunnablePassthrough.assign(context=retrieve_docs).assign(
 )
 ```
 
-
 ```python
-result = chain.invoke({"input": "How fast are cheetahs?"})
+result = chain.invoke({"input": "猎豹的速度有多快？"})
 ```
 
-Here we see that the model has extracted a relevant snippet of text from source 0:
-
+在这里我们看到模型从源 0 中提取了相关的文本片段：
 
 ```python
 result["answer"]
 ```
 
-
-
 ```output
-QuotedAnswer(answer='Cheetahs can run at speeds of 93 to 104 km/h (58 to 65 mph).', citations=[Citation(source_id=0, quote='The cheetah is capable of running at 93 to 104 km/h (58 to 65 mph); it has evolved specialized adaptations for speed, including a light build, long thin legs and a long tail.')])
+QuotedAnswer(answer='猎豹的速度可达到 93 到 104 公里/小时（58 到 65 英里/小时）。', citations=[Citation(source_id=0, quote='猎豹能够以 93 到 104 公里/小时（58 到 65 英里/小时）的速度奔跑；它已进化出专门的速度适应性，包括轻盈的体型、修长的腿和长尾巴。')])
 ```
 
+LangSmith 跟踪： https://smith.langchain.com/public/0f638cc9-8409-4a53-9010-86ac28144129/r
 
-LangSmith trace: https://smith.langchain.com/public/0f638cc9-8409-4a53-9010-86ac28144129/r
+## 直接提示
 
-## Direct prompting
-
-Many models don't support function-calling. We can achieve similar results with direct prompting. Let's try instructing a model to generate structured XML for its output:
+许多模型不支持函数调用。我们可以通过直接提示实现类似的结果。让我们尝试指示模型生成结构化的 XML 作为输出：
 
 
 ```python
@@ -353,11 +327,11 @@ xml_prompt = ChatPromptTemplate.from_messages(
 )
 ```
 
-We now make similar small updates to our chain:
+我们现在对我们的链进行类似的小更新：
 
-1. We update the formatting function to wrap the retrieved context in XML tags;
-2. We do not use `.with_structured_output` (e.g., because it does not exist for a model);
-3. We use [XMLOutputParser](https://api.python.langchain.com/en/latest/output_parsers/langchain_core.output_parsers.xml.XMLOutputParser.html) in place of `StrOutputParser` to parse the answer into a dict.
+1. 我们更新格式化函数，以将检索到的上下文包装在 XML 标签中；
+2. 我们不使用 `.with_structured_output`（例如，因为它在某个模型中不存在）；
+3. 我们使用 [XMLOutputParser](https://api.python.langchain.com/en/latest/output_parsers/langchain_core.output_parsers.xml.XMLOutputParser.html) 代替 `StrOutputParser` 来将答案解析为字典。
 
 
 ```python
@@ -395,7 +369,7 @@ chain = RunnablePassthrough.assign(context=retrieve_docs).assign(
 result = chain.invoke({"input": "How fast are cheetahs?"})
 ```
 
-Note that citations are again structured into the answer:
+请注意，引用再次被结构化到答案中：
 
 
 ```python
@@ -411,14 +385,13 @@ result["answer"]
 ```
 
 
-LangSmith trace: https://smith.langchain.com/public/a3636c70-39c6-4c8f-bc83-1c7a174c237e/r
+LangSmith 跟踪： https://smith.langchain.com/public/a3636c70-39c6-4c8f-bc83-1c7a174c237e/r
 
-## Retrieval post-processing
+## 检索后处理
 
-Another approach is to post-process our retrieved documents to compress the content, so that the source content is already minimal enough that we don't need the model to cite specific sources or spans. For example, we could break up each document into a sentence or two, embed those and keep only the most relevant ones. LangChain has some built-in components for this. Here we'll use a [RecursiveCharacterTextSplitter](https://api.python.langchain.com/en/latest/text_splitter/langchain_text_splitters.RecursiveCharacterTextSplitter.html#langchain_text_splitters.RecursiveCharacterTextSplitter), which creates chunks of a sepacified size by splitting on separator substrings, and an [EmbeddingsFilter](https://api.python.langchain.com/en/latest/retrievers/langchain.retrievers.document_compressors.embeddings_filter.EmbeddingsFilter.html#langchain.retrievers.document_compressors.embeddings_filter.EmbeddingsFilter), which keeps only the texts with the most relevant embeddings.
+另一种方法是对我们检索到的文档进行后处理，以压缩内容，使得源内容已经足够简洁，以至于我们不需要模型引用特定的来源或片段。例如，我们可以将每个文档拆分成一两句话，嵌入这些句子并仅保留最相关的句子。LangChain提供了一些内置组件用于此。这里我们将使用一个 [RecursiveCharacterTextSplitter](https://api.python.langchain.com/en/latest/text_splitter/langchain_text_splitters.RecursiveCharacterTextSplitter.html#langchain_text_splitters.RecursiveCharacterTextSplitter)，它通过在分隔子字符串上进行拆分来创建指定大小的块，以及一个 [EmbeddingsFilter](https://api.python.langchain.com/en/latest/retrievers/langchain.retrievers.document_compressors.embeddings_filter.EmbeddingsFilter.html#langchain.retrievers.document_compressors.embeddings_filter.EmbeddingsFilter)，它仅保留具有最相关嵌入的文本。
 
-This approach effectively swaps our original retriever with an updated one that compresses the documents. To start, we build the retriever:
-
+这种方法有效地用一个更新的检索器替换了我们原来的检索器，该检索器压缩了文档。首先，我们构建检索器：
 
 ```python
 from langchain.retrievers.document_compressors import EmbeddingsFilter
@@ -491,8 +464,7 @@ In India, four cheetahs of the subspecies are living in Kuno National Park in Ma
 Acinonyx jubatus velox proposed in 1913 by Edmund Heller on basis of a cheetah that was shot by Kermit Roosevelt in June 1909 in the Kenyan highlands.
 Acinonyx rex proposed in 1927 by Reginald Innes Pocock on basis of a specimen from the Umvukwe Range in Rhodesia.
 ```
-Next, we assemble it into our chain as before:
-
+接下来，我们将其组装成我们的链，如之前所述：
 
 ```python
 rag_chain_from_docs = (
@@ -516,8 +488,7 @@ print(result["answer"])
 ```output
 Cheetahs are capable of running at speeds between 93 to 104 km/h (58 to 65 mph), making them the fastest land animals.
 ```
-Note that the document content is now compressed, although the document objects retain the original content in a "summary" key in their metadata. These summaries are not passed to the model; only the condensed content is.
-
+请注意，文档内容现在已被压缩，尽管文档对象在其元数据中的“summary”键中保留了原始内容。这些摘要不会传递给模型；只有压缩的内容会传递。
 
 ```python
 result["context"][0].page_content  # passed to model
@@ -544,12 +515,11 @@ result["context"][0].metadata["summary"]  # original document
 
 LangSmith trace: https://smith.langchain.com/public/a61304fa-e5a5-4c64-a268-b0aef1130d53/r
 
-## Generation post-processing
+## 生成后处理
 
-Another approach is to post-process our model generation. In this example we'll first generate just an answer, and then we'll ask the model to annotate it's own answer with citations. The downside of this approach is of course that it is slower and more expensive, because two model calls need to be made.
+另一种方法是对我们的模型生成进行后处理。在这个例子中，我们将首先生成一个答案，然后要求模型用引用对其答案进行注释。这种方法的缺点当然是速度较慢且成本较高，因为需要进行两次模型调用。
 
-Let's apply this to our initial chain.
-
+让我们将其应用于我们的初始链。
 
 ```python
 class Citation(BaseModel):
@@ -573,7 +543,6 @@ class AnnotatedAnswer(BaseModel):
 
 structured_llm = llm.with_structured_output(AnnotatedAnswer)
 ```
-
 
 ```python
 from langchain_core.prompts import MessagesPlaceholder
@@ -603,11 +572,9 @@ chain = (
 )
 ```
 
-
 ```python
 result = chain.invoke({"input": "How fast are cheetahs?"})
 ```
-
 
 ```python
 print(result["answer"])
@@ -620,11 +587,8 @@ Cheetahs are capable of running at speeds between 93 to 104 km/h (58 to 65 mph).
 result["annotations"]
 ```
 
-
-
 ```output
 AnnotatedAnswer(citations=[Citation(source_id=0, quote='The cheetah is capable of running at 93 to 104 km/h (58 to 65 mph); it has evolved specialized adaptations for speed, including a light build, long thin legs and a long tail.')])
 ```
-
 
 LangSmith trace: https://smith.langchain.com/public/bf5e8856-193b-4ff2-af8d-c0f4fbd1d9cb/r

@@ -1,24 +1,24 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/premai.ipynb
 ---
+
 # PremAI
 
-[PremAI](https://premai.io/) is an all-in-one platform that simplifies the creation of robust, production-ready applications powered by Generative AI. By streamlining the development process, PremAI allows you to concentrate on enhancing user experience and driving overall growth for your application. You can quickly start using our platform [here](https://docs.premai.io/quick-start).
+[PremAI](https://premai.io/) 是一个一体化平台，简化了基于生成式人工智能的强大、可投入生产的应用程序的创建。通过简化开发流程，PremAI 使您能够专注于提升用户体验和推动应用程序的整体增长。您可以通过 [这里](https://docs.premai.io/quick-start) 快速开始使用我们的平台。
 
-### Installation and setup
+### 安装和设置
 
-We start by installing `langchain` and `premai-sdk`. You can type the following command to install:
+我们首先安装 `langchain` 和 `premai-sdk`。您可以输入以下命令进行安装：
 
 ```bash
 pip install premai langchain
 ```
 
-Before proceeding further, please make sure that you have made an account on PremAI and already created a project. If not, please refer to the [quick start](https://docs.premai.io/introduction) guide to get started with the PremAI platform. Create your first project and grab your API key.
+在进一步操作之前，请确保您已在 PremAI 上注册了账户并创建了项目。如果没有，请参考 [快速入门](https://docs.premai.io/introduction) 指南以开始使用 PremAI 平台。创建您的第一个项目并获取您的 API 密钥。
 
 ## PremEmbeddings
 
-In this section we are going to dicuss how we can get access to different embedding model using `PremEmbeddings` with LangChain. Lets start by importing our modules and setting our API Key. 
-
+在本节中，我们将讨论如何使用 `PremEmbeddings` 通过 LangChain 访问不同的嵌入模型。让我们先导入模块并设置我们的 API 密钥。
 
 ```python
 # Let's start by doing some imports and define our embedding object
@@ -26,10 +26,9 @@ In this section we are going to dicuss how we can get access to different embedd
 from langchain_community.embeddings import PremAIEmbeddings
 ```
 
-Once we imported our required modules, let's setup our client. For now let's assume that our `project_id` is `8`. But make sure you use your project-id, otherwise it will throw error.
+导入所需的模块后，让我们设置我们的客户端。现在假设我们的 `project_id` 是 `8`。但请确保使用您的项目 ID，否则会抛出错误。
 
-> Note: Setting `model_name` argument in mandatory for PremAIEmbeddings unlike [ChatPremAI.](https://python.langchain.com/v0.1/docs/integrations/chat/premai/)
-
+> 注意：与 [ChatPremAI.](https://python.langchain.com/v0.1/docs/integrations/chat/premai/) 不同，设置 `model_name` 参数对于 PremAIEmbeddings 是强制性的。
 
 ```python
 import getpass
@@ -39,14 +38,12 @@ if os.environ.get("PREMAI_API_KEY") is None:
     os.environ["PREMAI_API_KEY"] = getpass.getpass("PremAI API Key:")
 ```
 
-
 ```python
 model = "text-embedding-3-large"
 embedder = PremAIEmbeddings(project_id=8, model=model)
 ```
 
-We support lots of state of the art embedding models. You can view our list of supported LLMs and embedding models [here](https://docs.premai.io/get-started/supported-models). For now let's go for `text-embedding-3-large` model for this example.
-
+我们支持许多最先进的嵌入模型。您可以在 [这里](https://docs.premai.io/get-started/supported-models) 查看我们支持的 LLM 和嵌入模型列表。现在我们选择 `text-embedding-3-large` 模型作为示例。
 
 ```python
 query = "Hello, this is a test query"
@@ -59,8 +56,7 @@ print(query_result[:5])
 ```output
 [-0.02129288576543331, 0.0008162345038726926, -0.004556538071483374, 0.02918623760342598, -0.02547479420900345]
 ```
-Finally let's embed a document
-
+最后，让我们嵌入一个文档。
 
 ```python
 documents = ["This is document1", "This is document2", "This is document3"]
@@ -76,7 +72,7 @@ print(doc_result[0][:5])
 [-0.0030691148713231087, -0.045334383845329285, -0.0161729846149683, 0.04348714277148247, -0.0036920777056366205]
 ```
 
-## Related
+## 相关
 
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

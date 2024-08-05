@@ -1,12 +1,13 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/moonshot.ipynb
-sidebar_label: Moonshot
+sidebar_label: 月球任务
 ---
+
 # MoonshotChat
 
-[Moonshot](https://platform.moonshot.cn/) is a Chinese startup that provides LLM service for companies and individuals.
+[Moonshot](https://platform.moonshot.cn/) 是一家提供 LLM 服务的中国初创公司，服务于企业和个人。
 
-This example goes over how to use LangChain to interact with Moonshot Inference for Chat.
+本示例介绍如何使用 LangChain 与 Moonshot Inference 进行聊天交互。
 
 
 ```python
@@ -44,8 +45,7 @@ messages = [
 chat.invoke(messages)
 ```
 
+## 相关
 
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

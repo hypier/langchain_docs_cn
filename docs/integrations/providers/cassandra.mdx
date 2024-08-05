@@ -1,38 +1,35 @@
 # Cassandra
 
-> [Apache Cassandra®](https://cassandra.apache.org/) is a NoSQL, row-oriented, highly scalable and highly available database.
-> Starting with version 5.0, the database ships with [vector search capabilities](https://cassandra.apache.org/doc/trunk/cassandra/vector-search/overview.html).
+> [Apache Cassandra®](https://cassandra.apache.org/) 是一个 NoSQL、行导向、高度可扩展和高度可用的数据库。
+> 从版本 5.0 开始，该数据库附带 [向量搜索功能](https://cassandra.apache.org/doc/trunk/cassandra/vector-search/overview.html)。
 
-The integrations outlined in this page can be used with `Cassandra` as well as other CQL-compatible databases, 
-i.e. those using the `Cassandra Query Language` protocol.
+本页面概述的集成可以与 `Cassandra` 以及其他兼容 CQL 的数据库一起使用，即使用 `Cassandra Query Language` 协议的数据库。
 
+## 安装与设置
 
-## Installation and Setup
-
-Install the following Python package:
+安装以下 Python 包：
 
 ```bash
 pip install "cassio>=0.1.6"
 ```
 
-## Vector Store
+## 向量存储
 
 ```python
 from langchain_community.vectorstores import Cassandra
 ```
 
-Learn more in the [example notebook](/docs/integrations/vectorstores/cassandra).
+在[示例笔记本](/docs/integrations/vectorstores/cassandra)中了解更多信息。
 
-## Chat message history
+## 聊天消息历史
 
 ```python
 from langchain_community.chat_message_histories import CassandraChatMessageHistory
 ```
 
-Learn more in the [example notebook](/docs/integrations/memory/cassandra_chat_message_history).
+在[示例笔记本](/docs/integrations/memory/cassandra_chat_message_history)中了解更多信息。
 
-
-## LLM Cache
+## LLM 缓存
 
 ```python
 from langchain.globals import set_llm_cache
@@ -40,10 +37,9 @@ from langchain_community.cache import CassandraCache
 set_llm_cache(CassandraCache())
 ```
 
-Learn more in the [example notebook](/docs/integrations/llm_caching#cassandra-caches) (scroll to the Cassandra section).
+在 [示例笔记本](/docs/integrations/llm_caching#cassandra-caches) 中了解更多信息（滚动到 Cassandra 部分）。
 
-
-## Semantic LLM Cache
+## 语义 LLM 缓存
 
 ```python
 from langchain.globals import set_llm_cache
@@ -54,25 +50,23 @@ set_llm_cache(CassandraSemanticCache(
 ))
 ```
 
-Learn more in the [example notebook](/docs/integrations/llm_caching#cassandra-caches) (scroll to the appropriate section).
+在[示例笔记本](/docs/integrations/llm_caching#cassandra-caches)中了解更多信息（滚动到相关部分）。
 
-## Document loader
+## 文档加载器
 
 ```python
 from langchain_community.document_loaders import CassandraLoader
 ```
 
-Learn more in the [example notebook](/docs/integrations/document_loaders/cassandra).
+在[示例笔记本](/docs/integrations/document_loaders/cassandra)中了解更多信息。
 
-#### Attribution statement
+#### 版权声明
 
-> Apache Cassandra, Cassandra and Apache are either registered trademarks or trademarks of 
-> the [Apache Software Foundation](http://www.apache.org/) in the United States and/or other countries.
+> Apache Cassandra、Cassandra 和 Apache 是 [Apache Software Foundation](http://www.apache.org/) 在美国和/或其他国家的注册商标或商标。
 
-## Toolkit
+## 工具包
 
-The `Cassandra Database toolkit` enables AI engineers to efficiently integrate agents
-with Cassandra data.
+`Cassandra Database toolkit` 使 AI 工程师能够高效地将代理与 Cassandra 数据集成。
 
 ```python
 from langchain_community.agent_toolkits.cassandra_database.toolkit import (
@@ -80,6 +74,4 @@ from langchain_community.agent_toolkits.cassandra_database.toolkit import (
 )
 ```
 
-Learn more in the [example notebook](/docs/integrations/toolkits/cassandra_database).
-
-
+在 [示例笔记本](/docs/integrations/toolkits/cassandra_database) 中了解更多信息。

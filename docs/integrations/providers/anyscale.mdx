@@ -1,17 +1,17 @@
 # Anyscale
 
->[Anyscale](https://www.anyscale.com) is a platform to run, fine tune and scale LLMs via production-ready APIs.
-> [Anyscale Endpoints](https://docs.anyscale.com/endpoints/overview) serve many open-source models in a cost-effective way.
+>[Anyscale](https://www.anyscale.com) 是一个通过生产就绪的 API 运行、微调和扩展 LLM 的平台。
+> [Anyscale Endpoints](https://docs.anyscale.com/endpoints/overview) 以具有成本效益的方式服务许多开源模型。
 
-`Anyscale` also provides [an example](https://docs.anyscale.com/endpoints/model-serving/examples/langchain-integration) 
-how to setup `LangChain` with `Anyscale` for advanced chat agents.
+`Anyscale` 还提供了 [一个示例](https://docs.anyscale.com/endpoints/model-serving/examples/langchain-integration)， 
+说明如何将 `LangChain` 与 `Anyscale` 设置为高级聊天代理。
 
-## Installation and Setup
+## 安装和设置
 
-- Get an Anyscale Service URL, route and API key and set them as environment variables (`ANYSCALE_SERVICE_URL`,`ANYSCALE_SERVICE_ROUTE`, `ANYSCALE_SERVICE_TOKEN`). 
-- Please see [the Anyscale docs](https://www.anyscale.com/get-started) for more details.
+- 获取 Anyscale 服务 URL、路由和 API 密钥，并将它们设置为环境变量（`ANYSCALE_SERVICE_URL`，`ANYSCALE_SERVICE_ROUTE`，`ANYSCALE_SERVICE_TOKEN`）。
+- 有关更多详细信息，请参见 [Anyscale 文档](https://www.anyscale.com/get-started)。
 
-We have to install the `openai` package:
+我们需要安装 `openai` 包：
 
 ```bash
 pip install openai
@@ -19,23 +19,23 @@ pip install openai
 
 ## LLM
 
-See a [usage example](/docs/integrations/llms/anyscale).
+查看[用法示例](/docs/integrations/llms/anyscale)。
 
 ```python
 from langchain_community.llms.anyscale import Anyscale
 ```
 
-## Chat Models
+## 聊天模型
 
-See a [usage example](/docs/integrations/chat/anyscale).
+查看[使用示例](/docs/integrations/chat/anyscale)。
 
 ```python
 from langchain_community.chat_models.anyscale import ChatAnyscale
 ```
 
-## Embeddings
+## 嵌入
 
-See a [usage example](/docs/integrations/text_embedding/anyscale).
+查看[使用示例](/docs/integrations/text_embedding/anyscale)。
 
 ```python
 from langchain_community.embeddings import AnyscaleEmbeddings

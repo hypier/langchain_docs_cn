@@ -1,35 +1,24 @@
 # Brave Search
 
+>[Brave Search](https://en.wikipedia.org/wiki/Brave_Search) 是由 Brave Software 开发的搜索引擎。
+> - `Brave Search` 使用自己的网络索引。截至 2022 年 5 月，它覆盖了超过 100 亿个页面，并在不依赖任何第三方的情况下提供 92% 的搜索结果，其余的则通过 Bing API 从服务器端检索，或者（在用户选择的情况下）从 Google 客户端检索。根据 Brave 的说法，索引被故意保持在“比 Google 或 Bing 小”的水平，以帮助避免垃圾信息和其他低质量内容，缺点是“Brave Search 在检索长尾查询方面尚不如 Google。”
+>- `Brave Search Premium`：截至 2023 年 4 月，Brave Search 是一个无广告的网站，但最终将转向一个新的模式，届时将包含广告，付费用户将获得无广告体验。默认情况下不会收集用户数据，包括 IP 地址。需要一个高级账户才能选择数据收集。
 
->[Brave Search](https://en.wikipedia.org/wiki/Brave_Search) is a search engine developed by Brave Software.
-> - `Brave Search` uses its own web index. As of May 2022, it covered over 10 billion pages and was used to serve 92% 
-> of search results without relying on any third-parties, with the remainder being retrieved 
-> server-side from the Bing API or (on an opt-in basis) client-side from Google. According 
-> to Brave, the index was kept "intentionally smaller than that of Google or Bing" in order to 
-> help avoid spam and other low-quality content, with the disadvantage that "Brave Search is 
-> not yet as good as Google in recovering long-tail queries."
->- `Brave Search Premium`: As of April 2023 Brave Search is an ad-free website, but it will 
-> eventually switch to a new model that will include ads and premium users will get an ad-free experience.
-> User data including IP addresses won't be collected from its users by default. A premium account 
-> will be required for opt-in data-collection.
+## 安装与设置
 
+要访问 Brave Search API，您需要 [创建一个帐户并获取 API 密钥](https://api.search.brave.com/app/dashboard)。
 
-## Installation and Setup
+## 文档加载器
 
-To get access to the Brave Search API, you need to [create an account and get an API key](https://api.search.brave.com/app/dashboard).
-
-
-## Document Loader
-
-See a [usage example](/docs/integrations/document_loaders/brave_search).
+查看 [使用示例](/docs/integrations/document_loaders/brave_search)。
 
 ```python
 from langchain_community.document_loaders import BraveSearchLoader
 ```
 
-## Tool
+## 工具
 
-See a [usage example](/docs/integrations/tools/brave_search).
+查看 [使用示例](/docs/integrations/tools/brave_search).
 
 ```python
 from langchain.tools import BraveSearch

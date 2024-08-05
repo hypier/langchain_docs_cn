@@ -1,23 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/octoai.ipynb
 ---
+
 # ChatOctoAI
 
-[OctoAI](https://docs.octoai.cloud/docs) offers easy access to efficient compute and enables users to integrate their choice of AI models into applications. The `OctoAI` compute service helps you run, tune, and scale AI applications easily.
+[OctoAI](https://docs.octoai.cloud/docs) 提供了便捷的高效计算访问，使用户能够将自己选择的 AI 模型集成到应用程序中。`OctoAI` 计算服务帮助您轻松运行、调整和扩展 AI 应用程序。
 
-This notebook demonstrates the use of `langchain.chat_models.ChatOctoAI` for [OctoAI endpoints](https://octoai.cloud/text).
+本笔记本演示了如何使用 `langchain.chat_models.ChatOctoAI` 访问 [OctoAI 端点](https://octoai.cloud/text)。
 
-## Setup
+## 设置
 
-To run our example app, there are two simple steps to take:
+要运行我们的示例应用程序，请执行两个简单步骤：
 
-1. Get an API Token from [your OctoAI account page](https://octoai.cloud/settings).
+1. 从 [您的 OctoAI 账户页面](https://octoai.cloud/settings) 获取 API 令牌。
    
-2. Paste your API token in in the code cell below or use the `octoai_api_token` keyword argument.
+2. 将您的 API 令牌粘贴到下面的代码单元中，或使用 `octoai_api_token` 关键字参数。
 
-Note: If you want to use a different model than the [available models](https://octoai.cloud/text?selectedTags=Chat), you can containerize the model and make a custom OctoAI endpoint yourself, by following [Build a Container from Python](https://octo.ai/docs/bring-your-own-model/advanced-build-a-container-from-scratch-in-python) and [Create a Custom Endpoint from a Container](https://octo.ai/docs/bring-your-own-model/create-custom-endpoints-from-a-container/create-custom-endpoints-from-a-container) and then updating your `OCTOAI_API_BASE` environment variable.
-
-
+注意：如果您想使用与 [可用模型](https://octoai.cloud/text?selectedTags=Chat) 不同的模型，您可以将模型容器化，并通过遵循 [从 Python 构建容器](https://octo.ai/docs/bring-your-own-model/advanced-build-a-container-from-scratch-in-python) 和 [从容器创建自定义端点](https://octo.ai/docs/bring-your-own-model/create-custom-endpoints-from-a-container/create-custom-endpoints-from-a-container) 自行创建自定义 OctoAI 端点，然后更新您的 `OCTOAI_API_BASE` 环境变量。
 
 ```python
 import os
@@ -25,13 +24,12 @@ import os
 os.environ["OCTOAI_API_TOKEN"] = "OCTOAI_API_TOKEN"
 ```
 
-
 ```python
 from langchain_community.chat_models import ChatOctoAI
 from langchain_core.messages import HumanMessage, SystemMessage
 ```
 
-## Example
+## 示例
 
 
 ```python
@@ -47,14 +45,13 @@ messages = [
 print(chat(messages).content)
 ```
 
-Leonardo da Vinci (1452-1519) was an Italian polymath who is often considered one of the greatest painters in history. However, his genius extended far beyond art. He was also a scientist, inventor, mathematician, engineer, anatomist, geologist, and cartographer.
+列奥纳多·达·芬奇（1452-1519）是一位意大利博学家，常被认为是历史上最伟大的画家之一。然而，他的天才远不止于艺术。他还是一位科学家、发明家、数学家、工程师、解剖学家、地质学家和制图师。
 
-Da Vinci is best known for his paintings such as the Mona Lisa, The Last Supper, and The Virgin of the Rocks. His scientific studies were ahead of his time, and his notebooks contain detailed drawings and descriptions of various machines, human anatomy, and natural phenomena.
+达·芬奇以《蒙娜丽莎》、《最后的晚餐》和《岩间圣母》等画作而闻名。他的科学研究超前于时代，他的笔记本中包含了各种机器、人类解剖和自然现象的详细图纸和描述。
 
-Despite never receiving a formal education, da Vinci's insatiable curiosity and observational skills made him a pioneer in many fields. His work continues to inspire and influence artists, scientists, and thinkers today.
+尽管从未接受过正式教育，达·芬奇的强烈好奇心和观察能力使他在许多领域成为先锋。他的作品至今仍激励和影响着艺术家、科学家和思想家。
 
+## 相关
 
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

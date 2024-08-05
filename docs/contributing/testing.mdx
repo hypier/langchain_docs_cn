@@ -2,119 +2,102 @@
 sidebar_position: 6
 ---
 
-# Testing
+# 测试
 
-All of our packages have unit tests and integration tests, and we favor unit tests over integration tests.
+我们所有的包都有单元测试和集成测试，我们更倾向于单元测试而不是集成测试。
 
-Unit tests run on every pull request, so they should be fast and reliable.
+单元测试在每个拉取请求时运行，因此它们应该快速且可靠。
 
-Integration tests run once a day, and they require more setup, so they should be reserved for confirming interface points with external services.
+集成测试每天运行一次，并且需要更多的设置，因此它们应保留用于确认与外部服务的接口点。
 
-## Unit Tests
+## 单元测试
 
-Unit tests cover modular logic that does not require calls to outside APIs.
-If you add new logic, please add a unit test.
+单元测试涵盖不需要调用外部 API 的模块化逻辑。
+如果您添加了新逻辑，请添加单元测试。
 
-To install dependencies for unit tests:
+要安装单元测试的依赖项：
 
 ```bash
 poetry install --with test
 ```
 
-To run unit tests:
+要运行单元测试：
 
 ```bash
 make test
 ```
 
-To run unit tests in Docker:
+要在 Docker 中运行单元测试：
 
 ```bash
 make docker_tests
 ```
 
-To run a specific test:
+要运行特定测试：
 
 ```bash
 TEST_FILE=tests/unit_tests/test_imports.py make test
 ```
 
-## Integration Tests
+## 集成测试
 
-Integration tests cover logic that requires making calls to outside APIs (often integration with other services).
-If you add support for a new external API, please add a new integration test.
+集成测试涵盖需要调用外部 API 的逻辑（通常是与其他服务的集成）。如果您添加了对新的外部 API 的支持，请添加一个新的集成测试。
 
-**Warning:** Almost no tests should be integration tests.
+**警告：**几乎没有测试应该是集成测试。
 
-  Tests that require making network connections make it difficult for other
-  developers to test the code.
+  需要进行网络连接的测试使其他开发人员测试代码变得困难。
 
-  Instead favor relying on `responses` library and/or mock.patch to mock
-  requests using small fixtures.
+  相反，建议依赖 `responses` 库和/或 mock.patch 使用小的固定数据来模拟请求。
 
-To install dependencies for integration tests:
+要安装集成测试的依赖项：
 
 ```bash
 poetry install --with test,test_integration
 ```
 
-To run integration tests:
+要运行集成测试：
 
 ```bash
 make integration_tests
 ```
 
-### Prepare
+### 准备
 
-The integration tests use several search engines and databases. The tests
-aim to verify the correct behavior of the engines and databases according to
-their specifications and requirements.
+集成测试使用多个搜索引擎和数据库。这些测试旨在验证引擎和数据库是否按照其规范和要求正确运行。
 
-To run some integration tests, such as tests located in
-`tests/integration_tests/vectorstores/`, you will need to install the following
-software:
+要运行某些集成测试，例如位于 `tests/integration_tests/vectorstores/` 的测试，您需要安装以下软件：
 
 - Docker
-- Python 3.8.1 or later
+- Python 3.8.1 或更高版本
 
-Any new dependencies should be added by running:
+任何新的依赖项应通过运行以下命令添加：
 
 ```bash
 # add package and install it after adding:
 poetry add tiktoken@latest --group "test_integration" && poetry install --with test_integration
 ```
 
-Before running any tests, you should start a specific Docker container that has all the
-necessary dependencies installed. For instance, we use the `elasticsearch.yml` container
-for `test_elasticsearch.py`:
+在运行任何测试之前，您应启动一个特定的 Docker 容器，该容器已安装所有必要的依赖项。例如，我们使用 `elasticsearch.yml` 容器来运行 `test_elasticsearch.py`：
 
 ```bash
 cd tests/integration_tests/vectorstores/docker-compose
 docker-compose -f elasticsearch.yml up
 ```
 
-For environments that requires more involving preparation, look for `*.sh`. For instance,
-`opensearch.sh` builds a required docker image and then launch opensearch.
+对于需要更复杂准备的环境，请查找 `*.sh`。例如，`opensearch.sh` 构建所需的 Docker 镜像，然后启动 opensearch。
 
+### 为本地测试准备环境变量：
 
-### Prepare environment variables for local testing:
+- 将 `tests/integration_tests/.env.example` 复制到 `tests/integration_tests/.env`
+- 在 `tests/integration_tests/.env` 文件中设置变量，例如 `OPENAI_API_KEY`
 
-- copy `tests/integration_tests/.env.example` to `tests/integration_tests/.env`
-- set variables in `tests/integration_tests/.env` file, e.g `OPENAI_API_KEY`
+此外，重要的是要注意某些集成测试可能需要设置特定的环境变量，例如 `OPENAI_API_KEY`。在运行测试之前，请确保设置所有必需的环境变量，以确保它们正确运行。
 
-Additionally, it's important to note that some integration tests may require certain
-environment variables to be set, such as `OPENAI_API_KEY`. Be sure to set any required
-environment variables before running the tests to ensure they run correctly.
+### 使用pytest-vcr录制HTTP交互
 
-### Recording HTTP interactions with pytest-vcr
+本仓库中的一些集成测试涉及向外部服务发出HTTP请求。为了防止每次运行测试时都发出这些请求，我们使用pytest-vcr来录制和重放HTTP交互。
 
-Some of the integration tests in this repository involve making HTTP requests to
-external services. To prevent these requests from being made every time the tests are
-run, we use pytest-vcr to record and replay HTTP interactions.
-
-When running tests in a CI/CD pipeline, you may not want to modify the existing
-cassettes. You can use the --vcr-record=none command-line option to disable recording
-new cassettes. Here's an example:
+在CI/CD管道中运行测试时，您可能不想修改现有的录音带。您可以使用--vcr-record=none命令行选项来禁用录制新录音带。以下是一个示例：
 
 ```bash
 pytest --log-cli-level=10 tests/integration_tests/vectorstores/test_pinecone.py --vcr-record=none
@@ -122,7 +105,7 @@ pytest tests/integration_tests/vectorstores/test_elasticsearch.py --vcr-record=n
 
 ```
 
-### Run some tests with coverage:
+### 运行一些覆盖率测试：
 
 ```bash
 pytest tests/integration_tests/vectorstores/test_elasticsearch.py --cov=langchain --cov-report=html
@@ -130,17 +113,17 @@ start "" htmlcov/index.html || open htmlcov/index.html
 
 ```
 
-## Coverage
+## 覆盖率
 
-Code coverage (i.e. the amount of code that is covered by unit tests) helps identify areas of the code that are potentially more or less brittle.
+代码覆盖率（即被单元测试覆盖的代码量）有助于识别代码中可能更脆弱或更强健的区域。
 
-Coverage requires the dependencies for integration tests:
+覆盖率需要集成测试的依赖项：
 
 ```bash
 poetry install --with test_integration
 ```
 
-To get a report of current coverage, run the following:
+要获取当前覆盖率报告，请运行以下命令：
 
 ```bash
 make coverage

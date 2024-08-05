@@ -1,15 +1,16 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/sparkllm.ipynb
 ---
+
 # SparkLLM
-[SparkLLM](https://xinghuo.xfyun.cn/spark) is a large-scale cognitive model independently developed by iFLYTEK.
-It has cross-domain knowledge and language understanding ability by learning a large amount of texts, codes and images.
-It can understand and perform tasks based on natural dialogue.
+[SparkLLM](https://xinghuo.xfyun.cn/spark) 是由科大讯飞自主研发的大规模认知模型。
+它通过学习大量的文本、代码和图像，具备跨领域的知识和语言理解能力。
+它能够基于自然对话理解和执行任务。
 
-## Prerequisite
-- Get SparkLLM's app_id, api_key and api_secret from [iFlyTek SparkLLM API Console](https://console.xfyun.cn/services/bm3) (for more info, see [iFlyTek SparkLLM Intro](https://xinghuo.xfyun.cn/sparkapi) ), then set environment variables `IFLYTEK_SPARK_APP_ID`, `IFLYTEK_SPARK_API_KEY` and `IFLYTEK_SPARK_API_SECRET` or pass parameters when creating `ChatSparkLLM` as the demo above.
+## 前提条件
+- 从 [iFlyTek SparkLLM API 控制台](https://console.xfyun.cn/services/bm3) 获取 SparkLLM 的 app_id、api_key 和 api_secret（更多信息，请参见 [iFlyTek SparkLLM 介绍](https://xinghuo.xfyun.cn/sparkapi)），然后设置环境变量 `IFLYTEK_SPARK_APP_ID`、`IFLYTEK_SPARK_API_KEY` 和 `IFLYTEK_SPARK_API_SECRET`，或在创建 `ChatSparkLLM` 时传递参数，如上面的示例所示。
 
-## Use SparkLLM
+## 使用 SparkLLM
 
 
 ```python
@@ -24,7 +25,7 @@ os.environ["IFLYTEK_SPARK_API_SECRET"] = "api_secret"
 ```python
 from langchain_community.llms import SparkLLM
 
-# Load the model
+# 加载模型
 llm = SparkLLM()
 
 res = llm.invoke("What's your name?")
@@ -34,7 +35,7 @@ print(res)
 /Users/liugddx/code/langchain/libs/core/langchain_core/_api/deprecation.py:117: LangChainDeprecationWarning: The function `__call__` was deprecated in LangChain 0.1.7 and will be removed in 0.2.0. Use invoke instead.
   warn_deprecated(
 ``````output
-My name is iFLYTEK Spark. How can I assist you today?
+我的名字是 iFLYTEK Spark。今天我能为您提供什么帮助？
 ```
 
 ```python
@@ -58,7 +59,7 @@ for res in llm.stream("foo:"):
 Hello! How can I assist you today?
 ```
 
-## Related
+## 相关
 
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

@@ -1,24 +1,25 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/google_drive.ipynb
 ---
+
 # Google Drive
 
-This notebook walks through connecting a LangChain to the `Google Drive API`.
+本笔记本演示如何将 LangChain 连接到 `Google Drive API`。
 
-## Prerequisites
+## 前提条件
 
-1. Create a Google Cloud project or use an existing project
-1. Enable the [Google Drive API](https://console.cloud.google.com/flows/enableapi?apiid=drive.googleapis.com)
-1. [Authorize credentials for desktop app](https://developers.google.com/drive/api/quickstart/python#authorize_credentials_for_a_desktop_application)
+1. 创建一个 Google Cloud 项目或使用现有项目
+1. 启用 [Google Drive API](https://console.cloud.google.com/flows/enableapi?apiid=drive.googleapis.com)
+1. [为桌面应用授权凭据](https://developers.google.com/drive/api/quickstart/python#authorize_credentials_for_a_desktop_application)
 1. `pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib`
 
-## Instructions for retrieving your Google Docs data
-By default, the `GoogleDriveTools` and `GoogleDriveWrapper` expects the `credentials.json` file to be `~/.credentials/credentials.json`, but this is configurable using the `GOOGLE_ACCOUNT_FILE` environment variable. 
-The location of `token.json` use the same directory (or use the parameter `token_path`). Note that `token.json` will be created automatically the first time you use the tool.
+## 检索您的 Google Docs 数据的说明
+默认情况下，`GoogleDriveTools` 和 `GoogleDriveWrapper` 期望 `credentials.json` 文件位于 `~/.credentials/credentials.json`，但可以使用 `GOOGLE_ACCOUNT_FILE` 环境变量进行配置。 
+`token.json` 的位置使用相同的目录（或使用参数 `token_path`）。请注意，`token.json` 会在您第一次使用该工具时自动创建。
 
-`GoogleDriveSearchTool` can retrieve a selection of files with some requests. 
+`GoogleDriveSearchTool` 可以通过一些请求检索一系列文件。
 
-By default, If you use a `folder_id`, all the files inside this folder can be retrieved to `Document`, if the name match the query.
+默认情况下，如果您使用 `folder_id`，则可以检索该文件夹内的所有文件到 `Document`，前提是名称与查询匹配。
 
 
 
@@ -26,12 +27,12 @@ By default, If you use a `folder_id`, all the files inside this folder can be re
 %pip install --upgrade --quiet  google-api-python-client google-auth-httplib2 google-auth-oauthlib langchain-community
 ```
 
-You can obtain your folder and document id from the URL:
+您可以从 URL 中获取文件夹和文档 ID：
 
-* Folder: https://drive.google.com/drive/u/0/folders/1yucgL9WGgWZdM1TOuKkeghlPizuzMYb5 -> folder id is `"1yucgL9WGgWZdM1TOuKkeghlPizuzMYb5"`
-* Document: https://docs.google.com/document/d/1bfaMQ18_i56204VaQDVeAFpqEijJTgvurupdEDiaUQw/edit -> document id is `"1bfaMQ18_i56204VaQDVeAFpqEijJTgvurupdEDiaUQw"`
+* 文件夹: https://drive.google.com/drive/u/0/folders/1yucgL9WGgWZdM1TOuKkeghlPizuzMYb5 -> 文件夹 ID 是 `"1yucgL9WGgWZdM1TOuKkeghlPizuzMYb5"`
+* 文档: https://docs.google.com/document/d/1bfaMQ18_i56204VaQDVeAFpqEijJTgvurupdEDiaUQw/edit -> 文档 ID 是 `"1bfaMQ18_i56204VaQDVeAFpqEijJTgvurupdEDiaUQw"`
 
-The special value `root` is for your personal home.
+特殊值 `root` 是指您的个人主目录。
 
 
 ```python
@@ -39,7 +40,7 @@ folder_id = "root"
 # folder_id='1yucgL9WGgWZdM1TOuKkeghlPizuzMYb5'
 ```
 
-By default, all files with these mime-type can be converted to `Document`.
+默认情况下，所有具有以下 MIME 类型的文件可以转换为 `Document`。
 - text/text
 - text/plain
 - text/html
@@ -57,9 +58,9 @@ By default, all files with these mime-type can be converted to `Document`.
 - application/vnd.openxmlformats-officedocument.presentationml.presentation (PPTX)
 - application/vnd.openxmlformats-officedocument.wordprocessingml.document (DOCX)
 
-It's possible to update or customize this. See the documentation of `GoogleDriveAPIWrapper`.
+可以更新或自定义此设置。请参阅 `GoogleDriveAPIWrapper` 的文档。
 
-But, the corresponding packages must installed.
+但是，必须安装相应的包。
 
 
 ```python
@@ -71,12 +72,12 @@ But, the corresponding packages must installed.
 from langchain_googledrive.tools.google_drive.tool import GoogleDriveSearchTool
 from langchain_googledrive.utilities.google_drive import GoogleDriveAPIWrapper
 
-# By default, search only in the filename.
+# 默认情况下，仅在文件名中搜索。
 tool = GoogleDriveSearchTool(
     api_wrapper=GoogleDriveAPIWrapper(
         folder_id=folder_id,
         num_results=2,
-        template="gdrive-query-in-folder",  # Search in the body of documents
+        template="gdrive-query-in-folder",  # 在文档正文中搜索
     )
 )
 ```
@@ -109,7 +110,7 @@ tools = load_tools(
 )
 ```
 
-## Use within an Agent
+## 在代理中的使用
 
 
 ```python
@@ -129,8 +130,7 @@ agent = initialize_agent(
 agent.run("Search in google drive, who is 'Yann LeCun' ?")
 ```
 
+## 相关
 
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

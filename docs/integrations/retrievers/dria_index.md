@@ -1,22 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/dria_index.ipynb
 ---
+
 # Dria
 
->[Dria](https://dria.co/) is a hub of public RAG models for developers to both contribute and utilize a shared embedding lake. This notebook demonstrates how to use the `Dria API` for data retrieval tasks.
+>[Dria](https://dria.co/) 是一个公共 RAG 模型的中心，供开发者贡献和利用共享的嵌入湖。此笔记本演示如何使用 `Dria API` 进行数据检索任务。
 
-# Installation
+# 安装
 
-Ensure you have the `dria` package installed. You can install it using pip:
-
+确保您已安装 `dria` 包。您可以使用 pip 安装它：
 
 ```python
 %pip install --upgrade --quiet dria
 ```
 
-# Configure API Key
+# 配置 API 密钥
 
-Set up your Dria API key for access.
+设置您的 Dria API 密钥以便访问。
 
 
 ```python
@@ -25,10 +25,9 @@ import os
 os.environ["DRIA_API_KEY"] = "DRIA_API_KEY"
 ```
 
-# Initialize Dria Retriever
+# 初始化 Dria Retriever
 
-Create an instance of `DriaRetriever`.
-
+创建 `DriaRetriever` 的实例。
 
 ```python
 from langchain.retrievers import DriaRetriever
@@ -37,9 +36,9 @@ api_key = os.getenv("DRIA_API_KEY")
 retriever = DriaRetriever(api_key=api_key)
 ```
 
-# **Create Knowledge Base**
+# **创建知识库**
 
-Create a knowledge on [Dria's Knowledge Hub](https://dria.co/knowledge)
+在 [Dria's Knowledge Hub](https://dria.co/knowledge) 上创建知识库
 
 
 ```python
@@ -51,10 +50,9 @@ contract_id = retriever.create_knowledge_base(
 )
 ```
 
-# Add Data
+# 添加数据
 
-Load data into your Dria knowledge base.
-
+将数据加载到您的 Dria 知识库中。
 
 ```python
 texts = [
@@ -67,9 +65,9 @@ ids = retriever.add_texts(texts)
 print("Data added with IDs:", ids)
 ```
 
-# Retrieve Data
+# 检索数据
 
-Use the retriever to find relevant documents given a query.
+使用检索器根据查询查找相关文档。
 
 
 ```python
@@ -79,8 +77,7 @@ for doc in result:
     print(doc)
 ```
 
+## 相关
 
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

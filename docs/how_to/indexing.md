@@ -1,76 +1,76 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/indexing.ipynb
 ---
-# How to use the LangChain indexing API
 
-Here, we will look at a basic indexing workflow using the LangChain indexing API. 
+# 如何使用 LangChain 索引 API
 
-The indexing API lets you load and keep in sync documents from any source into a vector store. Specifically, it helps:
+在这里，我们将查看使用 LangChain 索引 API 的基本索引工作流程。
 
-* Avoid writing duplicated content into the vector store
-* Avoid re-writing unchanged content
-* Avoid re-computing embeddings over unchanged content
+索引 API 允许您从任何来源加载并保持文档与向量存储同步。具体来说，它有助于：
 
-All of which should save you time and money, as well as improve your vector search results.
+* 避免将重复内容写入向量存储
+* 避免重新写入未更改的内容
+* 避免对未更改的内容重新计算嵌入
 
-Crucially, the indexing API will work even with documents that have gone through several 
-transformation steps (e.g., via text chunking) with respect to the original source documents.
+所有这些都应该为您节省时间和金钱，并改善您的向量搜索结果。
 
-## How it works
+至关重要的是，索引 API 即使在文档经过多个转换步骤（例如，通过文本分块）后，也能正常工作，与原始源文档相比。
 
-LangChain indexing makes use of a record manager (`RecordManager`) that keeps track of document writes into the vector store.
+## 工作原理
 
-When indexing content, hashes are computed for each document, and the following information is stored in the record manager: 
+LangChain 索引利用记录管理器 (`RecordManager`) 来跟踪文档在向量存储中的写入。
 
-- the document hash (hash of both page content and metadata)
-- write time
-- the source id -- each document should include information in its metadata to allow us to determine the ultimate source of this document
+在索引内容时，会为每个文档计算哈希，并在记录管理器中存储以下信息：
 
-## Deletion modes
+- 文档哈希（页面内容和元数据的哈希）
+- 写入时间
+- 源 ID -- 每个文档应在其元数据中包含信息，以便我们确定该文档的最终来源
 
-When indexing documents into a vector store, it's possible that some existing documents in the vector store should be deleted. In certain situations you may want to remove any existing documents that are derived from the same sources as the new documents being indexed. In others you may want to delete all existing documents wholesale. The indexing API deletion modes let you pick the behavior you want:
+## 删除模式
 
-| Cleanup Mode | De-Duplicates Content | Parallelizable | Cleans Up Deleted Source Docs   | Cleans Up Mutations of Source Docs and/or Derived Docs | Clean Up Timing   |
-|-------------|-----------------------|---------------|----------------------------------|----------------------------------------------------|---------------------|
-| None        | ✅                    | ✅            | ❌                               | ❌                                                 | -                  |
-| Incremental | ✅                    | ✅            | ❌                               | ✅                                                 | Continuously       |
-| Full        | ✅                    | ❌            | ✅                               | ✅                                                 | At end of indexing |
+在将文档索引到向量存储时，可能需要删除向量存储中某些现有文档。在某些情况下，您可能希望删除与正在索引的新文档来自相同来源的所有现有文档。在其他情况下，您可能希望整体删除所有现有文档。索引 API 的删除模式让您可以选择所需的行为：
+
+| 清理模式   | 去重内容 | 可并行化 | 清理已删除的源文档 | 清理源文档和/或派生文档的变更 | 清理时机          |
+|-------------|----------|----------|---------------------|-------------------------------|-------------------|
+| 无          | ✅       | ✅       | ❌                  | ❌                            | -                 |
+| 增量        | ✅       | ✅       | ❌                  | ✅                            | 持续进行          |
+| 完全        | ✅       | ❌       | ✅                  | ✅                            | 在索引结束时      |
 
 
-`None` does not do any automatic clean up, allowing the user to manually do clean up of old content. 
+`无` 不会进行任何自动清理，允许用户手动清理旧内容。
 
-`incremental` and `full` offer the following automated clean up:
+`增量` 和 `完全` 提供以下自动清理：
 
-* If the content of the source document or derived documents has **changed**, both `incremental` or `full` modes will clean up (delete) previous versions of the content.
-* If the source document has been **deleted** (meaning it is not included in the documents currently being indexed), the `full` cleanup mode will delete it from the vector store correctly, but the `incremental` mode will not.
+* 如果源文档或派生文档的内容发生了 **变化**，那么 `增量` 或 `完全` 模式都将清理（删除）内容的先前版本。
+* 如果源文档已被 **删除**（意味着它不包含在当前正在索引的文档中），`完全` 清理模式将正确地将其从向量存储中删除，但 `增量` 模式不会。
 
-When content is mutated (e.g., the source PDF file was revised) there will be a period of time during indexing when both the new and old versions may be returned to the user. This happens after the new content was written, but before the old version was deleted.
+当内容发生变更时（例如，源 PDF 文件被修订），在索引期间会有一段时间，用户可能会看到新旧版本的内容。这发生在新内容被写入后，但在旧版本被删除之前。
 
-* `incremental` indexing minimizes this period of time as it is able to do clean up continuously, as it writes.
-* `full` mode does the clean up after all batches have been written.
+* `增量` 索引最小化了这段时间，因为它能够在写入时持续进行清理。
+* `完全` 模式在所有批次写入后进行清理。
 
-## Requirements
+## 要求
 
-1. Do not use with a store that has been pre-populated with content independently of the indexing API, as the record manager will not know that records have been inserted previously.
-2. Only works with LangChain `vectorstore`'s that support:
-   * document addition by id (`add_documents` method with `ids` argument)
-   * delete by id (`delete` method with `ids` argument)
+1. 不要与一个已经独立于索引 API 预填充内容的商店一起使用，因为记录管理器将不知道记录之前已被插入。
+2. 仅适用于支持以下功能的 LangChain `vectorstore`：
+   * 通过 ID 添加文档（`add_documents` 方法带 `ids` 参数）
+   * 通过 ID 删除（`delete` 方法带 `ids` 参数）
 
-Compatible Vectorstores: `Aerospike`, `AnalyticDB`, `AstraDB`, `AwaDB`, `AzureCosmosDBNoSqlVectorSearch`, `AzureCosmosDBVectorSearch`, `Bagel`, `Cassandra`, `Chroma`, `CouchbaseVectorStore`, `DashVector`, `DatabricksVectorSearch`, `DeepLake`, `Dingo`, `ElasticVectorSearch`, `ElasticsearchStore`, `FAISS`, `HanaDB`, `Milvus`, `MongoDBAtlasVectorSearch`, `MyScale`, `OpenSearchVectorSearch`, `PGVector`, `Pinecone`, `Qdrant`, `Redis`, `Rockset`, `ScaNN`, `SingleStoreDB`, `SupabaseVectorStore`, `SurrealDBStore`, `TimescaleVector`, `Vald`, `VDMS`, `Vearch`, `VespaStore`, `Weaviate`, `Yellowbrick`, `ZepVectorStore`, `TencentVectorDB`, `OpenSearchVectorSearch`.
-  
-## Caution
+兼容的 Vectorstores: `Aerospike`, `AnalyticDB`, `AstraDB`, `AwaDB`, `AzureCosmosDBNoSqlVectorSearch`, `AzureCosmosDBVectorSearch`, `Bagel`, `Cassandra`, `Chroma`, `CouchbaseVectorStore`, `DashVector`, `DatabricksVectorSearch`, `DeepLake`, `Dingo`, `ElasticVectorSearch`, `ElasticsearchStore`, `FAISS`, `HanaDB`, `Milvus`, `MongoDBAtlasVectorSearch`, `MyScale`, `OpenSearchVectorSearch`, `PGVector`, `Pinecone`, `Qdrant`, `Redis`, `Rockset`, `ScaNN`, `SingleStoreDB`, `SupabaseVectorStore`, `SurrealDBStore`, `TimescaleVector`, `Vald`, `VDMS`, `Vearch`, `VespaStore`, `Weaviate`, `Yellowbrick`, `ZepVectorStore`, `TencentVectorDB`, `OpenSearchVectorSearch`.
 
-The record manager relies on a time-based mechanism to determine what content can be cleaned up (when using `full` or `incremental` cleanup modes).
+## 注意
 
-If two tasks run back-to-back, and the first task finishes before the clock time changes, then the second task may not be able to clean up content.
+记录管理器依赖基于时间的机制来确定可以清理的内容（在使用 `full` 或 `incremental` 清理模式时）。
 
-This is unlikely to be an issue in actual settings for the following reasons:
+如果两个任务连续运行，并且第一个任务在时钟时间变化之前完成，则第二个任务可能无法清理内容。
 
-1. The RecordManager uses higher resolution timestamps.
-2. The data would need to change between the first and the second tasks runs, which becomes unlikely if the time interval between the tasks is small.
-3. Indexing tasks typically take more than a few ms.
+在实际设置中，这不太可能成为问题，原因如下：
 
-## Quickstart
+1. RecordManager 使用更高分辨率的时间戳。
+2. 数据需要在第一次和第二次任务运行之间发生变化，如果任务之间的时间间隔较小，这种情况变得不太可能。
+3. 索引任务通常需要超过几毫秒的时间。
+
+## 快速入门
 
 
 ```python
@@ -80,7 +80,7 @@ from langchain_elasticsearch import ElasticsearchStore
 from langchain_openai import OpenAIEmbeddings
 ```
 
-Initialize a vector store and set up the embeddings:
+初始化一个向量存储并设置嵌入：
 
 
 ```python
@@ -93,9 +93,9 @@ vectorstore = ElasticsearchStore(
 )
 ```
 
-Initialize a record manager with an appropriate namespace.
+使用适当的命名空间初始化记录管理器。
 
-**Suggestion:** Use a namespace that takes into account both the vector store and the collection name in the vector store; e.g., 'redis/my_docs', 'chromadb/my_docs' or 'postgres/my_docs'.
+**建议：** 使用一个考虑到向量存储和向量存储中的集合名称的命名空间；例如，'redis/my_docs'，'chromadb/my_docs' 或 'postgres/my_docs'。
 
 
 ```python
@@ -105,14 +105,14 @@ record_manager = SQLRecordManager(
 )
 ```
 
-Create a schema before using the record manager.
+在使用记录管理器之前创建一个模式。
 
 
 ```python
 record_manager.create_schema()
 ```
 
-Let's index some test documents:
+让我们索引一些测试文档：
 
 
 ```python
@@ -120,7 +120,7 @@ doc1 = Document(page_content="kitty", metadata={"source": "kitty.txt"})
 doc2 = Document(page_content="doggy", metadata={"source": "doggy.txt"})
 ```
 
-Indexing into an empty vector store:
+索引到一个空的向量存储中：
 
 
 ```python
@@ -129,15 +129,13 @@ def _clear():
     index([], record_manager, vectorstore, cleanup="full", source_id_key="source")
 ```
 
-### ``None`` deletion mode
+### ``None`` 删除模式
 
-This mode does not do automatic clean up of old versions of content; however, it still takes care of content de-duplication.
-
+此模式不会自动清理旧版本的内容；然而，它仍然会处理内容的去重。
 
 ```python
 _clear()
 ```
-
 
 ```python
 index(
@@ -149,45 +147,33 @@ index(
 )
 ```
 
-
-
 ```output
 {'num_added': 1, 'num_updated': 0, 'num_skipped': 0, 'num_deleted': 0}
 ```
 
-
-
 ```python
 _clear()
 ```
 
-
 ```python
 index([doc1, doc2], record_manager, vectorstore, cleanup=None, source_id_key="source")
 ```
-
-
 
 ```output
 {'num_added': 2, 'num_updated': 0, 'num_skipped': 0, 'num_deleted': 0}
 ```
 
-
-Second time around all content will be skipped:
-
+第二次所有内容将被跳过：
 
 ```python
 index([doc1, doc2], record_manager, vectorstore, cleanup=None, source_id_key="source")
 ```
 
-
-
 ```output
 {'num_added': 0, 'num_updated': 0, 'num_skipped': 2, 'num_deleted': 0}
 ```
 
-
-### ``"incremental"`` deletion mode
+### ``"增量"`` 删除模式
 
 
 ```python
@@ -212,7 +198,7 @@ index(
 ```
 
 
-Indexing again should result in both documents getting **skipped** -- also skipping the embedding operation!
+再次索引应该导致两个文档被**跳过**——同时跳过嵌入操作！
 
 
 ```python
@@ -232,7 +218,7 @@ index(
 ```
 
 
-If we provide no documents with incremental indexing mode, nothing will change.
+如果我们在增量索引模式下不提供任何文档，则不会发生任何变化。
 
 
 ```python
@@ -246,7 +232,7 @@ index([], record_manager, vectorstore, cleanup="incremental", source_id_key="sou
 ```
 
 
-If we mutate a document, the new version will be written and all old versions sharing the same source will be deleted.
+如果我们修改一个文档，新版本将被写入，所有共享相同来源的旧版本将被删除。
 
 
 ```python
@@ -270,14 +256,13 @@ index(
 {'num_added': 1, 'num_updated': 0, 'num_skipped': 0, 'num_deleted': 1}
 ```
 
+### ``"full"`` 删除模式
 
-### ``"full"`` deletion mode
+在 `full` 模式下，用户应将应被索引的 `full` 内容宇宙传递给索引函数。
 
-In `full` mode the user should pass the `full` universe of content that should be indexed into the indexing function.
+任何未传递到索引函数中的文档，如果存在于向量存储中，将会被删除！
 
-Any documents that are not passed into the indexing function and are present in the vectorstore will be deleted!
-
-This behavior is useful to handle deletions of source documents.
+这种行为对于处理源文档的删除非常有用。
 
 
 ```python
@@ -301,7 +286,7 @@ index(all_docs, record_manager, vectorstore, cleanup="full", source_id_key="sour
 ```
 
 
-Say someone deleted the first doc:
+假设有人删除了第一个文档：
 
 
 ```python
@@ -320,7 +305,7 @@ all_docs
 ```
 
 
-Using full mode will clean up the deleted content as well.
+使用全模式将清理已删除的内容。
 
 
 ```python
@@ -333,14 +318,13 @@ index(all_docs, record_manager, vectorstore, cleanup="full", source_id_key="sour
 {'num_added': 0, 'num_updated': 0, 'num_skipped': 1, 'num_deleted': 1}
 ```
 
+## 译文
 
-## Source 
+元数据属性包含一个字段，称为 `source`。该源应指向与给定文档相关的 *最终* 来源。
 
-The metadata attribute contains a field called `source`. This source should be pointing at the *ultimate* provenance associated with the given document.
+例如，如果这些文档代表某个父文档的片段，则两个文档的 `source` 应该相同，并引用父文档。
 
-For example, if these documents are representing chunks of some parent document, the `source` for both documents should be the same and reference the parent document.
-
-In general, `source` should always be specified. Only use a `None`, if you **never** intend to use `incremental` mode, and for some reason can't specify the `source` field correctly.
+一般来说，`source` 应始终被指定。只有在您 **绝对** 不打算使用 `incremental` 模式，并且由于某种原因无法正确指定 `source` 字段时，才使用 `None`。
 
 
 ```python
@@ -405,7 +389,7 @@ changed_doggy_docs = [
 ]
 ```
 
-This should delete the old versions of documents associated with `doggy.txt` source and replace them with the new versions.
+这应该删除与 `doggy.txt` 源相关的旧版本文档，并用新版本替换它们。
 
 
 ```python
@@ -440,13 +424,11 @@ vectorstore.similarity_search("dog", k=30)
  Document(page_content='kitty kit', metadata={'source': 'kitty.txt'})]
 ```
 
+## 使用加载器
 
-## Using with loaders
+索引可以接受文档的可迭代对象或任何加载器。
 
-Indexing can accept either an iterable of documents or else any loader.
-
-**Attention:** The loader **must** set source keys correctly.
-
+**注意：** 加载器 **必须** 正确设置源键。
 
 ```python
 from langchain_core.document_loaders import BaseLoader
@@ -513,4 +495,3 @@ vectorstore.similarity_search("dog", k=30)
 [Document(page_content='woof woof', metadata={'source': 'doggy.txt'}),
  Document(page_content='woof woof woof', metadata={'source': 'doggy.txt'})]
 ```
-

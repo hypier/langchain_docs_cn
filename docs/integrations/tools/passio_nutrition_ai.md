@@ -1,26 +1,27 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/passio_nutrition_ai.ipynb
 ---
+
 # Passio NutritionAI
 
-To best understand how NutritionAI can give your agents super food-nutrition powers, let's build an agent that can find that information via Passio NutritionAI.
+为了更好地理解 NutritionAI 如何赋予您的代理超强的食品营养能力，让我们构建一个可以通过 Passio NutritionAI 找到该信息的代理。
 
-## Define tools
+## 定义工具
 
-We first need to create [the Passio NutritionAI tool](/docs/integrations/tools/passio_nutrition_ai).
+我们首先需要创建 [the Passio NutritionAI tool](/docs/integrations/tools/passio_nutrition_ai)。
 
 ### [Passio Nutrition AI](/docs/integrations/tools/passio_nutrition_ai)
 
-We have a built-in tool in LangChain to easily use Passio NutritionAI to find food nutrition facts.
-Note that this requires an API key - they have a free tier.
+我们在 LangChain 中内置了一个工具，可以轻松使用 Passio NutritionAI 查找食物营养成分。
+请注意，这需要一个 API 密钥 - 他们提供免费套餐。
 
-Once you create your API key, you will need to export that as:
+一旦您创建了 API 密钥，您需要将其导出为：
 
 ```bash
 export NUTRITIONAI_SUBSCRIPTION_KEY="..."
 ```
 
-... or provide it to your Python environment via some other means such as the `dotenv` package.  You an also explicitly control the key via constructor calls.
+... 或通过其他方式将其提供给您的 Python 环境，例如 `dotenv` 包。您还可以通过构造函数调用显式控制密钥。
 
 
 ```python
@@ -55,21 +56,20 @@ nutritionai_search.invoke("chicken tikka masala")
 nutritionai_search.invoke("Schnuck Markets sliced pepper jack cheese")
 ```
 
-### Tools
+### 工具
 
-Now that we have the tool, we can create a list of tools that we will use downstream.
+现在我们有了工具，我们可以创建一个将用于后续的工具列表。
 
 
 ```python
 tools = [nutritionai_search]
 ```
 
-## Create the agent
+## 创建代理
 
-Now that we have defined the tools, we can create the agent. We will be using an OpenAI Functions agent - for more information on this type of agent, as well as other options, see [this guide](/docs/concepts#agents)
+现在我们已经定义了工具，我们可以创建代理。我们将使用 OpenAI Functions 代理 - 有关此类型代理的更多信息以及其他选项，请参阅 [此指南](/docs/concepts#agents)
 
-First, we choose the LLM we want to be guiding the agent.
-
+首先，我们选择要指导代理的 LLM。
 
 ```python
 from langchain_openai import ChatOpenAI
@@ -77,18 +77,15 @@ from langchain_openai import ChatOpenAI
 llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
 ```
 
-Next, we choose the prompt we want to use to guide the agent.
-
+接下来，我们选择要用于指导代理的提示。
 
 ```python
 from langchain import hub
 
-# Get the prompt to use - you can modify this!
+# 获取要使用的提示 - 你可以修改这个！
 prompt = hub.pull("hwchase17/openai-functions-agent")
 prompt.messages
 ```
-
-
 
 ```output
 [SystemMessagePromptTemplate(prompt=PromptTemplate(input_variables=[], template='You are a helpful assistant')),
@@ -97,9 +94,7 @@ prompt.messages
  MessagesPlaceholder(variable_name='agent_scratchpad')]
 ```
 
-
-Now, we can initalize the agent with the LLM, the prompt, and the tools. The agent is responsible for taking in input and deciding what actions to take. Crucially, the Agent does not execute those actions - that is done by the AgentExecutor (next step). For more information about how to think about these components, see our [conceptual guide](/docs/concepts#agents)
-
+现在，我们可以使用 LLM、提示和工具初始化代理。代理负责接收输入并决定采取什么行动。至关重要的是，代理不执行这些操作 - 这是由 AgentExecutor 完成的（下一步）。有关如何思考这些组件的更多信息，请参阅我们的 [概念指南](/docs/concepts#agents)
 
 ```python
 from langchain.agents import create_openai_functions_agent
@@ -107,8 +102,7 @@ from langchain.agents import create_openai_functions_agent
 agent = create_openai_functions_agent(llm, tools, prompt)
 ```
 
-Finally, we combine the agent (the brains) with the tools inside the AgentExecutor (which will repeatedly call the agent and execute tools). For more information about how to think about these components, see our [conceptual guide](/docs/concepts#agents)
-
+最后，我们将代理（大脑）与工具结合在 AgentExecutor 中（它将反复调用代理并执行工具）。有关如何思考这些组件的更多信息，请参阅我们的 [概念指南](/docs/concepts#agents)
 
 ```python
 from langchain.agents import AgentExecutor
@@ -116,10 +110,9 @@ from langchain.agents import AgentExecutor
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 ```
 
-## Run the agent
+## 运行代理
 
-We can now run the agent on a few queries! Note that for now, these are all **stateless** queries (it won't remember previous interactions).
-
+我们现在可以在一些查询上运行代理！请注意，目前这些都是**无状态**查询（它不会记住之前的交互）。
 
 ```python
 agent_executor.invoke({"input": "hi!"})
@@ -127,15 +120,15 @@ agent_executor.invoke({"input": "hi!"})
 ```output
 
 
-[1m> Entering new AgentExecutor chain...[0m
-[32;1m[1;3mHello! How can I assist you today?[0m
+[1m> 进入新的 AgentExecutor 链...[0m
+[32;1m[1;3m你好！今天我能为你提供什么帮助？[0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 ```
 
 
 ```output
-{'input': 'hi!', 'output': 'Hello! How can I assist you today?'}
+{'input': 'hi!', 'output': '你好！今天我能为你提供什么帮助？'}
 ```
 
 
@@ -144,8 +137,7 @@ agent_executor.invoke({"input": "hi!"})
 agent_executor.invoke({"input": "how many calories are in a slice pepperoni pizza?"})
 ```
 
-If we want to keep track of these messages automatically, we can wrap this in a RunnableWithMessageHistory. For more information on how to use this, see [this guide](/docs/how_to/message_history)
-
+如果我们想要自动跟踪这些消息，可以将其包装在 RunnableWithMessageHistory 中。有关如何使用此功能的更多信息，请参见[本指南](/docs/how_to/message_history)。
 
 ```python
 agent_executor.invoke(
@@ -180,12 +172,11 @@ agent_executor.invoke(
 )
 ```
 
-## Conclusion
+## 结论
 
-That's a wrap! In this quick start we covered how to create a simple agent that is able to incorporate food-nutrition information into its answers. Agents are a complex topic, and there's lot to learn!
+就这些！在这个快速入门中，我们讨论了如何创建一个能够将食品营养信息纳入其回答的简单代理。代理是一个复杂的话题，还有很多需要学习的内容！
 
+## 相关
 
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

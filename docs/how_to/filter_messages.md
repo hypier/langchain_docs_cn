@@ -1,13 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/filter_messages.ipynb
 ---
-# How to filter messages
 
-In more complex chains and agents we might track state with a list of messages. This list can start to accumulate messages from multiple different models, speakers, sub-chains, etc., and we may only want to pass subsets of this full list of messages to each model call in the chain/agent.
+# 如何过滤消息
 
-The `filter_messages` utility makes it easy to filter messages by type, id, or name.
+在更复杂的链和代理中，我们可能会使用消息列表来跟踪状态。这个列表可能会开始累积来自多个不同模型、发言者、子链等的消息，我们可能只想将这个完整消息列表的子集传递给链/代理中的每个模型调用。
 
-## Basic usage
+`filter_messages` 工具可以方便地按类型、id 或名称过滤消息。
+
+## 基本用法
 
 
 ```python
@@ -64,48 +65,39 @@ filter_messages(messages, include_types=[HumanMessage, AIMessage], exclude_ids=[
  AIMessage(content='real output', name='alice', id='5')]
 ```
 
+## 链接
 
-## Chaining
-
-`filter_messages` can be used in an imperatively (like above) or declaratively, making it easy to compose with other components in a chain:
-
+`filter_messages` 可以以命令式（如上所示）或声明式的方式使用，使其易于与其他组件组合成链式结构：
 
 ```python
 # pip install -U langchain-anthropic
 from langchain_anthropic import ChatAnthropic
 
 llm = ChatAnthropic(model="claude-3-sonnet-20240229", temperature=0)
-# Notice we don't pass in messages. This creates
-# a RunnableLambda that takes messages as input
+# 注意我们没有传入消息。这会创建
+# 一个接收消息作为输入的 RunnableLambda
 filter_ = filter_messages(exclude_names=["example_user", "example_assistant"])
 chain = filter_ | llm
 chain.invoke(messages)
 ```
 
-
-
 ```output
 AIMessage(content=[], response_metadata={'id': 'msg_01Wz7gBHahAwkZ1KCBNtXmwA', 'model': 'claude-3-sonnet-20240229', 'stop_reason': 'end_turn', 'stop_sequence': None, 'usage': {'input_tokens': 16, 'output_tokens': 3}}, id='run-b5d8a3fe-004f-4502-a071-a6c025031827-0', usage_metadata={'input_tokens': 16, 'output_tokens': 3, 'total_tokens': 19})
 ```
 
+查看 LangSmith 的跟踪，我们可以看到在消息传递给模型之前，它们是经过过滤的： https://smith.langchain.com/public/f808a724-e072-438e-9991-657cc9e7e253/r
 
-Looking at the LangSmith trace we can see that before the messages are passed to the model they are filtered: https://smith.langchain.com/public/f808a724-e072-438e-9991-657cc9e7e253/r
-
-Looking at just the filter_, we can see that it's a Runnable object that can be invoked like all Runnables:
-
+仅查看 filter_，我们可以看到它是一个可以像所有 Runnable 一样被调用的 Runnable 对象：
 
 ```python
 filter_.invoke(messages)
 ```
-
-
 
 ```output
 [HumanMessage(content='real input', name='bob', id='4'),
  AIMessage(content='real output', name='alice', id='5')]
 ```
 
+## API 参考
 
-## API reference
-
-For a complete description of all arguments head to the API reference: https://api.python.langchain.com/en/latest/messages/langchain_core.messages.utils.filter_messages.html
+有关所有参数的完整描述，请访问 API 参考： https://api.python.langchain.com/en/latest/messages/langchain_core.messages.utils.filter_messages.html

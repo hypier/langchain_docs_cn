@@ -1,12 +1,12 @@
 # Jina
 
-This page covers how to use the Jina Embeddings within LangChain.
-It is broken into two parts: installation and setup, and then references to specific Jina wrappers.
+本页介绍如何在 LangChain 中使用 Jina Embeddings。
+它分为两个部分：安装和设置，以及对特定 Jina 包装器的引用。
 
-## Installation and Setup
-- Get a Jina AI API token from [here](https://jina.ai/embeddings/) and set it as an environment variable (`JINA_API_TOKEN`)
+## 安装与设置
+- 从 [这里](https://jina.ai/embeddings/) 获取 Jina AI API 令牌，并将其设置为环境变量 (`JINA_API_TOKEN`)
 
-There exists a Jina Embeddings wrapper, which you can access with 
+存在一个 Jina Embeddings 包装器，您可以通过以下方式访问它
 
 ```python
 from langchain_community.embeddings import JinaEmbeddings
@@ -15,6 +15,6 @@ from langchain_community.embeddings import JinaEmbeddings
 embeddings = JinaEmbeddings(jina_api_key='jina_**', model_name='jina-embeddings-v2-base-en')
 ```
 
-You can check the list of available models from [here](https://jina.ai/embeddings/)
+您可以从 [这里](https://jina.ai/embeddings/) 检查可用模型的列表
 
-For a more detailed walkthrough of this, see [this notebook](/docs/integrations/text_embedding/jina)
+有关更详细的操作指南，请参见 [这个笔记本](/docs/integrations/text_embedding/jina)

@@ -1,31 +1,27 @@
-# How to load JSON
+# 如何加载 JSON
 
-[JSON (JavaScript Object Notation)](https://en.wikipedia.org/wiki/JSON) is an open standard file format and data interchange format that uses human-readable text to store and transmit data objects consisting of attribute–value pairs and arrays (or other serializable values).
+[JSON (JavaScript 对象表示法)](https://en.wikipedia.org/wiki/JSON) 是一种开放标准文件格式和数据交换格式，使用人类可读的文本来存储和传输由属性-值对和数组（或其他可序列化值）组成的数据对象。
 
-[JSON Lines](https://jsonlines.org/) is a file format where each line is a valid JSON value.
+[JSON Lines](https://jsonlines.org/) 是一种文件格式，其中每一行都是一个有效的 JSON 值。
 
-LangChain implements a [JSONLoader](https://api.python.langchain.com/en/latest/document_loaders/langchain_community.document_loaders.json_loader.JSONLoader.html) 
-to convert JSON and JSONL data into LangChain [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html#langchain_core.documents.base.Document) 
-objects. It uses a specified [jq schema](https://en.wikipedia.org/wiki/Jq_(programming_language)) to parse the JSON files, allowing for the extraction of specific fields into the content 
-and metadata of the LangChain Document.
+LangChain 实现了一个 [JSONLoader](https://api.python.langchain.com/en/latest/document_loaders/langchain_community.document_loaders.json_loader.JSONLoader.html) 
+来将 JSON 和 JSONL 数据转换为 LangChain [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html#langchain_core.documents.base.Document) 
+对象。它使用指定的 [jq schema](https://en.wikipedia.org/wiki/Jq_(programming_language)) 来解析 JSON 文件，从而允许将特定字段提取到 LangChain Document 的内容和元数据中。
 
-It uses the `jq` python package. Check out this [manual](https://stedolan.github.io/jq/manual/#Basicfilters) for a detailed documentation of the `jq` syntax.
+它使用 `jq` python 包。查看此 [手册](https://stedolan.github.io/jq/manual/#Basicfilters) 以获取 `jq` 语法的详细文档。
 
-Here we will demonstrate: 
+在这里我们将演示：
 
-- How to load JSON and JSONL data into the content of a LangChain `Document`;
-- How to load JSON and JSONL data into metadata associated with a `Document`.
-
+- 如何将 JSON 和 JSONL 数据加载到 LangChain `Document` 的内容中；
+- 如何将 JSON 和 JSONL 数据加载到与 `Document` 相关的元数据中。
 
 ```python
 #!pip install jq
 ```
 
-
 ```python
 from langchain_community.document_loaders import JSONLoader
 ```
-
 
 ```python
 import json
@@ -36,7 +32,6 @@ from pprint import pprint
 file_path='./example_data/facebook_chat.json'
 data = json.loads(Path(file_path).read_text())
 ```
-
 
 ```python
 pprint(data)
@@ -93,13 +88,11 @@ pprint(data)
 
 </CodeOutputBlock>
 
+## 使用 `JSONLoader`
 
-## Using `JSONLoader`
+假设我们有兴趣提取 JSON 数据中 `messages` 键下 `content` 字段的值。这可以通过下面的 `JSONLoader` 轻松完成。
 
-Suppose we are interested in extracting the values under the `content` field within the `messages` key of the JSON data. This can easily be done through the `JSONLoader` as shown below.
-
-
-### JSON file
+### JSON 文件
 
 ```python
 loader = JSONLoader(
@@ -110,7 +103,6 @@ loader = JSONLoader(
 data = loader.load()
 ```
 
-
 ```python
 pprint(data)
 ```
@@ -118,26 +110,24 @@ pprint(data)
 <CodeOutputBlock lang="python">
 
 ```
-    [Document(page_content='Bye!', metadata={'source': '/Users/avsolatorio/WBG/langchain/docs/modules/indexes/document_loaders/examples/example_data/facebook_chat.json', 'seq_num': 1}),
-     Document(page_content='Oh no worries! Bye', metadata={'source': '/Users/avsolatorio/WBG/langchain/docs/modules/indexes/document_loaders/examples/example_data/facebook_chat.json', 'seq_num': 2}),
-     Document(page_content='No Im sorry it was my mistake, the blue one is not for sale', metadata={'source': '/Users/avsolatorio/WBG/langchain/docs/modules/indexes/document_loaders/examples/example_data/facebook_chat.json', 'seq_num': 3}),
-     Document(page_content='I thought you were selling the blue one!', metadata={'source': '/Users/avsolatorio/WBG/langchain/docs/modules/indexes/document_loaders/examples/example_data/facebook_chat.json', 'seq_num': 4}),
-     Document(page_content='Im not interested in this bag. Im interested in the blue one!', metadata={'source': '/Users/avsolatorio/WBG/langchain/docs/modules/indexes/document_loaders/examples/example_data/facebook_chat.json', 'seq_num': 5}),
-     Document(page_content='Here is $129', metadata={'source': '/Users/avsolatorio/WBG/langchain/docs/modules/indexes/document_loaders/examples/example_data/facebook_chat.json', 'seq_num': 6}),
+    [Document(page_content='再见！', metadata={'source': '/Users/avsolatorio/WBG/langchain/docs/modules/indexes/document_loaders/examples/example_data/facebook_chat.json', 'seq_num': 1}),
+     Document(page_content='哦，不用担心！再见', metadata={'source': '/Users/avsolatorio/WBG/langchain/docs/modules/indexes/document_loaders/examples/example_data/facebook_chat.json', 'seq_num': 2}),
+     Document(page_content='不，抱歉，是我的错，蓝色的不是在售', metadata={'source': '/Users/avsolatorio/WBG/langchain/docs/modules/indexes/document_loaders/examples/example_data/facebook_chat.json', 'seq_num': 3}),
+     Document(page_content='我以为你在卖蓝色的呢！', metadata={'source': '/Users/avsolatorio/WBG/langchain/docs/modules/indexes/document_loaders/examples/example_data/facebook_chat.json', 'seq_num': 4}),
+     Document(page_content='我对这个包不感兴趣。我对蓝色的感兴趣！', metadata={'source': '/Users/avsolatorio/WBG/langchain/docs/modules/indexes/document_loaders/examples/example_data/facebook_chat.json', 'seq_num': 5}),
+     Document(page_content='这里是 $129', metadata={'source': '/Users/avsolatorio/WBG/langchain/docs/modules/indexes/document_loaders/examples/example_data/facebook_chat.json', 'seq_num': 6}),
      Document(page_content='', metadata={'source': '/Users/avsolatorio/WBG/langchain/docs/modules/indexes/document_loaders/examples/example_data/facebook_chat.json', 'seq_num': 7}),
-     Document(page_content='Online is at least $100', metadata={'source': '/Users/avsolatorio/WBG/langchain/docs/modules/indexes/document_loaders/examples/example_data/facebook_chat.json', 'seq_num': 8}),
-     Document(page_content='How much do you want?', metadata={'source': '/Users/avsolatorio/WBG/langchain/docs/modules/indexes/document_loaders/examples/example_data/facebook_chat.json', 'seq_num': 9}),
-     Document(page_content='Goodmorning! $50 is too low.', metadata={'source': '/Users/avsolatorio/WBG/langchain/docs/modules/indexes/document_loaders/examples/example_data/facebook_chat.json', 'seq_num': 10}),
-     Document(page_content='Hi! Im interested in your bag. Im offering $50. Let me know if you are interested. Thanks!', metadata={'source': '/Users/avsolatorio/WBG/langchain/docs/modules/indexes/document_loaders/examples/example_data/facebook_chat.json', 'seq_num': 11})]
+     Document(page_content='在线价格至少是 $100', metadata={'source': '/Users/avsolatorio/WBG/langchain/docs/modules/indexes/document_loaders/examples/example_data/facebook_chat.json', 'seq_num': 8}),
+     Document(page_content='你想要多少钱？', metadata={'source': '/Users/avsolatorio/WBG/langchain/docs/modules/indexes/document_loaders/examples/example_data/facebook_chat.json', 'seq_num': 9}),
+     Document(page_content='早上好！$50 太低了。', metadata={'source': '/Users/avsolatorio/WBG/langchain/docs/modules/indexes/document_loaders/examples/example_data/facebook_chat.json', 'seq_num': 10}),
+     Document(page_content='嗨！我对你的包感兴趣。我出价 $50。请告诉我你是否感兴趣。谢谢！', metadata={'source': '/Users/avsolatorio/WBG/langchain/docs/modules/indexes/document_loaders/examples/example_data/facebook_chat.json', 'seq_num': 11})]
 ```
 
 </CodeOutputBlock>
 
+### JSON Lines 文件
 
-### JSON Lines file
-
-If you want to load documents from a JSON Lines file, you pass `json_lines=True`
-and specify `jq_schema` to extract `page_content` from a single JSON object.
+如果您想从 JSON Lines 文件加载文档，可以传递 `json_lines=True` 并指定 `jq_schema` 以从单个 JSON 对象中提取 `page_content`。
 
 ```python
 file_path = './example_data/facebook_chat_messages.jsonl'
@@ -182,7 +172,7 @@ pprint(data)
 </CodeOutputBlock>
 
 
-Another option is set `jq_schema='.'` and provide `content_key`:
+另一个选项是设置 `jq_schema='.'` 并提供 `content_key`：
 
 ```python
 loader = JSONLoader(
@@ -208,10 +198,9 @@ pprint(data)
 
 </CodeOutputBlock>
 
-### JSON file with jq schema `content_key`
+### 使用 jq 模式 `content_key` 从 JSON 文件加载文档
 
-To load documents from a JSON file using the content_key within the jq schema, set is_content_key_jq_parsable=True. 
-Ensure that content_key is compatible and can be parsed using the jq schema.
+要使用 jq 模式中的 content_key 从 JSON 文件加载文档，请设置 is_content_key_jq_parsable=True。确保 content_key 兼容并可以使用 jq 模式进行解析。
 
 ```python
 file_path = './sample.json'
@@ -261,28 +250,27 @@ pprint(data)
 
 </CodeOutputBlock>
 
-## Extracting metadata
+## 提取元数据
 
-Generally, we want to include metadata available in the JSON file into the documents that we create from the content.
+通常，我们希望将 JSON 文件中可用的元数据包含到我们从内容中创建的文档中。
 
-The following demonstrates how metadata can be extracted using the `JSONLoader`.
+以下演示了如何使用 `JSONLoader` 提取元数据。
 
-There are some key changes to be noted. In the previous example where we didn't collect the metadata, we managed to directly specify in the schema where the value for the `page_content` can be extracted from.
+需要注意一些关键更改。在之前的示例中，我们没有收集元数据，因此我们能够直接在模式中指定 `page_content` 的值可以从哪里提取。
 
 ```
 .messages[].content
 ```
 
-In the current example, we have to tell the loader to iterate over the records in the `messages` field. The jq_schema then has to be:
+在当前示例中，我们必须告诉加载器遍历 `messages` 字段中的记录。jq_schema 现在必须是：
 
 ```
 .messages[]
 ```
 
-This allows us to pass the records (dict) into the `metadata_func` that has to be implemented. The `metadata_func` is responsible for identifying which pieces of information in the record should be included in the metadata stored in the final `Document` object.
+这使我们能够将记录（字典）传递给必须实现的 `metadata_func`。`metadata_func` 负责识别记录中哪些信息应包含在最终 `Document` 对象中存储的元数据中。
 
-Additionally, we now have to explicitly specify in the loader, via the `content_key` argument, the key from the record where the value for the `page_content` needs to be extracted from.
-
+此外，我们现在必须在加载器中通过 `content_key` 参数明确指定记录中提取 `page_content` 值的键。
 
 ```python
 # Define the metadata extraction function.
@@ -327,15 +315,15 @@ pprint(data)
 
 </CodeOutputBlock>
 
-Now, you will see that the documents contain the metadata associated with the content we extracted.
+现在，您将看到文档包含与我们提取的内容相关的元数据。
 
-## The `metadata_func`
+## `metadata_func`
 
-As shown above, the `metadata_func` accepts the default metadata generated by the `JSONLoader`. This allows full control to the user with respect to how the metadata is formatted.
+如上所示，`metadata_func` 接受由 `JSONLoader` 生成的默认元数据。这允许用户对元数据的格式进行完全控制。
 
-For example, the default metadata contains the `source` and the `seq_num` keys. However, it is possible that the JSON data contain these keys as well. The user can then exploit the `metadata_func` to rename the default keys and use the ones from the JSON data.
+例如，默认元数据包含 `source` 和 `seq_num` 键。然而，JSON 数据中也可能包含这些键。用户可以利用 `metadata_func` 来重命名默认键，并使用 JSON 数据中的键。
 
-The example below shows how we can modify the `source` to only contain information of the file source relative to the `langchain` directory.
+下面的示例展示了我们如何修改 `source` 以仅包含相对于 `langchain` 目录的文件源信息。
 
 
 ```python
@@ -386,9 +374,9 @@ pprint(data)
 
 </CodeOutputBlock>
 
-## Common JSON structures with jq schema
+## 常见的 JSON 结构与 jq 模式
 
-The list below provides a reference to the possible `jq_schema` the user can use to extract content from the JSON data depending on the structure.
+下面的列表提供了用户可以使用的可能的 `jq_schema`，以根据结构从 JSON 数据中提取内容。
 
 ```
 JSON        -> [{"text": ...}, {"text": ...}, {"text": ...}]

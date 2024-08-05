@@ -1,29 +1,29 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/output_parser_json.ipynb
 ---
-# How to parse JSON output
 
-:::info Prerequisites
+# 如何解析 JSON 输出
 
-This guide assumes familiarity with the following concepts:
-- [Chat models](/docs/concepts/#chat-models)
-- [Output parsers](/docs/concepts/#output-parsers)
-- [Prompt templates](/docs/concepts/#prompt-templates)
-- [Structured output](/docs/how_to/structured_output)
-- [Chaining runnables together](/docs/how_to/sequence/)
+:::info 前提条件
+
+本指南假设您对以下概念有一定了解：
+- [聊天模型](/docs/concepts/#chat-models)
+- [输出解析器](/docs/concepts/#output-parsers)
+- [提示模板](/docs/concepts/#prompt-templates)
+- [结构化输出](/docs/how_to/structured_output)
+- [将可运行项串联在一起](/docs/how_to/sequence/)
 
 :::
 
-While some model providers support [built-in ways to return structured output](/docs/how_to/structured_output), not all do. We can use an output parser to help users to specify an arbitrary JSON schema via the prompt, query a model for outputs that conform to that schema, and finally parse that schema as JSON.
+虽然一些模型提供者支持 [内置的结构化输出返回方式](/docs/how_to/structured_output)，但并非所有提供者都支持。我们可以使用输出解析器帮助用户通过提示指定任意 JSON 架构，查询模型以获取符合该架构的输出，最后将该架构解析为 JSON。
 
 :::note
-Keep in mind that large language models are leaky abstractions! You'll have to use an LLM with sufficient capacity to generate well-formed JSON.
+请记住，大型语言模型是泄漏的抽象！您必须使用具有足够容量的 LLM 来生成格式良好的 JSON。
 :::
 
-The [`JsonOutputParser`](https://api.python.langchain.com/en/latest/output_parsers/langchain_core.output_parsers.json.JsonOutputParser.html) is one built-in option for prompting for and then parsing JSON output. While it is similar in functionality to the [`PydanticOutputParser`](https://api.python.langchain.com/en/latest/output_parsers/langchain_core.output_parsers.pydantic.PydanticOutputParser.html), it also supports streaming back partial JSON objects.
+[`JsonOutputParser`](https://api.python.langchain.com/en/latest/output_parsers/langchain_core.output_parsers.json.JsonOutputParser.html) 是一个内置选项，可以用于提示和解析 JSON 输出。虽然它的功能与 [`PydanticOutputParser`](https://api.python.langchain.com/en/latest/output_parsers/langchain_core.output_parsers.pydantic.PydanticOutputParser.html) 相似，但它还支持流式返回部分 JSON 对象。
 
-Here's an example of how it can be used alongside [Pydantic](https://docs.pydantic.dev/) to conveniently declare the expected schema:
-
+以下是如何与 [Pydantic](https://docs.pydantic.dev/) 一起使用的示例，以方便声明期望的架构：
 
 ```python
 %pip install -qU langchain langchain-openai
@@ -34,7 +34,6 @@ from getpass import getpass
 os.environ["OPENAI_API_KEY"] = getpass()
 ```
 
-
 ```python
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import PromptTemplate
@@ -44,20 +43,20 @@ from langchain_openai import ChatOpenAI
 model = ChatOpenAI(temperature=0)
 
 
-# Define your desired data structure.
+# 定义您所需的数据结构。
 class Joke(BaseModel):
-    setup: str = Field(description="question to set up a joke")
-    punchline: str = Field(description="answer to resolve the joke")
+    setup: str = Field(description="设置笑话的问题")
+    punchline: str = Field(description="解决笑话的答案")
 
 
-# And a query intented to prompt a language model to populate the data structure.
-joke_query = "Tell me a joke."
+# 以及一个旨在提示语言模型填充数据结构的查询。
+joke_query = "告诉我一个笑话。"
 
-# Set up a parser + inject instructions into the prompt template.
+# 设置解析器 + 将指令注入提示模板。
 parser = JsonOutputParser(pydantic_object=Joke)
 
 prompt = PromptTemplate(
-    template="Answer the user query.\n{format_instructions}\n{query}\n",
+    template="回答用户查询。\n{format_instructions}\n{query}\n",
     input_variables=["query"],
     partial_variables={"format_instructions": parser.get_format_instructions()},
 )
@@ -67,32 +66,24 @@ chain = prompt | model | parser
 chain.invoke({"query": joke_query})
 ```
 
-
-
 ```output
-{'setup': "Why couldn't the bicycle stand up by itself?",
- 'punchline': 'Because it was two tired!'}
+{'setup': "为什么自行车无法独自站立？",
+ 'punchline': '因为它太累了！'}
 ```
 
-
-Note that we are passing `format_instructions` from the parser directly into the prompt. You can and should experiment with adding your own formatting hints in the other parts of your prompt to either augment or replace the default instructions:
-
+请注意，我们将 `format_instructions` 从解析器直接传递到提示中。您可以并且应该尝试在提示的其他部分添加自己的格式提示，以增强或替换默认指令：
 
 ```python
 parser.get_format_instructions()
 ```
 
-
-
 ```output
-'The output should be formatted as a JSON instance that conforms to the JSON schema below.\n\nAs an example, for the schema {"properties": {"foo": {"title": "Foo", "description": "a list of strings", "type": "array", "items": {"type": "string"}}}, "required": ["foo"]}\nthe object {"foo": ["bar", "baz"]} is a well-formatted instance of the schema. The object {"properties": {"foo": ["bar", "baz"]}} is not well-formatted.\n\nHere is the output schema:\n```\n{"properties": {"setup": {"title": "Setup", "description": "question to set up a joke", "type": "string"}, "punchline": {"title": "Punchline", "description": "answer to resolve the joke", "type": "string"}}, "required": ["setup", "punchline"]}\n```'
+'输出应格式化为符合以下 JSON 架构的 JSON 实例。\n\n作为示例，对于架构 {"properties": {"foo": {"title": "Foo", "description": "字符串列表", "type": "array", "items": {"type": "string"}}}, "required": ["foo"]}\n对象 {"foo": ["bar", "baz"]} 是该架构的格式良好的实例。对象 {"properties": {"foo": ["bar", "baz"]}} 不是格式良好的。\n\n以下是输出架构：\n```\n{"properties": {"setup": {"title": "设置", "description": "设置笑话的问题", "type": "string"}, "punchline": {"title": "答案", "description": "解决笑话的答案", "type": "string"}}, "required": ["setup", "punchline"]}\n```'
 ```
 
+## 流式处理
 
-## Streaming
-
-As mentioned above, a key difference between the `JsonOutputParser` and the `PydanticOutputParser` is that the `JsonOutputParser` output parser supports streaming partial chunks. Here's what that looks like:
-
+如上所述，`JsonOutputParser` 和 `PydanticOutputParser` 之间的一个关键区别是 `JsonOutputParser` 输出解析器支持流式处理部分数据块。以下是示例：
 
 ```python
 for s in chain.stream({"query": joke_query}):
@@ -119,10 +110,10 @@ for s in chain.stream({"query": joke_query}):
 {'setup': "Why couldn't the bicycle stand up by itself?", 'punchline': 'Because it was two tired'}
 {'setup': "Why couldn't the bicycle stand up by itself?", 'punchline': 'Because it was two tired!'}
 ```
-## Without Pydantic
 
-You can also use the `JsonOutputParser` without Pydantic. This will prompt the model to return JSON, but doesn't provide specifics about what the schema should be.
+## 无需 Pydantic
 
+您也可以在不使用 Pydantic 的情况下使用 `JsonOutputParser`。这将提示模型返回 JSON，但并未提供关于模式应如何的具体信息。
 
 ```python
 joke_query = "Tell me a joke."
@@ -140,13 +131,10 @@ chain = prompt | model | parser
 chain.invoke({"query": joke_query})
 ```
 
-
-
 ```output
 {'response': "Sure! Here's a joke for you: Why couldn't the bicycle stand up by itself? Because it was two tired!"}
 ```
 
+## 下一步
 
-## Next steps
-
-You've now learned one way to prompt a model to return structured JSON. Next, check out the [broader guide on obtaining structured output](/docs/how_to/structured_output) for other techniques.
+您现在已经学习了一种提示模型返回结构化 JSON 的方法。接下来，请查看 [获取结构化输出的更广泛指南](/docs/how_to/structured_output) 以了解其他技术。

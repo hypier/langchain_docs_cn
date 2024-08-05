@@ -1,21 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/octoai.ipynb
 ---
+
 # OctoAI
 
-[OctoAI](https://docs.octoai.cloud/docs) offers easy access to efficient compute and enables users to integrate their choice of AI models into applications. The `OctoAI` compute service helps you run, tune, and scale AI applications easily.
+[OctoAI](https://docs.octoai.cloud/docs) 提供了便捷的高效计算访问，并使用户能够将所选的 AI 模型集成到应用程序中。`OctoAI` 计算服务帮助您轻松运行、调整和扩展 AI 应用程序。
 
-This example goes over how to use LangChain to interact with `OctoAI` [LLM endpoints](https://octoai.cloud/templates)
+此示例介绍了如何使用 LangChain 与 `OctoAI` [LLM 端点](https://octoai.cloud/templates) 进行交互。
 
-## Setup
+## 设置
 
-To run our example app, there are two simple steps to take:
+要运行我们的示例应用程序，您需要执行两个简单步骤：
 
-1. Get an API Token from [your OctoAI account page](https://octoai.cloud/settings).
+1. 从 [您的 OctoAI 账户页面](https://octoai.cloud/settings) 获取 API 令牌。
    
-2. Paste your API key in in the code cell below.
+2. 将您的 API 密钥粘贴到下面的代码单元中。
 
-Note: If you want to use a different LLM model, you can containerize the model and make a custom OctoAI endpoint yourself, by following [Build a Container from Python](https://octo.ai/docs/bring-your-own-model/advanced-build-a-container-from-scratch-in-python) and [Create a Custom Endpoint from a Container](https://octo.ai/docs/bring-your-own-model/create-custom-endpoints-from-a-container/create-custom-endpoints-from-a-container) and then updating your `OCTOAI_API_BASE` environment variable.
+注意：如果您想使用不同的 LLM 模型，您可以将模型容器化，并按照 [从 Python 构建容器](https://octo.ai/docs/bring-your-own-model/advanced-build-a-container-from-scratch-in-python) 和 [从容器创建自定义端点](https://octo.ai/docs/bring-your-own-model/create-custom-endpoints-from-a-container/create-custom-endpoints-from-a-container) 的说明自己创建一个自定义 OctoAI 端点，然后更新您的 `OCTOAI_API_BASE` 环境变量。
 
 
 
@@ -32,11 +33,11 @@ from langchain_community.llms.octoai_endpoint import OctoAIEndpoint
 from langchain_core.prompts import PromptTemplate
 ```
 
-## Example
+## 示例
 
 
 ```python
-template = """Below is an instruction that describes a task. Write a response that appropriately completes the request.\n Instruction:\n{question}\n Response: """
+template = """以下是描述任务的指令。写一个适当完成请求的回应。\n 指令:\n{question}\n 回应: """
 prompt = PromptTemplate.from_template(template)
 ```
 
@@ -53,17 +54,16 @@ llm = OctoAIEndpoint(
 
 
 ```python
-question = "Who was Leonardo da Vinci?"
+question = "谁是列奥纳多·达·芬奇？"
 
 chain = prompt | llm
 
 print(chain.invoke(question))
 ```
 
-Leonardo da Vinci was a true Renaissance man. He was born in 1452 in Vinci, Italy and was known for his work in various fields, including art, science, engineering, and mathematics. He is considered one of the greatest painters of all time, and his most famous works include the Mona Lisa and The Last Supper. In addition to his art, da Vinci made significant contributions to engineering and anatomy, and his designs for machines and inventions were centuries ahead of his time. He is also known for his extensive journals and drawings, which provide valuable insights into his thoughts and ideas. Da Vinci's legacy continues to inspire and influence artists, scientists, and thinkers around the world today.
+列奥纳多·达·芬奇是真正的文艺复兴人。他于1452年出生在意大利的文奇，以在艺术、科学、工程和数学等多个领域的工作而闻名。他被认为是有史以来最伟大的画家之一，他最著名的作品包括《蒙娜丽莎》和《最后的晚餐》。除了他的艺术，达·芬奇在工程和解剖学方面也做出了重要贡献，他的机器和发明设计在几个世纪前就超出了他的时代。他还因其广泛的日记和绘图而闻名，这些提供了他思想和理念的宝贵见解。达·芬奇的遗产继续激励和影响着世界各地的艺术家、科学家和思想家。
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

@@ -1,35 +1,33 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/extraction_examples.ipynb
 ---
-# How to use reference examples when doing extraction
 
-The quality of extractions can often be improved by providing reference examples to the LLM.
+# 如何在提取时使用参考示例
 
-Data extraction attempts to generate structured representations of information found in text and other unstructured or semi-structured formats. [Tool-calling](/docs/concepts#functiontool-calling) LLM features are often used in this context. This guide demonstrates how to build few-shot examples of tool calls to help steer the behavior of extraction and similar applications.
+通过向 LLM 提供参考示例，提取的质量通常可以得到改善。
+
+数据提取旨在生成文本及其他非结构化或半结构化格式中所发现信息的结构化表示。此上下文中通常使用 [Tool-calling](/docs/concepts#functiontool-calling) LLM 特性。本指南演示如何构建工具调用的少量示例，以帮助引导提取及类似应用的行为。
 
 :::tip
-While this guide focuses how to use examples with a tool calling model, this technique is generally applicable, and will work
-also with JSON more or prompt based techniques.
+虽然本指南专注于如何使用工具调用模型的示例，但该技术通常适用，并且也适用于基于 JSON 或提示的技术。
 :::
 
-LangChain implements a [tool-call attribute](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessage.html#langchain_core.messages.ai.AIMessage.tool_calls) on messages from LLMs that include tool calls. See our [how-to guide on tool calling](/docs/how_to/tool_calling) for more detail. To build reference examples for data extraction, we build a chat history containing a sequence of: 
+LangChain 在包含工具调用的 LLM 消息上实现了 [tool-call 属性](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessage.html#langchain_core.messages.ai.AIMessage.tool_calls)。有关更多详细信息，请查看我们的 [工具调用指南](/docs/how_to/tool_calling)。为了构建数据提取的参考示例，我们构建一个包含以下序列的聊天历史：
 
-- [HumanMessage](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.human.HumanMessage.html) containing example inputs;
-- [AIMessage](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessage.html) containing example tool calls;
-- [ToolMessage](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.tool.ToolMessage.html) containing example tool outputs.
+- [HumanMessage](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.human.HumanMessage.html) 包含示例输入；
+- [AIMessage](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.ai.AIMessage.html) 包含示例工具调用；
+- [ToolMessage](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.tool.ToolMessage.html) 包含示例工具输出。
 
-LangChain adopts this convention for structuring tool calls into conversation across LLM model providers.
+LangChain 采用这种约定在不同 LLM 模型提供者之间结构化工具调用的对话。
 
-First we build a prompt template that includes a placeholder for these messages:
-
+首先，我们构建一个包含这些消息占位符的提示模板：
 
 ```python
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
-# Define a custom prompt to provide instructions and any additional context.
-# 1) You can add examples into the prompt template to improve extraction quality
-# 2) Introduce additional parameters to take context into account (e.g., include metadata
-#    about the document from which the text was extracted.)
+# 定义一个自定义提示以提供指示和任何额外上下文。
+# 1) 您可以在提示模板中添加示例以提高提取质量
+# 2) 引入额外参数以考虑上下文（例如，包含提取文本的文档的元数据。）
 prompt = ChatPromptTemplate.from_messages(
     [
         (
@@ -40,15 +38,14 @@ prompt = ChatPromptTemplate.from_messages(
             "to extract, return null for the attribute's value.",
         ),
         # ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-        MessagesPlaceholder("examples"),  # <-- EXAMPLES!
+        MessagesPlaceholder("examples"),  # <-- 示例！
         # ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
         ("human", "{text}"),
     ]
 )
 ```
 
-Test out the template:
-
+测试模板：
 
 ```python
 from langchain_core.messages import (
@@ -60,17 +57,13 @@ prompt.invoke(
 )
 ```
 
-
-
 ```output
 ChatPromptValue(messages=[SystemMessage(content="You are an expert extraction algorithm. Only extract relevant information from the text. If you do not know the value of an attribute asked to extract, return null for the attribute's value."), HumanMessage(content='testing 1 2 3'), HumanMessage(content='this is some text')])
 ```
 
+## 定义模式
 
-## Define the schema
-
-Let's re-use the person schema from the [extraction tutorial](/docs/tutorials/extraction).
-
+让我们重用来自 [提取教程](/docs/tutorials/extraction) 的人员模式。
 
 ```python
 from typing import List, Optional
@@ -80,42 +73,42 @@ from langchain_openai import ChatOpenAI
 
 
 class Person(BaseModel):
-    """Information about a person."""
+    """关于一个人的信息。"""
 
-    # ^ Doc-string for the entity Person.
-    # This doc-string is sent to the LLM as the description of the schema Person,
-    # and it can help to improve extraction results.
+    # ^ 实体 Person 的文档字符串。
+    # 该文档字符串作为模式 Person 的描述发送给 LLM，
+    # 并且可以帮助改善提取结果。
 
-    # Note that:
-    # 1. Each field is an `optional` -- this allows the model to decline to extract it!
-    # 2. Each field has a `description` -- this description is used by the LLM.
-    # Having a good description can help improve extraction results.
-    name: Optional[str] = Field(..., description="The name of the person")
+    # 注意：
+    # 1. 每个字段都是 `optional` -- 这允许模型拒绝提取它！
+    # 2. 每个字段都有一个 `description` -- 这个描述被 LLM 使用。
+    # 有一个好的描述可以帮助改善提取结果。
+    name: Optional[str] = Field(..., description="这个人的名字")
     hair_color: Optional[str] = Field(
-        ..., description="The color of the person's hair if known"
+        ..., description="如果已知，这个人的头发颜色"
     )
-    height_in_meters: Optional[str] = Field(..., description="Height in METERs")
+    height_in_meters: Optional[str] = Field(..., description="以米为单位的高度")
 
 
 class Data(BaseModel):
-    """Extracted data about people."""
+    """关于人们的提取数据。"""
 
-    # Creates a model so that we can extract multiple entities.
+    # 创建一个模型，以便我们可以提取多个实体。
     people: List[Person]
 ```
 
-## Define reference examples
+## 定义参考示例
 
-Examples can be defined as a list of input-output pairs. 
+示例可以定义为输入-输出对的列表。
 
-Each example contains an example `input` text and an example `output` showing what should be extracted from the text.
+每个示例包含一个示例 `input` 文本和一个示例 `output`，显示应从文本中提取的内容。
 
 :::important
-This is a bit in the weeds, so feel free to skip.
+这部分内容比较细节，可以选择跳过。
 
-The format of the example needs to match the API used (e.g., tool calling or JSON mode etc.).
+示例的格式需要与所使用的 API 匹配（例如，工具调用或 JSON 模式等）。
 
-Here, the formatted examples will match the format expected for the tool calling API since that's what we're using.
+在这里，格式化的示例将匹配工具调用 API 的预期格式，因为我们正在使用这个。
 :::
 
 
@@ -134,29 +127,28 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 
 
 class Example(TypedDict):
-    """A representation of an example consisting of text input and expected tool calls.
+    """一个示例的表示，由文本输入和预期的工具调用组成。
 
-    For extraction, the tool calls are represented as instances of pydantic model.
+    对于提取，工具调用表示为 pydantic 模型的实例。
     """
 
-    input: str  # This is the example text
-    tool_calls: List[BaseModel]  # Instances of pydantic model that should be extracted
+    input: str  # 这是示例文本
+    tool_calls: List[BaseModel]  # 应该提取的 pydantic 模型实例
 
 
 def tool_example_to_messages(example: Example) -> List[BaseMessage]:
-    """Convert an example into a list of messages that can be fed into an LLM.
+    """将示例转换为可以输入 LLM 的消息列表。
 
-    This code is an adapter that converts our example to a list of messages
-    that can be fed into a chat model.
+    这段代码是一个适配器，将我们的示例转换为可以输入聊天模型的消息列表。
 
-    The list of messages per example corresponds to:
+    每个示例的消息列表对应于：
 
-    1) HumanMessage: contains the content from which content should be extracted.
-    2) AIMessage: contains the extracted information from the model
-    3) ToolMessage: contains confirmation to the model that the model requested a tool correctly.
+    1) HumanMessage: 包含应提取内容的文本。
+    2) AIMessage: 包含从模型提取的信息
+    3) ToolMessage: 向模型确认模型正确请求了工具。
 
-    The ToolMessage is required because some of the chat models are hyper-optimized for agents
-    rather than for an extraction use case.
+    ToolMessage 是必需的，因为某些聊天模型是针对代理进行超优化的
+    而不是针对提取用例。
     """
     messages: List[BaseMessage] = [HumanMessage(content=example["input"])]
     tool_calls = []
@@ -165,33 +157,33 @@ def tool_example_to_messages(example: Example) -> List[BaseMessage]:
             {
                 "id": str(uuid.uuid4()),
                 "args": tool_call.dict(),
-                # The name of the function right now corresponds
-                # to the name of the pydantic model
-                # This is implicit in the API right now,
-                # and will be improved over time.
+                # 目前函数的名称对应于
+                # pydantic 模型的名称
+                # 这在 API 中是隐式的，
+                # 将随着时间的推移而改进。
                 "name": tool_call.__class__.__name__,
             },
         )
     messages.append(AIMessage(content="", tool_calls=tool_calls))
     tool_outputs = example.get("tool_outputs") or [
-        "You have correctly called this tool."
+        "您已正确调用此工具。"
     ] * len(tool_calls)
     for output, tool_call in zip(tool_outputs, tool_calls):
         messages.append(ToolMessage(content=output, tool_call_id=tool_call["id"]))
     return messages
 ```
 
-Next let's define our examples and then convert them into message format.
+接下来，让我们定义示例，然后将其转换为消息格式。
 
 
 ```python
 examples = [
     (
-        "The ocean is vast and blue. It's more than 20,000 feet deep. There are many fish in it.",
+        "海洋浩瀚而蔚蓝。深度超过 20,000 英尺。里面有很多鱼。",
         Data(people=[]),
     ),
     (
-        "Fiona traveled far from France to Spain.",
+        "菲奥娜从法国远道而来，前往西班牙。",
         Data(people=[Person(name="Fiona", height_in_meters=None, hair_color=None)]),
     ),
 ]
@@ -205,28 +197,29 @@ for text, tool_call in examples:
     )
 ```
 
-Let's test out the prompt
+让我们测试一下提示
 
 
 ```python
-example_prompt = prompt.invoke({"text": "this is some text", "examples": messages})
+example_prompt = prompt.invoke({"text": "这是一段文本", "examples": messages})
 
 for message in example_prompt.messages:
     print(f"{message.type}: {message}")
 ```
 ```output
-system: content="You are an expert extraction algorithm. Only extract relevant information from the text. If you do not know the value of an attribute asked to extract, return null for the attribute's value."
-human: content="The ocean is vast and blue. It's more than 20,000 feet deep. There are many fish in it."
+system: content="您是一个专家级的提取算法。只提取文本中的相关信息。如果您不知道要提取的属性的值，请返回该属性值的 null。"
+human: content="海洋浩瀚而蔚蓝。深度超过 20,000 英尺。里面有很多鱼。"
 ai: content='' tool_calls=[{'name': 'Person', 'args': {'name': None, 'hair_color': None, 'height_in_meters': None}, 'id': 'b843ba77-4c9c-48ef-92a4-54e534f24521'}]
-tool: content='You have correctly called this tool.' tool_call_id='b843ba77-4c9c-48ef-92a4-54e534f24521'
-human: content='Fiona traveled far from France to Spain.'
+tool: content='您已正确调用此工具。' tool_call_id='b843ba77-4c9c-48ef-92a4-54e534f24521'
+human: content='菲奥娜从法国远道而来，前往西班牙。'
 ai: content='' tool_calls=[{'name': 'Person', 'args': {'name': 'Fiona', 'hair_color': None, 'height_in_meters': None}, 'id': '46f00d6b-50e5-4482-9406-b07bb10340f6'}]
-tool: content='You have correctly called this tool.' tool_call_id='46f00d6b-50e5-4482-9406-b07bb10340f6'
-human: content='this is some text'
+tool: content='您已正确调用此工具。' tool_call_id='46f00d6b-50e5-4482-9406-b07bb10340f6'
+human: content='这是一段文本'
 ```
-## Create an extractor
 
-Let's select an LLM. Because we are using tool-calling, we will need a model that supports a tool-calling feature. See [this table](/docs/integrations/chat) for available LLMs.
+## 创建提取器
+
+让我们选择一个 LLM。因为我们正在使用工具调用，所以我们需要一个支持工具调用功能的模型。请参见 [此表](/docs/integrations/chat) 以获取可用的 LLM。
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
@@ -235,7 +228,7 @@ import ChatModelTabs from "@theme/ChatModelTabs";
   openaiParams={`model="gpt-4-0125-preview", temperature=0`}
 />
 
-Following the [extraction tutorial](/docs/tutorials/extraction), we use the `.with_structured_output` method to structure model outputs according to the desired schema:
+按照 [提取教程](/docs/tutorials/extraction)，我们使用 `.with_structured_output` 方法根据所需的架构来结构化模型输出：
 
 
 ```python
@@ -246,9 +239,9 @@ runnable = prompt | llm.with_structured_output(
 )
 ```
 
-## Without examples 😿
+## 没有示例 😿
 
-Notice that even capable models can fail with a **very simple** test case!
+请注意，即使是能力强大的模型也可能在**非常简单**的测试用例中失败！
 
 
 ```python
@@ -263,9 +256,10 @@ people=[]
 people=[Person(name='earth', hair_color='null', height_in_meters='null')]
 people=[]
 ```
-## With examples 😻
 
-Reference examples helps to fix the failure!
+## 带示例 😻
+
+参考示例有助于修复故障！
 
 
 ```python
@@ -280,9 +274,9 @@ people=[]
 people=[]
 people=[]
 ```
-Note that we can see the few-shot examples as tool-calls in the [Langsmith trace](https://smith.langchain.com/public/4c436bc2-a1ce-440b-82f5-093947542e40/r).
+请注意，我们可以在 [Langsmith trace](https://smith.langchain.com/public/4c436bc2-a1ce-440b-82f5-093947542e40/r) 中看到几次示例作为工具调用。
 
-And we retain performance on a positive sample:
+并且我们在一个正样本上保持性能：
 
 
 ```python
@@ -299,4 +293,3 @@ runnable.invoke(
 ```output
 Data(people=[Person(name='Harrison', hair_color='black', height_in_meters=None)])
 ```
-

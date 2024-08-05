@@ -1,37 +1,32 @@
 # Kinetica
 
-[Kinetica](https://www.kinetica.com/) is a real-time database purpose built for enabling
-analytics and generative AI on time-series & spatial data.
+[Kinetica](https://www.kinetica.com/) 是一个实时数据库，专为在时间序列和空间数据上实现分析和生成性人工智能而构建。
 
-## Chat Model
+## 聊天模型
 
-The Kinetica LLM wrapper uses the [Kinetica SqlAssist
-LLM](https://docs.kinetica.com/7.2/sql-gpt/concepts/) to transform natural language into
-SQL to simplify the process of data retrieval.
+Kinetica LLM 封装使用 [Kinetica SqlAssist LLM](https://docs.kinetica.com/7.2/sql-gpt/concepts/) 将自然语言转换为 SQL，以简化数据检索过程。
 
-See [Kinetica SqlAssist LLM Demo](/docs/integrations/chat/kinetica) for usage.
+有关用法，请参见 [Kinetica SqlAssist LLM 演示](/docs/integrations/chat/kinetica)。
 
 ```python
 from langchain_community.chat_models.kinetica import ChatKinetica
 ```
 
-## Vector Store
+## 向量存储
 
-The Kinetca vectorstore wrapper leverages Kinetica's native support for [vector
-similarity search](https://docs.kinetica.com/7.2/vector_search/).
+Kinetca 向量存储封装利用了 Kinetica 对 [向量相似性搜索](https://docs.kinetica.com/7.2/vector_search/) 的原生支持。
 
-See [Kinetica Vectorsore API](/docs/integrations/vectorstores/kinetica) for usage.
+请参阅 [Kinetica Vectorsore API](/docs/integrations/vectorstores/kinetica) 以获取使用说明。
 
 ```python
 from langchain_community.vectorstores import Kinetica
 ```
 
-## Document Loader
+## 文档加载器
 
-The Kinetica Document loader can be used to load LangChain Documents from the
-Kinetica database.
+Kinetica 文档加载器可用于从 Kinetica 数据库加载 LangChain 文档。
 
-See [Kinetica Document Loader](/docs/integrations/document_loaders/kinetica) for usage
+请参阅 [Kinetica 文档加载器](/docs/integrations/document_loaders/kinetica) 以获取用法
 
 ```python
 from langchain_community.document_loaders.kinetica_loader import KineticaLoader
@@ -39,6 +34,6 @@ from langchain_community.document_loaders.kinetica_loader import KineticaLoader
 
 ## Retriever
 
-The Kinetica Retriever can return documents given an unstructured query.
+Kinetica Retriever 可以根据非结构化查询返回文档。
 
-See [Kinetica VectorStore based Retriever](/docs/integrations/retrievers/kinetica) for usage
+请参阅 [Kinetica VectorStore 基于 Retriever 的使用](/docs/integrations/retrievers/kinetica)。

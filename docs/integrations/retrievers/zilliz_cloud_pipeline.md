@@ -1,29 +1,30 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/zilliz_cloud_pipeline.ipynb
 ---
+
 # Zilliz Cloud Pipeline
 
-> [Zilliz Cloud Pipelines](https://docs.zilliz.com/docs/pipelines) transform your unstructured data to a searchable vector collection, chaining up the embedding, ingestion, search, and deletion of your data.
+> [Zilliz Cloud Pipelines](https://docs.zilliz.com/docs/pipelines) 将您的非结构化数据转换为可搜索的向量集合，串联嵌入、摄取、搜索和删除您的数据。
 > 
-> Zilliz Cloud Pipelines are available in the Zilliz Cloud Console and via RestFul APIs.
+> Zilliz Cloud Pipelines 可在 Zilliz Cloud 控制台和通过 RestFul API 使用。
 
-This notebook demonstrates how to prepare Zilliz Cloud Pipelines and use the them via a LangChain Retriever.
+本笔记本演示了如何准备 Zilliz Cloud Pipelines 并通过 LangChain Retriever 使用它们。
 
-## Prepare Zilliz Cloud Pipelines
+## 准备 Zilliz Cloud 管道
 
-To get pipelines ready for LangChain Retriever, you need to create and configure the services in Zilliz Cloud.
+要为 LangChain Retriever 准备管道，您需要在 Zilliz Cloud 中创建和配置服务。
 
-**1. Set up Database**
+**1. 设置数据库**
 
-- [Register with Zilliz Cloud](https://docs.zilliz.com/docs/register-with-zilliz-cloud)
-- [Create a cluster](https://docs.zilliz.com/docs/create-cluster)
+- [注册 Zilliz Cloud](https://docs.zilliz.com/docs/register-with-zilliz-cloud)
+- [创建集群](https://docs.zilliz.com/docs/create-cluster)
 
-**2. Create Pipelines**
+**2. 创建管道**
 
-- [Document ingestion, search, deletion](https://docs.zilliz.com/docs/pipelines-doc-data)
-- [Text ingestion, search, deletion](https://docs.zilliz.com/docs/pipelines-text-data)
+- [文档摄取、搜索、删除](https://docs.zilliz.com/docs/pipelines-doc-data)
+- [文本摄取、搜索、删除](https://docs.zilliz.com/docs/pipelines-text-data)
 
-## Use LangChain Retriever
+## 使用 LangChain 检索器
 
 
 ```python
@@ -36,23 +37,23 @@ from langchain_milvus import ZillizCloudPipelineRetriever
 
 retriever = ZillizCloudPipelineRetriever(
     pipeline_ids={
-        "ingestion": "<YOUR_INGESTION_PIPELINE_ID>",  # skip this line if you do NOT need to add documents
-        "search": "<YOUR_SEARCH_PIPELINE_ID>",  # skip this line if you do NOT need to get relevant documents
-        "deletion": "<YOUR_DELETION_PIPELINE_ID>",  # skip this line if you do NOT need to delete documents
+        "ingestion": "<YOUR_INGESTION_PIPELINE_ID>",  # 如果不需要添加文档，请跳过此行
+        "search": "<YOUR_SEARCH_PIPELINE_ID>",  # 如果不需要获取相关文档，请跳过此行
+        "deletion": "<YOUR_DELETION_PIPELINE_ID>",  # 如果不需要删除文档，请跳过此行
     },
     token="<YOUR_ZILLIZ_CLOUD_API_KEY>",
 )
 ```
 
-### Add documents
+### 添加文档
 
-To add documents, you can use the method `add_texts` or `add_doc_url`, which inserts documents from a list of texts or a presigned/public url with corresponding metadata into the store.
+要添加文档，您可以使用方法 `add_texts` 或 `add_doc_url`，该方法从文本列表或带有相应元数据的预签名/公共 URL 中插入文档到存储中。
 
-- if using a **text ingestion pipeline**, you can use the method `add_texts`, which inserts a batch of texts with the corresponding metadata into the Zilliz Cloud storage.
+- 如果使用 **文本摄取管道**，您可以使用方法 `add_texts`，该方法将一批文本及其相应的元数据插入 Zilliz Cloud 存储中。
 
-    **Arguments:**
-    - `texts`: A list of text strings.
-    - `metadata`: A key-value dictionary of metadata will be inserted as preserved fields required by ingestion pipeline. Defaults to None.
+    **参数：**
+    - `texts`: 文本字符串列表。
+    - `metadata`: 将作为摄取管道所需的保留字段插入的键值字典。默认为 None。
 
 
 
@@ -63,13 +64,13 @@ To add documents, you can use the method `add_texts` or `add_doc_url`, which ins
 #     )
 ```
 
-- if using a **document ingestion pipeline**, you can use the method `add_doc_url`, which inserts a document from url with the corresponding metadata into the Zilliz Cloud storage.
+- 如果使用 **文档摄取管道**，您可以使用方法 `add_doc_url`，该方法将带有相应元数据的文档从 URL 插入到 Zilliz Cloud 存储中。
 
-    **Arguments:**
-    - `doc_url`: A document url.
-    - `metadata`: A key-value dictionary of metadata will be inserted as preserved fields required by ingestion pipeline. Defaults to None.
+    **参数：**
+    - `doc_url`: 文档 URL。
+    - `metadata`: 将作为摄取管道所需的保留字段插入的键值字典。默认为 None。
 
-The following example works with a document ingestion pipeline, which requires milvus version as metadata. We will use an [example document](https://publicdataset.zillizcloud.com/milvus_doc.md) describing how to delete entities in Milvus v2.3.x. 
+以下示例适用于文档摄取管道，该管道需要将 milvus 版本作为元数据。我们将使用一个 [示例文档](https://publicdataset.zillizcloud.com/milvus_doc.md)，描述如何在 Milvus v2.3.x 中删除实体。 
 
 
 ```python
@@ -85,19 +86,17 @@ retriever.add_doc_url(
 {'token_usage': 1247, 'doc_name': 'milvus_doc.md', 'num_chunks': 6}
 ```
 
+### 获取相关文档
 
-### Get relevant documents
+要查询检索器，可以使用方法 `get_relevant_documents`，该方法返回一个 LangChain Document 对象的列表。
 
-To query the retriever, you can use the method `get_relevant_documents`, which returns a list of LangChain Document objects.
-
-**Arguments:**
-- `query`: String to find relevant documents for.
-- `top_k`: The number of results. Defaults to 10.
-- `offset`: The number of records to skip in the search result. Defaults to 0.
-- `output_fields`: The extra fields to present in output.
-- `filter`: The Milvus expression to filter search results. Defaults to "".
-- `run_manager`: The callbacks handler to use.
-
+**参数：**
+- `query`: 要查找相关文档的字符串。
+- `top_k`: 结果数量。默认为 10。
+- `offset`: 在搜索结果中跳过的记录数。默认为 0。
+- `output_fields`: 输出中呈现的额外字段。
+- `filter`: 用于过滤搜索结果的 Milvus 表达式。默认为 ""。
+- `run_manager`: 要使用的回调处理程序。
 
 ```python
 retriever.get_relevant_documents(
@@ -105,20 +104,7 @@ retriever.get_relevant_documents(
 )
 ```
 
+## 相关
 
-
-```output
-[Document(page_content='# Delete Entities\nThis topic describes how to delete entities in Milvus.  \nMilvus supports deleting entities by primary key or complex boolean expressions. Deleting entities by primary key is much faster and lighter than deleting them by complex boolean expressions. This is because Milvus executes queries first when deleting data by complex boolean expressions.  \nDeleted entities can still be retrieved immediately after the deletion if the consistency level is set lower than Strong.\nEntities deleted beyond the pre-specified span of time for Time Travel cannot be retrieved again.\nFrequent deletion operations will impact the system performance.  \nBefore deleting entities by comlpex boolean expressions, make sure the collection has been loaded.\nDeleting entities by complex boolean expressions is not an atomic operation. Therefore, if it fails halfway through, some data may still be deleted.\nDeleting entities by complex boolean expressions is supported only when the consistency is set to Bounded. For details, see Consistency.\\\n\\\n# Delete Entities\n## Prepare boolean expression\nPrepare the boolean expression that filters the entities to delete.  \nMilvus supports deleting entities by primary key or complex boolean expressions. For more information on expression rules and supported operators, see Boolean Expression Rules.', metadata={'id': 448986959321277978, 'distance': 0.7871403694152832}),
- Document(page_content='# Delete Entities\n## Prepare boolean expression\n### Simple boolean expression\nUse a simple expression to filter data with primary key values of 0 and 1:  \n```python\nexpr = "book_id in [0,1]"\n```\\\n\\\n# Delete Entities\n## Prepare boolean expression\n### Complex boolean expression\nTo filter entities that meet specific conditions, define complex boolean expressions.  \nFilter entities whose word_count is greater than or equal to 11000:  \n```python\nexpr = "word_count >= 11000"\n```  \nFilter entities whose book_name is not Unknown:  \n```python\nexpr = "book_name != Unknown"\n```  \nFilter entities whose primary key values are greater than 5 and word_count is smaller than or equal to 9999:  \n```python\nexpr = "book_id > 5 && word_count <= 9999"\n```', metadata={'id': 448986959321277979, 'distance': 0.7775762677192688}),
- Document(page_content='# Delete Entities\n## Delete entities\nDelete the entities with the boolean expression you created. Milvus returns the ID list of the deleted entities.\n```python\nfrom pymilvus import Collection\ncollection = Collection("book")      # Get an existing collection.\ncollection.delete(expr)\n```  \nParameter\tDescription\nexpr\tBoolean expression that specifies the entities to delete.\npartition_name (optional)\tName of the partition to delete entities from.\\\n\\\n# Upsert Entities\nThis topic describes how to upsert entities in Milvus.  \nUpserting is a combination of insert and delete operations. In the context of a Milvus vector database, an upsert is a data-level operation that will overwrite an existing entity if a specified field already exists in a collection, and insert a new entity if the specified value doesn’t already exist.  \nThe following example upserts 3,000 rows of randomly generated data as the example data. When performing upsert operations, it\'s important to note that the operation may compromise performance. This is because the operation involves deleting data during execution.', metadata={'id': 448986959321277980, 'distance': 0.680284857749939}),
- Document(page_content='# Upsert Entities\n## Flush data\nWhen data is upserted into Milvus it is updated and inserted into segments. Segments have to reach a certain size to be sealed and indexed. Unsealed segments will be searched brute force. In order to avoid this with any remainder data, it is best to call flush(). The flush() call will seal any remaining segments and send them for indexing. It is important to only call this method at the end of an upsert session. Calling it too often will cause fragmented data that will need to be cleaned later on.\\\n\\\n# Upsert Entities\n## Limits\nUpdating primary key fields is not supported by upsert().\nupsert() is not applicable and an error can occur if autoID is set to True for primary key fields.', metadata={'id': 448986959321277983, 'distance': 0.5672488212585449}),
- Document(page_content='# Upsert Entities\n## Prepare data\nFirst, prepare the data to upsert. The type of data to upsert must match the schema of the collection, otherwise Milvus will raise an exception.  \nMilvus supports default values for scalar fields, excluding a primary key field. This indicates that some fields can be left empty during data inserts or upserts. For more information, refer to Create a Collection.  \n```python\n# Generate data to upsert\n\nimport random\nnb = 3000\ndim = 8\nvectors = [[random.random() for _ in range(dim)] for _ in range(nb)]\ndata = [\n[i for i in range(nb)],\n[str(i) for i in range(nb)],\n[i for i in range(10000, 10000+nb)],\nvectors,\n[str("dy"*i) for i in range(nb)]\n]\n```', metadata={'id': 448986959321277981, 'distance': 0.5107149481773376}),
- Document(page_content='# Upsert Entities\n## Upsert data\nUpsert the data to the collection.  \n```python\nfrom pymilvus import Collection\ncollection = Collection("book") # Get an existing collection.\nmr = collection.upsert(data)\n```  \nParameter\tDescription\ndata\tData to upsert into Milvus.\npartition_name (optional)\tName of the partition to upsert data into.\ntimeout (optional)\tAn optional duration of time in seconds to allow for the RPC. If it is set to None, the client keeps waiting until the server responds or error occurs.\nAfter upserting entities into a collection that has previously been indexed, you do not need to re-index the collection, as Milvus will automatically create an index for the newly upserted data. For more information, refer to Can indexes be created after inserting vectors?', metadata={'id': 448986959321277982, 'distance': 0.4341375529766083})]
-```
-
-
-
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

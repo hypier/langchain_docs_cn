@@ -1,26 +1,26 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/graphs/kuzu_db.ipynb
 ---
+
 # Kuzu
 
->[Kùzu](https://kuzudb.com) is an embeddable property graph database management system built for query speed and scalability.
+>[Kùzu](https://kuzudb.com) 是一个可嵌入的属性图数据库管理系统，旨在实现查询速度和可扩展性。
 > 
-> Kùzu has a permissive (MIT) open source license and implements [Cypher](https://en.wikipedia.org/wiki/Cypher_(query_language)), a declarative graph query language that allows for expressive and efficient data querying in a property graph.
-> It uses columnar storage and its query processor contains novel join algorithms that allow it to scale to very large graphs without sacrificing query performance.
+> Kùzu 采用宽松的 (MIT) 开源许可证，并实现了 [Cypher](https://en.wikipedia.org/wiki/Cypher_(query_language))，这是一种声明式图查询语言，允许在属性图中进行富有表现力和高效的数据查询。
+> 它使用列式存储，其查询处理器包含新颖的连接算法，使其能够在不牺牲查询性能的情况下扩展到非常大的图。
 > 
-> This notebook shows how to use LLMs to provide a natural language interface to [Kùzu](https://kuzudb.com) database with Cypher.
+> 本笔记本展示了如何使用 LLMs 为 [Kùzu](https://kuzudb.com) 数据库提供 Cypher 的自然语言接口。
 
-## Setting up
+## 设置
 
-Kùzu is an embedded database (it runs in-process), so there are no servers to manage.
-Simply install it via its Python package:
+Kùzu 是一个嵌入式数据库（它在进程内运行），因此无需管理服务器。  
+只需通过其 Python 包安装即可：
 
 ```bash
 pip install kuzu
 ```
 
-Create a database on the local machine and connect to it:
-
+在本地机器上创建一个数据库并连接到它：
 
 ```python
 import kuzu
@@ -29,8 +29,7 @@ db = kuzu.Database("test_db")
 conn = kuzu.Connection(db)
 ```
 
-First, we create the schema for a simple movie database:
-
+首先，我们为一个简单的电影数据库创建模式：
 
 ```python
 conn.execute("CREATE NODE TABLE Movie (name STRING, PRIMARY KEY(name))")
@@ -47,8 +46,7 @@ conn.execute("CREATE REL TABLE ActedIn (FROM Person TO Movie)")
 ```
 
 
-Then we can insert some data.
-
+然后我们可以插入一些数据。
 
 ```python
 conn.execute("CREATE (:Person {name: 'Al Pacino', birthDate: '1940-04-25'})")
@@ -78,11 +76,9 @@ conn.execute(
 <kuzu.query_result.QueryResult at 0x103a9e750>
 ```
 
+## 创建 `KuzuQAChain`
 
-## Creating `KuzuQAChain`
-
-We can now create the `KuzuGraph` and `KuzuQAChain`. To create the `KuzuGraph` we simply need to pass the database object to the `KuzuGraph` constructor.
-
+我们现在可以创建 `KuzuGraph` 和 `KuzuQAChain`。要创建 `KuzuGraph`，我们只需将数据库对象传递给 `KuzuGraph` 构造函数。
 
 ```python
 from langchain.chains import KuzuQAChain
@@ -90,11 +86,9 @@ from langchain_community.graphs import KuzuGraph
 from langchain_openai import ChatOpenAI
 ```
 
-
 ```python
 graph = KuzuGraph(db)
 ```
-
 
 ```python
 chain = KuzuQAChain.from_llm(
@@ -104,16 +98,13 @@ chain = KuzuQAChain.from_llm(
 )
 ```
 
-## Refresh graph schema information
+## 刷新图形模式信息
 
-If the schema of database changes, you can refresh the schema information needed to generate Cypher statements.
-You can also display the schema of the Kùzu graph as demonstrated below.
-
+如果数据库的模式发生变化，您可以刷新生成 Cypher 语句所需的模式信息。您还可以显示 Kùzu 图的模式，如下所示。
 
 ```python
 # graph.refresh_schema()
 ```
-
 
 ```python
 print(graph.get_schema)
@@ -123,9 +114,10 @@ Node properties: [{'properties': [('name', 'STRING')], 'label': 'Movie'}, {'prop
 Relationships properties: [{'properties': [], 'label': 'ActedIn'}]
 Relationships: ['(:Person)-[:ActedIn]->(:Movie)']
 ```
-## Querying the graph
 
-We can now use the `KuzuQAChain` to ask questions of the graph.
+## 查询图形
+
+我们现在可以使用 `KuzuQAChain` 来询问图形的问题。
 
 
 ```python
@@ -226,11 +218,9 @@ Full Context:
  'result': 'Al Pacino is the oldest actor who played in The Godfather: Part II.'}
 ```
 
+## 为 Cypher 和答案生成使用不同的 LLM
 
-## Use separate LLMs for Cypher and answer generation
-
-You can specify `cypher_llm` and `qa_llm` separately to use different LLMs for Cypher generation and answer generation.
-
+您可以分别指定 `cypher_llm` 和 `qa_llm`，以便为 Cypher 生成和答案生成使用不同的 LLM。
 
 ```python
 chain = KuzuQAChain.from_llm(
@@ -256,10 +246,10 @@ chain.invoke("How many actors played in The Godfather: Part II?")
 /Users/prrao/code/langchain/.venv/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:119: LangChainDeprecationWarning: The method `Chain.run` was deprecated in langchain 0.1.0 and will be removed in 0.2.0. Use invoke instead.
   warn_deprecated(
 ``````output
-Generated Cypher:
+生成的 Cypher:
 [32;1m[1;3mMATCH (:Person)-[:ActedIn]->(:Movie {name: 'The Godfather: Part II'})
 RETURN count(*)[0m
-Full Context:
+完整上下文:
 [32;1m[1;3m[{'COUNT_STAR()': 2}][0m
 ``````output
 /Users/prrao/code/langchain/.venv/lib/python3.11/site-packages/langchain_core/_api/deprecation.py:119: LangChainDeprecationWarning: The method `Chain.__call__` was deprecated in langchain 0.1.0 and will be removed in 0.2.0. Use invoke instead.
@@ -274,4 +264,3 @@ Full Context:
 {'query': 'How many actors played in The Godfather: Part II?',
  'result': 'Two actors played in The Godfather: Part II.'}
 ```
-

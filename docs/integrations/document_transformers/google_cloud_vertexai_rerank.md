@@ -1,20 +1,21 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_transformers/google_cloud_vertexai_rerank.ipynb
 ---
+
 # Google Cloud Vertex AI Reranker
 
-> The [Vertex Search Ranking API](https://cloud.google.com/generative-ai-app-builder/docs/ranking) is one of the standalone APIs in [Vertex AI Agent Builder](https://cloud.google.com/generative-ai-app-builder/docs/builder-apis). It takes a list of documents and reranks those documents based on how relevant the documents are to a query. Compared to embeddings, which look only at the semantic similarity of a document and a query, the ranking API can give you precise scores for how well a document answers a given query. The ranking API can be used to improve the quality of search results after retrieving an initial set of candidate documents.
+> [Vertex Search Ranking API](https://cloud.google.com/generative-ai-app-builder/docs/ranking) 是 [Vertex AI Agent Builder](https://cloud.google.com/generative-ai-app-builder/docs/builder-apis) 中的独立 API 之一。它接受一组文档，并根据文档与查询的相关性对这些文档进行重新排序。与仅关注文档与查询语义相似性的嵌入不同，排名 API 可以为文档回答特定查询的效果提供精确的评分。排名 API 可用于在检索初始候选文档后提高搜索结果的质量。
 
->The ranking API is stateless so there's no need to index documents before calling the API. All you need to do is pass in the query and documents. This makes the API well suited for reranking documents from any document retrievers.
+> 排名 API 是无状态的，因此在调用 API 之前无需对文档进行索引。您只需传入查询和文档即可。这使得该 API 非常适合对任何文档检索器中的文档进行重新排序。
 
->For more information, see [Rank and rerank documents](https://cloud.google.com/generative-ai-app-builder/docs/ranking).
+> 有关更多信息，请参见 [Rank and rerank documents](https://cloud.google.com/generative-ai-app-builder/docs/ranking).
 
 
 ```python
 %pip install --upgrade --quiet langchain langchain-community langchain-google-community langchain-google-community[vertexaisearch] langchain-google-vertexai langchain-chroma langchain-text-splitters
 ```
 
-### Setup
+### 设置
 
 
 ```python
@@ -28,14 +29,13 @@ from google.cloud import aiplatform
 aiplatform.init(project=PROJECT_ID, location=REGION)
 ```
 
-### Load and Prepare data
+### 加载和准备数据
 
-For this example, we will be using the [Google Wiki page](https://en.wikipedia.org/wiki/Google)to demonstrate how the Vertex Ranking API works.
+在这个例子中，我们将使用 [Google Wiki 页面](https://en.wikipedia.org/wiki/Google) 来演示 Vertex Ranking API 的工作原理。
 
-We use a standard pipeline of `load -> split -> embed data`.
+我们使用标准的管道 `load -> split -> embed data`。
 
-The embeddings are created using the [Vertex Embeddings API](https://cloud.google.com/vertex-ai/generative-ai/docs/embeddings/get-text-embeddings#supported_models) model - `textembedding-gecko@003`
-
+嵌入是使用 [Vertex Embeddings API](https://cloud.google.com/vertex-ai/generative-ai/docs/embeddings/get-text-embeddings#supported_models) 模型 - `textembedding-gecko@003` 创建的。
 
 ```python
 from langchain_chroma import Chroma
@@ -87,16 +87,15 @@ retriever_with_reranker = ContextualCompressionRetriever(
 )
 ```
 
-### Testing out the Vertex Ranking API
+### 测试 Vertex 排名 API
 
-Let's query both the `basic_retriever` and `retriever_with_reranker` with the same query and compare the retrieved documents.
+让我们用相同的查询同时查询 `basic_retriever` 和 `retriever_with_reranker`，并比较检索到的文档。
 
-The Ranking API takes in the input from the `basic_retriever` and passes it to the Ranking API.
+排名 API 接收来自 `basic_retriever` 的输入并将其传递给排名 API。
 
-The ranking API is used to improve the quality of the ranking and determine a score that indicates the relevance of each record to the query.
+排名 API 用于提高排名的质量，并确定一个分数，表示每条记录与查询的相关性。
 
-You can see the difference between the Unranked and the Ranked Documents. The Ranking API moves the most semantically relevant documents to the top of the context window of the LLM thus helping it form a better answer with reasoning.
-
+您可以看到未排名文档与排名文档之间的差异。排名 API 将最语义相关的文档移动到 LLM 的上下文窗口顶部，从而帮助其更好地形成带有推理的答案。
 
 ```python
 import pandas as pd
@@ -120,8 +119,6 @@ comparison_df = pd.DataFrame(
 
 comparison_df
 ```
-
-
 
 ```html
 
@@ -444,9 +441,7 @@ comparison_df
  
 ```
 
-
-Let's inspect a couple of reranked documents. We observe that the retriever still returns the relevant Langchain type [documents](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html) but as part of the metadata field, we also recieve the `relevance_score` from the Ranking API.
-
+让我们检查几个重新排名的文档。我们观察到检索器仍然返回相关的 Langchain 类型 [documents](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html)，但作为元数据字段的一部分，我们还收到了来自排名 API 的 `relevance_score`。
 
 ```python
 for i in range(2):
@@ -473,9 +468,10 @@ Document 1
 page_content='Eventually, they changed the name to Google; the name of the search engine was a misspelling of the word googol,[21][36][37] a very large number written 10100 (1 followed by 100 zeros), picked to signify that the search engine was intended to provide large quantities of information.[38]' metadata={'id': '1', 'relevance_score': 0.75, 'source': 'https://en.wikipedia.org/wiki/Google'}
 ----------------------------------------------------------
 ```
-### Putting it all together
 
-This shows an example of a complete RAG chain with a simple prompt template on how you can perform reranking using the Vertex Ranking API.
+### 整合所有内容
+
+这展示了一个完整的 RAG 链的示例，以及如何使用 Vertex Ranking API 执行重排序的简单提示模板。
 
 
 
@@ -572,4 +568,3 @@ chain.invoke(query)
 ```output
 'The name "Google" originated as a misspelling of the word "googol," a mathematical term for the number 1 followed by 100 zeros. Larry Page and Sergey Brin, the founders of Google, chose the name because it reflected their goal of building a search engine that could handle massive amounts of information. \n'
 ```
-

@@ -1,9 +1,10 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/dashscope.ipynb
 ---
+
 # DashScope
 
-Let's load the DashScope Embedding class.
+让我们加载 DashScope Embedding 类。
 
 
 ```python
@@ -34,8 +35,7 @@ doc_results = embeddings.embed_documents(["foo"])
 print(doc_results)
 ```
 
+## 相关
 
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

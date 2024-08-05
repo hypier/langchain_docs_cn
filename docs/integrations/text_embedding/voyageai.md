@@ -1,20 +1,21 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/voyageai.ipynb
 ---
+
 # Voyage AI
 
->[Voyage AI](https://www.voyageai.com/) provides cutting-edge embedding/vectorizations models.
+>[Voyage AI](https://www.voyageai.com/) 提供尖端的嵌入/向量化模型。
 
-Let's load the Voyage AI Embedding class. (Install the LangChain partner package with `pip install langchain-voyageai`)
+让我们加载 Voyage AI 嵌入类。 （使用 `pip install langchain-voyageai` 安装 LangChain 合作包）
 
 
 ```python
 from langchain_voyageai import VoyageAIEmbeddings
 ```
 
-Voyage AI utilizes API keys to monitor usage and manage permissions. To obtain your key, create an account on our [homepage](https://www.voyageai.com). Then, create a VoyageEmbeddings model with your API key. You can use any of the following models: ([source](https://docs.voyageai.com/docs/embeddings)):
+Voyage AI 使用 API 密钥来监控使用情况和管理权限。要获取您的密钥，请在我们的 [主页](https://www.voyageai.com) 上创建一个帐户。然后，使用您的 API 密钥创建一个 VoyageEmbeddings 模型。您可以使用以下任一模型：([source](https://docs.voyageai.com/docs/embeddings))：
 
-- `voyage-large-2` (default)
+- `voyage-large-2` (默认)
 - `voyage-code-2`
 - `voyage-2`
 - `voyage-law-2`
@@ -29,7 +30,7 @@ embeddings = VoyageAIEmbeddings(
 )
 ```
 
-Prepare the documents and use `embed_documents` to get their embeddings.
+准备文档并使用 `embed_documents` 获取它们的嵌入。
 
 
 ```python
@@ -61,7 +62,7 @@ documents_embds[0][:5]
 ```
 
 
-Similarly, use `embed_query` to embed the query.
+同样，使用 `embed_query` 嵌入查询。
 
 
 ```python
@@ -88,13 +89,11 @@ query_embd[:5]
  -0.019235141575336456]
 ```
 
+## 极简检索系统
 
-## A minimalist retrieval system
+嵌入的主要特征是两个嵌入之间的余弦相似度捕捉了相应原始段落的语义相关性。这使我们能够使用嵌入进行语义检索/搜索。
 
-The main feature of the embeddings is that the cosine similarity between two embeddings captures the semantic relatedness of the corresponding original passages. This allows us to use the embeddings to do semantic retrieval / search.
-
- We can find a few closest embeddings in the documents embeddings based on the cosine similarity, and retrieve the corresponding document using the `KNNRetriever` class from LangChain.
-
+我们可以根据余弦相似度在文档嵌入中找到几个最接近的嵌入，并使用 LangChain 中的 `KNNRetriever` 类检索相应的文档。
 
 ```python
 from langchain_community.retrievers import KNNRetriever
@@ -111,7 +110,7 @@ print(top1_retrieved_doc)
 An LLMChain is a chain that composes basic LLM functionality. It consists of a PromptTemplate and a language model (either an LLM or chat model). It formats the prompt template using the input key values provided (and also memory key values, if available), passes the formatted string to LLM and returns the LLM output.
 ```
 
-## Related
+## 相关
 
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

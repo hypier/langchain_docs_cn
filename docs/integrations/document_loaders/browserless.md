@@ -1,22 +1,20 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/browserless.ipynb
 ---
+
 # Browserless
 
-Browserless is a service that allows you to run headless Chrome instances in the cloud. It's a great way to run browser-based automation at scale without having to worry about managing your own infrastructure.
+Browserless 是一个服务，允许您在云中运行无头 Chrome 实例。这是以规模化方式运行基于浏览器的自动化的绝佳方式，而无需担心管理自己的基础设施。
 
-To use Browserless as a document loader, initialize a `BrowserlessLoader` instance as shown in this notebook. Note that by default, `BrowserlessLoader` returns the `innerText` of the page's `body` element. To disable this and get the raw HTML, set `text_content` to `False`.
-
+要将 Browserless 用作文档加载器，请按照本笔记本中的示例初始化 `BrowserlessLoader` 实例。请注意，默认情况下，`BrowserlessLoader` 返回页面 `body` 元素的 `innerText`。要禁用此功能并获取原始 HTML，请将 `text_content` 设置为 `False`。
 
 ```python
 from langchain_community.document_loaders import BrowserlessLoader
 ```
 
-
 ```python
 BROWSERLESS_API_TOKEN = "YOUR_BROWSERLESS_API_TOKEN"
 ```
-
 
 ```python
 loader = BrowserlessLoader(
@@ -56,7 +54,7 @@ The documents to be classified may be texts, images, music, etc. Each kind of do
 Do
 ```
 
-## Related
+## 相关
 
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

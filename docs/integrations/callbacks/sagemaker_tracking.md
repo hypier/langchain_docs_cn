@@ -1,22 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/callbacks/sagemaker_tracking.ipynb
 ---
+
 # SageMaker Tracking
 
->[Amazon SageMaker](https://aws.amazon.com/sagemaker/) is a fully managed service that is used to quickly and easily build, train and deploy machine learning (ML) models. 
+>[Amazon SageMaker](https://aws.amazon.com/sagemaker/) 是一个完全托管的服务，用于快速轻松地构建、训练和部署机器学习（ML）模型。
 
->[Amazon SageMaker Experiments](https://docs.aws.amazon.com/sagemaker/latest/dg/experiments.html) is a capability of `Amazon SageMaker` that lets you organize, track, compare and evaluate ML experiments and model versions.
+>[Amazon SageMaker Experiments](https://docs.aws.amazon.com/sagemaker/latest/dg/experiments.html) 是 `Amazon SageMaker` 的一项功能，允许您组织、跟踪、比较和评估 ML 实验和模型版本。
 
-This notebook shows how LangChain Callback can be used to log and track prompts and other LLM hyperparameters into `SageMaker Experiments`. Here, we use different scenarios to showcase the capability:
+本笔记本展示了如何使用 LangChain Callback 将提示和其他 LLM 超参数记录并跟踪到 `SageMaker Experiments` 中。在这里，我们使用不同的场景来展示这一功能：
 
-* **Scenario 1**: *Single LLM* - A case where a single LLM model is used to generate output based on a given prompt.
-* **Scenario 2**: *Sequential Chain* - A case where a sequential chain of two LLM models is used.
-* **Scenario 3**: *Agent with Tools (Chain of Thought)* - A case where multiple tools (search and math) are used in addition to an LLM.
+* **Scenario 1**: *Single LLM* - 一个使用单个 LLM 模型根据给定提示生成输出的案例。
+* **Scenario 2**: *Sequential Chain* - 一个使用两个 LLM 模型的顺序链的案例。
+* **Scenario 3**: *Agent with Tools (Chain of Thought)* - 一个在 LLM 之外使用多个工具（搜索和数学）的案例。
 
+在本笔记本中，我们将创建一个单一实验来记录每个场景的提示。
 
-In this notebook, we will create a single experiment to log the prompts from each scenario.
-
-## Installation and Setup
+## 安装与设置
 
 
 ```python
@@ -25,16 +25,16 @@ In this notebook, we will create a single experiment to log the prompts from eac
 %pip install --upgrade --quiet  google-search-results
 ```
 
-First, setup the required API keys
+首先，设置所需的 API 密钥
 
-* OpenAI: https://platform.openai.com/account/api-keys (For OpenAI LLM model)
-* Google SERP API: https://serpapi.com/manage-api-key (For Google Search Tool)
+* OpenAI: https://platform.openai.com/account/api-keys (用于 OpenAI LLM 模型)
+* Google SERP API: https://serpapi.com/manage-api-key (用于 Google 搜索工具)
 
 
 ```python
 import os
 
-## Add your API keys below
+## 在下面添加您的 API 密钥
 os.environ["OPENAI_API_KEY"] = "<ADD-KEY-HERE>"
 os.environ["SERPAPI_API_KEY"] = "<ADD-KEY-HERE>"
 ```
@@ -55,27 +55,27 @@ from sagemaker.experiments.run import Run
 from sagemaker.session import Session
 ```
 
-## LLM Prompt Tracking
+## LLM 提示跟踪
 
 
 ```python
-# LLM Hyperparameters
+# LLM 超参数
 HPARAMS = {
     "temperature": 0.1,
     "model_name": "gpt-3.5-turbo-instruct",
 }
 
-# Bucket used to save prompt logs (Use `None` is used to save the default bucket or otherwise change it)
+# 用于保存提示日志的桶（使用 `None` 保存默认桶，或更改为其他桶）
 BUCKET_NAME = None
 
-# Experiment name
+# 实验名称
 EXPERIMENT_NAME = "langchain-sagemaker-tracker"
 
-# Create SageMaker Session with the given bucket
+# 使用给定桶创建 SageMaker 会话
 session = Session(default_bucket=BUCKET_NAME)
 ```
 
-### Scenario 1 - LLM
+### 场景 1 - LLM
 
 
 ```python
@@ -89,27 +89,26 @@ INPUT_VARIABLES = {"topic": "fish"}
 with Run(
     experiment_name=EXPERIMENT_NAME, run_name=RUN_NAME, sagemaker_session=session
 ) as run:
-    # Create SageMaker Callback
+    # 创建 SageMaker 回调
     sagemaker_callback = SageMakerCallbackHandler(run)
 
-    # Define LLM model with callback
+    # 定义带回调的 LLM 模型
     llm = OpenAI(callbacks=[sagemaker_callback], **HPARAMS)
 
-    # Create prompt template
+    # 创建提示模板
     prompt = PromptTemplate.from_template(template=PROMPT_TEMPLATE)
 
-    # Create LLM Chain
+    # 创建 LLM 链
     chain = LLMChain(llm=llm, prompt=prompt, callbacks=[sagemaker_callback])
 
-    # Run chain
+    # 运行链
     chain.run(**INPUT_VARIABLES)
 
-    # Reset the callback
+    # 重置回调
     sagemaker_callback.flush_tracker()
 ```
 
-### Scenario 2 - Sequential Chain
-
+### 场景 2 - 顺序链
 
 ```python
 RUN_NAME = "run-scenario-2"
@@ -122,10 +121,9 @@ Play Synopsis: {synopsis}
 Review from a New York Times play critic of the above play:"""
 
 INPUT_VARIABLES = {
-    "input": "documentary about good video games that push the boundary of game design"
+    "input": "关于推动游戏设计边界的优秀视频游戏的纪录片"
 }
 ```
-
 
 ```python
 with Run(
@@ -159,44 +157,41 @@ with Run(
     sagemaker_callback.flush_tracker()
 ```
 
-### Scenario 3 - Agent with Tools
-
+### 场景 3 - 带工具的代理
 
 ```python
 RUN_NAME = "run-scenario-3"
-PROMPT_TEMPLATE = "Who is the oldest person alive? And what is their current age raised to the power of 1.51?"
+PROMPT_TEMPLATE = "谁是活着的最年长的人？他们当前的年龄提高到1.51的幂是多少？"
 ```
-
 
 ```python
 with Run(
     experiment_name=EXPERIMENT_NAME, run_name=RUN_NAME, sagemaker_session=session
 ) as run:
-    # Create SageMaker Callback
+    # 创建 SageMaker 回调
     sagemaker_callback = SageMakerCallbackHandler(run)
 
-    # Define LLM model with callback
+    # 定义带回调的 LLM 模型
     llm = OpenAI(callbacks=[sagemaker_callback], **HPARAMS)
 
-    # Define tools
+    # 定义工具
     tools = load_tools(["serpapi", "llm-math"], llm=llm, callbacks=[sagemaker_callback])
 
-    # Initialize agent with all the tools
+    # 使用所有工具初始化代理
     agent = initialize_agent(
         tools, llm, agent="zero-shot-react-description", callbacks=[sagemaker_callback]
     )
 
-    # Run agent
+    # 运行代理
     agent.run(input=PROMPT_TEMPLATE)
 
-    # Reset the callback
+    # 重置回调
     sagemaker_callback.flush_tracker()
 ```
 
-## Load Log Data
+## 加载日志数据
 
-Once the prompts are logged, we can easily load and convert them to Pandas DataFrame as follows.
-
+一旦提示被记录，我们可以轻松地将其加载并转换为 Pandas DataFrame，如下所示。
 
 ```python
 # Load
@@ -209,4 +204,4 @@ print(df.shape)
 df.head()
 ```
 
-As can be seen above, there are three runs (rows) in the experiment corresponding to each scenario. Each run logs the prompts and related LLM settings/hyperparameters as json and are saved in s3 bucket. Feel free to load and explore the log data from each json path.
+如上所示，实验中有三次运行（行），对应于每个场景。每次运行记录了提示和相关的 LLM 设置/超参数，并以 json 格式保存到 s3 存储桶中。可以随意加载并探索每个 json 路径中的日志数据。

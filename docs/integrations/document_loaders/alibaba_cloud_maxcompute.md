@@ -1,12 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/alibaba_cloud_maxcompute.ipynb
 ---
-# Alibaba Cloud MaxCompute
 
->[Alibaba Cloud MaxCompute](https://www.alibabacloud.com/product/maxcompute) (previously known as ODPS) is a general purpose, fully managed, multi-tenancy data processing platform for large-scale data warehousing. MaxCompute supports various data importing solutions and distributed computing models, enabling users to effectively query massive datasets, reduce production costs, and ensure data security.
+# 阿里云 MaxCompute
 
-The `MaxComputeLoader` lets you execute a MaxCompute SQL query and loads the results as one document per row.
+>[阿里云 MaxCompute](https://www.alibabacloud.com/product/maxcompute)（之前称为 ODPS）是一个通用的、完全托管的、多租户数据处理平台，适用于大规模数据仓库。MaxCompute 支持多种数据导入解决方案和分布式计算模型，使用户能够有效查询海量数据集，降低生产成本，并确保数据安全。
 
+`MaxComputeLoader` 允许您执行 MaxCompute SQL 查询，并将结果加载为每行一个文档。
 
 ```python
 %pip install --upgrade --quiet  pyodps
@@ -22,14 +22,13 @@ Requirement already satisfied: certifi>=2017.4.17 in /Users/newboy/anaconda3/env
 Installing collected packages: pyodps
 Successfully installed pyodps-0.11.4.post0
 ```
-## Basic Usage
-To instantiate the loader you'll need a SQL query to execute, your MaxCompute endpoint and project name, and you access ID and secret access key. The access ID and secret access key can either be passed in direct via the `access_id` and `secret_access_key` parameters or they can be set as environment variables `MAX_COMPUTE_ACCESS_ID` and `MAX_COMPUTE_SECRET_ACCESS_KEY`.
 
+## 基本用法
+要实例化加载器，您需要执行的 SQL 查询、您的 MaxCompute 终端节点和项目名称，以及您的访问 ID 和密钥访问密钥。访问 ID 和密钥访问密钥可以通过 `access_id` 和 `secret_access_key` 参数直接传递，也可以设置为环境变量 `MAX_COMPUTE_ACCESS_ID` 和 `MAX_COMPUTE_SECRET_ACCESS_KEY`。
 
 ```python
 from langchain_community.document_loaders import MaxComputeLoader
 ```
-
 
 ```python
 base_query = """
@@ -44,14 +43,12 @@ FROM (
 """
 ```
 
-
 ```python
 endpoint = "<ENDPOINT>"
 project = "<PROJECT>"
 ACCESS_ID = "<ACCESS ID>"
 SECRET_ACCESS_KEY = "<SECRET ACCESS KEY>"
 ```
-
 
 ```python
 loader = MaxComputeLoader.from_params(
@@ -63,7 +60,6 @@ loader = MaxComputeLoader.from_params(
 )
 data = loader.load()
 ```
-
 
 ```python
 print(data)
@@ -87,23 +83,22 @@ print(data[0].metadata)
 ```output
 {}
 ```
-## Specifying Which Columns are Content vs Metadata
-You can configure which subset of columns should be loaded as the contents of the Document and which as the metadata using the `page_content_columns` and `metadata_columns` parameters.
 
+## 指定哪些列是内容与元数据
+您可以使用 `page_content_columns` 和 `metadata_columns` 参数配置应该作为文档内容加载的列子集和作为元数据加载的列子集。
 
 ```python
 loader = MaxComputeLoader.from_params(
     base_query,
     endpoint,
     project,
-    page_content_columns=["content"],  # Specify Document page content
-    metadata_columns=["id", "meta_info"],  # Specify Document metadata
+    page_content_columns=["content"],  # 指定文档页面内容
+    metadata_columns=["id", "meta_info"],  # 指定文档元数据
     access_id=ACCESS_ID,
     secret_access_key=SECRET_ACCESS_KEY,
 )
 data = loader.load()
 ```
-
 
 ```python
 print(data[0].page_content)
@@ -119,7 +114,7 @@ print(data[0].metadata)
 {'id': 1, 'meta_info': 'meta_info1'}
 ```
 
-## Related
+## 相关
 
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

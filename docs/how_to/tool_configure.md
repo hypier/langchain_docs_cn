@@ -1,42 +1,41 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/tool_configure.ipynb
 ---
-# How to access the RunnableConfig from a tool
 
-:::info Prerequisites
+# 如何从工具访问 RunnableConfig
 
-This guide assumes familiarity with the following concepts:
+:::info 前提条件
 
-- [LangChain Tools](/docs/concepts/#tools)
-- [Custom tools](/docs/how_to/custom_tools)
-- [LangChain Expression Language (LCEL)](/docs/concepts/#langchain-expression-language-lcel)
-- [Configuring runnable behavior](/docs/how_to/configure/)
+本指南假设您熟悉以下概念：
 
-:::
-
-If you have a tool  that call chat models, retrievers, or other runnables, you may want to access internal events from those runnables or configure them with additional properties. This guide shows you how to manually pass parameters properly so that you can do this using the `astream_events()` method.
-
-Tools are runnables, and you can treat them the same way as any other runnable at the interface level - you can call `invoke()`, `batch()`, and `stream()` on them as normal. However, when writing custom tools, you may want to invoke other runnables like chat models or retrievers. In order to properly trace and configure those sub-invocations, you'll need to manually access and pass in the tool's current [`RunnableConfig`](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.config.RunnableConfig.html) object. This guide show you some examples of how to do that.
-
-:::caution Compatibility
-
-This guide requires `langchain-core>=0.2.16`.
+- [LangChain 工具](/docs/concepts/#tools)
+- [自定义工具](/docs/how_to/custom_tools)
+- [LangChain 表达语言 (LCEL)](/docs/concepts/#langchain-expression-language-lcel)
+- [配置可运行行为](/docs/how_to/configure/)
 
 :::
 
-## Inferring by parameter type
+如果您有一个调用聊天模型、检索器或其他可运行对象的工具，您可能希望访问这些可运行对象的内部事件或使用额外属性进行配置。本指南将向您展示如何正确手动传递参数，以便您可以使用 `astream_events()` 方法来实现这一点。
 
-To access reference the active config object from your custom tool, you'll need to add a parameter to your tool's signature typed as `RunnableConfig`. When you invoke your tool, LangChain will inspect your tool's signature, look for a parameter typed as `RunnableConfig`, and if it exists, populate that parameter with the correct value.
+工具是可运行对象，您可以在接口级别将它们视为任何其他可运行对象 - 您可以像往常一样对它们调用 `invoke()`、`batch()` 和 `stream()`。然而，在编写自定义工具时，您可能希望调用其他可运行对象，例如聊天模型或检索器。为了正确追踪和配置这些子调用，您需要手动访问并传递工具当前的 [`RunnableConfig`](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.config.RunnableConfig.html) 对象。本指南将向您展示如何做到这一点的一些示例。
 
-**Note:** The actual name of the parameter doesn't matter, only the typing.
+:::caution 兼容性
 
-To illustrate this, define a custom tool that takes a two parameters - one typed as a string, the other typed as `RunnableConfig`:
+本指南要求 `langchain-core>=0.2.16`。
 
+:::
+
+## 通过参数类型推断
+
+要从您的自定义工具访问活动配置对象，您需要在工具的签名中添加一个参数，类型为 `RunnableConfig`。当您调用工具时，LangChain 会检查工具的签名，查找类型为 `RunnableConfig` 的参数，如果存在，则用正确的值填充该参数。
+
+**注意：** 参数的实际名称并不重要，只有类型才重要。
+
+为了说明这一点，定义一个自定义工具，该工具接受两个参数 - 一个类型为字符串，另一个类型为 `RunnableConfig`：
 
 ```python
 %pip install -qU langchain_core
 ```
-
 
 ```python
 from langchain_core.runnables import RunnableConfig
@@ -45,12 +44,11 @@ from langchain_core.tools import tool
 
 @tool
 async def reverse_tool(text: str, special_config_param: RunnableConfig) -> str:
-    """A test tool that combines input text with a configurable parameter."""
+    """一个测试工具，将输入文本与可配置参数结合起来。"""
     return (text + special_config_param["configurable"]["additional_field"])[::-1]
 ```
 
-Then, if we invoke the tool with a `config` containing a `configurable` field, we can see that `additional_field` is passed through correctly:
-
+然后，如果我们使用包含 `configurable` 字段的 `config` 调用该工具，我们可以看到 `additional_field` 被正确传递：
 
 ```python
 await reverse_tool.ainvoke(
@@ -58,21 +56,18 @@ await reverse_tool.ainvoke(
 )
 ```
 
-
-
 ```output
 '321cba'
 ```
 
+## 下一步
 
-## Next steps
+您现在已经了解了如何在工具中配置和流式传输事件。接下来，请查看以下指南以获取更多关于使用工具的信息：
 
-You've now seen how to configure and stream events from within a tool. Next, check out the following guides for more on using tools:
+- [从自定义工具中的子运行流式传输事件](/docs/how_to/tool_stream_events/)
+- 将 [工具结果传递回模型](/docs/how_to/tool_results_pass_to_model)
 
-- [Stream events from child runs within a custom tool](/docs/how_to/tool_stream_events/)
-- Pass [tool results back to a model](/docs/how_to/tool_results_pass_to_model)
+您还可以查看一些工具调用的更具体用法：
 
-You can also check out some more specific uses of tool calling:
-
-- Building [tool-using chains and agents](/docs/how_to#tools)
-- Getting [structured outputs](/docs/how_to/structured_output/) from models
+- 构建 [使用工具的链和代理](/docs/how_to#tools)
+- 从模型获取 [结构化输出](/docs/how_to/structured_output/)

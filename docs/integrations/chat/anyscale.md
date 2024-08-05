@@ -2,12 +2,13 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/anyscale.ipynb
 sidebar_label: Anyscale
 ---
+
 # ChatAnyscale
 
-This notebook demonstrates the use of `langchain.chat_models.ChatAnyscale` for [Anyscale Endpoints](https://endpoints.anyscale.com/).
+本笔记本演示了如何使用 `langchain.chat_models.ChatAnyscale` 访问 [Anyscale Endpoints](https://endpoints.anyscale.com/)。
 
-* Set `ANYSCALE_API_KEY` environment variable
-* or use the `anyscale_api_key` keyword argument
+* 设置 `ANYSCALE_API_KEY` 环境变量
+* 或使用 `anyscale_api_key` 关键字参数
 
 
 ```python
@@ -24,7 +25,8 @@ os.environ["ANYSCALE_API_KEY"] = getpass()
 ```output
  ········
 ```
-# Let's try out each model offered on Anyscale Endpoints
+
+# 让我们尝试 Anyscale Endpoints 提供的每个模型
 
 
 ```python
@@ -40,9 +42,10 @@ print(chats.keys())
 ```output
 dict_keys(['meta-llama/Llama-2-70b-chat-hf', 'meta-llama/Llama-2-7b-chat-hf', 'meta-llama/Llama-2-13b-chat-hf'])
 ```
-# We can use async methods and other stuff supported by ChatOpenAI
 
-This way, the three requests will only take as long as the longest individual request.
+# 我们可以使用 async 方法和 ChatOpenAI 支持的其他功能
+
+这样，三个请求只会花费最长单个请求的时间。
 
 
 ```python
@@ -130,7 +133,7 @@ CPU times: user 371 ms, sys: 15.5 ms, total: 387 ms
 Wall time: 12 s
 ```
 
-## Related
+## 相关
 
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

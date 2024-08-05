@@ -1,62 +1,66 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/oci_model_deployment_endpoint.ipynb
 ---
-# OCI Data Science Model Deployment Endpoint
 
-[OCI Data Science](https://docs.oracle.com/en-us/iaas/data-science/using/home.htm) is a fully managed and serverless platform for data science teams to build, train, and manage machine learning models in the Oracle Cloud Infrastructure.
+# OCI 数据科学模型部署端点
 
-This notebooks goes over how to use an LLM hosted on a [OCI Data Science Model Deployment](https://docs.oracle.com/en-us/iaas/data-science/using/model-dep-about.htm).
+[OCI 数据科学](https://docs.oracle.com/en-us/iaas/data-science/using/home.htm) 是一个完全托管和无服务器的平台，供数据科学团队在 Oracle Cloud Infrastructure 中构建、训练和管理机器学习模型。
 
-To authenticate, [oracle-ads](https://accelerated-data-science.readthedocs.io/en/latest/user_guide/cli/authentication.html) has been used to automatically load credentials for invoking endpoint.
+本笔记本介绍如何使用托管在 [OCI 数据科学模型部署](https://docs.oracle.com/en-us/iaas/data-science/using/model-dep-about.htm) 上的 LLM。
 
+为了进行身份验证，使用了 [oracle-ads](https://accelerated-data-science.readthedocs.io/en/latest/user_guide/cli/authentication.html) 自动加载调用端点所需的凭据。
 
 ```python
 !pip3 install oracle-ads
 ```
 
-## Prerequisite
+## Prerequisites
 
-### Deploy model
-Check [Oracle GitHub samples repository](https://github.com/oracle-samples/oci-data-science-ai-samples/tree/main/model-deployment/containers/llama2) on how to deploy your llm on OCI Data Science Model deployment.
+### 部署模型
+查看 [Oracle GitHub 示例库](https://github.com/oracle-samples/oci-data-science-ai-samples/tree/main/model-deployment/containers/llama2) 了解如何在 OCI 数据科学模型部署中部署您的 llm。
 
-### Policies
-Make sure to have the required [policies](https://docs.oracle.com/en-us/iaas/data-science/using/model-dep-policies-auth.htm#model_dep_policies_auth__predict-endpoint) to access the OCI Data Science Model Deployment endpoint.
+### Policy
+确保拥有访问 OCI 数据科学模型部署端点所需的 [policy](https://docs.oracle.com/en-us/iaas/data-science/using/model-dep-policies-auth.htm#model_dep_policies_auth__predict-endpoint)。
 
-## Set up
+## Settings
 
 ### vLLM
-After having deployed model, you have to set up following required parameters of the `OCIModelDeploymentVLLM` call:
+在部署模型后，您必须设置`OCIModelDeploymentVLLM`调用的以下必要参数：
 
-- **`endpoint`**: The model HTTP endpoint from the deployed model, e.g. `https://<MD_OCID>/predict`. 
-- **`model`**: The location of the model.
+- **`endpoint`**：来自已部署模型的模型HTTP端点，例如`https://<MD_OCID>/predict`。
+- **`model`**：模型的位置。
 
-### Text generation inference (TGI)
-You have to set up following required parameters of the `OCIModelDeploymentTGI` call:
+### 文本生成推理 (TGI)
+您需要设置 `OCIModelDeploymentTGI` 调用的以下必需参数：
 
-- **`endpoint`**: The model HTTP endpoint from the deployed model, e.g. `https://<MD_OCID>/predict`. 
+- **`endpoint`**: 从已部署模型获取的模型 HTTP 端点，例如 `https://<MD_OCID>/predict`。
 
-### Authentication
+### 认证
 
-You can set authentication through either ads or environment variables. When you are working in OCI Data Science Notebook Session, you can leverage resource principal to access other OCI resources. Check out [here](https://accelerated-data-science.readthedocs.io/en/latest/user_guide/cli/authentication.html) to see more options. 
+您可以通过广告或环境变量设置认证。当您在 OCI 数据科学笔记本会话中工作时，可以利用资源主体访问其他 OCI 资源。请查看 [这里](https://accelerated-data-science.readthedocs.io/en/latest/user_guide/cli/authentication.html) 以了解更多选项。
 
-## Example
+```
+# 代码示例
+print("Hello, World!")
+```
+
+## 示例
 
 
 ```python
 import ads
 from langchain_community.llms import OCIModelDeploymentVLLM
 
-# Set authentication through ads
-# Use resource principal are operating within a
-# OCI service that has resource principal based
-# authentication configured
+# 通过 ads 设置认证
+# 使用资源主体在具有资源主体基础的
+# 认证配置的 OCI 服务中操作
 ads.set_auth("resource_principal")
 
-# Create an instance of OCI Model Deployment Endpoint
-# Replace the endpoint uri and model name with your own
+# 创建 OCI 模型部署端点的实例
+# 将端点 URI 和模型名称替换为您自己的
 llm = OCIModelDeploymentVLLM(endpoint="https://<MD_OCID>/predict", model="model_name")
 
-# Run the LLM
+# 运行 LLM
 llm.invoke("Who is the first president of United States?")
 ```
 
@@ -66,27 +70,25 @@ import os
 
 from langchain_community.llms import OCIModelDeploymentTGI
 
-# Set authentication through environment variables
-# Use API Key setup when you are working from a local
-# workstation or on platform which does not support
-# resource principals.
+# 通过环境变量设置认证
+# 当您在本地工作站或不支持
+# 资源主体的平台上工作时，请使用 API 密钥设置。
 os.environ["OCI_IAM_TYPE"] = "api_key"
 os.environ["OCI_CONFIG_PROFILE"] = "default"
 os.environ["OCI_CONFIG_LOCATION"] = "~/.oci"
 
-# Set endpoint through environment variables
-# Replace the endpoint uri with your own
+# 通过环境变量设置端点
+# 将端点 URI 替换为您自己的
 os.environ["OCI_LLM_ENDPOINT"] = "https://<MD_OCID>/predict"
 
-# Create an instance of OCI Model Deployment Endpoint
+# 创建 OCI 模型部署端点的实例
 llm = OCIModelDeploymentTGI()
 
-# Run the LLM
+# 运行 LLM
 llm.invoke("Who is the first president of United States?")
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

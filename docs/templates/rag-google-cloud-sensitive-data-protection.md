@@ -1,49 +1,43 @@
 # rag-google-cloud-sensitive-data-protection
 
-This template is an application that utilizes Google Vertex AI Search, a machine learning powered search service, and
-PaLM 2 for Chat (chat-bison). The application uses a Retrieval chain to answer questions based on your documents.
+此模板是一个利用 Google Vertex AI Search 的应用程序，这是一项基于机器学习的搜索服务，以及 PaLM 2 for Chat (chat-bison)。该应用程序使用检索链根据您的文档回答问题。
 
-This template is an application that utilizes Google Sensitive Data Protection, a service for detecting and redacting
-sensitive data in text, and PaLM 2 for Chat (chat-bison), although you can use any model.
+此模板是一个利用 Google 敏感数据保护的应用程序，这是一项用于检测和编辑文本中敏感数据的服务，以及 PaLM 2 for Chat (chat-bison)，尽管您可以使用任何模型。
 
-For more context on using Sensitive Data Protection,
-check [here](https://cloud.google.com/dlp/docs/sensitive-data-protection-overview).
+有关使用敏感数据保护的更多背景信息，请查看 [here](https://cloud.google.com/dlp/docs/sensitive-data-protection-overview)。
 
-## Environment Setup
+## 环境设置
 
-Before using this template, please ensure that you enable the [DLP API](https://console.cloud.google.com/marketplace/product/google/dlp.googleapis.com)
-and [Vertex AI API](https://console.cloud.google.com/marketplace/product/google/aiplatform.googleapis.com) in your Google Cloud
-project.
+在使用此模板之前，请确保您在 Google Cloud 项目中启用了 [DLP API](https://console.cloud.google.com/marketplace/product/google/dlp.googleapis.com) 和 [Vertex AI API](https://console.cloud.google.com/marketplace/product/google/aiplatform.googleapis.com)。
 
-For some common environment troubleshooting steps related to Google Cloud, see the bottom
-of this readme.
+有关与 Google Cloud 相关的一些常见环境故障排除步骤，请参见本 README 的底部。
 
-Set the following environment variables:
+设置以下环境变量：
 
-* `GOOGLE_CLOUD_PROJECT_ID` - Your Google Cloud project ID.
-* `MODEL_TYPE` - The model type for Vertex AI Search (e.g. `chat-bison`)
+* `GOOGLE_CLOUD_PROJECT_ID` - 您的 Google Cloud 项目 ID。
+* `MODEL_TYPE` - Vertex AI Search 的模型类型（例如 `chat-bison`）
 
-## Usage
+## 使用方法
 
-To use this package, you should first have the LangChain CLI installed:
+要使用此包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将其作为唯一的包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package rag-google-cloud-sensitive-data-protection
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，只需运行：
 
 ```shell
 langchain app add rag-google-cloud-sensitive-data-protection
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 
 ```python
 from rag_google_cloud_sensitive_data_protection.chain import chain as rag_google_cloud_sensitive_data_protection_chain
@@ -51,44 +45,44 @@ from rag_google_cloud_sensitive_data_protection.chain import chain as rag_google
 add_routes(app, rag_google_cloud_sensitive_data_protection_chain, path="/rag-google-cloud-sensitive-data-protection")
 ```
 
-(Optional) Let's now configure LangSmith.
-LangSmith will help us trace, monitor and debug LangChain applications.
-You can sign up for LangSmith [here](https://smith.langchain.com/).
-If you don't have access, you can skip this section
+（可选）现在让我们配置 LangSmith。
+LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server running locally at
+这将启动 FastAPI 应用程序，服务器在本地运行于
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground
-at [http://127.0.0.1:8000/rag-google-cloud-vertexai-search/playground](http://127.0.0.1:8000/rag-google-cloud-vertexai-search/playground)
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板
+我们可以访问 playground
+在 [http://127.0.0.1:8000/rag-google-cloud-vertexai-search/playground](http://127.0.0.1:8000/rag-google-cloud-vertexai-search/playground)
 
-We can access the template from code with:
+我们可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable
 
 runnable = RemoteRunnable("http://localhost:8000/rag-google-cloud-sensitive-data-protection")
 ```
-```
 
-# Troubleshooting Google Cloud
+# 故障排除 Google Cloud
 
-You can set your `gcloud` credentials with their CLI using `gcloud auth application-default login`
+您可以使用其 CLI 设置您的 `gcloud` 凭据，命令为 `gcloud auth application-default login`
 
-You can set your `gcloud` project with the following commands
+您可以使用以下命令设置您的 `gcloud` 项目：
+
 ```bash
 gcloud config set project <your project>
 gcloud auth application-default set-quota-project <your project>

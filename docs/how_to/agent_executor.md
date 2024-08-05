@@ -2,39 +2,40 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/agent_executor.ipynb
 sidebar_position: 4
 ---
-# Build an Agent with AgentExecutor (Legacy)
+
+# 使用 AgentExecutor（遗留版）构建代理
 
 :::important
-This section will cover building with the legacy LangChain AgentExecutor. These are fine for getting started, but past a certain point, you will likely want flexibility and control that they do not offer. For working with more advanced agents, we'd recommend checking out [LangGraph Agents](/docs/concepts/#langgraph) or the [migration guide](/docs/how_to/migrate_agent/)
+本节将介绍如何使用遗留版 LangChain AgentExecutor 构建代理。这些对于入门来说很好，但在某个阶段之后，您可能会希望获得它们所不提供的灵活性和控制。对于更高级的代理，我们建议查看 [LangGraph Agents](/docs/concepts/#langgraph) 或 [迁移指南](/docs/how_to/migrate_agent/)
 :::
 
-By themselves, language models can't take actions - they just output text.
-A big use case for LangChain is creating **agents**.
-Agents are systems that use an LLM as a reasoning engine to determine which actions to take and what the inputs to those actions should be.
-The results of those actions can then be fed back into the agent and it determines whether more actions are needed, or whether it is okay to finish.
+单独来看，语言模型无法采取行动 - 它们只是输出文本。
+LangChain 的一个重要用例是创建 **代理**。
+代理是将 LLM 作为推理引擎来确定采取哪些行动以及这些行动的输入应该是什么的系统。
+这些行动的结果可以反馈给代理，代理将判断是否需要更多的行动，或者是否可以结束。
 
-In this tutorial, we will build an agent that can interact with multiple different tools: one being a local database, the other being a search engine. You will be able to ask this agent questions, watch it call tools, and have conversations with it.
+在本教程中，我们将构建一个可以与多种不同工具互动的代理：一个是本地数据库，另一个是搜索引擎。您将能够向这个代理提问，观察它调用工具，并与它进行对话。
 
-## Concepts
+## 概念
 
-Concepts we will cover are:
-- Using [language models](/docs/concepts/#chat-models), in particular their tool calling ability
-- Creating a [Retriever](/docs/concepts/#retrievers) to expose specific information to our agent
-- Using a Search [Tool](/docs/concepts/#tools) to look up things online
-- [`Chat History`](/docs/concepts/#chat-history), which allows a chatbot to "remember" past interactions and take them into account when responding to follow-up questions. 
-- Debugging and tracing your application using [LangSmith](/docs/concepts/#langsmith)
+我们将涵盖的概念包括：
+- 使用 [language models](/docs/concepts/#chat-models)，特别是它们的工具调用能力
+- 创建一个 [Retriever](/docs/concepts/#retrievers) 来向我们的代理暴露特定信息
+- 使用搜索 [Tool](/docs/concepts/#tools) 在线查找信息
+- [`Chat History`](/docs/concepts/#chat-history)，允许聊天机器人“记住”过去的互动，并在回答后续问题时考虑这些互动。
+- 使用 [LangSmith](/docs/concepts/#langsmith) 调试和追踪您的应用程序
 
-## Setup
+## 设置
 
 ### Jupyter Notebook
 
-This guide (and most of the other guides in the documentation) uses [Jupyter notebooks](https://jupyter.org/) and assumes the reader is as well. Jupyter notebooks are perfect for learning how to work with LLM systems because oftentimes things can go wrong (unexpected output, API down, etc) and going through guides in an interactive environment is a great way to better understand them.
+本指南（以及文档中的大多数其他指南）使用[Jupyter notebooks](https://jupyter.org/)并假设读者也是如此。Jupyter notebooks 非常适合学习如何使用 LLM 系统，因为有时事情可能会出错（意外输出、API 故障等），在交互环境中逐步阅读指南是更好地理解它们的好方法。
 
-This and other tutorials are perhaps most conveniently run in a Jupyter notebook. See [here](https://jupyter.org/install) for instructions on how to install.
+本教程和其他教程在 Jupyter notebook 中运行可能最为方便。有关安装的说明，请参见[这里](https://jupyter.org/install)。
 
-### Installation
+### 安装
 
-To install LangChain run:
+要安装 LangChain，请运行：
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -49,24 +50,22 @@ import CodeBlock from "@theme/CodeBlock";
   </TabItem>
 </Tabs>
 
-
-
-For more details, see our [Installation guide](/docs/how_to/installation).
+有关更多详细信息，请参阅我们的 [安装指南](/docs/how_to/installation).
 
 ### LangSmith
 
-Many of the applications you build with LangChain will contain multiple steps with multiple invocations of LLM calls.
-As these applications get more and more complex, it becomes crucial to be able to inspect what exactly is going on inside your chain or agent.
-The best way to do this is with [LangSmith](https://smith.langchain.com).
+您使用 LangChain 构建的许多应用程序将包含多个步骤和多个 LLM 调用。  
+随着这些应用程序变得越来越复杂，能够检查您的链或代理内部究竟发生了什么变得至关重要。  
+最好的方法是使用 [LangSmith](https://smith.langchain.com)。
 
-After you sign up at the link above, make sure to set your environment variables to start logging traces:
+在您在上述链接注册后，请确保设置您的环境变量以开始记录跟踪：
 
 ```shell
 export LANGCHAIN_TRACING_V2="true"
 export LANGCHAIN_API_KEY="..."
 ```
 
-Or, if in a notebook, you can set them with:
+或者，如果在笔记本中，您可以使用以下代码设置它们：
 
 ```python
 import getpass
@@ -76,17 +75,15 @@ os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 ```
 
+## 定义工具
 
-## Define tools
-
-We first need to create the tools we want to use. We will use two tools: [Tavily](/docs/integrations/tools/tavily_search) (to search online) and then a retriever over a local index we will create
+我们首先需要创建我们想要使用的工具。我们将使用两个工具：[Tavily](/docs/integrations/tools/tavily_search)（用于在线搜索），然后在我们将创建的本地索引上使用检索器。
 
 ### [Tavily](/docs/integrations/tools/tavily_search)
 
-We have a built-in tool in LangChain to easily use Tavily search engine as tool.
-Note that this requires an API key - they have a free tier, but if you don't have one or don't want to create one, you can always ignore this step.
+我们在LangChain中内置了一个工具，可以轻松使用Tavily搜索引擎。请注意，这需要一个API密钥 - 他们提供免费套餐，但如果您没有密钥或不想创建一个，您可以忽略此步骤。
 
-Once you create your API key, you will need to export that as:
+一旦您创建了API密钥，您需要将其导出为：
 
 ```bash
 export TAVILY_API_KEY="..."
@@ -116,11 +113,9 @@ search.invoke("what is the weather in SF")
   'content': 'San Francisco Weather Forecast for Apr 2024 - Risk of Rain Graph. Rain Risk Graph: Monthly Overview. Bar heights indicate rain risk percentages. Yellow bars mark low-risk days, while black and grey bars signal higher risks. Grey-yellow bars act as buffers, advising to keep at least one day clear from the riskier grey and black days, guiding ...'}]
 ```
 
+### 检索器
 
-### Retriever
-
-We will also create a retriever over some data of our own. For a deeper explanation of each step here, see [this tutorial](/docs/tutorials/rag).
-
+我们还将创建一个针对我们自己数据的检索器。有关每个步骤的更深入解释，请参见 [本教程](/docs/tutorials/rag)。
 
 ```python
 from langchain_community.document_loaders import WebBaseLoader
@@ -137,25 +132,19 @@ vector = FAISS.from_documents(documents, OpenAIEmbeddings())
 retriever = vector.as_retriever()
 ```
 
-
 ```python
 retriever.invoke("how to upload a dataset")[0]
 ```
-
-
 
 ```output
 Document(page_content='# The data to predict and grade over    evaluators=[exact_match], # The evaluators to score the results    experiment_prefix="sample-experiment", # The name of the experiment    metadata={      "version": "1.0.0",      "revision_id": "beta"    },)import { Client, Run, Example } from \'langsmith\';import { runOnDataset } from \'langchain/smith\';import { EvaluationResult } from \'langsmith/evaluation\';const client = new Client();// Define dataset: these are your test casesconst datasetName = "Sample Dataset";const dataset = await client.createDataset(datasetName, {    description: "A sample dataset in LangSmith."});await client.createExamples({    inputs: [        { postfix: "to LangSmith" },        { postfix: "to Evaluations in LangSmith" },    ],    outputs: [        { output: "Welcome to LangSmith" },        { output: "Welcome to Evaluations in LangSmith" },    ],    datasetId: dataset.id,});// Define your evaluatorconst exactMatch = async ({ run, example }: { run: Run; example?:', metadata={'source': 'https://docs.smith.langchain.com/overview', 'title': 'Getting started with LangSmith | \uf8ffü¶úÔ∏è\uf8ffüõ†Ô∏è LangSmith', 'description': 'Introduction', 'language': 'en'})
 ```
 
-
-Now that we have populated our index that we will do doing retrieval over, we can easily turn it into a tool (the format needed for an agent to properly use it)
-
+现在我们已经填充了用于检索的索引，我们可以轻松地将其转化为工具（代理正确使用所需的格式）。
 
 ```python
 from langchain.tools.retriever import create_retriever_tool
 ```
-
 
 ```python
 retriever_tool = create_retriever_tool(
@@ -165,24 +154,24 @@ retriever_tool = create_retriever_tool(
 )
 ```
 
-### Tools
+### 工具
 
-Now that we have created both, we can create a list of tools that we will use downstream.
+现在我们已经创建了两者，我们可以创建一个我们将在后续使用的工具列表。
 
 
 ```python
 tools = [search, retriever_tool]
 ```
 
-## Using Language Models
+## 使用语言模型
 
-Next, let's learn how to use a language model by to call tools. LangChain supports many different language models that you can use interchangably - select the one you want to use below!
+接下来，让我们学习如何通过调用工具来使用语言模型。LangChain 支持许多不同的语言模型，您可以互换使用 - 请选择您想要使用的模型！
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
 <ChatModelTabs openaiParams={`model="gpt-4"`} />
 
-You can call the language model by passing in a list of messages. By default, the response is a `content` string.
+您可以通过传递一系列消息来调用语言模型。默认情况下，响应是一个 `content` 字符串。
 
 
 ```python
@@ -199,14 +188,14 @@ response.content
 ```
 
 
-We can now see what it is like to enable this model to do tool calling. In order to enable that we use `.bind_tools` to give the language model knowledge of these tools
+现在我们可以看到启用此模型进行工具调用的情况。为了启用它，我们使用 `.bind_tools` 让语言模型了解这些工具
 
 
 ```python
 model_with_tools = model.bind_tools(tools)
 ```
 
-We can now call the model. Let's first call it with a normal message, and see how it responds. We can look at both the `content` field as well as the `tool_calls` field.
+我们现在可以调用模型。让我们先用一条普通消息调用它，看看它的响应。我们可以查看 `content` 字段和 `tool_calls` 字段。
 
 
 ```python
@@ -219,7 +208,7 @@ print(f"ToolCalls: {response.tool_calls}")
 ContentString: Hello! How can I assist you today?
 ToolCalls: []
 ```
-Now, let's try calling it with some input that would expect a tool to be called.
+现在，让我们尝试用一些期望调用工具的输入来调用它。
 
 
 ```python
@@ -232,17 +221,17 @@ print(f"ToolCalls: {response.tool_calls}")
 ContentString: 
 ToolCalls: [{'name': 'tavily_search_results_json', 'args': {'query': 'current weather in San Francisco'}, 'id': 'call_4HteVahXkRAkWjp6dGXryKZX'}]
 ```
-We can see that there's now no content, but there is a tool call! It wants us to call the Tavily Search tool.
+我们可以看到现在没有内容，但有一个工具调用！它希望我们调用 Tavily Search 工具。
 
-This isn't calling that tool yet - it's just telling us to. In order to actually calll it, we'll want to create our agent.
+这还不是在调用该工具 - 它只是告诉我们这样做。为了实际调用它，我们需要创建我们的代理。
 
-## Create the agent
+## 创建代理
 
-Now that we have defined the tools and the LLM, we can create the agent. We will be using a tool calling agent - for more information on this type of agent, as well as other options, see [this guide](/docs/concepts/#agent_types/).
+现在我们已经定义了工具和 LLM，我们可以创建代理。我们将使用工具调用代理 - 有关此类型代理的更多信息以及其他选项，请参见 [本指南](/docs/concepts/#agent_types/)。
 
-We can first choose the prompt we want to use to guide the agent.
+我们可以首先选择要用于指导代理的提示。
 
-If you want to see the contents of this prompt and have access to LangSmith, you can go to:
+如果您想查看此提示的内容并访问 LangSmith，您可以前往：
 
 [https://smith.langchain.com/hub/hwchase17/openai-functions-agent](https://smith.langchain.com/hub/hwchase17/openai-functions-agent)
 
@@ -250,7 +239,7 @@ If you want to see the contents of this prompt and have access to LangSmith, you
 ```python
 from langchain import hub
 
-# Get the prompt to use - you can modify this!
+# 获取要使用的提示 - 您可以修改此内容！
 prompt = hub.pull("hwchase17/openai-functions-agent")
 prompt.messages
 ```
@@ -265,9 +254,9 @@ prompt.messages
 ```
 
 
-Now, we can initalize the agent with the LLM, the prompt, and the tools. The agent is responsible for taking in input and deciding what actions to take. Crucially, the Agent does not execute those actions - that is done by the AgentExecutor (next step). For more information about how to think about these components, see our [conceptual guide](/docs/concepts/#agents).
+现在，我们可以使用 LLM、提示和工具初始化代理。代理负责接收输入并决定采取什么行动。至关重要的是，代理并不执行这些操作 - 这是由 AgentExecutor 完成的（下一步）。有关如何思考这些组件的更多信息，请参见我们的 [概念指南](/docs/concepts/#agents)。
 
-Note that we are passing in the `model`, not `model_with_tools`. That is because `create_tool_calling_agent` will call `.bind_tools` for us under the hood.
+请注意，我们传入的是 `model`，而不是 `model_with_tools`。这是因为 `create_tool_calling_agent` 会在后台为我们调用 `.bind_tools`。
 
 
 ```python
@@ -276,7 +265,7 @@ from langchain.agents import create_tool_calling_agent
 agent = create_tool_calling_agent(model, tools, prompt)
 ```
 
-Finally, we combine the agent (the brains) with the tools inside the AgentExecutor (which will repeatedly call the agent and execute tools).
+最后，我们将代理（大脑）与 AgentExecutor 内部的工具结合起来（它将重复调用代理并执行工具）。
 
 
 ```python
@@ -285,12 +274,11 @@ from langchain.agents import AgentExecutor
 agent_executor = AgentExecutor(agent=agent, tools=tools)
 ```
 
-## Run the agent
+## 运行代理
 
-We can now run the agent on a few queries! Note that for now, these are all **stateless** queries (it won't remember previous interactions).
+现在我们可以在几个查询上运行代理！请注意，目前这些都是**无状态**查询（它不会记住之前的交互）。
 
-First up, let's how it responds when there's no need to call a tool:
-
+首先，让我们看看当不需要调用工具时它的响应：
 
 ```python
 agent_executor.invoke({"input": "hi!"})
@@ -303,10 +291,9 @@ agent_executor.invoke({"input": "hi!"})
 ```
 
 
-In order to see exactly what is happening under the hood (and to make sure it's not calling a tool) we can take a look at the [LangSmith trace](https://smith.langchain.com/public/8441812b-94ce-4832-93ec-e1114214553a/r)
+为了确切了解内部发生了什么（并确保它没有调用工具），我们可以查看[LangSmith trace](https://smith.langchain.com/public/8441812b-94ce-4832-93ec-e1114214553a/r)
 
-Let's now try it out on an example where it should be invoking the retriever
-
+现在让我们尝试一个应该调用检索器的示例：
 
 ```python
 agent_executor.invoke({"input": "how can langsmith help with testing?"})
@@ -316,14 +303,13 @@ agent_executor.invoke({"input": "how can langsmith help with testing?"})
 
 ```output
 {'input': 'how can langsmith help with testing?',
- 'output': 'LangSmith is a platform that aids in building production-grade Language Learning Model (LLM) applications. It can assist with testing in several ways:\n\n1. **Monitoring and Evaluation**: LangSmith allows close monitoring and evaluation of your application. This helps you to ensure the quality of your application and deploy it with confidence.\n\n2. **Tracing**: LangSmith has tracing capabilities that can be beneficial for debugging and understanding the behavior of your application.\n\n3. **Evaluation Capabilities**: LangSmith has built-in tools for evaluating the performance of your LLM. \n\n4. **Prompt Hub**: This is a prompt management tool built into LangSmith that can help in testing different prompts and their responses.\n\nPlease note that to use LangSmith, you would need to install it and create an API key. The platform offers Python and Typescript SDKs for utilization. It works independently and does not require the use of LangChain.'}
+ 'output': 'LangSmith是一个有助于构建生产级语言学习模型（LLM）应用程序的平台。它可以通过几种方式协助测试：\n\n1. **监控与评估**：LangSmith允许对您的应用程序进行密切监控和评估。这有助于确保应用程序的质量，并自信地部署。\n\n2. **追踪**：LangSmith具有追踪功能，这对调试和理解应用程序的行为非常有益。\n\n3. **评估能力**：LangSmith内置了评估LLM性能的工具。\n\n4. **提示中心**：这是LangSmith内置的提示管理工具，可以帮助测试不同的提示及其响应。\n\n请注意，要使用LangSmith，您需要安装它并创建一个API密钥。该平台提供Python和Typescript SDK供使用。它独立工作，不需要使用LangChain。'}
 ```
 
 
-Let's take a look at the [LangSmith trace](https://smith.langchain.com/public/762153f6-14d4-4c98-8659-82650f860c62/r) to make sure it's actually calling that.
+让我们查看[LangSmith trace](https://smith.langchain.com/public/762153f6-14d4-4c98-8659-82650f860c62/r)，以确保它确实在调用那个。
 
-Now let's try one where it needs to call the search tool:
-
+现在让我们尝试一个需要调用搜索工具的查询：
 
 ```python
 agent_executor.invoke({"input": "whats the weather in sf?"})
@@ -333,23 +319,21 @@ agent_executor.invoke({"input": "whats the weather in sf?"})
 
 ```output
 {'input': 'whats the weather in sf?',
- 'output': 'The current weather in San Francisco is partly cloudy with a temperature of 16.1°C (61.0°F). The wind is coming from the WNW at a speed of 10.5 mph. The humidity is at 67%. [source](https://www.weatherapi.com/)'}
+ 'output': '旧金山当前的天气是部分多云，温度为16.1°C（61.0°F）。风速为10.5 mph，来自西北偏西。湿度为67%。[source](https://www.weatherapi.com/)'}
+
 ```
 
 
-We can check out the [LangSmith trace](https://smith.langchain.com/public/36df5b1a-9a0b-4185-bae2-964e1d53c665/r) to make sure it's calling the search tool effectively.
+我们可以查看[LangSmith trace](https://smith.langchain.com/public/36df5b1a-9a0b-4185-bae2-964e1d53c665/r)，以确保它有效地调用搜索工具。
 
-## Adding in memory
+## 添加记忆
 
-As mentioned earlier, this agent is stateless. This means it does not remember previous interactions. To give it memory we need to pass in previous `chat_history`. Note: it needs to be called `chat_history` because of the prompt we are using. If we use a different prompt, we could change the variable name
-
+如前所述，此代理是无状态的。这意味着它不会记住以前的交互。为了给它添加记忆，我们需要传入之前的 `chat_history`。注意：它需要被称为 `chat_history`，因为我们使用的提示。如果我们使用不同的提示，我们可以更改变量名称。
 
 ```python
-# Here we pass in an empty list of messages for chat_history because it is the first message in the chat
+# 这里我们传入一个空的消息列表作为 chat_history，因为这是聊天中的第一条消息
 agent_executor.invoke({"input": "hi! my name is bob", "chat_history": []})
 ```
-
-
 
 ```output
 {'input': 'hi! my name is bob',
@@ -357,12 +341,9 @@ agent_executor.invoke({"input": "hi! my name is bob", "chat_history": []})
  'output': 'Hello Bob! How can I assist you today?'}
 ```
 
-
-
 ```python
 from langchain_core.messages import AIMessage, HumanMessage
 ```
-
 
 ```python
 agent_executor.invoke(
@@ -376,8 +357,6 @@ agent_executor.invoke(
 )
 ```
 
-
-
 ```output
 {'chat_history': [HumanMessage(content='hi! my name is bob'),
   AIMessage(content='Hello Bob! How can I assist you today?')],
@@ -385,9 +364,7 @@ agent_executor.invoke(
  'output': 'Your name is Bob. How can I assist you further?'}
 ```
 
-
-If we want to keep track of these messages automatically, we can wrap this in a RunnableWithMessageHistory. For more information on how to use this, see [this guide](/docs/how_to/message_history). 
-
+如果我们想自动跟踪这些消息，我们可以将其包装在 RunnableWithMessageHistory 中。有关如何使用此功能的更多信息，请参见 [此指南](/docs/how_to/message_history)。
 
 ```python
 from langchain_community.chat_message_histories import ChatMessageHistory
@@ -403,11 +380,10 @@ def get_session_history(session_id: str) -> BaseChatMessageHistory:
     return store[session_id]
 ```
 
-Because we have multiple inputs, we need to specify two things:
+因为我们有多个输入，我们需要指定两件事：
 
-- `input_messages_key`: The input key to use to add to the conversation history.
-- `history_messages_key`: The key to add the loaded messages into.
-
+- `input_messages_key`：用于添加到对话历史的输入键。
+- `history_messages_key`：用于添加加载的消息的键。
 
 ```python
 agent_with_chat_history = RunnableWithMessageHistory(
@@ -418,7 +394,6 @@ agent_with_chat_history = RunnableWithMessageHistory(
 )
 ```
 
-
 ```python
 agent_with_chat_history.invoke(
     {"input": "hi! I'm bob"},
@@ -426,15 +401,11 @@ agent_with_chat_history.invoke(
 )
 ```
 
-
-
 ```output
 {'input': "hi! I'm bob",
  'chat_history': [],
  'output': 'Hello Bob! How can I assist you today?'}
 ```
-
-
 
 ```python
 agent_with_chat_history.invoke(
@@ -443,8 +414,6 @@ agent_with_chat_history.invoke(
 )
 ```
 
-
-
 ```output
 {'input': "what's my name?",
  'chat_history': [HumanMessage(content="hi! I'm bob"),
@@ -452,20 +421,19 @@ agent_with_chat_history.invoke(
  'output': 'Your name is Bob.'}
 ```
 
+示例 LangSmith 跟踪：https://smith.langchain.com/public/98c8d162-60ae-4493-aa9f-992d87bd0429/r
 
-Example LangSmith trace: https://smith.langchain.com/public/98c8d162-60ae-4493-aa9f-992d87bd0429/r
+## 结论
 
-## Conclusion
-
-That's a wrap! In this quick start we covered how to create a simple agent. Agents are a complex topic, and there's lot to learn! 
+这就是全部内容！在这个快速入门中，我们讨论了如何创建一个简单的代理。代理是一个复杂的话题，还有很多需要学习的内容！
 
 :::important
-This section covered building with LangChain Agents. LangChain Agents are fine for getting started, but past a certain point you will likely want flexibility and control that they do not offer. For working with more advanced agents, we'd reccommend checking out [LangGraph](/docs/concepts/#langgraph)
+本节内容涵盖了使用 LangChain 代理的构建。LangChain 代理适合入门，但在某个阶段，您可能会希望获得它们所不提供的灵活性和控制。对于更高级的代理工作，我们建议查看 [LangGraph](/docs/concepts/#langgraph)
 :::
 
-If you want to continue using LangChain agents, some good advanced guides are:
+如果您想继续使用 LangChain 代理，一些不错的高级指南包括：
 
-- [How to use LangGraph's built-in versions of `AgentExecutor`](/docs/how_to/migrate_agent)
-- [How to create a custom agent](https://python.langchain.com/v0.1/docs/modules/agents/how_to/custom_agent/)
-- [How to stream responses from an agent](https://python.langchain.com/v0.1/docs/modules/agents/how_to/streaming/)
-- [How to return structured output from an agent](https://python.langchain.com/v0.1/docs/modules/agents/how_to/agent_structured/)
+- [如何使用 LangGraph 内置的 `AgentExecutor` 版本](/docs/how_to/migrate_agent)
+- [如何创建自定义代理](https://python.langchain.com/v0.1/docs/modules/agents/how_to/custom_agent/)
+- [如何从代理流式传输响应](https://python.langchain.com/v0.1/docs/modules/agents/how_to/streaming/)
+- [如何从代理返回结构化输出](https://python.langchain.com/v0.1/docs/modules/agents/how_to/agent_structured/)

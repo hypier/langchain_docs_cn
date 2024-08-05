@@ -1,38 +1,27 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/brave_search.ipynb
 ---
+
 # Brave Search
 
 
->[Brave Search](https://en.wikipedia.org/wiki/Brave_Search) is a search engine developed by Brave Software.
-> - `Brave Search` uses its own web index. As of May 2022, it covered over 10 billion pages and was used to serve 92% 
-> of search results without relying on any third-parties, with the remainder being retrieved 
-> server-side from the Bing API or (on an opt-in basis) client-side from Google. According 
-> to Brave, the index was kept "intentionally smaller than that of Google or Bing" in order to 
-> help avoid spam and other low-quality content, with the disadvantage that "Brave Search is 
-> not yet as good as Google in recovering long-tail queries."
->- `Brave Search Premium`: As of April 2023 Brave Search is an ad-free website, but it will 
-> eventually switch to a new model that will include ads and premium users will get an ad-free experience.
-> User data including IP addresses won't be collected from its users by default. A premium account 
-> will be required for opt-in data-collection.
+>[Brave Search](https://en.wikipedia.org/wiki/Brave_Search) 是由 Brave Software 开发的搜索引擎。
+> - `Brave Search` 使用自己的网页索引。截至 2022 年 5 月，它覆盖了超过 100 亿个页面，并且在不依赖任何第三方的情况下提供了 92% 的搜索结果，其余的通过 Bing API 服务器端检索，或（在用户选择的情况下）从 Google 客户端检索。根据 Brave 的说法，该索引被故意保持在“比 Google 或 Bing 小”的规模，以帮助避免垃圾邮件和其他低质量内容，但缺点是“Brave Search 在恢复长尾查询方面尚未达到 Google 的水平。”
+>- `Brave Search Premium`：截至 2023 年 4 月，Brave Search 是一个无广告网站，但它最终将切换到一个新的模型，包含广告，付费用户将获得无广告体验。默认情况下，不会收集用户的数据，包括 IP 地址。需要一个高级账户以选择性地收集数据。
 
+## 安装与设置
 
-## Installation and Setup
-
-To get access to the Brave Search API, you need to [create an account and get an API key](https://api.search.brave.com/app/dashboard).
-
-
+要访问 Brave Search API，您需要 [创建一个账户并获取 API 密钥](https://api.search.brave.com/app/dashboard).
 
 ```python
 api_key = "..."
 ```
 
-
 ```python
 from langchain_community.document_loaders import BraveSearchLoader
 ```
 
-## Example
+## 示例
 
 
 ```python
@@ -80,9 +69,7 @@ len(docs)
  'Barack <strong>Obama</strong>, in full Barack Hussein <strong>Obama</strong> II, (born August 4, 1961, Honolulu, Hawaii, U.S.), 44th president of the United States (2009–17) and the first African American to hold the office. Before winning the presidency, <strong>Obama</strong> represented Illinois in the U.S.']
 ```
 
+## 相关
 
-
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

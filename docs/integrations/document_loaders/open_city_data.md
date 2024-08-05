@@ -1,37 +1,34 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/open_city_data.ipynb
 ---
-# Open City Data
 
-[Socrata](https://dev.socrata.com/foundry/data.sfgov.org/vw6y-z8j6) provides an API for city open data. 
+# 开放城市数据
 
-For a dataset such as [SF crime](https://data.sfgov.org/Public-Safety/Police-Department-Incident-Reports-Historical-2003/tmnf-yvry), to to the `API` tab on top right. 
+[Socrata](https://dev.socrata.com/foundry/data.sfgov.org/vw6y-z8j6) 提供城市开放数据的 API。
 
-That provides you with the `dataset identifier`.
+对于数据集，例如 [SF 犯罪](https://data.sfgov.org/Public-Safety/Police-Department-Incident-Reports-Historical-2003/tmnf-yvry)，请前往右上角的 `API` 选项卡。
 
-Use the dataset identifier to grab specific tables for a given city_id (`data.sfgov.org`) - 
+这将为您提供 `dataset identifier`。
 
-E.g., `vw6y-z8j6` for [SF 311 data](https://dev.socrata.com/foundry/data.sfgov.org/vw6y-z8j6).
+使用数据集标识符来获取特定城市 ID (`data.sfgov.org`) 的具体表格 -
 
-E.g., `tmnf-yvry` for [SF Police data](https://dev.socrata.com/foundry/data.sfgov.org/tmnf-yvry).
+例如，`vw6y-z8j6` 对于 [SF 311 数据](https://dev.socrata.com/foundry/data.sfgov.org/vw6y-z8j6)。
 
+例如，`tmnf-yvry` 对于 [SF 警察数据](https://dev.socrata.com/foundry/data.sfgov.org/tmnf-yvry)。
 
 ```python
 %pip install --upgrade --quiet  sodapy
 ```
 
-
 ```python
 from langchain_community.document_loaders import OpenCityDataLoader
 ```
 
-
 ```python
-dataset = "vw6y-z8j6"  # 311 data
-dataset = "tmnf-yvry"  # crime data
+dataset = "vw6y-z8j6"  # 311 数据
+dataset = "tmnf-yvry"  # 犯罪数据
 loader = OpenCityDataLoader(city_id="data.sfgov.org", dataset_id=dataset, limit=2000)
 ```
-
 
 ```python
 docs = loader.load()
@@ -43,8 +40,6 @@ WARNING:root:Requests made without an app_token will be subject to strict thrott
 ```python
 eval(docs[0].page_content)
 ```
-
-
 
 ```output
 {'pdid': '4133422003074',
@@ -67,9 +62,7 @@ eval(docs[0].page_content)
  ':@computed_region_bh8s_q3mv': '309'}
 ```
 
+## 相关
 
-
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

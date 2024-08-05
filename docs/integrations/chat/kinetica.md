@@ -2,44 +2,31 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/kinetica.ipynb
 sidebar_label: Kinetica
 ---
-# Kinetica SqlAssist LLM Demo
 
-This notebook demonstrates how to use Kinetica to transform natural language into SQL
-and simplify the process of data retrieval. This demo is intended to show the mechanics
-of creating and using a chain as opposed to the capabilities of the LLM.
+# Kinetica SqlAssist LLM 演示
 
-## Overview
+本笔记本演示了如何使用 Kinetica 将自然语言转换为 SQL，并简化数据检索的过程。此演示旨在展示创建和使用链的机制，而不是 LLM 的能力。
 
-With the Kinetica LLM workflow you create an LLM context in the database that provides
-information needed for infefencing that includes tables, annotations, rules, and
-samples. Invoking ``ChatKinetica.load_messages_from_context()`` will retrieve the
-context information from the database so that it can be used to create a chat prompt.
+## 概述
 
-The chat prompt consists of a ``SystemMessage`` and pairs of
-``HumanMessage``/``AIMessage`` that contain the samples which are question/SQL
-pairs. You can append pairs samples to this list but it is not intended to
-facilitate a typical natural language conversation.
+通过 Kinetica LLM 工作流，您可以在数据库中创建一个 LLM 上下文，该上下文提供进行推理所需的信息，包括表格、注释、规则和示例。调用 ``ChatKinetica.load_messages_from_context()`` 将从数据库中检索上下文信息，以便用于创建聊天提示。
 
-When you create a chain from the chat prompt and execute it, the Kinetica LLM will
-generate SQL from the input. Optionally you can use ``KineticaSqlOutputParser`` to
-execute the SQL and return the result as a dataframe.
+聊天提示由 ``SystemMessage`` 和包含样本的 ``HumanMessage``/``AIMessage`` 对组成，这些样本是问题/SQL 对。您可以将样本对附加到此列表中，但这并不旨在促进典型的自然语言对话。
 
-Currently, 2 LLM's are supported for SQL generation: 
+当您从聊天提示创建一个链并执行时，Kinetica LLM 将根据输入生成 SQL。您可以选择使用 ``KineticaSqlOutputParser`` 来执行 SQL 并将结果以数据框的形式返回。
 
-1. **Kinetica SQL-GPT**: This LLM is based on OpenAI ChatGPT API.
-2. **Kinetica SqlAssist**: This LLM is purpose built to integrate with the Kinetica
-   database and it can run in a secure customer premise.
+目前，支持用于 SQL 生成的 2 个 LLM：
 
-For this demo we will be using **SqlAssist**. See the [Kinetica Documentation
-site](https://docs.kinetica.com/7.1/sql-gpt/concepts/) for more information.
+1. **Kinetica SQL-GPT**：该 LLM 基于 OpenAI ChatGPT API。
+2. **Kinetica SqlAssist**：该 LLM 是专门构建的，可以与 Kinetica 数据库集成，并且可以在安全的客户环境中运行。
 
-## Prerequisites
+在本演示中，我们将使用 **SqlAssist**。有关更多信息，请参见 [Kinetica 文档网站](https://docs.kinetica.com/7.1/sql-gpt/concepts/)。
 
-To get started you will need a Kinetica DB instance. If you don't have one you can
-obtain a [free development instance](https://cloud.kinetica.com/trynow).
+## 前提条件
 
-You will need to install the following packages...
+要开始，您需要一个 Kinetica DB 实例。如果您没有，可以获得一个 [免费的开发实例](https://cloud.kinetica.com/trynow)。
 
+您需要安装以下软件包...
 
 ```python
 # Install Langchain community and core packages
@@ -52,14 +39,14 @@ You will need to install the following packages...
 %pip install --upgrade --quiet faker ipykernel 
 ```
 
-## Database Connection
+## 数据库连接
 
-You must set the database connection in the following environment variables. If you are using a virtual environment you can set them in the `.env` file of the project:
-* `KINETICA_URL`: Database connection URL
-* `KINETICA_USER`: Database user
-* `KINETICA_PASSWD`: Secure password.
+您必须在以下环境变量中设置数据库连接。如果您使用虚拟环境，可以在项目的 `.env` 文件中设置它们：
+* `KINETICA_URL`: 数据库连接 URL
+* `KINETICA_USER`: 数据库用户
+* `KINETICA_PASSWD`: 安全密码。
 
-If you can create an instance of `KineticaChatLLM` then you are successfully connected.
+如果您可以创建 `KineticaChatLLM` 的实例，那么您已经成功连接。
 
 
 ```python
@@ -74,14 +61,13 @@ table_name = "demo.user_profiles"
 kinetica_ctx = "demo.test_llm_ctx"
 ```
 
-## Create test data
+## 创建测试数据
 
-Before we can generate SQL we will need to create a Kinetica table and an LLM context that can inference the table.
+在生成 SQL 之前，我们需要创建一个 Kinetica 表和一个可以推断该表的 LLM 上下文。
 
-### Create some fake user profiles
+### 创建一些虚假用户档案
 
-We will use the `faker` package to create a dataframe with 100 fake profiles.
-
+我们将使用 `faker` 包创建一个包含 100 个虚假档案的数据框。
 
 ```python
 from typing import Generator
@@ -128,8 +114,8 @@ id
 3  1988-10-26  
 4  1931-03-19
 ```
-### Create a Kinetica table from the Dataframe
 
+### 从 Dataframe 创建 Kinetica 表
 
 ```python
 from gpudb import GPUdbTable
@@ -142,7 +128,7 @@ gpudb_table = GPUdbTable.from_df(
     load_data=True,
 )
 
-# See the Kinetica column types
+# 查看 Kinetica 列类型
 print(gpudb_table.type_as_df())
 ```
 ```output
@@ -154,12 +140,12 @@ print(gpudb_table.type_as_df())
 4       mail  string     [char32]
 5  birthdate    long  [timestamp]
 ```
-### Create the LLM context
 
-You can create an LLM Context using the Kinetica Workbench UI or you can manually create it with the `CREATE OR REPLACE CONTEXT` syntax. 
+### 创建 LLM 上下文
 
-Here we create a context from the SQL syntax referencing the table we created.
+您可以使用 Kinetica Workbench UI 创建 LLM 上下文，或者可以使用 `CREATE OR REPLACE CONTEXT` 语法手动创建它。
 
+在这里，我们从 SQL 语法创建一个上下文，引用我们创建的表。
 
 ```python
 from gpudb import GPUdbSamplesClause, GPUdbSqlContext, GPUdbTableClause
@@ -205,15 +191,13 @@ CREATE OR REPLACE CONTEXT "demo"."test_llm_ctx" (
 1
 ```
 
+## 使用 Langchain 进行推理
 
-## Use Langchain for inferencing
+在下面的示例中，我们将从之前创建的表和 LLM 上下文中创建一个链。这个链将生成 SQL 并将结果数据作为数据框返回。
 
-In the example below we will create a chain from the previously created table and LLM context. This chain will generate SQL and return the resulting data as a dataframe.
+### 从 Kinetica DB 加载聊天提示
 
-### Load the chat prompt from the Kinetica DB
-
-The `load_messages_from_context()` function will retrieve a context from the DB and convert it into a list of chat messages that we use to create a ``ChatPromptTemplate``.
-
+`load_messages_from_context()` 函数将从数据库中检索上下文，并将其转换为我们用来创建 ``ChatPromptTemplate`` 的聊天消息列表。
 
 ```python
 from langchain_core.prompts import ChatPromptTemplate
@@ -229,7 +213,7 @@ prompt_template = ChatPromptTemplate.from_messages(ctx_messages)
 prompt_template.pretty_print()
 ```
 ```output
-================================[1m System Message [0m================================
+================================[1m 系统消息 [0m================================
 
 CREATE TABLE demo.user_profiles AS
 (
@@ -240,26 +224,26 @@ CREATE TABLE demo.user_profiles AS
    mail VARCHAR (32) NOT NULL,
    birthdate TIMESTAMP NOT NULL
 );
-COMMENT ON TABLE demo.user_profiles IS 'Contains user profiles.';
+COMMENT ON TABLE demo.user_profiles IS '包含用户资料。';
 
-================================[1m Human Message [0m=================================
+================================[1m 人类消息 [0m=================================
 
-How many male users are there?
+有多少男性用户？
 
-==================================[1m Ai Message [0m==================================
+==================================[1m AI 消息 [0m==================================
 
 select count(1) as num_users
     from demo.user_profiles
     where sex = 'M';
 
-================================[1m Human Message [0m=================================
+================================[1m 人类消息 [0m=================================
 
 [33;1m[1;3m{input}[0m
 ```
-### Create the chain
 
-The last element of this chain is `KineticaSqlOutputParser` that will execute the SQL and return a dataframe. This is optional and if we left it out then only SQL would be returned.
+### 创建链
 
+这个链的最后一个元素是 `KineticaSqlOutputParser`，它将执行 SQL 并返回一个数据框。这是可选的，如果我们省略它，则只会返回 SQL。
 
 ```python
 from langchain_community.chat_models.kinetica import (
@@ -270,13 +254,12 @@ from langchain_community.chat_models.kinetica import (
 chain = prompt_template | kinetica_llm | KineticaSqlOutputParser(kdbc=kinetica_llm.kdbc)
 ```
 
-### Generate the SQL
+### 生成 SQL
 
-The chain we created will take a question as input and return a ``KineticaSqlResponse`` containing the generated SQL and data. The question must be relevant to the to LLM context we used to create the prompt.
-
+我们创建的链将接受一个问题作为输入，并返回一个 ``KineticaSqlResponse``，其中包含生成的 SQL 和数据。问题必须与我们用于创建提示的 LLM 上下文相关。
 
 ```python
-# Here you must ask a question relevant to the LLM context provided in the prompt template.
+# 在这里，您必须提出一个与提示模板中提供的 LLM 上下文相关的问题。
 response: KineticaSqlResponse = chain.invoke(
     {"input": "What are the female users ordered by username?"}
 )
@@ -297,7 +280,7 @@ SQL: SELECT username, name
 4       carl19       Amanda Potts
 ```
 
-## Related
+## 相关
 
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [使用指南](/docs/how_to/#chat-models)

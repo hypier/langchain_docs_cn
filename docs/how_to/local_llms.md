@@ -1,89 +1,87 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/local_llms.ipynb
 ---
-# Run models locally
 
-## Use case
+# 在本地运行模型
 
-The popularity of projects like [llama.cpp](https://github.com/ggerganov/llama.cpp), [Ollama](https://github.com/ollama/ollama), [GPT4All](https://github.com/nomic-ai/gpt4all), [llamafile](https://github.com/Mozilla-Ocho/llamafile), and others underscore the demand to run LLMs locally (on your own device).
+## 用例
 
-This has at least two important benefits:
+像 [llama.cpp](https://github.com/ggerganov/llama.cpp)、[Ollama](https://github.com/ollama/ollama)、[GPT4All](https://github.com/nomic-ai/gpt4all)、[llamafile](https://github.com/Mozilla-Ocho/llamafile) 等项目的受欢迎程度凸显了在本地（在您自己的设备上）运行 LLM 的需求。
 
-1. `Privacy`: Your data is not sent to a third party, and it is not subject to the terms of service of a commercial service
-2. `Cost`: There is no inference fee, which is important for token-intensive applications (e.g., [long-running simulations](https://twitter.com/RLanceMartin/status/1691097659262820352?s=20), summarization)
+这至少有两个重要好处：
 
-## Overview
+1. `隐私`：您的数据不会发送给第三方，也不受商业服务条款的限制
+2. `成本`：没有推理费用，这对需要大量令牌的应用程序（例如，[长期运行的模拟](https://twitter.com/RLanceMartin/status/1691097659262820352?s=20)、摘要）非常重要
 
-Running an LLM locally requires a few things:
+## 概述
 
-1. `Open-source LLM`: An open-source LLM that can be freely modified and shared 
-2. `Inference`: Ability to run this LLM on your device w/ acceptable latency
+在本地运行 LLM 需要一些条件：
 
-### Open-source LLMs
+1. `Open-source LLM`: 一个可以自由修改和共享的开源 LLM
+2. `Inference`: 能够在您的设备上以可接受的延迟运行该 LLM
 
-Users can now gain access to a rapidly growing set of [open-source LLMs](https://cameronrwolfe.substack.com/p/the-history-of-open-source-llms-better). 
+### 开源 LLMs
 
-These LLMs can be assessed across at least two dimensions (see figure):
- 
-1. `Base model`: What is the base-model and how was it trained?
-2. `Fine-tuning approach`: Was the base-model fine-tuned and, if so, what [set of instructions](https://cameronrwolfe.substack.com/p/beyond-llama-the-power-of-open-llms#%C2%A7alpaca-an-instruction-following-llama-model) was used?
+用户现在可以访问一系列快速增长的 [开源 LLMs](https://cameronrwolfe.substack.com/p/the-history-of-open-source-llms-better)。
+
+这些 LLMs 可以从至少两个维度进行评估（见图）：
+
+1. `Base model`: 基础模型是什么，如何进行训练？
+2. `Fine-tuning approach`: 基础模型是否经过微调，如果是，使用了什么 [指令集](https://cameronrwolfe.substack.com/p/beyond-llama-the-power-of-open-llms#%C2%A7alpaca-an-instruction-following-llama-model)？
 
 ![Image description](../../static/img/OSS_LLM_overview.png)
 
-The relative performance of these models can be assessed using several leaderboards, including:
+这些模型的相对性能可以通过几个排行榜进行评估，包括：
 
 1. [LmSys](https://chat.lmsys.org/?arena)
 2. [GPT4All](https://gpt4all.io/index.html)
 3. [HuggingFace](https://huggingface.co/spaces/lmsys/chatbot-arena-leaderboard)
 
-### Inference
+### 推理
 
-A few frameworks for this have emerged to support inference of open-source LLMs on various devices:
+为支持在各种设备上进行开源 LLM 推理，出现了一些框架：
 
-1. [`llama.cpp`](https://github.com/ggerganov/llama.cpp): C++ implementation of llama inference code with [weight optimization / quantization](https://finbarr.ca/how-is-llama-cpp-possible/)
-2. [`gpt4all`](https://docs.gpt4all.io/index.html): Optimized C backend for inference
-3. [`Ollama`](https://ollama.ai/): Bundles model weights and environment into an app that runs on device and serves the LLM
-4. [`llamafile`](https://github.com/Mozilla-Ocho/llamafile): Bundles model weights and everything needed to run the model in a single file, allowing you to run the LLM locally from this file without any additional installation steps
+1. [`llama.cpp`](https://github.com/ggerganov/llama.cpp): C++ 实现的 llama 推理代码，包含 [权重优化 / 量化](https://finbarr.ca/how-is-llama-cpp-possible/)
+2. [`gpt4all`](https://docs.gpt4all.io/index.html): 优化的 C 后端用于推理
+3. [`Ollama`](https://ollama.ai/): 将模型权重和环境打包成一个在设备上运行并提供 LLM 的应用
+4. [`llamafile`](https://github.com/Mozilla-Ocho/llamafile): 将模型权重和运行模型所需的一切打包成一个文件，允许您从该文件本地运行 LLM，而无需任何额外的安装步骤
 
-In general, these frameworks will do a few things:
+一般来说，这些框架会做几件事：
 
-1. `Quantization`: Reduce the memory footprint of the raw model weights
-2. `Efficient implementation for inference`: Support inference on consumer hardware (e.g., CPU or laptop GPU)
+1. `量化`: 减少原始模型权重的内存占用
+2. `高效的推理实现`: 支持在消费硬件上进行推理（例如，CPU 或笔记本 GPU）
 
-In particular, see [this excellent post](https://finbarr.ca/how-is-llama-cpp-possible/) on the importance of quantization.
+特别地，请参见 [这篇优秀的文章](https://finbarr.ca/how-is-llama-cpp-possible/) 关于量化的重要性。
 
-![Image description](../../static/img/llama-memory-weights.png)
+![图像描述](../../static/img/llama-memory-weights.png)
 
-With less precision, we radically decrease the memory needed to store the LLM in memory.
+通过降低精度，我们显著减少了存储 LLM 所需的内存。
 
-In addition, we can see the importance of GPU memory bandwidth [sheet](https://docs.google.com/spreadsheets/d/1OehfHHNSn66BP2h3Bxp2NJTVX97icU0GmCXF6pK23H8/edit#gid=0)!
+此外，我们可以看到 GPU 内存带宽的重要性 [表格](https://docs.google.com/spreadsheets/d/1OehfHHNSn66BP2h3Bxp2NJTVX97icU0GmCXF6pK23H8/edit#gid=0)!
 
-A Mac M2 Max is 5-6x faster than a M1 for inference due to the larger GPU memory bandwidth.
+Mac M2 Max 在推理方面比 M1 快 5-6 倍，因为其更大的 GPU 内存带宽。
 
-![Image description](../../static/img/llama_t_put.png)
+![图像描述](../../static/img/llama_t_put.png)
 
-### Formatting prompts
+### 格式化提示
 
-Some providers have [chat model](/docs/concepts/#chat-models) wrappers that takes care of formatting your input prompt for the specific local model you're using. However, if you are prompting local models with a [text-in/text-out LLM](/docs/concepts/#llms) wrapper, you may need to use a prompt tailed for your specific model.
+一些提供商有 [chat model](/docs/concepts/#chat-models) 包装器，可以处理您所使用的特定本地模型的输入提示格式。然而，如果您使用 [text-in/text-out LLM](/docs/concepts/#llms) 包装器提示本地模型，您可能需要使用针对您特定模型的提示。
 
-This can [require the inclusion of special tokens](https://huggingface.co/blog/llama2#how-to-prompt-llama-2). [Here's an example for LLaMA 2](https://smith.langchain.com/hub/rlm/rag-prompt-llama).
+这可能 [需要包含特殊标记](https://huggingface.co/blog/llama2#how-to-prompt-llama-2)。 [这是 LLaMA 2 的一个示例](https://smith.langchain.com/hub/rlm/rag-prompt-llama)。
 
-## Quickstart
+## 快速入门
 
-[`Ollama`](https://ollama.ai/) is one way to easily run inference on macOS.
- 
-The instructions [here](https://github.com/jmorganca/ollama?tab=readme-ov-file#ollama) provide details, which we summarize:
- 
-* [Download and run](https://ollama.ai/download) the app
-* From command line, fetch a model from this [list of options](https://github.com/jmorganca/ollama): e.g., `ollama pull llama3.1:8b`
-* When the app is running, all models are automatically served on `localhost:11434`
+[`Ollama`](https://ollama.ai/) 是在 macOS 上轻松运行推理的一种方式。
 
+[这里](https://github.com/jmorganca/ollama?tab=readme-ov-file#ollama) 的说明提供了详细信息，以下是我们的总结：
 
+* [下载并运行](https://ollama.ai/download) 应用程序
+* 从命令行中，从此 [选项列表](https://github.com/jmorganca/ollama) 获取模型：例如，`ollama pull llama3.1:8b`
+* 当应用程序运行时，所有模型会自动在 `localhost:11434` 上提供服务
 
 ```python
 %pip install -qU langchain_ollama
 ```
-
 
 ```python
 from langchain_ollama import OllamaLLM
@@ -93,15 +91,11 @@ llm = OllamaLLM(model="llama3.1:8b")
 llm.invoke("The first man on the moon was ...")
 ```
 
-
-
 ```output
 '...Neil Armstrong!\n\nOn July 20, 1969, Neil Armstrong became the first person to set foot on the lunar surface, famously declaring "That\'s one small step for man, one giant leap for mankind" as he stepped off the lunar module Eagle onto the Moon\'s surface.\n\nWould you like to know more about the Apollo 11 mission or Neil Armstrong\'s achievements?'
 ```
 
-
-Stream tokens as they are being generated:
-
+生成令牌时进行流式传输：
 
 ```python
 for chunk in llm.stream("The first man on the moon was ..."):
@@ -112,8 +106,7 @@ for chunk in llm.stream("The first man on the moon was ..."):
 ``````output
 Neil| Armstrong|,| an| American| astronaut|.| He| stepped| out| of| the| lunar| module| Eagle| and| onto| the| surface| of| the| Moon| on| July| |20|,| |196|9|,| famously| declaring|:| "|That|'s| one| small| step| for| man|,| one| giant| leap| for| mankind|."||
 ```
-Ollama also includes a chat model wrapper that handles formatting conversation turns:
-
+Ollama 还包括一个聊天模型包装器，用于处理对话回合的格式：
 
 ```python
 from langchain_ollama import ChatOllama
@@ -123,42 +116,39 @@ chat_model = ChatOllama(model="llama3.1:8b")
 chat_model.invoke("Who was the first man on the moon?")
 ```
 
-
-
 ```output
 AIMessage(content='The answer is a historic one!\n\nThe first man to walk on the Moon was Neil Armstrong, an American astronaut and commander of the Apollo 11 mission. On July 20, 1969, Armstrong stepped out of the lunar module Eagle onto the surface of the Moon, famously declaring:\n\n"That\'s one small step for man, one giant leap for mankind."\n\nArmstrong was followed by fellow astronaut Edwin "Buzz" Aldrin, who also walked on the Moon during the mission. Michael Collins remained in orbit around the Moon in the command module Columbia.\n\nNeil Armstrong passed away on August 25, 2012, but his legacy as a pioneering astronaut and engineer continues to inspire people around the world!', response_metadata={'model': 'llama3.1:8b', 'created_at': '2024-08-01T00:38:29.176717Z', 'message': {'role': 'assistant', 'content': ''}, 'done_reason': 'stop', 'done': True, 'total_duration': 10681861417, 'load_duration': 34270292, 'prompt_eval_count': 19, 'prompt_eval_duration': 6209448000, 'eval_count': 141, 'eval_duration': 4432022000}, id='run-7bed57c5-7f54-4092-912c-ae49073dcd48-0', usage_metadata={'input_tokens': 19, 'output_tokens': 141, 'total_tokens': 160})
 ```
 
+## 环境
 
-## Environment
+在本地运行模型时，推理速度是一个挑战（见上文）。
 
-Inference speed is a challenge when running models locally (see above).
+为了最小化延迟，最好在配备GPU的本地运行模型，这在许多消费级笔记本电脑中都可以找到 [例如，Apple设备](https://www.apple.com/newsroom/2022/06/apple-unveils-m2-with-breakthrough-performance-and-capabilities/)。
 
-To minimize latency, it is desirable to run models locally on GPU, which ships with many consumer laptops [e.g., Apple devices](https://www.apple.com/newsroom/2022/06/apple-unveils-m2-with-breakthrough-performance-and-capabilities/).
+即使有GPU，可用的GPU内存带宽（如上所述）也很重要。
 
-And even with GPU, the available GPU memory bandwidth (as noted above) is important.
+### 运行 Apple Silicon GPU
 
-### Running Apple silicon GPU
+`Ollama` 和 [`llamafile`](https://github.com/Mozilla-Ocho/llamafile?tab=readme-ov-file#gpu-support) 将自动利用 Apple 设备上的 GPU。
 
-`Ollama` and [`llamafile`](https://github.com/Mozilla-Ocho/llamafile?tab=readme-ov-file#gpu-support) will automatically utilize the GPU on Apple devices.
- 
-Other frameworks require the user to set up the environment to utilize the Apple GPU.
+其他框架需要用户设置环境以利用 Apple GPU。
 
-For example, `llama.cpp` python bindings can be configured to use the GPU via [Metal](https://developer.apple.com/metal/).
+例如，`llama.cpp` 的 Python 绑定可以通过 [Metal](https://developer.apple.com/metal/) 配置为使用 GPU。
 
-Metal is a graphics and compute API created by Apple providing near-direct access to the GPU. 
+Metal 是由 Apple 创建的图形和计算 API，提供对 GPU 的近乎直接访问。
 
-See the [`llama.cpp`](docs/integrations/llms/llamacpp) setup [here](https://github.com/abetlen/llama-cpp-python/blob/main/docs/install/macos.md) to enable this.
+请参阅 [`llama.cpp`](docs/integrations/llms/llamacpp) 设置 [这里](https://github.com/abetlen/llama-cpp-python/blob/main/docs/install/macos.md) 以启用此功能。
 
-In particular, ensure that conda is using the correct virtual environment that you created (`miniforge3`).
+特别是，确保 conda 使用您创建的正确虚拟环境（`miniforge3`）。
 
-E.g., for me:
+例如，对我来说：
 
 ```
 conda activate /Users/rlm/miniforge3/envs/llama
 ```
 
-With the above confirmed, then:
+确认以上内容后，接着：
 
 ```
 CMAKE_ARGS="-DLLAMA_METAL=on" FORCE_CMAKE=1 pip install -U llama-cpp-python --no-cache-dir
@@ -166,19 +156,19 @@ CMAKE_ARGS="-DLLAMA_METAL=on" FORCE_CMAKE=1 pip install -U llama-cpp-python --no
 
 ## LLMs
 
-There are various ways to gain access to quantized model weights.
+获取量化模型权重的方式有多种。
 
-1. [`HuggingFace`](https://huggingface.co/TheBloke) - Many quantized model are available for download and can be run with framework such as [`llama.cpp`](https://github.com/ggerganov/llama.cpp). You can also download models in [`llamafile` format](https://huggingface.co/models?other=llamafile) from HuggingFace.
-2. [`gpt4all`](https://gpt4all.io/index.html) - The model explorer offers a leaderboard of metrics and associated quantized models available for download 
-3. [`Ollama`](https://github.com/jmorganca/ollama) - Several models can be accessed directly via `pull`
+1. [`HuggingFace`](https://huggingface.co/TheBloke) - 许多量化模型可供下载，并可以使用诸如[`llama.cpp`](https://github.com/ggerganov/llama.cpp)之类的框架运行。您还可以从HuggingFace下载[`llamafile`格式](https://huggingface.co/models?other=llamafile)的模型。
+2. [`gpt4all`](https://gpt4all.io/index.html) - 模型浏览器提供了一个指标排行榜和可供下载的相关量化模型。
+3. [`Ollama`](https://github.com/jmorganca/ollama) - 可以通过`pull`直接访问多个模型。
 
 ### Ollama
 
-With [Ollama](https://github.com/jmorganca/ollama), fetch a model via `ollama pull <model family>:<tag>`:
+使用 [Ollama](https://github.com/jmorganca/ollama)，通过 `ollama pull <model family>:<tag>` 获取模型：
 
-* E.g., for Llama 2 7b: `ollama pull llama2` will download the most basic version of the model (e.g., smallest # parameters and 4 bit quantization)
-* We can also specify a particular version from the [model list](https://github.com/jmorganca/ollama?tab=readme-ov-file#model-library), e.g., `ollama pull llama2:13b`
-* See the full set of parameters on the [API reference page](https://api.python.langchain.com/en/latest/llms/langchain_community.llms.ollama.Ollama.html)
+* 例如，对于 Llama 2 7b：`ollama pull llama2` 将下载模型的最基本版本（例如，参数最少和 4 位量化）
+* 我们还可以从 [模型列表](https://github.com/jmorganca/ollama?tab=readme-ov-file#model-library) 指定特定版本，例如 `ollama pull llama2:13b`
+* 在 [API 参考页面](https://api.python.langchain.com/en/latest/llms/langchain_community.llms.ollama.Ollama.html) 查看完整的参数集合
 
 
 ```python
@@ -192,44 +182,41 @@ llm.invoke("The first man on the moon was ... think step by step")
 ' Sure! Here\'s the answer, broken down step by step:\n\nThe first man on the moon was... Neil Armstrong.\n\nHere\'s how I arrived at that answer:\n\n1. The first manned mission to land on the moon was Apollo 11.\n2. The mission included three astronauts: Neil Armstrong, Edwin "Buzz" Aldrin, and Michael Collins.\n3. Neil Armstrong was the mission commander and the first person to set foot on the moon.\n4. On July 20, 1969, Armstrong stepped out of the lunar module Eagle and onto the moon\'s surface, famously declaring "That\'s one small step for man, one giant leap for mankind."\n\nSo, the first man on the moon was Neil Armstrong!'
 ```
 
-
 ### Llama.cpp
 
-Llama.cpp is compatible with a [broad set of models](https://github.com/ggerganov/llama.cpp).
+Llama.cpp 与一组 [广泛的模型](https://github.com/ggerganov/llama.cpp) 兼容。
 
-For example, below we run inference on `llama2-13b` with 4 bit quantization downloaded from [HuggingFace](https://huggingface.co/TheBloke/Llama-2-13B-GGML/tree/main).
+例如，下面我们对从 [HuggingFace](https://huggingface.co/TheBloke/Llama-2-13B-GGML/tree/main) 下载的 `llama2-13b` 进行 4 位量化推理。
 
-As noted above, see the [API reference](https://api.python.langchain.com/en/latest/llms/langchain.llms.llamacpp.LlamaCpp.html?highlight=llamacpp#langchain.llms.llamacpp.LlamaCpp) for the full set of parameters. 
+如上所述，请参见 [API 参考](https://api.python.langchain.com/en/latest/llms/langchain.llms.llamacpp.LlamaCpp.html?highlight=llamacpp#langchain.llms.llamacpp.LlamaCpp) 以获取完整的参数集。
 
-From the [llama.cpp API reference docs](https://api.python.langchain.com/en/latest/llms/langchain_community.llms.llamacpp.LlamaCpp.htm), a few are worth commenting on:
+根据 [llama.cpp API 参考文档](https://api.python.langchain.com/en/latest/llms/langchain_community.llms.llamacpp.LlamaCpp.htm)，有几个值得评论的参数：
 
-`n_gpu_layers`: number of layers to be loaded into GPU memory
+`n_gpu_layers`: 加载到 GPU 内存中的层数
 
-* Value: 1
-* Meaning: Only one layer of the model will be loaded into GPU memory (1 is often sufficient).
+* 值：1
+* 意义：模型将只加载一层到 GPU 内存中（1 通常足够）。
 
-`n_batch`: number of tokens the model should process in parallel 
+`n_batch`: 模型应并行处理的令牌数量 
 
-* Value: n_batch
-* Meaning: It's recommended to choose a value between 1 and n_ctx (which in this case is set to 2048)
+* 值：n_batch
+* 意义：建议选择 1 和 n_ctx 之间的值（在这种情况下设置为 2048）。
 
-`n_ctx`: Token context window
+`n_ctx`: 令牌上下文窗口
 
-* Value: 2048
-* Meaning: The model will consider a window of 2048 tokens at a time
+* 值：2048
+* 意义：模型将同时考虑 2048 个令牌的窗口。
 
-`f16_kv`: whether the model should use half-precision for the key/value cache
+`f16_kv`: 模型是否应使用半精度的键/值缓存
 
-* Value: True
-* Meaning: The model will use half-precision, which can be more memory efficient; Metal only supports True.
-
+* 值：True
+* 意义：模型将使用半精度，这可以更节省内存；Metal 仅支持 True。
 
 ```python
 %env CMAKE_ARGS="-DLLAMA_METAL=on"
 %env FORCE_CMAKE=1
 %pip install --upgrade --quiet  llama-cpp-python --no-cache-dirclear
 ```
-
 
 ```python
 from langchain_community.llms import LlamaCpp
@@ -246,12 +233,11 @@ llm = LlamaCpp(
 )
 ```
 
-The console log will show the below to indicate Metal was enabled properly from steps above:
+控制台日志将显示以下内容，以指示 Metal 已正确启用：
 ```
 ggml_metal_init: allocating
 ggml_metal_init: using MPS
 ```
-
 
 ```python
 llm.invoke("The first man on the moon was ... Let's think step by step")
@@ -259,17 +245,17 @@ llm.invoke("The first man on the moon was ... Let's think step by step")
 ```output
 Llama.generate: prefix-match hit
 ``````output
- and use logical reasoning to figure out who the first man on the moon was.
+并运用逻辑推理来找出第一个登上月球的人。
 
-Here are some clues:
+这里有一些线索：
 
-1. The first man on the moon was an American.
-2. He was part of the Apollo 11 mission.
-3. He stepped out of the lunar module and became the first person to set foot on the moon's surface.
-4. His last name is Armstrong.
+1. 第一个登上月球的人是美国人。
+2. 他是阿波罗 11 号任务的一部分。
+3. 他走出登月舱，成为第一个踏上月球表面的人。
+4. 他的姓是阿姆斯特朗。
 
-Now, let's use our reasoning skills to figure out who the first man on the moon was. Based on clue #1, we know that the first man on the moon was an American. Clue #2 tells us that he was part of the Apollo 11 mission. Clue #3 reveals that he was the first person to set foot on the moon's surface. And finally, clue #4 gives us his last name: Armstrong.
-Therefore, the first man on the moon was Neil Armstrong!
+现在，让我们运用推理能力找出第一个登上月球的人。根据线索 #1，我们知道第一个登上月球的人是美国人。线索 #2 告诉我们他是阿波罗 11 号任务的一部分。线索 #3 揭示了他是第一个踏上月球表面的人。最后，线索 #4 给出了他的姓：阿姆斯特朗。
+因此，第一个登上月球的人是尼尔·阿姆斯特朗！
 ``````output
 
 llama_print_timings:        load time =  9623.21 ms
@@ -279,23 +265,19 @@ llama_print_timings:        eval time =  6385.16 ms /   202 runs   (   31.61 ms 
 llama_print_timings:       total time =  7279.28 ms
 ```
 
-
 ```output
-" and use logical reasoning to figure out who the first man on the moon was.\n\nHere are some clues:\n\n1. The first man on the moon was an American.\n2. He was part of the Apollo 11 mission.\n3. He stepped out of the lunar module and became the first person to set foot on the moon's surface.\n4. His last name is Armstrong.\n\nNow, let's use our reasoning skills to figure out who the first man on the moon was. Based on clue #1, we know that the first man on the moon was an American. Clue #2 tells us that he was part of the Apollo 11 mission. Clue #3 reveals that he was the first person to set foot on the moon's surface. And finally, clue #4 gives us his last name: Armstrong.\nTherefore, the first man on the moon was Neil Armstrong!"
+"并运用逻辑推理来找出第一个登上月球的人。\n\n这里有一些线索：\n\n1. 第一个登上月球的人是美国人。\n2. 他是阿波罗 11 号任务的一部分。\n3. 他走出登月舱，成为第一个踏上月球表面的人。\n4. 他的姓是阿姆斯特朗。\n\n现在，让我们运用推理能力找出第一个登上月球的人。根据线索 #1，我们知道第一个登上月球的人是美国人。线索 #2 告诉我们他是阿波罗 11 号任务的一部分。线索 #3 揭示了他是第一个踏上月球表面的人。最后，线索 #4 给出了他的姓：阿姆斯特朗。\n因此，第一个登上月球的人是尼尔·阿姆斯特朗！"
 ```
-
 
 ### GPT4All
 
-We can use model weights downloaded from [GPT4All](/docs/integrations/llms/gpt4all) model explorer.
+我们可以使用从 [GPT4All](/docs/integrations/llms/gpt4all) 模型浏览器下载的模型权重。
 
-Similar to what is shown above, we can run inference and use [the API reference](https://api.python.langchain.com/en/latest/llms/langchain_community.llms.gpt4all.GPT4All.html) to set parameters of interest.
-
+与上面所示的类似，我们可以运行推理并使用 [API 参考](https://api.python.langchain.com/en/latest/llms/langchain_community.llms.gpt4all.GPT4All.html) 来设置感兴趣的参数。
 
 ```python
 %pip install gpt4all
 ```
-
 
 ```python
 from langchain_community.llms import GPT4All
@@ -305,29 +287,25 @@ llm = GPT4All(
 )
 ```
 
-
 ```python
 llm.invoke("The first man on the moon was ... Let's think step by step")
 ```
-
-
 
 ```output
 ".\n1) The United States decides to send a manned mission to the moon.2) They choose their best astronauts and train them for this specific mission.3) They build a spacecraft that can take humans to the moon, called the Lunar Module (LM).4) They also create a larger spacecraft, called the Saturn V rocket, which will launch both the LM and the Command Service Module (CSM), which will carry the astronauts into orbit.5) The mission is planned down to the smallest detail: from the trajectory of the rockets to the exact movements of the astronauts during their moon landing.6) On July 16, 1969, the Saturn V rocket launches from Kennedy Space Center in Florida, carrying the Apollo 11 mission crew into space.7) After one and a half orbits around the Earth, the LM separates from the CSM and begins its descent to the moon's surface.8) On July 20, 1969, at 2:56 pm EDT (GMT-4), Neil Armstrong becomes the first man on the moon. He speaks these"
 ```
 
-
 ### llamafile
 
-One of the simplest ways to run an LLM locally is using a [llamafile](https://github.com/Mozilla-Ocho/llamafile). All you need to do is:
+在本地运行LLM的最简单方法之一是使用[llamafile](https://github.com/Mozilla-Ocho/llamafile)。您只需执行以下步骤：
 
-1) Download a llamafile from [HuggingFace](https://huggingface.co/models?other=llamafile)
-2) Make the file executable
-3) Run the file
+1) 从[HuggingFace](https://huggingface.co/models?other=llamafile)下载一个llamafile
+2) 使文件可执行
+3) 运行该文件
 
-llamafiles bundle model weights and a [specially-compiled](https://github.com/Mozilla-Ocho/llamafile?tab=readme-ov-file#technical-details) version of [`llama.cpp`](https://github.com/ggerganov/llama.cpp) into a single file that can run on most computers any additional dependencies. They also come with an embedded inference server that provides an [API](https://github.com/Mozilla-Ocho/llamafile/blob/main/llama.cpp/server/README.md#api-endpoints) for interacting with your model. 
+llamafile将模型权重和一个[特别编译的](https://github.com/Mozilla-Ocho/llamafile?tab=readme-ov-file#technical-details)版本的[`llama.cpp`](https://github.com/ggerganov/llama.cpp)打包成一个可以在大多数计算机上运行的单一文件，而无需任何额外依赖项。它们还配备了一个嵌入式推理服务器，提供与您的模型交互的[API](https://github.com/Mozilla-Ocho/llamafile/blob/main/llama.cpp/server/README.md#api-endpoints)。
 
-Here's a simple bash script that shows all 3 setup steps:
+以下是一个简单的bash脚本，展示了所有3个设置步骤：
 
 ```bash
 # Download a llamafile from HuggingFace
@@ -340,8 +318,7 @@ chmod +x TinyLlama-1.1B-Chat-v1.0.Q5_K_M.llamafile
 ./TinyLlama-1.1B-Chat-v1.0.Q5_K_M.llamafile --server --nobrowser
 ```
 
-After you run the above setup steps, you can use LangChain to interact with your model:
-
+在您运行上述设置步骤后，您可以使用LangChain与您的模型进行交互：
 
 ```python
 from langchain_community.llms.llamafile import Llamafile
@@ -351,20 +328,17 @@ llm = Llamafile()
 llm.invoke("The first man on the moon was ... Let's think step by step.")
 ```
 
-
-
 ```output
 "\nFirstly, let's imagine the scene where Neil Armstrong stepped onto the moon. This happened in 1969. The first man on the moon was Neil Armstrong. We already know that.\n2nd, let's take a step back. Neil Armstrong didn't have any special powers. He had to land his spacecraft safely on the moon without injuring anyone or causing any damage. If he failed to do this, he would have been killed along with all those people who were on board the spacecraft.\n3rd, let's imagine that Neil Armstrong successfully landed his spacecraft on the moon and made it back to Earth safely. The next step was for him to be hailed as a hero by his people back home. It took years before Neil Armstrong became an American hero.\n4th, let's take another step back. Let's imagine that Neil Armstrong wasn't hailed as a hero, and instead, he was just forgotten. This happened in the 1970s. Neil Armstrong wasn't recognized for his remarkable achievement on the moon until after he died.\n5th, let's take another step back. Let's imagine that Neil Armstrong didn't die in the 1970s and instead, lived to be a hundred years old. This happened in 2036. In the year 2036, Neil Armstrong would have been a centenarian.\nNow, let's think about the present. Neil Armstrong is still alive. He turned 95 years old on July 20th, 2018. If he were to die now, his achievement of becoming the first human being to set foot on the moon would remain an unforgettable moment in history.\nI hope this helps you understand the significance and importance of Neil Armstrong's achievement on the moon!"
 ```
 
+## 提示
 
-## Prompts
+一些 LLM 在特定提示下会受益。
 
-Some LLMs will benefit from specific prompts.
+例如，LLaMA 将使用 [特殊标记](https://twitter.com/RLanceMartin/status/1681879318493003776?s=20)。
 
-For example, LLaMA will use [special tokens](https://twitter.com/RLanceMartin/status/1681879318493003776?s=20).
-
-We can use `ConditionalPromptSelector` to set prompt based on the model type.
+我们可以使用 `ConditionalPromptSelector` 根据模型类型设置提示。
 
 
 ```python
@@ -380,7 +354,7 @@ llm = LlamaCpp(
 )
 ```
 
-Set the associated prompt based upon the model version.
+根据模型版本设置相关提示。
 
 
 ```python
@@ -447,21 +421,21 @@ llama_print_timings:       total time = 18578.26 ms
 ```
 
 
-We also can use the LangChain Prompt Hub to fetch and / or store prompts that are model specific.
+我们还可以使用 LangChain 提示中心来获取和/或存储特定于模型的提示。
 
-This will work with your [LangSmith API key](https://docs.smith.langchain.com/).
+这将与您的 [LangSmith API 密钥](https://docs.smith.langchain.com/) 一起使用。
 
-For example, [here](https://smith.langchain.com/hub/rlm/rag-prompt-llama) is a prompt for RAG with LLaMA-specific tokens.
+例如，[这里](https://smith.langchain.com/hub/rlm/rag-prompt-llama) 是一个适用于 RAG 的 LLaMA 特定标记的提示。
 
-## Use cases
+## 用例
 
-Given an `llm` created from one of the models above, you can use it for [many use cases](/docs/how_to#use-cases).
+给定一个从上述模型创建的 `llm`，您可以用于[许多用例](/docs/how_to#use-cases)。
 
-For example, here is a guide to [RAG](/docs/tutorials/local_rag) with local LLMs.
+例如，这里有一个关于本地 LLM 的[RAG](/docs/tutorials/local_rag)指南。
 
-In general, use cases for local LLMs can be driven by at least two factors:
+一般来说，本地 LLM 的用例可以由至少两个因素驱动：
 
-* `Privacy`: private data (e.g., journals, etc) that a user does not want to share 
-* `Cost`: text preprocessing (extraction/tagging), summarization, and agent simulations are token-use-intensive tasks
+* `隐私`：用户不想共享的私人数据（例如，日记等）
+* `成本`：文本预处理（提取/标记）、摘要和代理模拟是使用令牌密集型的任务
 
-In addition, [here](https://blog.langchain.dev/using-langsmith-to-support-fine-tuning-of-open-source-llms/) is an overview on fine-tuning, which can utilize open-source LLMs.
+此外，[这里](https://blog.langchain.dev/using-langsmith-to-support-fine-tuning-of-open-source-llms/)是关于微调的概述，微调可以利用开源 LLM。

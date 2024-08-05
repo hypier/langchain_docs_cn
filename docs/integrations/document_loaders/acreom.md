@@ -1,13 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/acreom.ipynb
 ---
+
 # acreom
 
-[acreom](https://acreom.com) is a dev-first knowledge base with tasks running on local markdown files.
+[acreom](https://acreom.com) 是一个以开发者为中心的知识库，任务在本地的 markdown 文件上运行。
 
-Below is an example on how to load a local acreom vault into Langchain. As the local vault in acreom is a folder of plain text .md files, the loader requires the path to the directory. 
+以下是如何将本地的 acreom vault 加载到 Langchain 的示例。由于 acreom 中的本地 vault 是一组纯文本的 .md 文件，因此加载器需要目录的路径。
 
-Vault files may contain some metadata which is stored as a YAML header. These values will be added to the document’s metadata if `collect_metadata` is set to true. 
+Vault 文件可能包含一些以 YAML 头部存储的元数据。如果 `collect_metadata` 设置为 true，这些值将被添加到文档的元数据中。 
 
 
 ```python
@@ -24,8 +25,7 @@ loader = AcreomLoader("<path-to-acreom-vault>", collect_metadata=False)
 docs = loader.load()
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

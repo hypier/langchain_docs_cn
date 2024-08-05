@@ -1,67 +1,65 @@
-# OracleAI Vector Search
+# OracleAI 向量搜索
 
-Oracle AI Vector Search is designed for Artificial Intelligence (AI) workloads that allows you to query data based on semantics, rather than keywords.
-One of the biggest benefits of Oracle AI Vector Search is that semantic search on unstructured data can be combined with relational search on business data in one single system.
-This is not only powerful but also significantly more effective because you don't need to add a specialized vector database, eliminating the pain of data fragmentation between multiple systems.
+Oracle AI 向量搜索旨在处理人工智能 (AI) 工作负载，允许您基于语义而非关键字查询数据。
+Oracle AI 向量搜索的最大好处之一是，非结构化数据的语义搜索可以与业务数据的关系搜索在一个系统中结合。
+这不仅强大，而且显著更有效，因为您无需添加专门的向量数据库，从而消除了多个系统之间数据碎片化的痛苦。
 
-In addition, your vectors can benefit from all of Oracle Database’s most powerful features, like the following:
+此外，您的向量可以受益于 Oracle 数据库的所有强大功能，例如：
 
- * [Partitioning Support](https://www.oracle.com/database/technologies/partitioning.html)
- * [Real Application Clusters scalability](https://www.oracle.com/database/real-application-clusters/)
- * [Exadata smart scans](https://www.oracle.com/database/technologies/exadata/software/smartscan/)
- * [Shard processing across geographically distributed databases](https://www.oracle.com/database/distributed-database/)
- * [Transactions](https://docs.oracle.com/en/database/oracle/oracle-database/23/cncpt/transactions.html)
- * [Parallel SQL](https://docs.oracle.com/en/database/oracle/oracle-database/21/vldbg/parallel-exec-intro.html#GUID-D28717E4-0F77-44F5-BB4E-234C31D4E4BA)
- * [Disaster recovery](https://www.oracle.com/database/data-guard/)
- * [Security](https://www.oracle.com/security/database-security/)
- * [Oracle Machine Learning](https://www.oracle.com/artificial-intelligence/database-machine-learning/)
- * [Oracle Graph Database](https://www.oracle.com/database/integrated-graph-database/)
- * [Oracle Spatial and Graph](https://www.oracle.com/database/spatial/)
- * [Oracle Blockchain](https://docs.oracle.com/en/database/oracle/oracle-database/23/arpls/dbms_blockchain_table.html#GUID-B469E277-978E-4378-A8C1-26D3FF96C9A6)
+ * [分区支持](https://www.oracle.com/database/technologies/partitioning.html)
+ * [真实应用集群的可扩展性](https://www.oracle.com/database/real-application-clusters/)
+ * [Exadata 智能扫描](https://www.oracle.com/database/technologies/exadata/software/smartscan/)
+ * [跨地理分布数据库的分片处理](https://www.oracle.com/database/distributed-database/)
+ * [事务](https://docs.oracle.com/en/database/oracle/oracle-database/23/cncpt/transactions.html)
+ * [并行 SQL](https://docs.oracle.com/en/database/oracle/oracle-database/21/vldbg/parallel-exec-intro.html#GUID-D28717E4-0F77-44F5-BB4E-234C31D4E4BA)
+ * [灾难恢复](https://www.oracle.com/database/data-guard/)
+ * [安全性](https://www.oracle.com/security/database-security/)
+ * [Oracle 机器学习](https://www.oracle.com/artificial-intelligence/database-machine-learning/)
+ * [Oracle 图数据库](https://www.oracle.com/database/integrated-graph-database/)
+ * [Oracle 空间和图](https://www.oracle.com/database/spatial/)
+ * [Oracle 区块链](https://docs.oracle.com/en/database/oracle/oracle-database/23/arpls/dbms_blockchain_table.html#GUID-B469E277-978E-4378-A8C1-26D3FF96C9A6)
  * [JSON](https://docs.oracle.com/en/database/oracle/oracle-database/23/adjsn/json-in-oracle-database.html)
 
+## 文档加载器
 
-## Document Loaders
-
-Please check the [usage example](/docs/integrations/document_loaders/oracleai).
+请查看 [使用示例](/docs/integrations/document_loaders/oracleai).
 
 ```python
 from langchain_community.document_loaders.oracleai import OracleDocLoader
 ```
 
-## Text Splitter
+## 文本分割器
 
-Please check the [usage example](/docs/integrations/document_loaders/oracleai).
+请查看 [用法示例](/docs/integrations/document_loaders/oracleai).
 
 ```python
 from langchain_community.document_loaders.oracleai import OracleTextSplitter
 ```
 
-## Embeddings
+## 嵌入
 
-Please check the [usage example](/docs/integrations/text_embedding/oracleai).
+请查看[使用示例](/docs/integrations/text_embedding/oracleai)。
 
 ```python
 from langchain_community.embeddings.oracleai import OracleEmbeddings
 ```
 
-## Summary
+## 摘要
 
-Please check the [usage example](/docs/integrations/tools/oracleai).
+请查看[使用示例](/docs/integrations/tools/oracleai)。
 
 ```python
 from langchain_community.utilities.oracleai import OracleSummary
 ```
 
-## Vector Store
+## 向量存储
 
-Please check the [usage example](/docs/integrations/vectorstores/oracle).
+请查看 [使用示例](/docs/integrations/vectorstores/oracle)。
 
 ```python
 from langchain_community.vectorstores.oraclevs import OracleVS
 ```
 
-## End to End Demo
+## 端到端演示
 
-Please check the [Oracle AI Vector Search End-to-End Demo Guide](https://github.com/langchain-ai/langchain/blob/master/cookbook/oracleai_demo.ipynb).
-
+请查看 [Oracle AI 向量搜索端到端演示指南](https://github.com/langchain-ai/langchain/blob/master/cookbook/oracleai_demo.ipynb).

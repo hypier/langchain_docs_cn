@@ -1,22 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/thirdai_neuraldb.ipynb
 ---
+
 # ThirdAI NeuralDB
 
->[NeuralDB](https://www.thirdai.com/neuraldb-enterprise/) is a CPU-friendly and fine-tunable vector store developed by [ThirdAI](https://www.thirdai.com/).
+>[NeuralDB](https://www.thirdai.com/neuraldb-enterprise/) 是由 [ThirdAI](https://www.thirdai.com/) 开发的友好于 CPU 且可精细调优的向量存储。
 
-## Initialization
+## 初始化
 
-There are two initialization methods:
-- From Scratch: Basic model
-- From Checkpoint: Load a model that was previously saved
+有两种初始化方法：
+- 从头开始：基本模型
+- 从检查点：加载之前保存的模型
 
-For all of the following initialization methods, the `thirdai_key` parameter can be omitted if the `THIRDAI_KEY` environment variable is set.
+在所有以下初始化方法中，如果设置了 `THIRDAI_KEY` 环境变量，则可以省略 `thirdai_key` 参数。
 
-ThirdAI API keys can be obtained at https://www.thirdai.com/try-bolt/
+可以在 https://www.thirdai.com/try-bolt/ 获取 ThirdAI API 密钥。
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
-
+您需要使用 `pip install -qU langchain-community` 安装 `langchain-community` 才能使用此集成。
 
 ```python
 from langchain_community.vectorstores import NeuralDBVectorStore
@@ -35,26 +35,24 @@ vectorstore = NeuralDBVectorStore.from_checkpoint(
 )
 ```
 
-## Inserting document sources
-
+## 插入文档源
 
 ```python
 vectorstore.insert(
-    # If you have PDF, DOCX, or CSV files, you can directly pass the paths to the documents
+    # 如果您有PDF、DOCX或CSV文件，可以直接传递文档的路径
     sources=["/path/to/doc.pdf", "/path/to/doc.docx", "/path/to/doc.csv"],
-    # When True this means that the underlying model in the NeuralDB will
-    # undergo unsupervised pretraining on the inserted files. Defaults to True.
+    # 当为True时，这意味着NeuralDB中的基础模型将
+    # 对插入的文件进行无监督预训练。默认为True。
     train=True,
-    # Much faster insertion with a slight drop in performance. Defaults to True.
+    # 插入速度更快，但性能略有下降。默认为True。
     fast_mode=True,
 )
 
 from thirdai import neural_db as ndb
 
 vectorstore.insert(
-    # If you have files in other formats, or prefer to configure how
-    # your files are parsed, then you can pass in NeuralDB document objects
-    # like this.
+    # 如果您有其他格式的文件，或者希望配置文件的解析方式，
+    # 那么您可以像这样传递NeuralDB文档对象。
     sources=[
         ndb.PDF(
             "/path/to/doc.pdf",
@@ -67,22 +65,20 @@ vectorstore.insert(
 )
 ```
 
-## Similarity search
+## 相似性搜索
 
-To query the vectorstore, you can use the standard LangChain vectorstore method `similarity_search`, which returns a list of LangChain Document objects. Each document object represents a chunk of text from the indexed files. For example, it may contain a paragraph from one of the indexed PDF files. In addition to the text, the document's metadata field contains information such as the document's ID, the source of this document (which file it came from), and the score of the document.
-
+要查询向量存储，可以使用标准的 LangChain 向量存储方法 `similarity_search`，该方法返回一个 LangChain Document 对象的列表。每个文档对象代表来自索引文件的一段文本。例如，它可能包含来自某个索引 PDF 文件的段落。除了文本之外，文档的元数据字段还包含信息，例如文档的 ID、该文档的来源（来自哪个文件）以及文档的得分。
 
 ```python
 # This returns a list of LangChain Document objects
 documents = vectorstore.similarity_search("query", k=10)
 ```
 
-## Fine tuning
+## 微调
 
-NeuralDBVectorStore can be fine-tuned to user behavior and domain-specific knowledge. It can be fine-tuned in two ways:
-1. Association: the vectorstore associates a source phrase with a target phrase. When the vectorstore sees the source phrase, it will also consider results that are relevant to the target phrase.
-2. Upvoting: the vectorstore upweights the score of a document for a specific query. This is useful when you want to fine-tune the vectorstore to user behavior. For example, if a user searches "how is a car manufactured" and likes the returned document with id 52, then we can upvote the document with id 52 for the query "how is a car manufactured".
-
+NeuralDBVectorStore 可以根据用户行为和特定领域知识进行微调。它可以通过两种方式进行微调：
+1. 关联：向量存储将源短语与目标短语关联。当向量存储看到源短语时，它还会考虑与目标短语相关的结果。
+2. 赞同：向量存储为特定查询提高文档的得分。这在您希望根据用户行为微调向量存储时非常有用。例如，如果用户搜索“汽车是如何制造的”，并且喜欢返回的文档 ID 为 52 的文档，那么我们可以为查询“汽车是如何制造的”对文档 ID 为 52 进行赞同。
 
 ```python
 vectorstore.associate(source="source phrase", target="target phrase")
@@ -102,8 +98,7 @@ vectorstore.upvote_batch(
 )
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

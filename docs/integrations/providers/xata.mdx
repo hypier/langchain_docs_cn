@@ -1,36 +1,34 @@
 # Xata
 
-> [Xata](https://xata.io) is a serverless data platform, based on `PostgreSQL`. 
-> It provides a Python SDK for interacting with your database, and a UI 
-> for managing your data.
-> `Xata` has a native vector type, which can be added to any table, and 
-> supports similarity search. LangChain inserts vectors directly to `Xata`, 
-> and queries it for the nearest neighbors of a given vector, so that you can
-> use all the LangChain Embeddings integrations with `Xata`.
+> [Xata](https://xata.io) 是一个无服务器数据平台，基于 `PostgreSQL`。 
+> 它提供了一个用于与数据库交互的 Python SDK，以及一个 
+> 用于管理数据的用户界面。
+> `Xata` 具有原生向量类型，可以添加到任何表中，并 
+> 支持相似性搜索。LangChain 直接将向量插入 `Xata`， 
+> 并查询给定向量的最近邻，以便您可以
+> 使用所有与 `Xata` 兼容的 LangChain 嵌入集成。
+
+## 安装与设置
 
 
-## Installation and Setup
-
-
-We need to install `xata` python package.
+我们需要安装 `xata` python 包。
 
 ```bash
 pip install xata==1.0.0a7 
 ```
 
-## Vector Store
+## 向量存储
 
-See a [usage example](/docs/integrations/vectorstores/xata).
+查看 [用例示例](/docs/integrations/vectorstores/xata)。
 
 ```python
 from langchain_community.vectorstores import XataVectorStore
 ```
 
-## Memory
+## 内存
 
-See a [usage example](/docs/integrations/memory/xata_chat_message_history).
+请参见[用法示例](/docs/integrations/memory/xata_chat_message_history)。
 
 ```python
 from langchain_community.chat_message_histories import XataChatMessageHistory
 ```
-

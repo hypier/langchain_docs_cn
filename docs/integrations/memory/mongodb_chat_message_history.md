@@ -1,41 +1,40 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/mongodb_chat_message_history.ipynb
 ---
+
 # MongoDB
 
->`MongoDB` is a source-available cross-platform document-oriented database program. Classified as a NoSQL database program, `MongoDB` uses `JSON`-like documents with optional schemas.
+>`MongoDB` 是一个源可用的跨平台文档导向数据库程序。被归类为 NoSQL 数据库程序，`MongoDB` 使用类似 `JSON` 的文档，具有可选的模式。
 >
->`MongoDB` is developed by MongoDB Inc. and licensed under the Server Side Public License (SSPL). - [Wikipedia](https://en.wikipedia.org/wiki/MongoDB)
+>`MongoDB` 由 MongoDB Inc. 开发，并根据服务器端公共许可证 (SSPL) 进行许可。 - [维基百科](https://en.wikipedia.org/wiki/MongoDB)
 
-This notebook goes over how to use the `MongoDBChatMessageHistory` class to store chat message history in a Mongodb database.
+本笔记本介绍如何使用 `MongoDBChatMessageHistory` 类在 Mongodb 数据库中存储聊天消息历史。
 
+## 设置
 
-## Setup
-
-The integration lives in the `langchain-mongodb` package, so we need to install that.
+集成存在于 `langchain-mongodb` 包中，因此我们需要安装它。
 
 ```bash
 pip install -U --quiet langchain-mongodb
 ```
 
-It's also helpful (but not needed) to set up [LangSmith](https://smith.langchain.com/) for best-in-class observability
-
+设置 [LangSmith](https://smith.langchain.com/) 以获得最佳的可观察性也是有帮助的（但不是必需的）。
 
 ```python
 # os.environ["LANGCHAIN_TRACING_V2"] = "true"
 # os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 ```
 
-## Usage
+## 使用方法
 
-To use the storage you need to provide only 2 things:
+要使用存储，您只需提供两个信息：
 
-1. Session Id - a unique identifier of the session, like user name, email, chat id etc.
-2. Connection string - a string that specifies the database connection. It will be passed to MongoDB create_engine function.
+1. 会话 ID - 会话的唯一标识符，例如用户名、电子邮件、聊天 ID 等。
+2. 连接字符串 - 指定数据库连接的字符串。它将传递给 MongoDB 的 create_engine 函数。
 
-If you want to customize where the chat histories go, you can also pass:
-1. *database_name* - name of the database to use
-1. *collection_name* - collection to use within that database
+如果您想自定义聊天历史记录的存储位置，您还可以传递：
+1. *database_name* - 要使用的数据库名称
+1. *collection_name* - 在该数据库中使用的集合
 
 
 ```python
@@ -63,21 +62,17 @@ chat_message_history.messages
 [HumanMessage(content='Hello'), AIMessage(content='Hi')]
 ```
 
+## 链接
 
-## Chaining
+我们可以轻松地将此消息历史类与 [LCEL Runnables](/docs/how_to/message_history) 结合起来。
 
-We can easily combine this message history class with [LCEL Runnables](/docs/how_to/message_history)
-
-To do this we will want to use OpenAI, so we need to install that.  You will also need to set the OPENAI_API_KEY environment variable to your OpenAI key.
-
-
+为此，我们需要使用 OpenAI，因此需要安装它。您还需要将 OPENAI_API_KEY 环境变量设置为您的 OpenAI 密钥。
 
 ```python
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import ChatOpenAI
 ```
-
 
 ```python
 import os
@@ -86,7 +81,6 @@ assert os.environ[
     "OPENAI_API_KEY"
 ], "Set the OPENAI_API_KEY environment variable with your OpenAI API key."
 ```
-
 
 ```python
 prompt = ChatPromptTemplate.from_messages(
@@ -99,7 +93,6 @@ prompt = ChatPromptTemplate.from_messages(
 
 chain = prompt | ChatOpenAI()
 ```
-
 
 ```python
 chain_with_history = RunnableWithMessageHistory(
@@ -115,32 +108,23 @@ chain_with_history = RunnableWithMessageHistory(
 )
 ```
 
-
 ```python
 # This is where we configure the session id
 config = {"configurable": {"session_id": "<SESSION_ID>"}}
 ```
 
-
 ```python
 chain_with_history.invoke({"question": "Hi! I'm bob"}, config=config)
 ```
-
-
 
 ```output
 AIMessage(content='Hi Bob! How can I assist you today?')
 ```
 
-
-
 ```python
 chain_with_history.invoke({"question": "Whats my name"}, config=config)
 ```
 
-
-
 ```output
 AIMessage(content='Your name is Bob. Is there anything else I can help you with, Bob?')
 ```
-

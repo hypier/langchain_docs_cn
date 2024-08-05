@@ -1,64 +1,58 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/tutorials/rag.ipynb
 ---
-# Build a Retrieval Augmented Generation (RAG) App
 
-One of the most powerful applications enabled by LLMs is sophisticated question-answering (Q&A) chatbots. These are applications that can answer questions about specific source information. These applications use a technique known as Retrieval Augmented Generation, or RAG.
+# 构建一个检索增强生成 (RAG) 应用
 
-This tutorial will show how to build a simple Q&A application
-over a text data source. Along the way we’ll go over a typical Q&A
-architecture and highlight additional resources for more advanced Q&A techniques. We’ll also see
-how LangSmith can help us trace and understand our application.
-LangSmith will become increasingly helpful as our application grows in
-complexity.
+由 LLMs 驱动的最强大应用之一是复杂的问答 (Q&A) 聊天机器人。这些应用可以回答有关特定源信息的问题。这些应用使用一种称为检索增强生成的技术，或称 RAG。
 
-If you're already familiar with basic retrieval, you might also be interested in
-this [high-level overview of different retrieval techinques](/docs/concepts/#retrieval).
+本教程将展示如何构建一个简单的 Q&A 应用程序，基于文本数据源。在此过程中，我们将讨论一个典型的 Q&A 架构，并强调更多高级 Q&A 技术的额外资源。我们还将看到 LangSmith 如何帮助我们追踪和理解我们的应用程序。随着应用程序复杂性的增加，LangSmith 将变得越来越有用。
 
-## What is RAG?
+如果您已经熟悉基本的检索，您可能还会对这篇 [不同检索技术的高级概述](/docs/concepts/#retrieval) 感兴趣。
 
-RAG is a technique for augmenting LLM knowledge with additional data.
+## 什么是 RAG？
 
-LLMs can reason about wide-ranging topics, but their knowledge is limited to the public data up to a specific point in time that they were trained on. If you want to build AI applications that can reason about private data or data introduced after a model's cutoff date, you need to augment the knowledge of the model with the specific information it needs. The process of bringing the appropriate information and inserting it into the model prompt is known as Retrieval Augmented Generation (RAG).
+RAG 是一种通过额外数据增强 LLM 知识的技术。
 
-LangChain has a number of components designed to help build Q&A applications, and RAG applications more generally. 
+LLM 可以推理各种主题，但它们的知识仅限于训练时所用的公共数据，且截至特定时间点。如果您希望构建能够推理私有数据或在模型截止日期后引入的数据的 AI 应用程序，您需要用模型所需的特定信息来增强模型的知识。将适当的信息引入并插入到模型提示中的过程称为检索增强生成（RAG）。
 
-**Note**: Here we focus on Q&A for unstructured data. If you are interested for RAG over structured data, check out our tutorial on doing [question/answering over SQL data](/docs/tutorials/sql_qa).
+LangChain 有多个组件旨在帮助构建问答应用程序，以及更广泛的 RAG 应用程序。
 
-## Concepts
-A typical RAG application has two main components:
+**注意**：在这里我们重点关注非结构化数据的问答。如果您对结构化数据上的 RAG 感兴趣，请查看我们关于 [SQL 数据的问答教程](/docs/tutorials/sql_qa)。
 
-**Indexing**: a pipeline for ingesting data from a source and indexing it. *This usually happens offline.*
+## 概念
+一个典型的 RAG 应用程序有两个主要组件：
 
-**Retrieval and generation**: the actual RAG chain, which takes the user query at run time and retrieves the relevant data from the index, then passes that to the model.
+**索引**：一个从源获取数据并进行索引的管道。*这通常在离线进行。*
 
-The most common full sequence from raw data to answer looks like:
+**检索和生成**：实际的 RAG 链，在运行时接收用户查询并从索引中检索相关数据，然后将其传递给模型。
 
-### Indexing
-1. **Load**: First we need to load our data. This is done with [Document Loaders](/docs/concepts/#document-loaders).
-2. **Split**: [Text splitters](/docs/concepts/#text-splitters) break large `Documents` into smaller chunks. This is useful both for indexing data and for passing it in to a model, since large chunks are harder to search over and won't fit in a model's finite context window.
-3. **Store**: We need somewhere to store and index our splits, so that they can later be searched over. This is often done using a [VectorStore](/docs/concepts/#vector-stores) and [Embeddings](/docs/concepts/#embedding-models) model.
+从原始数据到答案的最常见完整序列如下：
+
+### 索引
+1. **加载**: 首先我们需要加载我们的数据。这是通过 [Document Loaders](/docs/concepts/#document-loaders) 完成的。
+2. **拆分**: [Text splitters](/docs/concepts/#text-splitters) 将大型 `Documents` 拆分为较小的块。这对于索引数据和将其传递给模型都很有用，因为大型块更难搜索，并且无法适应模型的有限上下文窗口。
+3. **存储**: 我们需要一个地方来存储和索引我们的拆分，以便后续可以进行搜索。这通常使用 [VectorStore](/docs/concepts/#vector-stores) 和 [Embeddings](/docs/concepts/#embedding-models) 模型来完成。
 
 ![index_diagram](../../static/img/rag_indexing.png)
 
-### Retrieval and generation
-4. **Retrieve**: Given a user input, relevant splits are retrieved from storage using a [Retriever](/docs/concepts/#retrievers).
-5. **Generate**: A [ChatModel](/docs/concepts/#chat-models) / [LLM](/docs/concepts/#llms) produces an answer using a prompt that includes the question and the retrieved data
+### 检索与生成
+4. **检索**：根据用户输入，从存储中使用 [Retriever](/docs/concepts/#retrievers) 检索相关的分片。
+5. **生成**：一个 [ChatModel](/docs/concepts/#chat-models) / [LLM](/docs/concepts/#llms) 使用包含问题和检索数据的提示生成答案。
 
 ![retrieval_diagram](../../static/img/rag_retrieval_generation.png)
 
-
-## Setup
+## 设置
 
 ### Jupyter Notebook
 
-This guide (and most of the other guides in the documentation) uses [Jupyter notebooks](https://jupyter.org/) and assumes the reader is as well. Jupyter notebooks are perfect for learning how to work with LLM systems because oftentimes things can go wrong (unexpected output, API down, etc) and going through guides in an interactive environment is a great way to better understand them.
+本指南（以及文档中的大多数其他指南）使用 [Jupyter notebooks](https://jupyter.org/) 并假设读者也使用它。Jupyter notebooks 非常适合学习如何使用 LLM 系统，因为在很多情况下可能会出现问题（意外输出、API 崩溃等），在交互环境中逐步进行指南是更好理解它们的好方法。
 
-This and other tutorials are perhaps most conveniently run in a Jupyter notebook. See [here](https://jupyter.org/install) for instructions on how to install.
+本教程和其他教程最方便的运行方式是使用 Jupyter notebook。有关安装的说明，请参见 [这里](https://jupyter.org/install)。
 
-### Installation
+### 安装
 
-This tutorial requires these langchain dependencies:
+本教程需要以下 langchain 依赖：
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -73,24 +67,22 @@ import CodeBlock from "@theme/CodeBlock";
   </TabItem>
 </Tabs>
 
-
-
-For more details, see our [Installation guide](/docs/how_to/installation).
+有关更多详细信息，请参阅我们的 [安装指南](/docs/how_to/installation)。
 
 ### LangSmith
 
-Many of the applications you build with LangChain will contain multiple steps with multiple invocations of LLM calls.
-As these applications get more and more complex, it becomes crucial to be able to inspect what exactly is going on inside your chain or agent.
-The best way to do this is with [LangSmith](https://smith.langchain.com).
+您使用 LangChain 构建的许多应用程序将包含多个步骤和多次调用 LLM。  
+随着这些应用程序变得越来越复杂，能够检查您的链或代理内部究竟发生了什么变得至关重要。  
+做到这一点的最佳方法是使用 [LangSmith](https://smith.langchain.com)。
 
-After you sign up at the link above, make sure to set your environment variables to start logging traces:
+在您注册上述链接后，请确保设置您的环境变量以开始记录追踪：
 
 ```shell
 export LANGCHAIN_TRACING_V2="true"
 export LANGCHAIN_API_KEY="..."
 ```
 
-Or, if in a notebook, you can set them with:
+或者，如果在笔记本中，您可以通过以下方式设置它们：
 
 ```python
 import getpass
@@ -99,15 +91,12 @@ import os
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 ```
-## Preview
 
-In this guide we’ll build an app that answers questions about the content of a website. The specific website we will use is the [LLM Powered Autonomous
-Agents](https://lilianweng.github.io/posts/2023-06-23-agent/) blog post
-by Lilian Weng, which allows us to ask questions about the contents of
-the post.
+## 预览
 
-We can create a simple indexing pipeline and RAG chain to do this in ~20
-lines of code:
+在本指南中，我们将构建一个应用程序，用于回答有关网站内容的问题。我们将使用的具体网站是Lilian Weng的[LLM Powered Autonomous Agents](https://lilianweng.github.io/posts/2023-06-23-agent/)博客文章，该文章允许我们询问有关内容的问题。
+
+我们可以创建一个简单的索引管道和RAG链来实现这一点，代码大约为20行：
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
@@ -171,33 +160,26 @@ rag_chain.invoke("What is Task Decomposition?")
 vectorstore.delete_collection()
 ```
 
-Check out the [LangSmith
-trace](https://smith.langchain.com/public/1c6ca97e-445b-4d00-84b4-c7befcbc59fe/r).
+查看[LangSmith trace](https://smith.langchain.com/public/1c6ca97e-445b-4d00-84b4-c7befcbc59fe/r)。
 
-## Detailed walkthrough
+## 详细步骤讲解
 
-Let’s go through the above code step-by-step to really understand what’s
-going on.
+让我们一步一步地分析上述代码，以真正理解发生了什么。
 
-## 1. Indexing: Load {#indexing-load}
+## 1. 索引：加载 {#indexing-load}
 
-We need to first load the blog post contents. We can use
+我们需要首先加载博客文章的内容。我们可以使用
 [DocumentLoaders](/docs/concepts#document-loaders)
-for this, which are objects that load in data from a source and return a
-list of
-[Documents](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html).
-A `Document` is an object with some `page_content` (str) and `metadata`
-(dict).
+来实现，这些对象从源加载数据并返回一个
+[Documents](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html)的列表。
+`Document`是一个包含一些`page_content`（str）和`metadata`（dict）的对象。
 
-In this case we’ll use the
-[WebBaseLoader](/docs/integrations/document_loaders/web_base),
-which uses `urllib` to load HTML from web URLs and `BeautifulSoup` to
-parse it to text. We can customize the HTML -\> text parsing by passing
-in parameters to the `BeautifulSoup` parser via `bs_kwargs` (see
+在这种情况下，我们将使用
+[WebBaseLoader](/docs/integrations/document_loaders/web_base)，
+它使用`urllib`从网页 URL 加载 HTML，并使用`BeautifulSoup`将其解析为文本。我们可以通过`bs_kwargs`将参数传递给`BeautifulSoup`解析器，从而自定义 HTML -\> 文本解析（参见
 [BeautifulSoup
-docs](https://beautiful-soup-4.readthedocs.io/en/latest/#beautifulsoup)).
-In this case only HTML tags with class “post-content”, “post-title”, or
-“post-header” are relevant, so we’ll remove all others.
+docs](https://beautiful-soup-4.readthedocs.io/en/latest/#beautifulsoup)）。
+在这种情况下，只有类名为“post-content”、“post-title”或“post-header”的 HTML 标签是相关的，因此我们将删除所有其他标签。
 
 
 ```python
@@ -238,44 +220,28 @@ Building agents with LLM (large language model) as its core controller is a cool
 Agent System Overview#
 In
 ```
-### Go deeper
 
-`DocumentLoader`: Object that loads data from a source as list of
-`Documents`.
+### 深入了解
 
-- [Docs](/docs/how_to#document-loaders):
-  Detailed documentation on how to use `DocumentLoaders`.
-- [Integrations](/docs/integrations/document_loaders/): 160+
-  integrations to choose from.
-- [Interface](https://api.python.langchain.com/en/latest/document_loaders/langchain_core.document_loaders.base.BaseLoader.html):
-  API reference  for the base interface.
+`DocumentLoader`: 从源加载数据作为 `Documents` 列表的对象。
 
+- [文档](/docs/how_to#document-loaders):
+  关于如何使用 `DocumentLoaders` 的详细文档。
+- [集成](/docs/integrations/document_loaders/): 160+
+  种可供选择的集成。
+- [接口](https://api.python.langchain.com/en/latest/document_loaders/langchain_core.document_loaders.base.BaseLoader.html):
+  基础接口的 API 参考。
 
-## 2. Indexing: Split {#indexing-split}
+## 2. 索引：拆分 {#indexing-split}
 
+我们加载的文档超过42,000个字符。这对于许多模型的上下文窗口来说太长了。即使对于那些能够将完整帖子放入其上下文窗口的模型，模型在处理非常长的输入时也可能会遇到困难。
 
-Our loaded document is over 42k characters long. This is too long to fit
-in the context window of many models. Even for those models that could
-fit the full post in their context window, models can struggle to find
-information in very long inputs.
+为了解决这个问题，我们将把`Document`拆分成块以进行嵌入和向量存储。这应该有助于我们在运行时仅检索博客文章中最相关的部分。
 
-To handle this we’ll split the `Document` into chunks for embedding and
-vector storage. This should help us retrieve only the most relevant bits
-of the blog post at run time.
+在这个例子中，我们将把文档拆分成每块1000个字符，块与块之间重叠200个字符。重叠有助于减轻将陈述与其相关的重要上下文分开的可能性。我们使用
+[RecursiveCharacterTextSplitter](/docs/how_to/recursive_text_splitter)，它将使用常见的分隔符（如换行符）递归地拆分文档，直到每块达到适当的大小。这是通用文本用例推荐的文本拆分器。
 
-In this case we’ll split our documents into chunks of 1000 characters
-with 200 characters of overlap between chunks. The overlap helps
-mitigate the possibility of separating a statement from important
-context related to it. We use the
-[RecursiveCharacterTextSplitter](/docs/how_to/recursive_text_splitter),
-which will recursively split the document using common separators like
-new lines until each chunk is the appropriate size. This is the
-recommended text splitter for generic text use cases.
-
-We set `add_start_index=True` so that the character index at which each
-split Document starts within the initial Document is preserved as
-metadata attribute “start_index”.
-
+我们设置`add_start_index=True`，以便在初始文档中每个拆分文档开始的字符索引作为元数据属性“start_index”被保留。
 
 ```python
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -288,72 +254,47 @@ all_splits = text_splitter.split_documents(docs)
 len(all_splits)
 ```
 
-
-
 ```output
 66
 ```
-
-
 
 ```python
 len(all_splits[0].page_content)
 ```
 
-
-
 ```output
 969
 ```
 
-
-
 ```python
 all_splits[10].metadata
 ```
-
-
 
 ```output
 {'source': 'https://lilianweng.github.io/posts/2023-06-23-agent/',
  'start_index': 7056}
 ```
 
+### 深入了解
 
-### Go deeper
+`TextSplitter`: 将 `Document` 列表拆分为更小块的对象。`DocumentTransformer` 的子类。
 
-`TextSplitter`: Object that splits a list of `Document`s into smaller
-chunks. Subclass of `DocumentTransformer`s.
+- 通过阅读 [如何文档](/docs/how_to#text-splitters) 了解使用不同方法拆分文本的更多信息
+- [代码 (py 或 js)](/docs/integrations/document_loaders/source_code)
+- [科学论文](/docs/integrations/document_loaders/grobid)
+- [接口](https://api.python.langchain.com/en/latest/base/langchain_text_splitters.base.TextSplitter.html): 基础接口的 API 参考。
 
-- Learn more about splitting text using different methods by reading the [how-to docs](/docs/how_to#text-splitters)
-- [Code (py or js)](/docs/integrations/document_loaders/source_code)
-- [Scientific papers](/docs/integrations/document_loaders/grobid)
-- [Interface](https://api.python.langchain.com/en/latest/base/langchain_text_splitters.base.TextSplitter.html): API reference for the base interface.
+`DocumentTransformer`: 对 `Document` 对象列表执行转换的对象。
 
-`DocumentTransformer`: Object that performs a transformation on a list
-of `Document` objects.
+- [文档](/docs/how_to#text-splitters): 有关如何使用 `DocumentTransformers` 的详细文档
+- [集成](/docs/integrations/document_transformers/)
+- [接口](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.transformers.BaseDocumentTransformer.html): 基础接口的 API 参考。
 
-- [Docs](/docs/how_to#text-splitters): Detailed documentation on how to use `DocumentTransformers`
-- [Integrations](/docs/integrations/document_transformers/)
-- [Interface](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.transformers.BaseDocumentTransformer.html): API reference for the base interface.
+## 3. 索引：存储 {#indexing-store}
 
-## 3. Indexing: Store {#indexing-store}
+现在我们需要对我们的 66 个文本块进行索引，以便在运行时可以对它们进行搜索。最常见的方法是嵌入每个文档切分的内容，并将这些嵌入插入到向量数据库（或向量存储）中。当我们想要搜索我们的切分时，我们会获取一个文本搜索查询，对其进行嵌入，并执行某种“相似性”搜索，以识别与我们的查询嵌入最相似的存储切分。最简单的相似性度量是余弦相似性——我们测量每对嵌入（高维向量）之间角度的余弦值。
 
-Now we need to index our 66 text chunks so that we can search over them
-at runtime. The most common way to do this is to embed the contents of
-each document split and insert these embeddings into a vector database
-(or vector store). When we want to search over our splits, we take a
-text search query, embed it, and perform some sort of “similarity”
-search to identify the stored splits with the most similar embeddings to
-our query embedding. The simplest similarity measure is cosine
-similarity — we measure the cosine of the angle between each pair of
-embeddings (which are high dimensional vectors).
-
-We can embed and store all of our document splits in a single command
-using the [Chroma](/docs/integrations/vectorstores/chroma)
-vector store and
-[OpenAIEmbeddings](/docs/integrations/text_embedding/openai)
-model.
+我们可以使用 [Chroma](/docs/integrations/vectorstores/chroma) 向量存储和 [OpenAIEmbeddings](/docs/integrations/text_embedding/openai) 模型，通过一个命令嵌入并存储所有文档切分。
 
 
 
@@ -364,45 +305,33 @@ from langchain_openai import OpenAIEmbeddings
 vectorstore = Chroma.from_documents(documents=all_splits, embedding=OpenAIEmbeddings())
 ```
 
-### Go deeper
+### 深入了解
 
-`Embeddings`: Wrapper around a text embedding model, used for converting
-text to embeddings.
+`Embeddings`: 文本嵌入模型的包装器，用于将文本转换为嵌入。
 
-- [Docs](/docs/how_to/embed_text): Detailed documentation on how to use embeddings.
-- [Integrations](/docs/integrations/text_embedding/): 30+ integrations to choose from.
-- [Interface](https://api.python.langchain.com/en/latest/embeddings/langchain_core.embeddings.Embeddings.html): API reference for the base interface.
+- [Docs](/docs/how_to/embed_text): 有关如何使用嵌入的详细文档。
+- [Integrations](/docs/integrations/text_embedding/): 30多个可供选择的集成。
+- [Interface](https://api.python.langchain.com/en/latest/embeddings/langchain_core.embeddings.Embeddings.html): 基础接口的API参考。
 
-`VectorStore`: Wrapper around a vector database, used for storing and
-querying embeddings.
+`VectorStore`: 向量数据库的包装器，用于存储和查询嵌入。
 
-- [Docs](/docs/how_to/vectorstores): Detailed documentation on how to use vector stores.
-- [Integrations](/docs/integrations/vectorstores/): 40+ integrations to choose from.
-- [Interface](https://api.python.langchain.com/en/latest/vectorstores/langchain_core.vectorstores.VectorStore.html): API reference for the base interface.
+- [Docs](/docs/how_to/vectorstores): 有关如何使用向量存储的详细文档。
+- [Integrations](/docs/integrations/vectorstores/): 40多个可供选择的集成。
+- [Interface](https://api.python.langchain.com/en/latest/vectorstores/langchain_core.vectorstores.VectorStore.html): 基础接口的API参考。
 
-This completes the **Indexing** portion of the pipeline. At this point
-we have a query-able vector store containing the chunked contents of our
-blog post. Given a user question, we should ideally be able to return
-the snippets of the blog post that answer the question.
+这完成了管道的**索引**部分。在这一点上，我们拥有一个可查询的向量存储，其中包含我们博客文章的分块内容。给定用户问题，我们理想情况下应该能够返回回答该问题的博客文章片段。
 
-## 4. Retrieval and Generation: Retrieve {#retrieval-and-generation-retrieve}
+## 4. 检索与生成: Retrieve {#retrieval-and-generation-retrieve}
 
-Now let’s write the actual application logic. We want to create a simple
-application that takes a user question, searches for documents relevant
-to that question, passes the retrieved documents and initial question to
-a model, and returns an answer.
+现在让我们编写实际的应用逻辑。我们想要创建一个简单的应用程序，它接收用户问题，搜索与该问题相关的文档，将检索到的文档和初始问题传递给模型，并返回答案。
 
-First we need to define our logic for searching over documents.
-LangChain defines a
-[Retriever](/docs/concepts#retrievers/) interface
-which wraps an index that can return relevant `Documents` given a string
-query.
+首先，我们需要定义检索文档的逻辑。LangChain 定义了一个
+[Retriever](/docs/concepts#retrievers/) 接口
+，它封装了一个可以根据字符串查询返回相关 `Documents` 的索引。
 
-The most common type of `Retriever` is the
-[VectorStoreRetriever](/docs/how_to/vectorstore_retriever),
-which uses the similarity search capabilities of a vector store to
-facilitate retrieval. Any `VectorStore` can easily be turned into a
-`Retriever` with `VectorStore.as_retriever()`:
+最常见的 `Retriever` 类型是
+[VectorStoreRetriever](/docs/how_to/vectorstore_retriever)，
+它利用向量存储的相似性搜索能力来促进检索。任何 `VectorStore` 都可以轻松地通过 `VectorStore.as_retriever()` 转换为 `Retriever`：
 
 
 ```python
@@ -428,51 +357,35 @@ print(retrieved_docs[0].page_content)
 Tree of Thoughts (Yao et al. 2023) extends CoT by exploring multiple reasoning possibilities at each step. It first decomposes the problem into multiple thought steps and generates multiple thoughts per step, creating a tree structure. The search process can be BFS (breadth-first search) or DFS (depth-first search) with each state evaluated by a classifier (via a prompt) or majority vote.
 Task decomposition can be done (1) by LLM with simple prompting like "Steps for XYZ.\n1.", "What are the subgoals for achieving XYZ?", (2) by using task-specific instructions; e.g. "Write a story outline." for writing a novel, or (3) with human inputs.
 ```
-### Go deeper
 
-Vector stores are commonly used for retrieval, but there are other ways
-to do retrieval, too.
+### 深入了解
 
-`Retriever`: An object that returns `Document`s given a text query
+向量存储通常用于检索，但还有其他检索方式。
 
-- [Docs](/docs/how_to#retrievers): Further
-  documentation on the interface and built-in retrieval techniques.
-  Some of which include:
-  - `MultiQueryRetriever` [generates variants of the input
-    question](/docs/how_to/MultiQueryRetriever)
-    to improve retrieval hit rate.
-  - `MultiVectorRetriever` instead generates
-    [variants of the
-    embeddings](/docs/how_to/multi_vector),
-    also in order to improve retrieval hit rate.
-  - `Max marginal relevance` selects for [relevance and
-    diversity](https://www.cs.cmu.edu/~jgc/publication/The_Use_MMR_Diversity_Based_LTMIR_1998.pdf)
-    among the retrieved documents to avoid passing in duplicate
-    context.
-  - Documents can be filtered during vector store retrieval using
-    metadata filters, such as with a [Self Query
-    Retriever](/docs/how_to/self_query).
-- [Integrations](/docs/integrations/retrievers/): Integrations
-  with retrieval services.
-- [Interface](https://api.python.langchain.com/en/latest/retrievers/langchain_core.retrievers.BaseRetriever.html):
-  API reference for the base interface.
+`Retriever`: 一个根据文本查询返回 `Document` 的对象
 
-## 5. Retrieval and Generation: Generate {#retrieval-and-generation-generate}
+- [文档](/docs/how_to#retrievers): 关于接口和内置检索技术的进一步文档。
+  其中包括：
+  - `MultiQueryRetriever` [生成输入问题的变体](/docs/how_to/MultiQueryRetriever)，以提高检索命中率。
+  - `MultiVectorRetriever` 则生成 [嵌入的变体](/docs/how_to/multi_vector)，同样是为了提高检索命中率。
+  - `Max marginal relevance` 在检索到的文档中选择 [相关性和多样性](https://www.cs.cmu.edu/~jgc/publication/The_Use_MMR_Diversity_Based_LTMIR_1998.pdf)，以避免传递重复的上下文。
+  - 在向量存储检索期间，可以使用元数据过滤器过滤文档，例如使用 [Self Query Retriever](/docs/how_to/self_query)。
+- [集成](/docs/integrations/retrievers/): 与检索服务的集成。
+- [接口](https://api.python.langchain.com/en/latest/retrievers/langchain_core.retrievers.BaseRetriever.html): 基础接口的 API 参考。
 
-Let’s put it all together into a chain that takes a question, retrieves
-relevant documents, constructs a prompt, passes that to a model, and
-parses the output.
+## 5. 检索与生成：生成 {#retrieval-and-generation-generate}
 
-We’ll use the gpt-3.5-turbo OpenAI chat model, but any LangChain `LLM`
-or `ChatModel` could be substituted in.
+让我们将所有内容整合成一个链条，接受一个问题，检索相关文档，构建提示，将其传递给模型，并解析输出。
+
+我们将使用 gpt-3.5-turbo OpenAI 聊天模型，但任何 LangChain 的 `LLM` 或 `ChatModel` 都可以替代。
 
 <ChatModelTabs
   customVarName="llm"
   anthropicParams={`"model="claude-3-sonnet-20240229", temperature=0.2, max_tokens=1024"`}
 />
 
-We’ll use a prompt for RAG that is checked into the LangChain prompt hub
-([here](https://smith.langchain.com/hub/rlm/rag-prompt)).
+我们将使用一个 RAG 的提示，该提示已检查到 LangChain 提示中心
+([这里](https://smith.langchain.com/hub/rlm/rag-prompt))。
 
 
 ```python
@@ -504,14 +417,14 @@ Question: filler question
 Context: filler context 
 Answer:
 ```
-We’ll use the [LCEL Runnable](/docs/concepts#langchain-expression-language-lcel)
-protocol to define the chain, allowing us to 
+我们将使用 [LCEL Runnable](/docs/concepts#langchain-expression-language-lcel)
+协议来定义链条，使我们能够 
 
-- pipe together components and functions in a transparent way 
-- automatically trace our chain in LangSmith 
-- get streaming, async, and batched calling out of the box.
+- 以透明的方式将组件和函数连接在一起 
+- 在 LangSmith 中自动追踪我们的链条 
+- 直接获得流式、异步和批量调用。
 
-Here is the implementation:
+以下是实现代码：
 
 
 ```python
@@ -536,39 +449,37 @@ for chunk in rag_chain.stream("What is Task Decomposition?"):
 ```output
 Task Decomposition is a process where a complex task is broken down into smaller, more manageable steps or parts. This is often done using techniques like "Chain of Thought" or "Tree of Thoughts", which instruct a model to "think step by step" and transform large tasks into multiple simple tasks. Task decomposition can be prompted in a model, guided by task-specific instructions, or influenced by human inputs.
 ```
-Let's dissect the LCEL to understand what's going on.
+让我们分析一下 LCEL，以理解发生了什么。
 
-First: each of these components (`retriever`, `prompt`, `llm`, etc.) are instances of [Runnable](/docs/concepts#langchain-expression-language-lcel). This means that they implement the same methods-- such as sync and async `.invoke`, `.stream`, or `.batch`-- which makes them easier to connect together. They can be connected into a [RunnableSequence](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.RunnableSequence.html)-- another Runnable-- via the `|` operator.
+首先：这些组件（`retriever`、`prompt`、`llm` 等）都是 [Runnable](/docs/concepts#langchain-expression-language-lcel) 的实例。这意味着它们实现了相同的方法——例如同步和异步的 `.invoke`、`.stream` 或 `.batch`——这使得它们更容易连接在一起。它们可以通过 `|` 操作符连接成一个 [RunnableSequence](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.RunnableSequence.html)——另一个 Runnable。
 
-LangChain will automatically cast certain objects to runnables when met with the `|` operator. Here, `format_docs` is cast to a [RunnableLambda](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.RunnableLambda.html), and the dict with `"context"` and `"question"` is cast to a [RunnableParallel](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.RunnableParallel.html). The details are less important than the bigger point, which is that each object is a Runnable.
+LangChain 会在遇到 `|` 操作符时自动将某些对象转换为 runnable。在这里，`format_docs` 被转换为 [RunnableLambda](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.RunnableLambda.html)，而包含 `"context"` 和 `"question"` 的字典被转换为 [RunnableParallel](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.RunnableParallel.html)。细节不如更大的观点重要，即每个对象都是一个 Runnable。
 
-Let's trace how the input question flows through the above runnables.
+让我们追踪输入问题如何通过上述 runnable 流动。
 
-As we've seen above, the input to `prompt` is expected to be a dict with keys `"context"` and `"question"`. So the first element of this chain builds runnables that will calculate both of these from the input question:
-- `retriever | format_docs` passes the question through the retriever, generating [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html) objects, and then to `format_docs` to generate strings;
-- `RunnablePassthrough()` passes through the input question unchanged.
+正如我们上面所看到的，`prompt` 的输入预计是一个包含键 `"context"` 和 `"question"` 的字典。因此，这个链条的第一个元素构建了将从输入问题计算出这两个值的 runnables：
+- `retriever | format_docs` 将问题传递给检索器，生成 [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html) 对象，然后传递给 `format_docs` 以生成字符串；
+- `RunnablePassthrough()` 将输入问题原样传递。
 
-That is, if you constructed
+也就是说，如果你构建了
 ```python
 chain = (
     {"context": retriever | format_docs, "question": RunnablePassthrough()}
     | prompt
 )
 ```
-Then `chain.invoke(question)` would build a formatted prompt, ready for inference. (Note: when developing with LCEL, it can be practical to test with sub-chains like this.)
+那么 `chain.invoke(question)` 将构建一个格式化的提示，准备进行推理。（注意：在使用 LCEL 开发时，测试这样的子链可能是实用的。）
 
-The last steps of the chain are `llm`, which runs the inference, and `StrOutputParser()`, which just plucks the string content out of the LLM's output message.
+链条的最后步骤是 `llm`，它执行推理，以及 `StrOutputParser()`，它只是从 LLM 的输出消息中提取字符串内容。
 
-You can analyze the individual steps of this chain via its [LangSmith
-trace](https://smith.langchain.com/public/1799e8db-8a6d-4eb2-84d5-46e8d7d5a99b/r).
+你可以通过其 [LangSmith 追踪](https://smith.langchain.com/public/1799e8db-8a6d-4eb2-84d5-46e8d7d5a99b/r) 分析这个链条的各个步骤。
 
-### Built-in chains
+### 内置链
 
-If preferred, LangChain includes convenience functions that implement the above LCEL. We compose two functions:
+如果需要，LangChain 包含实现上述 LCEL 的便捷函数。我们组合了两个函数：
 
-- [create_stuff_documents_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.combine_documents.stuff.create_stuff_documents_chain.html) specifies how retrieved context is fed into a prompt and LLM. In this case, we will "stuff" the contents into the prompt -- i.e., we will include all retrieved context without any summarization or other processing. It largely implements our above `rag_chain`, with input keys `context` and `input`-- it generates an answer using retrieved context and query.
-- [create_retrieval_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.retrieval.create_retrieval_chain.html) adds the retrieval step and propagates the retrieved context through the chain, providing it alongside the final answer. It has input key `input`, and includes `input`, `context`, and `answer` in its output.
-
+- [create_stuff_documents_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.combine_documents.stuff.create_stuff_documents_chain.html) 指定如何将检索到的上下文输入到提示和 LLM 中。在这种情况下，我们将“填充”内容到提示中——即，我们将包含所有检索到的上下文，而不进行任何总结或其他处理。它在很大程度上实现了我们上面的 `rag_chain`，输入键为 `context` 和 `input`——它使用检索到的上下文和查询生成答案。
+- [create_retrieval_chain](https://api.python.langchain.com/en/latest/chains/langchain.chains.retrieval.create_retrieval_chain.html) 添加了检索步骤，并将检索到的上下文通过链传播，提供最终答案的同时也包含上下文。它的输入键为 `input`，并在输出中包含 `input`、`context` 和 `answer`。
 
 ```python
 from langchain.chains import create_retrieval_chain
@@ -602,54 +513,37 @@ print(response["answer"])
 ```output
 Task Decomposition is a process in which complex tasks are broken down into smaller and simpler steps. Techniques like Chain of Thought (CoT) and Tree of Thoughts are used to enhance model performance on these tasks. The CoT method instructs the model to think step by step, decomposing hard tasks into manageable ones, while Tree of Thoughts extends CoT by exploring multiple reasoning possibilities at each step, creating a tree structure of thoughts.
 ```
-#### Returning sources
-Often in Q&A applications it's important to show users the sources that were used to generate the answer. LangChain's built-in `create_retrieval_chain` will propagate retrieved source documents through to the output in the `"context"` key:
-
+#### 返回来源
+在问答应用中，通常重要的是向用户展示用于生成答案的来源。LangChain 的内置 `create_retrieval_chain` 将通过 `"context"` 键将检索到的源文档传播到输出中：
 
 ```python
 for document in response["context"]:
     print(document)
     print()
 ```
-```output
-page_content='Fig. 1. Overview of a LLM-powered autonomous agent system.\nComponent One: Planning#\nA complicated task usually involves many steps. An agent needs to know what they are and plan ahead.\nTask Decomposition#\nChain of thought (CoT; Wei et al. 2022) has become a standard prompting technique for enhancing model performance on complex tasks. The model is instructed to “think step by step” to utilize more test-time computation to decompose hard tasks into smaller and simpler steps. CoT transforms big tasks into multiple manageable tasks and shed lights into an interpretation of the model’s thinking process.' metadata={'source': 'https://lilianweng.github.io/posts/2023-06-23-agent/'}
 
-page_content='Fig. 1. Overview of a LLM-powered autonomous agent system.\nComponent One: Planning#\nA complicated task usually involves many steps. An agent needs to know what they are and plan ahead.\nTask Decomposition#\nChain of thought (CoT; Wei et al. 2022) has become a standard prompting technique for enhancing model performance on complex tasks. The model is instructed to “think step by step” to utilize more test-time computation to decompose hard tasks into smaller and simpler steps. CoT transforms big tasks into multiple manageable tasks and shed lights into an interpretation of the model’s thinking process.' metadata={'source': 'https://lilianweng.github.io/posts/2023-06-23-agent/', 'start_index': 1585}
+### 深入了解
 
-page_content='Tree of Thoughts (Yao et al. 2023) extends CoT by exploring multiple reasoning possibilities at each step. It first decomposes the problem into multiple thought steps and generates multiple thoughts per step, creating a tree structure. The search process can be BFS (breadth-first search) or DFS (depth-first search) with each state evaluated by a classifier (via a prompt) or majority vote.\nTask decomposition can be done (1) by LLM with simple prompting like "Steps for XYZ.\\n1.", "What are the subgoals for achieving XYZ?", (2) by using task-specific instructions; e.g. "Write a story outline." for writing a novel, or (3) with human inputs.' metadata={'source': 'https://lilianweng.github.io/posts/2023-06-23-agent/', 'start_index': 2192}
+#### 选择模型
 
-page_content='Tree of Thoughts (Yao et al. 2023) extends CoT by exploring multiple reasoning possibilities at each step. It first decomposes the problem into multiple thought steps and generates multiple thoughts per step, creating a tree structure. The search process can be BFS (breadth-first search) or DFS (depth-first search) with each state evaluated by a classifier (via a prompt) or majority vote.\nTask decomposition can be done (1) by LLM with simple prompting like "Steps for XYZ.\\n1.", "What are the subgoals for achieving XYZ?", (2) by using task-specific instructions; e.g. "Write a story outline." for writing a novel, or (3) with human inputs.' metadata={'source': 'https://lilianweng.github.io/posts/2023-06-23-agent/'}
+`ChatModel`：一个基于LLM的聊天模型。接收一系列消息并返回一条消息。
 
-page_content='Resources:\n1. Internet access for searches and information gathering.\n2. Long Term memory management.\n3. GPT-3.5 powered Agents for delegation of simple tasks.\n4. File output.\n\nPerformance Evaluation:\n1. Continuously review and analyze your actions to ensure you are performing to the best of your abilities.\n2. Constructively self-criticize your big-picture behavior constantly.\n3. Reflect on past decisions and strategies to refine your approach.\n4. Every command has a cost, so be smart and efficient. Aim to complete tasks in the least number of steps.' metadata={'source': 'https://lilianweng.github.io/posts/2023-06-23-agent/'}
+- [文档](/docs/how_to#chat-models)
+- [集成](/docs/integrations/chat/)：可选择25+个集成。
+- [接口](https://api.python.langchain.com/en/latest/language_models/langchain_core.language_models.chat_models.BaseChatModel.html)：基础接口的API参考。
 
-page_content='Resources:\n1. Internet access for searches and information gathering.\n2. Long Term memory management.\n3. GPT-3.5 powered Agents for delegation of simple tasks.\n4. File output.\n\nPerformance Evaluation:\n1. Continuously review and analyze your actions to ensure you are performing to the best of your abilities.\n2. Constructively self-criticize your big-picture behavior constantly.\n3. Reflect on past decisions and strategies to refine your approach.\n4. Every command has a cost, so be smart and efficient. Aim to complete tasks in the least number of steps.' metadata={'source': 'https://lilianweng.github.io/posts/2023-06-23-agent/', 'start_index': 29630}
-```
-### Go deeper
+`LLM`：一个文本输入文本输出的LLM。接收一个字符串并返回一个字符串。
 
-#### Choosing a model
+- [文档](/docs/how_to#llms)
+- [集成](/docs/integrations/llms)：可选择75+个集成。
+- [接口](https://api.python.langchain.com/en/latest/language_models/langchain_core.language_models.llms.BaseLLM.html)：基础接口的API参考。
 
-`ChatModel`: An LLM-backed chat model. Takes in a sequence of messages
-and returns a message.
+查看关于本地运行模型的RAG指南
+[这里](/docs/tutorials/local_rag)。
 
-- [Docs](/docs/how_to#chat-models)
-- [Integrations](/docs/integrations/chat/): 25+ integrations to choose from.
-- [Interface](https://api.python.langchain.com/en/latest/language_models/langchain_core.language_models.chat_models.BaseChatModel.html): API reference for the base interface.
+#### 自定义提示
 
-`LLM`: A text-in-text-out LLM. Takes in a string and returns a string.
-
-- [Docs](/docs/how_to#llms)
-- [Integrations](/docs/integrations/llms): 75+ integrations to choose from.
-- [Interface](https://api.python.langchain.com/en/latest/language_models/langchain_core.language_models.llms.BaseLLM.html): API reference for the base interface.
-
-See a guide on RAG with locally-running models
-[here](/docs/tutorials/local_rag).
-
-#### Customizing the prompt
-
-As shown above, we can load prompts (e.g., [this RAG
-prompt](https://smith.langchain.com/hub/rlm/rag-prompt)) from the prompt
-hub. The prompt can also be easily customized:
-
+如上所示，我们可以从提示中心加载提示（例如，[这个RAG提示](https://smith.langchain.com/hub/rlm/rag-prompt)）。提示也可以很容易地自定义：
 
 ```python
 from langchain_core.prompts import PromptTemplate
@@ -676,32 +570,26 @@ rag_chain = (
 rag_chain.invoke("What is Task Decomposition?")
 ```
 
-
-
 ```output
 'Task decomposition is the process of breaking down a complex task into smaller, more manageable parts. Techniques like Chain of Thought (CoT) and Tree of Thoughts allow an agent to "think step by step" and explore multiple reasoning possibilities, respectively. This process can be executed by a Language Model with simple prompts, task-specific instructions, or human inputs. Thanks for asking!'
 ```
 
+查看[LangSmith追踪](https://smith.langchain.com/public/da23c4d8-3b33-47fd-84df-a3a582eedf84/r)
 
-Check out the [LangSmith
-trace](https://smith.langchain.com/public/da23c4d8-3b33-47fd-84df-a3a582eedf84/r)
+## 下一步
 
-## Next steps
+我们已经涵盖了构建基本问答应用程序的步骤：
 
-We've covered the steps to build a basic Q&A app over data:
+- 使用 [Document Loader](/docs/concepts#document-loaders) 加载数据
+- 使用 [Text Splitter](/docs/concepts#text-splitters) 对索引数据进行切块，使其更易于模型使用
+- [Embedding the data](/docs/concepts#embedding-models) 并将数据存储在 [vectorstore](/docs/how_to/vectorstores) 中
+- [Retrieving](/docs/concepts#retrievers) 之前存储的块以响应传入的问题
+- 使用检索到的块作为上下文生成答案
 
-- Loading data with a [Document Loader](/docs/concepts#document-loaders)
-- Chunking the indexed data with a [Text Splitter](/docs/concepts#text-splitters) to make it more easily usable by a model
-- [Embedding the data](/docs/concepts#embedding-models) and storing the data in a [vectorstore](/docs/how_to/vectorstores)
-- [Retrieving](/docs/concepts#retrievers) the previously stored chunks in response to incoming questions
-- Generating an answer using the retrieved chunks as context
+在上述每个部分中还有许多功能、集成和扩展可供探索。除了上述提到的 **深入了解** 资源，好的下一步包括：
 
-There’s plenty of features, integrations, and extensions to explore in each of
-the above sections. Along from the **Go deeper** sources mentioned
-above, good next steps include:
-
-- [Return sources](/docs/how_to/qa_sources): Learn how to return source documents
-- [Streaming](/docs/how_to/streaming): Learn how to stream outputs and intermediate steps
-- [Add chat history](/docs/how_to/message_history): Learn how to add chat history to your app
-- [Retrieval conceptual guide](/docs/concepts/#retrieval): A high-level overview of specific retrieval techniques
-- [Build a local RAG application](/docs/tutorials/local_rag): Create an app similar to the one above using all local components
+- [Return sources](/docs/how_to/qa_sources): 学习如何返回源文档
+- [Streaming](/docs/how_to/streaming): 学习如何流式输出和中间步骤
+- [Add chat history](/docs/how_to/message_history): 学习如何将聊天历史添加到您的应用程序中
+- [Retrieval conceptual guide](/docs/concepts/#retrieval): 特定检索技术的高级概述
+- [Build a local RAG application](/docs/tutorials/local_rag): 创建一个类似于上述应用程序的应用，使用所有本地组件

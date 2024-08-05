@@ -1,50 +1,47 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/assemblyai.ipynb
 ---
-# AssemblyAI Audio Transcripts
 
-The `AssemblyAIAudioTranscriptLoader` allows to transcribe audio files with the [AssemblyAI API](https://www.assemblyai.com) and loads the transcribed text into documents.
+# AssemblyAI 音频转录
 
-To use it, you should have the `assemblyai` python package installed, and the
-environment variable `ASSEMBLYAI_API_KEY` set with your API key. Alternatively, the API key can also be passed as an argument.
+`AssemblyAIAudioTranscriptLoader` 允许使用 [AssemblyAI API](https://www.assemblyai.com) 转录音频文件，并将转录文本加载到文档中。
 
-More info about AssemblyAI:
+要使用它，您需要安装 `assemblyai` Python 包，并设置环境变量 `ASSEMBLYAI_API_KEY`，其中包含您的 API 密钥。或者，API 密钥也可以作为参数传递。
 
-- [Website](https://www.assemblyai.com/)
-- [Get a Free API key](https://www.assemblyai.com/dashboard/signup)
-- [AssemblyAI API Docs](https://www.assemblyai.com/docs)
+有关 AssemblyAI 的更多信息：
 
-## Installation
+- [网站](https://www.assemblyai.com/)
+- [获取免费 API 密钥](https://www.assemblyai.com/dashboard/signup)
+- [AssemblyAI API 文档](https://www.assemblyai.com/docs)
 
-First, you need to install the `assemblyai` python package.
+## 安装
 
-You can find more info about it inside the [assemblyai-python-sdk GitHub repo](https://github.com/AssemblyAI/assemblyai-python-sdk).
+首先，您需要安装 `assemblyai` python 包。
 
+您可以在 [assemblyai-python-sdk GitHub 仓库](https://github.com/AssemblyAI/assemblyai-python-sdk) 中找到更多信息。
 
 ```python
 %pip install --upgrade --quiet  assemblyai
 ```
 
-## Example
+## 示例
 
-The `AssemblyAIAudioTranscriptLoader` needs at least the `file_path` argument. Audio files can be specified as an URL or a local file path.
-
+`AssemblyAIAudioTranscriptLoader` 至少需要 `file_path` 参数。音频文件可以指定为 URL 或本地文件路径。
 
 ```python
 from langchain_community.document_loaders import AssemblyAIAudioTranscriptLoader
 
 audio_file = "https://storage.googleapis.com/aai-docs-samples/nbc.mp3"
-# or a local file path: audio_file = "./nbc.mp3"
+# 或本地文件路径: audio_file = "./nbc.mp3"
 
 loader = AssemblyAIAudioTranscriptLoader(file_path=audio_file)
 
 docs = loader.load()
 ```
 
-Note: Calling `loader.load()` blocks until the transcription is finished.
+注意：调用 `loader.load()` 会阻塞，直到转录完成。
 
-The transcribed text is available in the `page_content`:
-
+转录文本可通过 `page_content` 获取：
 
 ```python
 docs[0].page_content
@@ -54,8 +51,7 @@ docs[0].page_content
 "Load time, a new president and new congressional makeup. Same old ..."
 ```
 
-The `metadata` contains the full JSON response with more meta information:
-
+`metadata` 包含完整的 JSON 响应以及更多元信息：
 
 ```python
 docs[0].metadata
@@ -70,17 +66,17 @@ docs[0].metadata
 }
 ```
 
-## Transcript Formats
+## 转录格式
 
-You can specify the `transcript_format` argument for different formats.
+您可以为不同的格式指定 `transcript_format` 参数。
 
-Depending on the format, one or more documents are returned. These are the different `TranscriptFormat` options:
+根据格式的不同，返回一个或多个文档。这些是不同的 `TranscriptFormat` 选项：
 
-- `TEXT`: One document with the transcription text
-- `SENTENCES`: Multiple documents, splits the transcription by each sentence
-- `PARAGRAPHS`: Multiple documents, splits the transcription by each paragraph
-- `SUBTITLES_SRT`: One document with the transcript exported in SRT subtitles format
-- `SUBTITLES_VTT`: One document with the transcript exported in VTT subtitles format
+- `TEXT`: 一个包含转录文本的文档
+- `SENTENCES`: 多个文档，按每个句子拆分转录
+- `PARAGRAPHS`: 多个文档，按每个段落拆分转录
+- `SUBTITLES_SRT`: 一个以 SRT 字幕格式导出的转录文档
+- `SUBTITLES_VTT`: 一个以 VTT 字幕格式导出的转录文档
 
 
 ```python
@@ -94,11 +90,11 @@ loader = AssemblyAIAudioTranscriptLoader(
 docs = loader.load()
 ```
 
-## Transcription Config
+## 转录配置
 
-You can also specify the `config` argument to use different audio intelligence models.
+您还可以指定 `config` 参数以使用不同的音频智能模型。
 
-Visit the [AssemblyAI API Documentation](https://www.assemblyai.com/docs) to get an overview of all available models!
+访问 [AssemblyAI API 文档](https://www.assemblyai.com/docs) 以获取所有可用模型的概述！
 
 
 ```python
@@ -111,9 +107,9 @@ config = aai.TranscriptionConfig(
 loader = AssemblyAIAudioTranscriptLoader(file_path="./your_file.mp3", config=config)
 ```
 
-## Pass the API Key as argument
+## 将API密钥作为参数传递
 
-Next to setting the API key as environment variable `ASSEMBLYAI_API_KEY`, it is also possible to pass it as argument.
+除了将API密钥设置为环境变量 `ASSEMBLYAI_API_KEY`，还可以将其作为参数传递。
 
 
 ```python
@@ -122,8 +118,7 @@ loader = AssemblyAIAudioTranscriptLoader(
 )
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

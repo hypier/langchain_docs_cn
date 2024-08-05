@@ -1,23 +1,24 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/callbacks/infino.ipynb
 ---
+
 # Infino
 
->[Infino](https://github.com/infinohq/infino) is a scalable telemetry store designed for logs, metrics, and traces. Infino can function as a standalone observability solution or as the storage layer in your observability stack.
+>[Infino](https://github.com/infinohq/infino) 是一个可扩展的遥测存储，专为日志、指标和追踪而设计。Infino 可以作为独立的可观察性解决方案，也可以作为您可观察性栈中的存储层。
 
-This example shows how one can track the following while calling OpenAI and ChatOpenAI models via `LangChain` and [Infino](https://github.com/infinohq/infino):
+此示例演示如何在通过 `LangChain` 和 [Infino](https://github.com/infinohq/infino) 调用 OpenAI 和 ChatOpenAI 模型时跟踪以下内容：
 
-* prompt input
-* response from `ChatGPT` or any other `LangChain` model
-* latency
-* errors
-* number of tokens consumed
+* 提示输入
+* 来自 `ChatGPT` 或任何其他 `LangChain` 模型的响应
+* 延迟
+* 错误
+* 消耗的令牌数量
 
-## Initializing
+## 初始化
 
 
 ```python
-# Install necessary dependencies.
+# 安装必要的依赖项。
 %pip install --upgrade --quiet  infinopy
 %pip install --upgrade --quiet  matplotlib
 %pip install --upgrade --quiet  tiktoken
@@ -41,7 +42,7 @@ from infinopy import InfinoClient
 from langchain_openai import OpenAI
 ```
 
-## Start Infino server, initialize the Infino client
+## 启动 Infino 服务器，初始化 Infino 客户端
 
 
 ```python
@@ -54,38 +55,38 @@ client = InfinoClient()
 ```output
 a1159e99c6bdb3101139157acee6aba7ae9319375e77ab6fbc79beff75abeca3
 ```
-## Read the questions dataset
+
+## 阅读问题数据集
 
 
 ```python
-# These are a subset of questions from Stanford's QA dataset -
+# 这些是斯坦福QA数据集的一个子集 -
 # https://rajpurkar.github.io/SQuAD-explorer/
-data = """In what country is Normandy located?
-When were the Normans in Normandy?
-From which countries did the Norse originate?
-Who was the Norse leader?
-What century did the Normans first gain their separate identity?
-Who gave their name to Normandy in the 1000's and 1100's
-What is France a region of?
-Who did King Charles III swear fealty to?
-When did the Frankish identity emerge?
-Who was the duke in the battle of Hastings?
-Who ruled the duchy of Normandy
-What religion were the Normans
-What type of major impact did the Norman dynasty have on modern Europe?
-Who was famed for their Christian spirit?
-Who assimilted the Roman language?
-Who ruled the country of Normandy?
-What principality did William the conqueror found?
-What is the original meaning of the word Norman?
-When was the Latin version of the word Norman first recorded?
-What name comes from the English words Normans/Normanz?"""
+data = """诺曼底位于哪个国家？
+诺曼人在诺曼底的时间是什么时候？
+北欧人来自哪些国家？
+谁是北欧的领袖？
+诺曼人第一次获得独立身份是在几个世纪？
+谁在1000年和1100年给诺曼底命名？
+法国是哪个地区的？
+查理三世国王向谁宣誓效忠？
+法兰克身份是什么时候出现的？
+谁是黑斯廷斯战役中的公爵？
+谁统治了诺曼底公国？
+诺曼人信仰什么宗教？
+诺曼王朝对现代欧洲产生了什么重大影响？
+谁以其基督教精神而闻名？
+谁吸收了罗马语言？
+谁统治了诺曼底这个国家？
+威廉征服者创立了哪个公国？
+“诺曼”这个词的原始含义是什么？
+“诺曼”这个词的拉丁语版本首次记录于何时？
+哪个名字源自英语单词Normans/Normanz？"""
 
 questions = data.split("\n")
 ```
 
-## Example 1: LangChain OpenAI Q&A; Publish metrics and logs to Infino
-
+## 示例 1：LangChain OpenAI 问答；将指标和日志发布到 Infino
 
 ```python
 # Set your key here.
@@ -132,10 +133,10 @@ generations=[[Generation(text='\n\nThe Frankish identity began to emerge in the 
 Who was the duke in the battle of Hastings?
 generations=[[Generation(text='\n\nThe Duke of Normandy, William the Conqueror, was the leader of the Norman forces at the Battle of Hastings in 1066.', generation_info={'finish_reason': 'stop', 'logprobs': None})]] llm_output={'token_usage': {'total_tokens': 39, 'prompt_tokens': 11, 'completion_tokens': 28}, 'model_name': 'text-davinci-003'} run=[RunInfo(run_id=UUID('b8f84619-ea5f-4c18-b411-b62194f36fe0'))]
 ```
-## Create Metric Charts
 
-We now use matplotlib to create graphs of latency, errors and tokens consumed.
+## 创建指标图表
 
+我们现在使用 matplotlib 创建延迟、错误和消耗的令牌的图表。
 
 ```python
 # Helper function to create a graph using matplotlib.
@@ -168,26 +169,25 @@ def plot(data, title):
 
 ```python
 response = client.search_ts("__name__", "latency", 0, int(time.time()))
-plot(response.text, "Latency")
+plot(response.text, "延迟")
 
 response = client.search_ts("__name__", "error", 0, int(time.time()))
-plot(response.text, "Errors")
+plot(response.text, "错误")
 
 response = client.search_ts("__name__", "prompt_tokens", 0, int(time.time()))
-plot(response.text, "Prompt Tokens")
+plot(response.text, "提示令牌")
 
 response = client.search_ts("__name__", "completion_tokens", 0, int(time.time()))
-plot(response.text, "Completion Tokens")
+plot(response.text, "完成令牌")
 
 response = client.search_ts("__name__", "total_tokens", 0, int(time.time()))
-plot(response.text, "Total Tokens")
+plot(response.text, "总令牌")
 ```
 
-## Full text query on prompt or prompt outputs.
-
+## 完整文本查询提示或提示输出。
 
 ```python
-# Search for a particular prompt text.
+# 搜索特定的提示文本。
 query = "normandy"
 response = client.search_log(query, 0, int(time.time()))
 print("Results for", query, ":", response.text)
@@ -199,12 +199,12 @@ response = client.search_log("king charles III", 0, int(time.time()))
 print("Results for", query, ":", response.text)
 ```
 ```output
-Results for normandy : [{"time":1696947743,"fields":{"prompt_response":"\n\nThe Normans, a people from northern France, gave their name to Normandy in the 1000s and 1100s. The Normans were descendants of Vikings who had settled in the region in the late 800s."},"text":"\n\nThe Normans, a people from northern France, gave their name to Normandy in the 1000s and 1100s. The Normans were descendants of Vikings who had settled in the region in the late 800s."},{"time":1696947740,"fields":{"prompt":"Who gave their name to Normandy in the 1000's and 1100's"},"text":"Who gave their name to Normandy in the 1000's and 1100's"},{"time":1696947733,"fields":{"prompt_response":"\n\nThe Normans first settled in Normandy in the late 9th century."},"text":"\n\nThe Normans first settled in Normandy in the late 9th century."},{"time":1696947732,"fields":{"prompt_response":"\n\nNormandy is located in France."},"text":"\n\nNormandy is located in France."},{"time":1696947731,"fields":{"prompt":"In what country is Normandy located?"},"text":"In what country is Normandy located?"}]
+Results for normandy : [{"time":1696947743,"fields":{"prompt_response":"\n\n诺曼人，来自法国北部的一个民族，在1000年和1100年给予了诺曼底这个名字。诺曼人是定居在该地区的维京人的后裔，早在800年代末就已定居。"},"text":"\n\n诺曼人，来自法国北部的一个民族，在1000年和1100年给予了诺曼底这个名字。诺曼人是定居在该地区的维京人的后裔，早在800年代末就已定居。"},{"time":1696947740,"fields":{"prompt":"谁在1000年和1100年给予了诺曼底这个名字"},"text":"谁在1000年和1100年给予了诺曼底这个名字"},{"time":1696947733,"fields":{"prompt_response":"\n\n诺曼人在9世纪末首次定居于诺曼底。"},"text":"\n\n诺曼人在9世纪末首次定居于诺曼底。"},{"time":1696947732,"fields":{"prompt_response":"\n\n诺曼底位于法国。"},"text":"\n\n诺曼底位于法国。"},{"time":1696947731,"fields":{"prompt":"诺曼底位于哪个国家？"},"text":"诺曼底位于哪个国家？"}]
 ===
-Results for king charles III : [{"time":1696947745,"fields":{"prompt_response":"\n\nKing Charles III swore fealty to King Philip II of Spain."},"text":"\n\nKing Charles III swore fealty to King Philip II of Spain."},{"time":1696947744,"fields":{"prompt":"Who did King Charles III swear fealty to?"},"text":"Who did King Charles III swear fealty to?"}]
+Results for king charles III : [{"time":1696947745,"fields":{"prompt_response":"\n\n查尔斯三世国王向西班牙的菲利普二世国王宣誓效忠。"},"text":"\n\n查尔斯三世国王向西班牙的菲利普二世国王宣誓效忠。"},{"time":1696947744,"fields":{"prompt":"查尔斯三世国王向谁宣誓效忠？"},"text":"查尔斯三世国王向谁宣誓效忠？"}]
 ```
-# Example 2: Summarize a piece of text using ChatOpenAI
 
+# 示例 2：使用 ChatOpenAI 总结一段文本
 
 ```python
 # Set your key here.
@@ -235,7 +235,7 @@ for url in urls:
     chain.run(docs)
 ```
 
-## Create Metric Charts
+## 创建指标图表
 
 
 ```python
@@ -254,16 +254,16 @@ plot(response.text, "Completion Tokens")
 
 
 ```python
-## Full text query on prompt or prompt outputs
+## 在提示或提示输出上进行全文查询
 ```
 
 
 ```python
-# Search for a particular prompt text.
+# 搜索特定的提示文本。
 query = "machine learning"
 response = client.search_log(query, 0, int(time.time()))
 
-# The output can be verbose - uncomment below if it needs to be printed.
+# 输出可能会很冗长 - 如果需要打印，请取消注释下面的代码。
 # print("Results for", query, ":", response.text)
 
 print("===")
@@ -273,7 +273,7 @@ print("===")
 ```
 
 ```python
-## Stop Infino server
+## 停止 Infino 服务器
 ```
 
 

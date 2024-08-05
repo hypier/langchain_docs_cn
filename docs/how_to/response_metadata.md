@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/response_metadata.ipynb
 ---
-# Response metadata
 
-Many model providers include some metadata in their chat generation responses. This metadata can be accessed via the `AIMessage.response_metadata: Dict` attribute. Depending on the model provider and model configuration, this can contain information like [token counts](/docs/how_to/chat_token_usage_tracking), [logprobs](/docs/how_to/logprobs), and more.
+# 响应元数据
 
-Here's what the response metadata looks like for a few different providers:
+许多模型提供者在其聊天生成响应中包含一些元数据。可以通过 `AIMessage.response_metadata: Dict` 属性访问这些元数据。根据模型提供者和模型配置，这可能包含诸如 [token 计数](/docs/how_to/chat_token_usage_tracking)、[logprobs](/docs/how_to/logprobs) 等信息。
+
+以下是不同提供者的响应元数据示例：
 
 ## OpenAI
 
@@ -30,8 +31,7 @@ msg.response_metadata
  'logprobs': None}
 ```
 
-
-## Anthropic
+## 人工智能公司
 
 
 ```python
@@ -51,7 +51,6 @@ msg.response_metadata
  'stop_sequence': None,
  'usage': {'input_tokens': 17, 'output_tokens': 296}}
 ```
-
 
 ## Google VertexAI
 
@@ -86,8 +85,7 @@ msg.response_metadata
   'total_token_count': 40}}
 ```
 
-
-## Bedrock (Anthropic)
+## 基岩 (Anthropic)
 
 
 ```python
@@ -104,7 +102,6 @@ msg.response_metadata
 {'model_id': 'anthropic.claude-v2',
  'usage': {'prompt_tokens': 19, 'completion_tokens': 371, 'total_tokens': 390}}
 ```
-
 
 ## MistralAI
 
@@ -126,7 +123,6 @@ msg.response_metadata
  'model': 'mistral-small',
  'finish_reason': 'stop'}
 ```
-
 
 ## Groq
 
@@ -154,7 +150,6 @@ msg.response_metadata
  'finish_reason': 'stop',
  'logprobs': None}
 ```
-
 
 ## TogetherAI
 
@@ -185,7 +180,6 @@ msg.response_metadata
  'logprobs': None}
 ```
 
-
 ## FireworksAI
 
 
@@ -208,4 +202,3 @@ msg.response_metadata
  'finish_reason': 'length',
  'logprobs': None}
 ```
-

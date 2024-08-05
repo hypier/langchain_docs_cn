@@ -1,17 +1,17 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/chatgpt-plugin.ipynb
 ---
-# ChatGPT plugin
 
->[OpenAI plugins](https://platform.openai.com/docs/plugins/introduction) connect `ChatGPT` to third-party applications. These plugins enable `ChatGPT` to interact with APIs defined by developers, enhancing `ChatGPT's` capabilities and allowing it to perform a wide range of actions.
+# ChatGPT 插件
 
->Plugins allow `ChatGPT` to do things like:
->- Retrieve real-time information; e.g., sports scores, stock prices, the latest news, etc.
->- Retrieve knowledge-base information; e.g., company docs, personal notes, etc.
->- Perform actions on behalf of the user; e.g., booking a flight, ordering food, etc.
+>[OpenAI 插件](https://platform.openai.com/docs/plugins/introduction) 将 `ChatGPT` 连接到第三方应用程序。这些插件使 `ChatGPT` 能够与开发者定义的 API 进行交互，增强了 `ChatGPT` 的能力，并允许它执行各种操作。
 
-This notebook shows how to use the ChatGPT Retriever Plugin within LangChain.
+>插件允许 `ChatGPT` 执行以下操作：
+>- 检索实时信息；例如，体育比分、股票价格、最新新闻等。
+>- 检索知识库信息；例如，公司文档、个人笔记等。
+>- 代表用户执行操作；例如，预订航班、点餐等。
 
+本笔记本展示了如何在 LangChain 中使用 ChatGPT 检索器插件。
 
 ```python
 # STEP 1: Load
@@ -48,14 +48,13 @@ write_json("foo.json", data)
 # Ingest this as you would any other json file in https://github.com/openai/chatgpt-retrieval-plugin/tree/main/scripts/process_json
 ```
 
-## Using the ChatGPT Retriever Plugin
+## 使用 ChatGPT 检索插件
 
-Okay, so we've created the ChatGPT Retriever Plugin, but how do we actually use it?
+好的，我们已经创建了 ChatGPT 检索插件，但我们到底该如何使用它呢？
 
-The below code walks through how to do that.
+下面的代码演示了如何做到这一点。
 
-We want to use `ChatGPTPluginRetriever` so we have to get the OpenAI API Key.
-
+我们想要使用 `ChatGPTPluginRetriever`，因此我们需要获取 OpenAI API 密钥。
 
 ```python
 import getpass
@@ -91,9 +90,7 @@ retriever.invoke("alice's phone number")
  Document(page_content='Team: Angels "Payroll (millions)": 154.49 "Wins": 89', lookup_str='', metadata={'id': '59c2c0c1-ae3f-4272-a1da-f44a723ea631_0', 'metadata': {'source': None, 'source_id': None, 'url': None, 'created_at': None, 'author': None, 'document_id': '59c2c0c1-ae3f-4272-a1da-f44a723ea631'}, 'embedding': None, 'score': 0.697888613}, lookup_index=0)]
 ```
 
+## 相关
 
-
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

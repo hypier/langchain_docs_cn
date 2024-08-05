@@ -2,29 +2,27 @@
 
 :::warning
 
-MLflow AI Gateway has been deprecated. Please use [MLflow Deployments for LLMs](/docs/integrations/providers/mlflow/) instead.
+MLflow AI Gateway 已被弃用。请使用 [MLflow Deployments for LLMs](/docs/integrations/providers/mlflow/) 代替。
 
 :::
 
->[The MLflow AI Gateway](https://www.mlflow.org/docs/latest/index.html) service is a powerful tool designed to streamline the usage and management of various large 
-> language model (LLM) providers, such as OpenAI and Anthropic, within an organization. It offers a high-level interface 
-> that simplifies the interaction with these services by providing a unified endpoint to handle specific LLM related requests.
+>[The MLflow AI Gateway](https://www.mlflow.org/docs/latest/index.html) 服务是一个强大的工具，旨在简化组织内各种大型语言模型（LLM）提供商（如 OpenAI 和 Anthropic）的使用和管理。它提供了一个高层次的接口，通过提供一个统一的端点来处理特定的 LLM 相关请求，从而简化与这些服务的交互。
 
-## Installation and Setup
+## 安装与设置
 
-Install `mlflow` with MLflow AI Gateway dependencies:
+安装 `mlflow` 及其 MLflow AI Gateway 依赖项：
 
 ```sh
 pip install 'mlflow[gateway]'
 ```
 
-Set the OpenAI API key as an environment variable:
+将 OpenAI API 密钥设置为环境变量：
 
 ```sh
 export OPENAI_API_KEY=...
 ```
 
-Create a configuration file:
+创建配置文件：
 
 ```yaml
 routes:
@@ -45,23 +43,21 @@ routes:
         openai_api_key: $OPENAI_API_KEY
 ```
 
-Start the Gateway server:
+启动 Gateway 服务器：
 
 ```sh
 mlflow gateway start --config-path /path/to/config.yaml
 ```
 
-## Example provided by `MLflow`
+## `MLflow` 提供的示例
 
->The `mlflow.langchain` module provides an API for logging and loading `LangChain` models. 
-> This module exports multivariate LangChain models in the langchain flavor and univariate LangChain 
-> models in the pyfunc flavor.
+>`mlflow.langchain` 模块提供了用于记录和加载 `LangChain` 模型的 API。 
+> 该模块以 langchain 风格导出多元 LangChain 模型，以 pyfunc 风格导出单元 LangChain 
+> 模型。
  
-See the [API documentation and examples](https://www.mlflow.org/docs/latest/python_api/mlflow.langchain.html?highlight=langchain#module-mlflow.langchain).
+查看 [API 文档和示例](https://www.mlflow.org/docs/latest/python_api/mlflow.langchain.html?highlight=langchain#module-mlflow.langchain)。
 
-
-
-## Completions Example
+## 完成示例
 
 ```python
 import mlflow
@@ -81,20 +77,20 @@ llm_chain = LLMChain(
     llm=gateway,
     prompt=PromptTemplate(
         input_variables=["adjective"],
-        template="Tell me a {adjective} joke",
+        template="告诉我一个{adjective}的笑话",
     ),
 )
-result = llm_chain.run(adjective="funny")
+result = llm_chain.run(adjective="搞笑")
 print(result)
 
 with mlflow.start_run():
     model_info = mlflow.langchain.log_model(chain, "model")
 
 model = mlflow.pyfunc.load_model(model_info.model_uri)
-print(model.predict([{"adjective": "funny"}]))
+print(model.predict([{"adjective": "搞笑"}]))
 ```
 
-## Embeddings Example
+## 嵌入示例
 
 ```python
 from langchain_community.embeddings import MlflowAIGatewayEmbeddings
@@ -108,7 +104,7 @@ print(embeddings.embed_query("hello"))
 print(embeddings.embed_documents(["hello"]))
 ```
 
-## Chat Example
+## 聊天示例
 
 ```python
 from langchain_community.chat_models import ChatMLflowAIGateway
@@ -135,8 +131,8 @@ print(chat(messages))
 
 ## Databricks MLflow AI Gateway
 
-Databricks MLflow AI Gateway is in private preview.
-Please contact a Databricks representative to enroll in the preview.
+Databricks MLflow AI Gateway 目前处于私人预览阶段。  
+请联系 Databricks 代表以注册预览。
 
 ```python
 from langchain.chains import LLMChain

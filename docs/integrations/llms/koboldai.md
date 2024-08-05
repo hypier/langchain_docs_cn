@@ -1,29 +1,26 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/koboldai.ipynb
 ---
+
 # KoboldAI API
 
-[KoboldAI](https://github.com/KoboldAI/KoboldAI-Client) is a "a browser-based front-end for AI-assisted writing with multiple local & remote AI models...". It has a public and local API that is able to be used in langchain.
+[KoboldAI](https://github.com/KoboldAI/KoboldAI-Client) 是一个“基于浏览器的前端，用于与多个本地和远程AI模型进行AI辅助写作...”。它具有一个公共和本地API，可以在langchain中使用。
 
-This example goes over how to use LangChain with that API.
+本示例介绍了如何使用LangChain与该API。
 
-Documentation can be found in the browser adding /api to the end of your endpoint (i.e http://127.0.0.1/:5000/api).
-
-
+文档可以在浏览器中通过在端点后添加/api找到（即 http://127.0.0.1/:5000/api）。
 
 ```python
 from langchain_community.llms import KoboldApiLLM
 ```
 
-Replace the endpoint seen below with the one shown in the output after starting the webui with --api or --public-api
+将下面看到的端点替换为在使用 --api 或 --public-api 启动webui后显示的端点。
 
-Optionally, you can pass in parameters like temperature or max_length
-
+可选地，您可以传递像 temperature 或 max_length 的参数。
 
 ```python
 llm = KoboldApiLLM(endpoint="http://192.168.1.144:5000", max_length=80)
 ```
-
 
 ```python
 response = llm.invoke(
@@ -31,8 +28,7 @@ response = llm.invoke(
 )
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

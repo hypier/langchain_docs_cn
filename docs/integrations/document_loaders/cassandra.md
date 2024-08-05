@@ -1,41 +1,41 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/cassandra.ipynb
 ---
+
 # Cassandra
 
-[Cassandra](https://cassandra.apache.org/) is a NoSQL, row-oriented, highly scalable and highly available database.Starting with version 5.0, the database ships with [vector search capabilities](https://cassandra.apache.org/doc/trunk/cassandra/vector-search/overview.html).
+[Cassandra](https://cassandra.apache.org/) 是一个 NoSQL、行导向、高度可扩展和高度可用的数据库。从 5.0 版本开始，该数据库提供了 [向量搜索功能](https://cassandra.apache.org/doc/trunk/cassandra/vector-search/overview.html)。
 
-## Overview
+## 概述
 
-The Cassandra Document Loader returns a list of Langchain Documents from a Cassandra database.
+Cassandra Document Loader 从 Cassandra 数据库返回 Langchain 文档列表。
 
-You must either provide a CQL query or a table name to retrieve the documents.
-The Loader takes the following parameters:
+您必须提供 CQL 查询或表名以检索文档。
+Loader 接受以下参数：
 
-* table: (Optional) The table to load the data from.
-* session: (Optional) The cassandra driver session. If not provided, the cassio resolved session will be used.
-* keyspace: (Optional) The keyspace of the table. If not provided, the cassio resolved keyspace will be used.
-* query: (Optional) The query used to load the data.
-* page_content_mapper: (Optional) a function to convert a row to string page content. The default converts the row to JSON.
-* metadata_mapper: (Optional) a function to convert a row to metadata dict.
-* query_parameters: (Optional) The query parameters used when calling session.execute .
-* query_timeout: (Optional) The query timeout used when calling session.execute .
-* query_custom_payload: (Optional) The query custom_payload used when calling `session.execute`.
-* query_execution_profile: (Optional) The query execution_profile used when calling `session.execute`.
-* query_host: (Optional) The query host used when calling `session.execute`.
-* query_execute_as: (Optional) The query execute_as used when calling `session.execute`.
+* table: (可选) 要加载数据的表。
+* session: (可选) Cassandra 驱动程序会话。如果未提供，将使用 cassio 解析的会话。
+* keyspace: (可选) 表的 keyspace。如果未提供，将使用 cassio 解析的 keyspace。
+* query: (可选) 用于加载数据的查询。
+* page_content_mapper: (可选) 将行转换为字符串页面内容的函数。默认将行转换为 JSON。
+* metadata_mapper: (可选) 将行转换为元数据字典的函数。
+* query_parameters: (可选) 调用 session.execute 时使用的查询参数。
+* query_timeout: (可选) 调用 session.execute 时使用的查询超时。
+* query_custom_payload: (可选) 调用 `session.execute` 时使用的查询 custom_payload。
+* query_execution_profile: (可选) 调用 `session.execute` 时使用的查询 execution_profile。
+* query_host: (可选) 调用 `session.execute` 时使用的查询主机。
+* query_execute_as: (可选) 调用 `session.execute` 时使用的查询 execute_as。
 
-## Load documents with the Document Loader
+## 使用文档加载器加载文档
 
 
 ```python
 from langchain_community.document_loaders import CassandraLoader
 ```
 
-### Init from a cassandra driver Session
+### 从 Cassandra 驱动程序会话初始化
 
-You need to create a `cassandra.cluster.Session` object, as described in the [Cassandra driver documentation](https://docs.datastax.com/en/developer/python-driver/latest/api/cassandra/cluster/#module-cassandra.cluster). The details vary (e.g. with network settings and authentication), but this might be something like:
-
+您需要创建一个 `cassandra.cluster.Session` 对象，如 [Cassandra 驱动程序文档](https://docs.datastax.com/en/developer/python-driver/latest/api/cassandra/cluster/#module-cassandra.cluster) 中所述。具体细节会有所不同（例如网络设置和身份验证），但可能类似于：
 
 ```python
 from cassandra.cluster import Cluster
@@ -44,15 +44,13 @@ cluster = Cluster()
 session = cluster.connect()
 ```
 
-You need to provide the name of an existing keyspace of the Cassandra instance:
-
+您需要提供 Cassandra 实例中现有键空间的名称：
 
 ```python
 CASSANDRA_KEYSPACE = input("CASSANDRA_KEYSPACE = ")
 ```
 
-Creating the document loader:
-
+创建文档加载器：
 
 ```python
 loader = CassandraLoader(
@@ -62,27 +60,21 @@ loader = CassandraLoader(
 )
 ```
 
-
 ```python
 docs = loader.load()
 ```
-
 
 ```python
 docs[0]
 ```
 
-
-
 ```output
 Document(page_content='Row(_id=\'659bdffa16cbc4586b11a423\', title=\'Dangerous Men\', reviewtext=\'"Dangerous Men,"  the picture\\\'s production notes inform, took 26 years to reach the big screen. After having seen it, I wonder: What was the rush?\')', metadata={'table': 'movie_reviews', 'keyspace': 'default_keyspace'})
 ```
 
+### 从 cassio 初始化
 
-### Init from cassio
-
-It's also possible to use cassio to configure the session and keyspace.
-
+还可以使用 cassio 配置会话和键空间。
 
 ```python
 import cassio
@@ -96,12 +88,11 @@ loader = CassandraLoader(
 docs = loader.load()
 ```
 
-#### Attribution statement
+#### 归属声明
 
-> Apache Cassandra, Cassandra and Apache are either registered trademarks or trademarks of the [Apache Software Foundation](http://www.apache.org/) in the United States and/or other countries.
+> Apache Cassandra、Cassandra 和 Apache 是 [Apache Software Foundation](http://www.apache.org/) 在美国和/或其他国家的注册商标或商标。
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

@@ -1,23 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat_loaders/gmail.ipynb
 ---
+
 # GMail
 
-This loader goes over how to load data from GMail. There are many ways you could want to load data from GMail. This loader is currently fairly opinionated in how to do so. The way it does it is it first looks for all messages that you have sent. It then looks for messages where you are responding to a previous email. It then fetches that previous email, and creates a training example of that email, followed by your email.
+此加载器介绍了如何从 GMail 加载数据。您可能希望通过多种方式从 GMail 加载数据。该加载器目前在执行此操作时有明确的偏好。它的工作方式是首先查找您发送的所有邮件。然后查找您回复的邮件。接着，它获取那封之前的邮件，并创建一个训练示例，该示例包括之前的邮件和您的回复邮件。
 
-Note that there are clear limitations here. For example, all examples created are only looking at the previous email for context.
+请注意，这里存在明显的限制。例如，所有创建的示例仅查看之前的邮件以获取上下文。
 
-To use:
+使用方法：
 
-- Set up a Google Developer Account: Go to the Google Developer Console, create a project, and enable the Gmail API for that project. This will give you a credentials.json file that you'll need later.
+- 设置 Google 开发者账户：访问 Google 开发者控制台，创建一个项目，并为该项目启用 Gmail API。这将为您提供一个稍后需要的 credentials.json 文件。
 
-- Install the Google Client Library: Run the following command to install the Google Client Library:
-
+- 安装 Google 客户端库：运行以下命令以安装 Google 客户端库：
 
 ```python
 %pip install --upgrade --quiet  google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
 ```
-
 
 ```python
 import os.path
@@ -28,57 +27,46 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 
-
 creds = None
-# The file token.json stores the user's access and refresh tokens, and is
-# created automatically when the authorization flow completes for the first
-# time.
+# 文件 token.json 存储用户的访问和刷新令牌，并且在授权流程第一次完成时自动创建。
 if os.path.exists("email_token.json"):
     creds = Credentials.from_authorized_user_file("email_token.json", SCOPES)
-# If there are no (valid) credentials available, let the user log in.
+# 如果没有可用的（有效的）凭据，则让用户登录。
 if not creds or not creds.valid:
     if creds and creds.expired and creds.refresh_token:
         creds.refresh(Request())
     else:
         flow = InstalledAppFlow.from_client_secrets_file(
-            # your creds file here. Please create json file as here https://cloud.google.com/docs/authentication/getting-started
+            # 在此处放置您的凭据文件。请按照此处的说明创建 json 文件 https://cloud.google.com/docs/authentication/getting-started
             "creds.json",
             SCOPES,
         )
         creds = flow.run_local_server(port=0)
-    # Save the credentials for the next run
+    # 将凭据保存以供下次使用
     with open("email_token.json", "w") as token:
         token.write(creds.to_json())
 ```
-
 
 ```python
 from langchain_community.chat_loaders.gmail import GMailLoader
 ```
 
-
 ```python
 loader = GMailLoader(creds=creds, n=3)
 ```
-
 
 ```python
 data = loader.load()
 ```
 
-
 ```python
-# Sometimes there can be errors which we silently ignore
+# 有时可能会出现错误，我们会默默忽略
 len(data)
 ```
-
-
 
 ```output
 2
 ```
-
-
 
 ```python
 from langchain_community.chat_loaders.utils import (
@@ -86,10 +74,9 @@ from langchain_community.chat_loaders.utils import (
 )
 ```
 
-
 ```python
-# This makes messages sent by hchase@langchain.com the AI Messages
-# This means you will train an LLM to predict as if it's responding as hchase
+# 这使得由 hchase@langchain.com 发送的消息成为 AI 消息
+# 这意味着您将训练一个 LLM 来预测其作为 hchase 的回复
 training_data = list(
     map_ai_messages(data, sender="Harrison Chase <hchase@langchain.com>")
 )

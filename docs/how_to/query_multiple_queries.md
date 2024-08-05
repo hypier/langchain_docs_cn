@@ -2,21 +2,22 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/query_multiple_queries.ipynb
 sidebar_position: 4
 ---
-# How to handle multiple queries when doing query analysis
 
-Sometimes, a query analysis technique may allow for multiple queries to be generated. In these cases, we need to remember to run all queries and then to combine the results. We will show a simple example (using mock data) of how to do that.
+# 如何在查询分析中处理多个查询
 
-## Setup
-#### Install dependencies
+有时，查询分析技术可能会生成多个查询。在这种情况下，我们需要记住运行所有查询，然后将结果合并。我们将展示一个简单的示例（使用模拟数据）来说明如何做到这一点。
+
+## 设置
+#### 安装依赖项
 
 
 ```python
 # %pip install -qU langchain langchain-community langchain-openai langchain-chroma
 ```
 
-#### Set environment variables
+#### 设置环境变量
 
-We'll use OpenAI in this example:
+在这个示例中我们将使用 OpenAI：
 
 
 ```python
@@ -25,15 +26,14 @@ import os
 
 os.environ["OPENAI_API_KEY"] = getpass.getpass()
 
-# Optional, uncomment to trace runs with LangSmith. Sign up here: https://smith.langchain.com.
+# 可选，取消注释以使用 LangSmith 跟踪运行。在此注册： https://smith.langchain.com。
 # os.environ["LANGCHAIN_TRACING_V2"] = "true"
 # os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 ```
 
-### Create Index
+### 创建索引
 
-We will create a vectorstore over fake information.
-
+我们将基于虚假信息创建一个向量存储。
 
 ```python
 from langchain_chroma import Chroma
@@ -49,10 +49,9 @@ vectorstore = Chroma.from_texts(
 retriever = vectorstore.as_retriever(search_kwargs={"k": 1})
 ```
 
-## Query analysis
+## 查询分析
 
-We will use function calling to structure the output. We will let it return multiple queries.
-
+我们将使用函数调用来构造输出。我们将允许它返回多个查询。
 
 ```python
 from typing import List, Optional
@@ -61,14 +60,13 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 
 
 class Search(BaseModel):
-    """Search over a database of job records."""
+    """在职位记录数据库中进行搜索。"""
 
     queries: List[str] = Field(
         ...,
-        description="Distinct queries to search for",
+        description="要搜索的不同查询",
     )
 ```
-
 
 ```python
 from langchain_core.output_parsers.openai_tools import PydanticToolsParser
@@ -78,9 +76,9 @@ from langchain_openai import ChatOpenAI
 
 output_parser = PydanticToolsParser(tools=[Search])
 
-system = """You have the ability to issue search queries to get information to help answer user information.
+system = """您可以发出搜索查询以获取信息，以帮助回答用户的信息。
 
-If you need to look up two distinct pieces of information, you are allowed to do that!"""
+如果您需要查找两个不同的信息，您是可以这样做的！"""
 prompt = ChatPromptTemplate.from_messages(
     [
         ("system", system),
@@ -95,41 +93,31 @@ query_analyzer = {"question": RunnablePassthrough()} | prompt | structured_llm
 /Users/harrisonchase/workplace/langchain/libs/core/langchain_core/_api/beta_decorator.py:86: LangChainBetaWarning: The function `with_structured_output` is in beta. It is actively being worked on, so the API may change.
   warn_beta(
 ```
-We can see that this allows for creating multiple queries
-
+我们可以看到这允许创建多个查询。
 
 ```python
 query_analyzer.invoke("where did Harrison Work")
 ```
 
-
-
 ```output
 Search(queries=['Harrison work location'])
 ```
-
-
 
 ```python
 query_analyzer.invoke("where did Harrison and ankush Work")
 ```
 
-
-
 ```output
 Search(queries=['Harrison work place', 'Ankush work place'])
 ```
 
+## 带查询分析的检索
 
-## Retrieval with query analysis
-
-So how would we include this in a chain? One thing that will make this a lot easier is if we call our retriever asyncronously - this will let us loop over the queries and not get blocked on the response time.
-
+那么我们如何将其包含在链中呢？一个可以使这变得更容易的事情是，如果我们异步调用我们的检索器——这将使我们能够循环遍历查询，而不会因响应时间而被阻塞。
 
 ```python
 from langchain_core.runnables import chain
 ```
-
 
 ```python
 @chain
@@ -139,32 +127,24 @@ async def custom_chain(question):
     for query in response.queries:
         new_docs = await retriever.ainvoke(query)
         docs.extend(new_docs)
-    # You probably want to think about reranking or deduplicating documents here
-    # But that is a separate topic
+    # 你可能想在这里考虑对文档进行重新排序或去重
+    # 但这是一个单独的话题
     return docs
 ```
-
 
 ```python
 await custom_chain.ainvoke("where did Harrison Work")
 ```
 
-
-
 ```output
 [Document(page_content='Harrison worked at Kensho')]
 ```
-
-
 
 ```python
 await custom_chain.ainvoke("where did Harrison and ankush Work")
 ```
 
-
-
 ```output
 [Document(page_content='Harrison worked at Kensho'),
  Document(page_content='Ankush worked at Facebook')]
 ```
-

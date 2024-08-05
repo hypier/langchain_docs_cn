@@ -2,30 +2,29 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/anthropic_functions.ipynb
 sidebar_class_name: hidden
 ---
-# [Deprecated] Experimental Anthropic Tools Wrapper
+
+# [已弃用] 实验性 Anthropic 工具包装器
 
 ::: {.callout-warning}
 
-The Anthropic API officially supports tool-calling so this workaround is no longer needed. Please use [ChatAnthropic](/docs/integrations/chat/anthropic) with `langchain-anthropic>=0.1.5`.
+Anthropic API 官方支持工具调用，因此此变通方法不再需要。请使用 [ChatAnthropic](/docs/integrations/chat/anthropic) 和 `langchain-anthropic>=0.1.5`。
 
 :::
 
-This notebook shows how to use an experimental wrapper around Anthropic that gives it tool calling and structured output capabilities. It follows Anthropic's guide [here](https://docs.anthropic.com/claude/docs/functions-external-tools)
+本笔记本展示了如何使用围绕 Anthropic 的实验性包装器，该包装器提供工具调用和结构化输出功能。它遵循 Anthropic 的指南 [在这里](https://docs.anthropic.com/claude/docs/functions-external-tools)
 
-The wrapper is available from the `langchain-anthropic` package, and it also requires the optional dependency `defusedxml` for parsing XML output from the llm.
+该包装器可以从 `langchain-anthropic` 包中获得，并且还需要可选依赖项 `defusedxml` 以解析来自 llm 的 XML 输出。
 
-Note: this is a beta feature that will be replaced by Anthropic's formal implementation of tool calling, but it is useful for testing and experimentation in the meantime.
-
+注意：这是一个测试版功能，将被 Anthropic 正式实现的工具调用所取代，但在此期间对于测试和实验是有用的。
 
 ```python
 %pip install -qU langchain-anthropic defusedxml
 from langchain_anthropic.experimental import ChatAnthropicTools
 ```
 
-## Tool Binding
+## 工具绑定
 
-`ChatAnthropicTools` exposes a `bind_tools` method that allows you to pass in Pydantic models or BaseTools to the llm.
-
+`ChatAnthropicTools` 提供了一个 `bind_tools` 方法，允许您将 Pydantic 模型或 BaseTools 传递给 llm。
 
 ```python
 from langchain_core.pydantic_v1 import BaseModel
@@ -46,11 +45,9 @@ model.invoke("I am a 27 year old named Erick")
 AIMessage(content='', additional_kwargs={'tool_calls': [{'function': {'name': 'Person', 'arguments': '{"name": "Erick", "age": "27"}'}, 'type': 'function'}]})
 ```
 
+## 结构化输出
 
-## Structured Output
-
-`ChatAnthropicTools` also implements the [`with_structured_output` spec](/docs/how_to/structured_output) for extracting values. Note: this may not be as stable as with models that explicitly offer tool calling.
-
+`ChatAnthropicTools` 还实现了 [`with_structured_output` 规范](/docs/how_to/structured_output) 用于提取值。注意：这可能不如明确提供工具调用的模型那样稳定。
 
 ```python
 chain = ChatAnthropicTools(model="claude-3-opus-20240229").with_structured_output(
@@ -59,15 +56,11 @@ chain = ChatAnthropicTools(model="claude-3-opus-20240229").with_structured_outpu
 chain.invoke("I am a 27 year old named Erick")
 ```
 
-
-
 ```output
 Person(name='Erick', age=27)
 ```
 
+## 相关
 
-
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

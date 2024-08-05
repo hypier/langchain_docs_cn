@@ -1,36 +1,34 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/recursive_json_splitter.ipynb
 ---
-# How to split JSON data
 
-This json splitter splits json data while allowing control over chunk sizes. It traverses json data depth first and builds smaller json chunks. It attempts to keep nested json objects whole but will split them if needed to keep chunks between a min_chunk_size and the max_chunk_size.
+# 如何拆分 JSON 数据
 
-If the value is not a nested json, but rather a very large string the string will not be split. If you need a hard cap on the chunk size consider composing this with a Recursive Text splitter on those chunks. There is an optional pre-processing step to split lists, by first converting them to json (dict) and then splitting them as such.
+这个 JSON 分割器在允许控制块大小的同时拆分 JSON 数据。它深度优先遍历 JSON 数据并构建较小的 JSON 块。它尝试保持嵌套的 JSON 对象完整，但如果需要，会将其拆分，以使块的大小在 min_chunk_size 和 max_chunk_size 之间。
 
-1. How the text is split: json value.
-2. How the chunk size is measured: by number of characters.
+如果值不是嵌套的 JSON，而是一个非常大的字符串，则该字符串不会被拆分。如果需要对块大小进行严格限制，可以考虑将其与递归文本分割器组合使用。还有一个可选的预处理步骤，可以通过先将列表转换为 JSON（字典）然后作为 JSON 拆分它们。
 
+1. 文本如何拆分：JSON 值。
+2. 块大小如何测量：按字符数。
 
 ```python
 %pip install -qU langchain-text-splitters
 ```
 
-First we load some json data:
-
+首先，我们加载一些 JSON 数据：
 
 ```python
 import json
 
 import requests
 
-# This is a large nested json object and will be loaded as a python dict
+# 这是一个大型嵌套 JSON 对象，将作为 Python 字典加载
 json_data = requests.get("https://api.smith.langchain.com/openapi.json").json()
 ```
 
-## Basic usage
+## 基本用法
 
-Specify `max_chunk_size` to constrain chunk sizes:
-
+指定 `max_chunk_size` 以限制块的大小：
 
 ```python
 from langchain_text_splitters import RecursiveJsonSplitter
@@ -38,11 +36,10 @@ from langchain_text_splitters import RecursiveJsonSplitter
 splitter = RecursiveJsonSplitter(max_chunk_size=300)
 ```
 
-To obtain json chunks, use the `.split_json` method:
-
+要获取 json 块，请使用 `.split_json` 方法：
 
 ```python
-# Recursively split json data - If you need to access/manipulate the smaller json chunks
+# 递归拆分 json 数据 - 如果您需要访问/处理较小的 json 块
 json_chunks = splitter.split_json(json_data=json_data)
 
 for chunk in json_chunks[:3]:
@@ -53,11 +50,10 @@ for chunk in json_chunks[:3]:
 {'paths': {'/api/v1/sessions/{session_id}': {'get': {'tags': ['tracer-sessions'], 'summary': 'Read Tracer Session', 'description': 'Get a specific session.', 'operationId': 'read_tracer_session_api_v1_sessions__session_id__get'}}}}
 {'paths': {'/api/v1/sessions/{session_id}': {'get': {'security': [{'API Key': []}, {'Tenant ID': []}, {'Bearer Auth': []}]}}}}
 ```
-To obtain LangChain [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html) objects, use the `.create_documents` method:
-
+要获取 LangChain [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html) 对象，请使用 `.create_documents` 方法：
 
 ```python
-# The splitter can also output documents
+# 分割器也可以输出文档
 docs = splitter.create_documents(texts=[json_data])
 
 for doc in docs[:3]:
@@ -68,8 +64,7 @@ page_content='{"openapi": "3.1.0", "info": {"title": "LangSmith", "version": "0.
 page_content='{"paths": {"/api/v1/sessions/{session_id}": {"get": {"tags": ["tracer-sessions"], "summary": "Read Tracer Session", "description": "Get a specific session.", "operationId": "read_tracer_session_api_v1_sessions__session_id__get"}}}}'
 page_content='{"paths": {"/api/v1/sessions/{session_id}": {"get": {"security": [{"API Key": []}, {"Tenant ID": []}, {"Bearer Auth": []}]}}}}'
 ```
-Or use `.split_text` to obtain string content directly:
-
+或者使用 `.split_text` 直接获取字符串内容：
 
 ```python
 texts = splitter.split_text(json_data=json_data)
@@ -81,10 +76,10 @@ print(texts[1])
 {"openapi": "3.1.0", "info": {"title": "LangSmith", "version": "0.1.0"}, "servers": [{"url": "https://api.smith.langchain.com", "description": "LangSmith API endpoint."}]}
 {"paths": {"/api/v1/sessions/{session_id}": {"get": {"tags": ["tracer-sessions"], "summary": "Read Tracer Session", "description": "Get a specific session.", "operationId": "read_tracer_session_api_v1_sessions__session_id__get"}}}}
 ```
-## How to manage chunk sizes from list content
 
-Note that one of the chunks in this example is larger than the specified `max_chunk_size` of 300. Reviewing one of these chunks that was bigger we see there is a list object there:
+## 如何管理列表内容的块大小
 
+请注意，在此示例中，其中一个块的大小超过了指定的 `max_chunk_size` 300。查看其中一个较大的块，我们看到那里有一个列表对象：
 
 ```python
 print([len(text) for text in texts][:10])
@@ -96,17 +91,15 @@ print(texts[3])
 
 {"paths": {"/api/v1/sessions/{session_id}": {"get": {"parameters": [{"name": "session_id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid", "title": "Session Id"}}, {"name": "include_stats", "in": "query", "required": false, "schema": {"type": "boolean", "default": false, "title": "Include Stats"}}, {"name": "accept", "in": "header", "required": false, "schema": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Accept"}}]}}}}
 ```
-The json splitter by default does not split lists.
+默认情况下，json 分割器不会拆分列表。
 
-Specify `convert_lists=True` to preprocess the json, converting list content to dicts with `index:item` as `key:val` pairs:
-
+指定 `convert_lists=True` 来预处理 json，将列表内容转换为以 `index:item` 作为 `key:val` 对的字典：
 
 ```python
 texts = splitter.split_text(json_data=json_data, convert_lists=True)
 ```
 
-Let's look at the size of the chunks. Now they are all under the max
-
+让我们看看块的大小。现在它们都在最大值之下
 
 ```python
 print([len(text) for text in texts][:10])
@@ -114,8 +107,7 @@ print([len(text) for text in texts][:10])
 ```output
 [176, 236, 141, 203, 212, 221, 210, 213, 242, 291]
 ```
-The list has been converted to a dict, but retains all the needed contextual information even if split into many chunks:
-
+列表已被转换为字典，但即使拆分成多个块，仍保留了所有所需的上下文信息：
 
 ```python
 print(texts[1])
@@ -125,13 +117,10 @@ print(texts[1])
 ```
 
 ```python
-# We can also look at the documents
+# 我们也可以查看文档
 docs[1]
 ```
-
-
 
 ```output
 Document(page_content='{"paths": {"/api/v1/sessions/{session_id}": {"get": {"tags": ["tracer-sessions"], "summary": "Read Tracer Session", "description": "Get a specific session.", "operationId": "read_tracer_session_api_v1_sessions__session_id__get"}}}}')
 ```
-

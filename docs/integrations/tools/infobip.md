@@ -1,24 +1,24 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/infobip.ipynb
 ---
+
 # Infobip
-This notebook that shows how to use [Infobip](https://www.infobip.com/) API wrapper to send SMS messages, emails.
+本笔记本展示了如何使用 [Infobip](https://www.infobip.com/) API 包来发送 SMS 消息和电子邮件。
 
-Infobip provides many services, but this notebook will focus on SMS and Email services. You can find more information about the API and other channels [here](https://www.infobip.com/docs/api).
+Infobip 提供了许多服务，但本笔记本将重点介绍 SMS 和电子邮件服务。您可以在 [这里](https://www.infobip.com/docs/api) 找到有关 API 和其他渠道的更多信息。
 
-## Setup
+## 设置
 
-To use this tool you need to have an Infobip account. You can create [free trial account](https://www.infobip.com/docs/essentials/free-trial).
+要使用此工具，您需要拥有一个 Infobip 账户。您可以创建一个 [免费试用账户](https://www.infobip.com/docs/essentials/free-trial)。
 
+`InfobipAPIWrapper` 使用命名参数，您可以提供凭据：
 
-`InfobipAPIWrapper` uses name parameters where you can provide credentials:
+- `infobip_api_key` - [API 密钥](https://www.infobip.com/docs/essentials/api-authentication#api-key-header)，您可以在 [开发者工具](https://portal.infobip.com/dev/api-keys) 中找到
+- `infobip_base_url` - [基础 URL](https://www.infobip.com/docs/essentials/base-url) 用于 Infobip API。您可以使用默认值 `https://api.infobip.com/`。
 
-- `infobip_api_key` - [API Key](https://www.infobip.com/docs/essentials/api-authentication#api-key-header) that you can find in your [developer tools](https://portal.infobip.com/dev/api-keys)
-- `infobip_base_url` - [Base url](https://www.infobip.com/docs/essentials/base-url) for Infobip API. You can use the default value `https://api.infobip.com/`.
+您还可以将 `infobip_api_key` 和 `infobip_base_url` 作为环境变量 `INFOBIP_API_KEY` 和 `INFOBIP_BASE_URL` 提供。
 
-You can also provide `infobip_api_key` and `infobip_base_url` as environment variables `INFOBIP_API_KEY` and `INFOBIP_BASE_URL`.
-
-## Sending a SMS
+## 发送短信
 
 
 ```python
@@ -34,7 +34,7 @@ infobip.run(
 )
 ```
 
-## Sending an Email
+## 发送电子邮件
 
 
 ```python
@@ -51,8 +51,7 @@ infobip.run(
 )
 ```
 
-# How to use it inside an Agent 
-
+# 如何在代理中使用它
 
 ```python
 from langchain import hub
@@ -69,19 +68,19 @@ llm = ChatOpenAI(temperature=0)
 
 
 class EmailInput(BaseModel):
-    body: str = Field(description="Email body text")
-    to: str = Field(description="Email address to send to. Example: email@example.com")
+    body: str = Field(description="电子邮件正文文本")
+    to: str = Field(description="要发送到的电子邮件地址。示例：email@example.com")
     sender: str = Field(
-        description="Email address to send from, must be 'validemail@example.com'"
+        description="发件人电子邮件地址，必须是 'validemail@example.com'"
     )
-    subject: str = Field(description="Email subject")
-    channel: str = Field(description="Email channel, must be 'email'")
+    subject: str = Field(description="电子邮件主题")
+    channel: str = Field(description="电子邮件渠道，必须是 'email'")
 
 
 infobip_api_wrapper: InfobipAPIWrapper = InfobipAPIWrapper()
 infobip_tool = StructuredTool.from_function(
     name="infobip_email",
-    description="Send Email via Infobip. If you need to send email, use infobip_email",
+    description="通过 Infobip 发送电子邮件。如果您需要发送电子邮件，请使用 infobip_email",
     func=infobip_api_wrapper.run,
     args_schema=EmailInput,
 )
@@ -112,8 +111,7 @@ I have sent an example of Python recursion to your email. Please check your inbo
 > Finished chain.
 ```
 
+## 相关
 
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

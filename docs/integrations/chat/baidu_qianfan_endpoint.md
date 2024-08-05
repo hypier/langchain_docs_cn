@@ -1,35 +1,34 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/baidu_qianfan_endpoint.ipynb
-sidebar_label: Baidu Qianfan
+sidebar_label: 百度千帆
 ---
+
 # QianfanChatEndpoint
 
-Baidu AI Cloud Qianfan Platform is a one-stop large model development and service operation platform for enterprise developers. Qianfan not only provides including the model of Wenxin Yiyan (ERNIE-Bot) and the third-party open-source models, but also provides various AI development tools and the whole set of development environment, which facilitates customers to use and develop large model applications easily.
+百度AI云千帆平台是一个为企业开发者提供的一站式大模型开发和服务运营平台。千帆不仅提供包括文心一言（ERNIE-Bot）和第三方开源模型在内的模型，还提供各种AI开发工具和整套开发环境，方便客户轻松使用和开发大模型应用。
 
-Basically, those model are split into the following type:
+基本上，这些模型分为以下几种类型：
 
-- Embedding
-- Chat
-- Completion
+- 嵌入
+- 聊天
+- 完成
 
-In this notebook, we will introduce how to use langchain with [Qianfan](https://cloud.baidu.com/doc/WENXINWORKSHOP/index.html) mainly in `Chat` corresponding
- to the package `langchain/chat_models` in langchain:
+在本笔记本中，我们将介绍如何使用langchain与[千帆](https://cloud.baidu.com/doc/WENXINWORKSHOP/index.html)结合，主要针对langchain中的`Chat`包`langchain/chat_models`：
 
+## API 初始化
 
-## API Initialization
+要使用基于百度千帆的 LLM 服务，您必须初始化这些参数：
 
-To use the LLM services based on Baidu Qianfan, you have to initialize these parameters:
-
-You could either choose to init the AK,SK in environment variables or init params:
+您可以选择在环境变量中初始化 AK、SK，或初始化参数：
 
 ```base
 export QIANFAN_AK=XXX
 export QIANFAN_SK=XXX
 ```
 
-## Current supported models:
+## 当前支持的模型：
 
-- ERNIE-Bot-turbo (default models)
+- ERNIE-Bot-turbo（默认模型）
 - ERNIE-Bot
 - BLOOMZ-7B
 - Llama-2-7b-chat
@@ -40,7 +39,7 @@ export QIANFAN_SK=XXX
 - ChatGLM2-6B-32K
 - AquilaChat-7B
 
-## Set up
+## 设置
 
 
 ```python
@@ -54,7 +53,7 @@ os.environ["QIANFAN_AK"] = "Your_api_key"
 os.environ["QIANFAN_SK"] = "You_secret_Key"
 ```
 
-## Usage
+## 使用方法
 
 
 ```python
@@ -93,8 +92,7 @@ chat.batch([messages])
 [AIMessage(content='您好！有什么我可以帮助您的吗？')]
 ```
 
-
-### Streaming
+### 流媒体
 
 
 ```python
@@ -107,12 +105,13 @@ except TypeError as e:
 ```output
 您好！有什么我可以帮助您的吗？
 ```
-## Use different models in Qianfan
 
-The default model is ERNIE-Bot-turbo, in the case you want to deploy your own model based on Ernie Bot or third-party open-source model, you could follow these steps:
+## 在千帆中使用不同的模型
 
-1. (Optional, if the model are included in the default models, skip it) Deploy your model in Qianfan Console, get your own customized deploy endpoint.
-2. Set up the field called `endpoint` in the initialization:
+默认模型为 ERNIE-Bot-turbo，如果您想基于 Ernie Bot 或第三方开源模型部署自己的模型，可以按照以下步骤操作：
+
+1. （可选，如果模型已包含在默认模型中，请跳过此步骤）在千帆控制台中部署您的模型，获取您自己的定制部署端点。
+2. 在初始化时设置名为 `endpoint` 的字段：
 
 
 ```python
@@ -131,10 +130,9 @@ chatBot.invoke(messages)
 AIMessage(content='Hello，可以回答问题了，我会竭尽全力为您解答，请问有什么问题吗？')
 ```
 
+## 模型参数：
 
-## Model Params:
-
-For now, only `ERNIE-Bot` and `ERNIE-Bot-turbo` support model params below, we might support more models in the future.
+目前，仅支持以下模型参数的有 `ERNIE-Bot` 和 `ERNIE-Bot-turbo`，未来可能会支持更多模型。
 
 - temperature
 - top_p
@@ -155,9 +153,7 @@ chat.invoke(
 AIMessage(content='您好！有什么我可以帮助您的吗？')
 ```
 
+## 相关
 
-
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

@@ -1,119 +1,116 @@
-
 # rag-multi-modal-mv-local
 
-Visual search is a famililar application to many with iPhones or Android devices. It allows user to search photos using natural language.
-  
-With the release of open source, multi-modal LLMs it's possible to build this kind of application for yourself for your own private photo collection.
+视觉搜索是许多iPhone或Android设备用户熟悉的应用。它允许用户使用自然语言搜索照片。
 
-This template demonstrates how to perform private visual search and question-answering over a collection of your photos.
+随着开源多模态LLM的发布，您可以为自己的私人照片集合构建这种应用程序。
 
-It uses an open source multi-modal LLM of your choice to create image summaries for each photos, embeds the summaries, and stores them in Chroma.
- 
-Given a question, relevant photos are retrieved and passed to the multi-modal LLM for answer synthesis.
+此模板演示如何在您的照片集合上执行私人视觉搜索和问答。
 
+它使用您选择的开源多模态LLM为每张照片创建图像摘要，嵌入摘要并将其存储在Chroma中。
 
+给定一个问题，相关照片将被检索并传递给多模态LLM进行答案合成。
 
-## Input
+## 输入
 
-Supply a set of photos in the `/docs` directory. 
+在 `/docs` 目录中提供一组照片。
 
-By default, this template has a toy collection of 3 food pictures.
+默认情况下，此模板包含 3 张食物照片的玩具集合。
 
-The app will look up and summarize photos based upon provided keywords or questions:
+该应用程序将根据提供的关键词或问题查找并总结照片：
 ```
-What kind of ice cream did I have?
+我吃了什么样的冰淇淋？
 ```
 
-In practice, a larger corpus of images can be tested.
+实际上，可以测试更大的图像语料库。
 
-To create an index of the images, run:
+要创建图像索引，请运行：
 ```
 poetry install
 python ingest.py
 ```
 
-## Storage
+## 存储
 
-Here is the process the template will use to create an index of the slides (see [blog](https://blog.langchain.dev/multi-modal-rag-template/)):
+这里是模板用于创建幻灯片索引的过程（参见 [blog](https://blog.langchain.dev/multi-modal-rag-template/)）：
 
-* Given a set of images
-* It uses a local multi-modal LLM ([bakllava](https://ollama.ai/library/bakllava)) to summarize each image
-* Embeds the image summaries with a link to the original images
-* Given a user question, it will relevant image(s) based on similarity between the image summary and user input (using Ollama embeddings)
-* It will pass those images to bakllava for answer synthesis
+* 给定一组图像
+* 它使用本地多模态 LLM ([bakllava](https://ollama.ai/library/bakllava)) 来总结每个图像
+* 将图像摘要嵌入并链接到原始图像
+* 给定用户问题，它将根据图像摘要与用户输入之间的相似性（使用 Ollama 嵌入）找到相关图像
+* 它将把这些图像传递给 bakllava 进行答案合成
 
-By default, this will use [LocalFileStore](https://python.langchain.com/docs/integrations/stores/file_system) to store images and Chroma to store summaries.
+默认情况下，这将使用 [LocalFileStore](https://python.langchain.com/docs/integrations/stores/file_system) 来存储图像，并使用 Chroma 来存储摘要。
 
-## LLM and Embedding Models
+## LLM 和嵌入模型
 
-We will use [Ollama](https://python.langchain.com/docs/integrations/chat/ollama#multi-modal) for generating image summaries, embeddings, and the final image QA.
+我们将使用 [Ollama](https://python.langchain.com/docs/integrations/chat/ollama#multi-modal) 来生成图像摘要、嵌入和最终的图像问答。
 
-Download the latest version of Ollama: https://ollama.ai/
+下载最新版本的 Ollama: https://ollama.ai/
 
-Pull an open source multi-modal LLM: e.g., https://ollama.ai/library/bakllava
+拉取一个开源多模态 LLM: 例如，https://ollama.ai/library/bakllava
 
-Pull an open source embedding model: e.g., https://ollama.ai/library/llama2:7b
+拉取一个开源嵌入模型: 例如，https://ollama.ai/library/llama2:7b
 
 ```
 ollama pull bakllava
 ollama pull llama2:7b
 ```
 
-The app is by default configured for `bakllava`. But you can change this in `chain.py` and `ingest.py` for different downloaded models.
+该应用程序默认配置为 `bakllava`。但您可以在 `chain.py` 和 `ingest.py` 中更改以使用不同的下载模型。
 
-The app will retrieve images based on similarity between the text input and the image summary, and pass the images to `bakllava`.
+该应用程序将根据文本输入与图像摘要之间的相似性检索图像，并将图像传递给 `bakllava`。
 
-## Usage
+## 使用方法
 
-To use this package, you should first have the LangChain CLI installed:
+要使用此包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将其作为唯一的包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package rag-multi-modal-mv-local
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，只需运行：
 
 ```shell
 langchain app add rag-multi-modal-mv-local
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 ```python
 from rag_multi_modal_mv_local import chain as rag_multi_modal_mv_local_chain
 
 add_routes(app, rag_multi_modal_mv_local_chain, path="/rag-multi-modal-mv-local")
 ```
 
-(Optional) Let's now configure LangSmith. 
-LangSmith will help us trace, monitor and debug LangChain applications. 
-You can sign up for LangSmith [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
+（可选）现在让我们配置 LangSmith。 
+LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。 
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。 
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录内，则可以直接通过以下命令启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server is running locally at 
+这将启动 FastAPI 应用程序，服务器在本地运行，地址为 
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/rag-multi-modal-mv-local/playground](http://127.0.0.1:8000/rag-multi-modal-mv-local/playground)  
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板。
+我们可以在 [http://127.0.0.1:8000/rag-multi-modal-mv-local/playground](http://127.0.0.1:8000/rag-multi-modal-mv-local/playground) 访问游乐场。
 
-We can access the template from code with:
+我们可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable

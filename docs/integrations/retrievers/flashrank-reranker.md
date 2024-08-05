@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/flashrank-reranker.ipynb
 ---
-# FlashRank reranker
 
->[FlashRank](https://github.com/PrithivirajDamodaran/FlashRank) is the Ultra-lite & Super-fast Python library to add re-ranking to your existing search & retrieval pipelines. It is based on SoTA cross-encoders, with gratitude to all the model owners.
+# FlashRank 重新排序器
 
-This notebook shows how to use [flashrank](https://github.com/PrithivirajDamodaran/FlashRank) for document compression and retrieval.
+>[FlashRank](https://github.com/PrithivirajDamodaran/FlashRank) 是一个超轻量级和超快速的 Python 库，用于为现有的搜索和检索管道添加重新排序功能。它基于 SoTA 交叉编码器，感谢所有模型的拥有者。
+
+本笔记本展示了如何使用 [flashrank](https://github.com/PrithivirajDamodaran/FlashRank) 进行文档压缩和检索。
 
 
 ```python
@@ -19,7 +20,7 @@ This notebook shows how to use [flashrank](https://github.com/PrithivirajDamodar
 
 
 ```python
-# Helper function for printing docs
+# 打印文档的辅助函数
 
 
 def pretty_print_docs(docs):
@@ -33,9 +34,8 @@ def pretty_print_docs(docs):
     )
 ```
 
-## Set up the base vector store retriever
-Let's start by initializing a simple vector store retriever and storing the 2023 State of the Union speech (in chunks). We can set up the retriever to retrieve a high number (20) of docs.
-
+## 设置基础向量存储检索器
+让我们开始初始化一个简单的向量存储检索器，并存储2023年国情咨文（分块）。我们可以设置检索器以检索大量（20）文档。
 
 ```python
 import getpass
@@ -43,7 +43,6 @@ import os
 
 os.environ["OPENAI_API_KEY"] = getpass.getpass()
 ```
-
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -268,8 +267,9 @@ The United States of America.
 
 May God bless you all. May God protect our troops.
 ```
-## Doing reranking with FlashRank
-Now let's wrap our base retriever with a `ContextualCompressionRetriever`, using `FlashrankRerank` as a compressor.
+
+## 使用 FlashRank 进行重新排序
+现在让我们用 `ContextualCompressionRetriever` 包装我们的基础检索器，使用 `FlashrankRerank` 作为压缩器。
 
 
 ```python
@@ -292,7 +292,7 @@ print([doc.metadata["id"] for doc in compressed_docs])
 ```output
 [0, 5, 3]
 ```
-After reranking, the top 3 documents are different from the top 3 documents retrieved by the base retriever.
+经过重新排序后，前 3 个文档与基础检索器检索的前 3 个文档不同。
 
 
 ```python
@@ -329,7 +329,8 @@ I’m a capitalist, but capitalism without competition isn’t capitalism.
 
 It’s exploitation—and it drives up prices.
 ```
-## QA reranking with FlashRank
+
+## QA 重新排序与 FlashRank
 
 
 ```python
@@ -346,13 +347,11 @@ chain.invoke(query)
 
 
 ```output
-{'query': 'What did the president say about Ketanji Brown Jackson',
- 'result': "The President mentioned that Ketanji Brown Jackson is one of the nation's top legal minds and will continue Justice Breyer's legacy of excellence."}
+{'query': '总统对 Ketanji Brown Jackson 说了什么',
+ 'result': "总统提到 Ketanji Brown Jackson 是国家顶尖的法律头脑之一，将继续布雷耶法官卓越的遗产。"}
 ```
 
+## 相关
 
-
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

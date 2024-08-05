@@ -1,34 +1,34 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/exllamav2.ipynb
 ---
+
 # ExLlamaV2
 
-[ExLlamav2](https://github.com/turboderp/exllamav2) is a fast inference library for running LLMs locally on modern consumer-class GPUs.
+[ExLlamav2](https://github.com/turboderp/exllamav2) 是一个快速推理库，用于在现代消费级 GPU 上本地运行 LLM。
 
-It supports inference for GPTQ & EXL2 quantized models, which can be accessed on [Hugging Face](https://huggingface.co/TheBloke).
+它支持对 GPTQ 和 EXL2 量化模型的推理，这些模型可以在 [Hugging Face](https://huggingface.co/TheBloke) 上访问。
 
-This notebook goes over how to run `exllamav2` within LangChain.
+本笔记本介绍了如何在 LangChain 中运行 `exllamav2`。
 
-Additional information: 
-[ExLlamav2 examples](https://github.com/turboderp/exllamav2/tree/master/examples)
+附加信息： 
+[ExLlamav2 示例](https://github.com/turboderp/exllamav2/tree/master/examples)
 
+## 安装
 
-## Installation
+请参考官方 [doc](https://github.com/turboderp/exllamav2)  
+对于这个笔记本，需求如下：  
+- python 3.11  
+- langchain 0.1.7  
+- CUDA: 12.1.0 (见下文)  
+- torch==2.1.1+cu121  
+- exllamav2 (0.0.12+cu121)  
 
-Refer to the official [doc](https://github.com/turboderp/exllamav2)
-For this notebook, the requirements are : 
-- python 3.11
-- langchain 0.1.7
-- CUDA: 12.1.0 (see bellow)
-- torch==2.1.1+cu121
-- exllamav2 (0.0.12+cu121) 
-
-If you want to install the same exllamav2 version :
+如果您想安装相同的 exllamav2 版本：  
 ```shell
 pip install https://github.com/turboderp/exllamav2/releases/download/v0.0.12/exllamav2-0.0.12+cu121-cp311-cp311-linux_x86_64.whl
 ```
 
-if you use conda, the dependencies are : 
+如果您使用 conda，依赖项如下：  
 ```
   - conda-forge::ninja
   - nvidia/label/cuda-12.1.0::cuda
@@ -36,15 +36,13 @@ if you use conda, the dependencies are :
   - conda-forge::gxx=11.4
 ```
 
-## Usage
+## 使用方法
 
-You don't need an `API_TOKEN` as you will run the LLM locally.
+您无需 `API_TOKEN`，因为您将在本地运行 LLM。
 
-It is worth understanding which models are suitable to be used on the desired machine.
+了解哪些模型适合在所需机器上使用是值得的。
 
-[TheBloke's](https://huggingface.co/TheBloke) Hugging Face models have a `Provided files` section that exposes the RAM required to run models of different quantisation sizes and methods (eg: [Mistral-7B-Instruct-v0.2-GPTQ](https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.2-GPTQ)).
-
-
+[TheBloke's](https://huggingface.co/TheBloke) Hugging Face 模型有一个 `Provided files` 部分，展示了运行不同量化大小和方法的模型所需的 RAM（例如：[Mistral-7B-Instruct-v0.2-GPTQ](https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.2-GPTQ)）。
 
 ```python
 import os
@@ -56,7 +54,6 @@ from langchain_core.prompts import PromptTemplate
 
 from libs.langchain.langchain.chains.llm import LLMChain
 ```
-
 
 ```python
 # function to download the gptq model
@@ -84,7 +81,6 @@ def download_GPTQ_model(model_name: str, models_dir: str = "./models/") -> str:
 
     return model_path
 ```
-
 
 ```python
 from exllamav2.generator import (
@@ -169,7 +165,7 @@ Tue Feb 20 19:43:53 2024
 +-----------------------------------------------------------------------------------------+
 ```
 
-## Related
+## 相关
 
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

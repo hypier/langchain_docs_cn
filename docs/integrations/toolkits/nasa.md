@@ -1,15 +1,17 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/toolkits/nasa.ipynb
 ---
+
 # NASA
 
-This notebook shows how to use agents to interact with the NASA toolkit. The toolkit provides access to the NASA Image and Video Library API, with potential to expand and include other accessible NASA APIs in future iterations.
+本笔记本展示了如何使用代理与NASA工具包进行交互。该工具包提供了对NASA图像和视频库API的访问，未来版本有可能扩展并包括其他可访问的NASA API。
 
-**Note: NASA Image and Video Library search queries can result in large responses when the number of desired media results is not specified. Consider this prior to using the agent with LLM token credits.**
+**注意：当未指定所需媒体结果的数量时，NASA图像和视频库的搜索查询可能会产生大量响应。在使用具有LLM令牌额度的代理之前，请考虑这一点。**
 
-## Example Use:
+## 示例用法:
 ---
-### Initializing the agent
+
+### 初始化代理
 
 
 ```python
@@ -31,7 +33,7 @@ agent = initialize_agent(
 )
 ```
 
-### Querying media assets
+### 查询媒体资产
 
 
 ```python
@@ -40,7 +42,7 @@ agent.run(
 )
 ```
 
-### Querying details about media assets
+### 查询媒体资产的详细信息
 
 
 ```python

@@ -1,23 +1,16 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/bedrock.ipynb
 ---
+
 # Bedrock
 
 :::caution
-You are currently on a page documenting the use of Amazon Bedrock models as [text completion models](/docs/concepts/#llms). Many popular models available on Bedrock are [chat completion models](/docs/concepts/#chat-models).
+您当前正在查看有关使用 Amazon Bedrock 模型作为 [文本补全模型](/docs/concepts/#llms) 的文档。许多在 Bedrock 上可用的流行模型是 [聊天补全模型](/docs/concepts/#chat-models)。
 
-You may be looking for [this page instead](/docs/integrations/chat/bedrock/).
+您可能想查看 [此页面](/docs/integrations/chat/bedrock/)。
 :::
 
->[Amazon Bedrock](https://aws.amazon.com/bedrock/) is a fully managed service that offers a choice of 
-> high-performing foundation models (FMs) from leading AI companies like `AI21 Labs`, `Anthropic`, `Cohere`, 
-> `Meta`, `Stability AI`, and `Amazon` via a single API, along with a broad set of capabilities you need to 
-> build generative AI applications with security, privacy, and responsible AI. Using `Amazon Bedrock`, 
-> you can easily experiment with and evaluate top FMs for your use case, privately customize them with 
-> your data using techniques such as fine-tuning and `Retrieval Augmented Generation` (`RAG`), and build 
-> agents that execute tasks using your enterprise systems and data sources. Since `Amazon Bedrock` is 
-> serverless, you don't have to manage any infrastructure, and you can securely integrate and deploy 
-> generative AI capabilities into your applications using the AWS services you are already familiar with.
+>[Amazon Bedrock](https://aws.amazon.com/bedrock/) 是一项完全托管的服务，提供来自 `AI21 Labs`、`Anthropic`、`Cohere`、`Meta`、`Stability AI` 和 `Amazon` 等领先 AI 公司的一系列高性能基础模型（FMs），通过单一 API 访问，并提供构建具有安全性、隐私性和负责任 AI 的生成 AI 应用所需的广泛功能。使用 `Amazon Bedrock`，您可以轻松地实验和评估适合您用例的顶级 FMs，使用微调和 `检索增强生成`（`RAG`）等技术私下定制它们，并构建利用您的企业系统和数据源执行任务的代理。由于 `Amazon Bedrock` 是无服务器的，您无需管理任何基础设施，并且可以使用您已经熟悉的 AWS 服务将生成 AI 功能安全集成和部署到您的应用中。
 
 
 
@@ -34,14 +27,14 @@ llm = BedrockLLM(
 )
 ```
 
-### Custom models
+### 自定义模型
 
 
 ```python
 custom_llm = BedrockLLM(
     credentials_profile_name="bedrock-admin",
     provider="cohere",
-    model_id="<Custom model ARN>",  # ARN like 'arn:aws:bedrock:...' obtained via provisioning the custom model
+    model_id="<Custom model ARN>",  # ARN 类似 'arn:aws:bedrock:...' 通过配置自定义模型获得
     model_kwargs={"temperature": 1},
     streaming=True,
 )
@@ -49,12 +42,11 @@ custom_llm = BedrockLLM(
 custom_llm.invoke(input="What is the recipe of mayonnaise?")
 ```
 
-## Guardrails for Amazon Bedrock
+## Amazon Bedrock 的保护措施
 
-[Guardrails for Amazon Bedrock](https://aws.amazon.com/bedrock/guardrails/) evaluates user inputs and model responses based on use case specific policies, and provides an additional layer of safeguards regardless of the underlying model. Guardrails can be applied across models, including Anthropic Claude, Meta Llama 2, Cohere Command, AI21 Labs Jurassic, and Amazon Titan Text, as well as fine-tuned models.
-**Note**: Guardrails for Amazon Bedrock is currently in preview and not generally available. Reach out through your usual AWS Support contacts if you’d like access to this feature.
-In this section, we are going to set up a Bedrock language model with specific guardrails that include tracing capabilities.   
-
+[Amazon Bedrock 的保护措施](https://aws.amazon.com/bedrock/guardrails/) 基于特定用例的政策评估用户输入和模型响应，并提供额外的保护层，无论底层模型如何。保护措施可以应用于多个模型，包括 Anthropic Claude、Meta Llama 2、Cohere Command、AI21 Labs Jurassic 和 Amazon Titan Text，以及微调模型。
+**注意**：Amazon Bedrock 的保护措施目前处于预览阶段，尚未普遍提供。如果您希望访问此功能，请通过您通常的 AWS 支持联系渠道进行联系。
+在本节中，我们将设置一个具有特定保护措施的 Bedrock 语言模型，其中包括跟踪功能。   
 
 ```python
 from typing import Any
@@ -81,8 +73,7 @@ llm = BedrockLLM(
 )
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

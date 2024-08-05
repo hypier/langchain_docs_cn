@@ -1,18 +1,19 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/wolfram_alpha.ipynb
 ---
+
 # Wolfram Alpha
 
-This notebook goes over how to use the wolfram alpha component.
+本笔记本介绍如何使用 Wolfram Alpha 组件。
 
-First, you need to set up your Wolfram Alpha developer account and get your APP ID:
+首先，您需要设置您的 Wolfram Alpha 开发者账户并获取您的 APP ID：
 
-1. Go to wolfram alpha and sign up for a developer account [here](https://developer.wolframalpha.com/)
-2. Create an app and get your APP ID
+1. 前往 Wolfram Alpha 并在 [这里](https://developer.wolframalpha.com/) 注册开发者账户
+2. 创建一个应用并获取您的 APP ID
 3. pip install wolframalpha
 
-Then we will need to set some environment variables:
-1. Save your APP ID into WOLFRAM_ALPHA_APPID env variable
+然后我们需要设置一些环境变量：
+1. 将您的 APP ID 保存到 WOLFRAM_ALPHA_APPID 环境变量中
 
 
 ```python
@@ -47,9 +48,7 @@ wolfram.run("What is 2x+5 = -3x + 7?")
 'x = 2/5'
 ```
 
+## 相关
 
-
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

@@ -1,19 +1,19 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/graphs/hugegraph.ipynb
 ---
+
 # HugeGraph
 
->[HugeGraph](https://hugegraph.apache.org/) is a convenient, efficient, and adaptable graph database compatible with
->the `Apache TinkerPop3` framework and the `Gremlin` query language.
+>[HugeGraph](https://hugegraph.apache.org/) 是一个方便、高效且灵活的图数据库，兼容 `Apache TinkerPop3` 框架和 `Gremlin` 查询语言。
 >
->[Gremlin](https://en.wikipedia.org/wiki/Gremlin_(query_language)) is a graph traversal language and virtual machine developed by `Apache TinkerPop` of the `Apache Software Foundation`.
+>[Gremlin](https://en.wikipedia.org/wiki/Gremlin_(query_language)) 是由 `Apache Software Foundation` 的 `Apache TinkerPop` 开发的图遍历语言和虚拟机。
 
-This notebook shows how to use LLMs to provide a natural language interface to [HugeGraph](https://hugegraph.apache.org/cn/) database.
+本笔记本展示了如何使用 LLM 提供自然语言接口到 [HugeGraph](https://hugegraph.apache.org/cn/) 数据库。
 
-## Setting up
+## 设置
 
-You will need to have a running HugeGraph instance.
-You can run a local docker container by running the executing the following script:
+您需要有一个正在运行的 HugeGraph 实例。  
+您可以通过执行以下脚本来运行本地 Docker 容器：
 
 ```
 docker run \
@@ -23,14 +23,13 @@ docker run \
     hugegraph/hugegraph
 ```
 
-If we want to connect HugeGraph in the application, we need to install python sdk:
+如果我们想在应用程序中连接 HugeGraph，我们需要安装 Python SDK：
 
 ```
 pip3 install hugegraph-python
 ```
 
-If you are using the docker container, you need to wait a couple of second for the database to start, and then we need create schema and write graph data for the database.
-
+如果您使用的是 Docker 容器，您需要等待几秒钟以便数据库启动，然后我们需要为数据库创建模式并写入图数据。
 
 ```python
 from hugegraph.connection import PyHugeGraph
@@ -38,8 +37,7 @@ from hugegraph.connection import PyHugeGraph
 client = PyHugeGraph("localhost", "8080", user="admin", pwd="admin", graph="hugegraph")
 ```
 
-First, we create the schema for a simple movie database:
-
+首先，我们为一个简单的电影数据库创建模式：
 
 ```python
 """schema"""
@@ -57,15 +55,11 @@ schema.edgeLabel("ActedIn").sourceLabel("Person").targetLabel(
 ).ifNotExist().create()
 ```
 
-
-
 ```output
 'create EdgeLabel success, Detail: "b\'{"id":1,"name":"ActedIn","source_label":"Person","target_label":"Movie","frequency":"SINGLE","sort_keys":[],"nullable_keys":[],"index_labels":[],"properties":[],"status":"CREATED","ttl":0,"enable_label_index":true,"user_data":{"~create_time":"2023-07-04 10:48:47.908"}}\'"'
 ```
 
-
-Then we can insert some data.
-
+然后我们可以插入一些数据。
 
 ```python
 """graph"""
@@ -84,24 +78,19 @@ g.addEdge(
 g.addEdge("ActedIn", "1:Robert De Niro", "2:The Godfather Part II", {})
 ```
 
-
-
 ```output
 1:Robert De Niro--ActedIn-->2:The Godfather Part II
 ```
 
+## 创建 `HugeGraphQAChain`
 
-## Creating `HugeGraphQAChain`
-
-We can now create the `HugeGraph` and `HugeGraphQAChain`. To create the `HugeGraph` we simply need to pass the database object to the `HugeGraph` constructor.
-
+我们现在可以创建 `HugeGraph` 和 `HugeGraphQAChain`。要创建 `HugeGraph`，我们只需将数据库对象传递给 `HugeGraph` 构造函数。
 
 ```python
 from langchain.chains import HugeGraphQAChain
 from langchain_community.graphs import HugeGraph
 from langchain_openai import ChatOpenAI
 ```
-
 
 ```python
 graph = HugeGraph(
@@ -113,15 +102,13 @@ graph = HugeGraph(
 )
 ```
 
-## Refresh graph schema information
+## 刷新图形模式信息
 
-If the schema of database changes, you can refresh the schema information needed to generate Gremlin statements.
-
+如果数据库的模式发生变化，您可以刷新生成 Gremlin 语句所需的模式信息。
 
 ```python
 # graph.refresh_schema()
 ```
-
 
 ```python
 print(graph.get_schema)
@@ -131,15 +118,14 @@ Node properties: [name: Person, primary_keys: ['name'], properties: ['name', 'bi
 Edge properties: [name: ActedIn, properties: []]
 Relationships: ['Person--ActedIn-->Movie']
 ```
-## Querying the graph
 
-We can now use the graph Gremlin QA chain to ask question of the graph
+## 查询图形
 
+我们现在可以使用图形 Gremlin QA 链来询问图形
 
 ```python
 chain = HugeGraphQAChain.from_llm(ChatOpenAI(temperature=0), graph=graph, verbose=True)
 ```
-
 
 ```python
 chain.run("Who played in The Godfather?")
@@ -156,8 +142,6 @@ Full Context:
 [1m> Finished chain.[0m
 ```
 
-
 ```output
 'Al Pacino played in The Godfather.'
 ```
-

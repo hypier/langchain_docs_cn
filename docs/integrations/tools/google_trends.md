@@ -1,21 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/google_trends.ipynb
 ---
+
 # Google Trends
 
-This notebook goes over how to use the Google Trends Tool to fetch trends information.
+本笔记本介绍如何使用 Google Trends 工具获取趋势信息。
 
-First, you need to sign up for an `SerpApi key` key at: https://serpapi.com/users/sign_up.
+首先，您需要在以下网址注册一个 `SerpApi key`：https://serpapi.com/users/sign_up。
 
-Then you must install `google-search-results` with the command:
+然后，您必须使用以下命令安装 `google-search-results`：
 
 `pip install google-search-results`
 
-Then you will need to set the environment variable `SERPAPI_API_KEY` to your `SerpApi key`
+接下来，您需要将环境变量 `SERPAPI_API_KEY` 设置为您的 `SerpApi key`。
 
-[Alternatively you can pass the key in as a argument to the wrapper `serp_api_key="your secret key"`]
+[或者，您可以将密钥作为参数传递给包装器 `serp_api_key="your secret key"`]
 
-## Use the Tool
+## 使用工具
 
 
 ```python
@@ -51,9 +52,7 @@ tool.run("Water")
 'Query: Water\nDate From: Nov 20, 2022\nDate To: Nov 11, 2023\nMin Value: 72\nMax Value: 100\nAverage Value: 84.25490196078431\nPrecent Change: 5.555555555555555%\nTrend values: 72, 72, 74, 77, 86, 80, 82, 88, 79, 79, 85, 82, 81, 84, 83, 77, 80, 85, 82, 80, 88, 84, 82, 84, 83, 85, 92, 92, 100, 92, 100, 96, 94, 95, 94, 98, 96, 84, 86, 84, 85, 83, 83, 76, 81, 85, 78, 77, 81, 75, 76\nRising Related Queries: avatar way of water, avatar the way of water, owala water bottle, air up water bottle, lake mead water level\nTop Related Queries: water park, water bottle, water heater, water filter, water tank, water bill, water world, avatar way of water, avatar the way of water, coconut water, deep water, water cycle, water dispenser, water purifier, water pollution, distilled water, hot water heater, water cooler, sparkling water, american water, micellar water, density of water, tankless water heater, tonic water, water jug'
 ```
 
+## 相关
 
-
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

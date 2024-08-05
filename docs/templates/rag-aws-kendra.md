@@ -1,81 +1,80 @@
 # rag-aws-kendra
 
-This template is an application that utilizes Amazon Kendra, a machine learning powered search service, and Anthropic Claude for text generation. The application retrieves documents using a Retrieval chain to answer questions from your documents. 
+此模板是一个应用程序，利用了 Amazon Kendra 这一机器学习驱动的搜索服务，以及 Anthropic Claude 进行文本生成。该应用程序使用检索链从您的文档中检索文档以回答问题。
 
-It uses the `boto3` library to connect with the Bedrock service. 
+它使用 `boto3` 库与 Bedrock 服务连接。
 
-For more context on building RAG applications with Amazon Kendra, check [this page](https://aws.amazon.com/blogs/machine-learning/quickly-build-high-accuracy-generative-ai-applications-on-enterprise-data-using-amazon-kendra-langchain-and-large-language-models/).
+有关使用 Amazon Kendra 构建 RAG 应用程序的更多背景，请查看 [此页面](https://aws.amazon.com/blogs/machine-learning/quickly-build-high-accuracy-generative-ai-applications-on-enterprise-data-using-amazon-kendra-langchain-and-large-language-models/)。
 
-## Environment Setup
+## 环境设置
 
-Please ensure to setup and configure `boto3` to work with your AWS account. 
+请确保设置并配置 `boto3` 以便与您的 AWS 账户配合使用。
 
-You can follow the guide [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#configuration).
+您可以按照 [此处](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#configuration) 的指南进行操作。
 
-You should also have a Kendra Index set up before using this template. 
+在使用此模板之前，您还应该设置一个 Kendra 索引。
 
-You can use [this Cloudformation template](https://github.com/aws-samples/amazon-kendra-langchain-extensions/blob/main/kendra_retriever_samples/kendra-docs-index.yaml) to create a sample index. 
+您可以使用 [此 Cloudformation 模板](https://github.com/aws-samples/amazon-kendra-langchain-extensions/blob/main/kendra_retriever_samples/kendra-docs-index.yaml) 来创建一个示例索引。
 
-This includes sample data containing AWS online documentation for Amazon Kendra, Amazon Lex, and Amazon SageMaker. Alternatively, you can use your own Amazon Kendra index if you have indexed your own dataset. 
+这包括包含 Amazon Kendra、Amazon Lex 和 Amazon SageMaker 的 AWS 在线文档的示例数据。或者，如果您已经对自己的数据集进行了索引，您也可以使用自己的 Amazon Kendra 索引。
 
-The following environment variables need to be set:
+需要设置以下环境变量：
 
-* `AWS_DEFAULT_REGION` - This should reflect the correct AWS region. Default is `us-east-1`.
-* `AWS_PROFILE` - This should reflect your AWS profile. Default is `default`.
-* `KENDRA_INDEX_ID` - This should have the Index ID of the Kendra index. Note that the Index ID is a 36 character alphanumeric value that can be found in the index detail page.
+* `AWS_DEFAULT_REGION` - 这应该反映正确的 AWS 区域。默认值为 `us-east-1`。
+* `AWS_PROFILE` - 这应该反映您的 AWS 配置文件。默认值为 `default`。
+* `KENDRA_INDEX_ID` - 这应该包含 Kendra 索引的索引 ID。请注意，索引 ID 是一个 36 个字符的字母数字值，可以在索引详细信息页面找到。
 
-## Usage
+## 使用方法
 
-To use this package, you should first have the LangChain CLI installed:
+要使用此包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将其作为唯一包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package rag-aws-kendra
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，只需运行：
 
 ```shell
 langchain app add rag-aws-kendra
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 ```python
 from rag_aws_kendra.chain import chain as rag_aws_kendra_chain
 
 add_routes(app, rag_aws_kendra_chain, path="/rag-aws-kendra")
 ```
 
-(Optional) Let's now configure LangSmith. 
-LangSmith will help us trace, monitor and debug LangChain applications. 
-You can sign up for LangSmith [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
-
+（可选）现在让我们配置 LangSmith。
+LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接启动一个 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server running locally at 
+这将启动一个 FastAPI 应用程序，服务器在本地运行，地址为 
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/rag-aws-kendra/playground](http://127.0.0.1:8000/rag-aws-kendra/playground)  
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板。
+我们可以在 [http://127.0.0.1:8000/rag-aws-kendra/playground](http://127.0.0.1:8000/rag-aws-kendra/playground) 访问游乐场。
 
-We can access the template from code with:
+我们可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable

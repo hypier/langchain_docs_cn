@@ -1,31 +1,26 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/polars_dataframe.ipynb
 ---
+
 # Polars DataFrame
 
-This notebook goes over how to load data from a [polars](https://pola-rs.github.io/polars-book/user-guide/) DataFrame.
-
+本笔记本介绍如何从 [polars](https://pola-rs.github.io/polars-book/user-guide/) DataFrame 加载数据。
 
 ```python
 %pip install --upgrade --quiet  polars
 ```
 
-
 ```python
 import polars as pl
 ```
-
 
 ```python
 df = pl.read_csv("example_data/mlb_teams_2012.csv")
 ```
 
-
 ```python
 df.head()
 ```
-
-
 
 ```html
 <div><style>
@@ -37,23 +32,17 @@ df.head()
 <small>shape: (5, 3)</small><table border="1" class="dataframe"><thead><tr><th>Team</th><th> &quot;Payroll (millions)&quot;</th><th> &quot;Wins&quot;</th></tr><tr><td>str</td><td>f64</td><td>i64</td></tr></thead><tbody><tr><td>&quot;Nationals&quot;</td><td>81.34</td><td>98</td></tr><tr><td>&quot;Reds&quot;</td><td>82.2</td><td>97</td></tr><tr><td>&quot;Yankees&quot;</td><td>197.96</td><td>95</td></tr><tr><td>&quot;Giants&quot;</td><td>117.62</td><td>94</td></tr><tr><td>&quot;Braves&quot;</td><td>83.31</td><td>94</td></tr></tbody></table></div> 
 ```
 
-
-
 ```python
 from langchain_community.document_loaders import PolarsDataFrameLoader
 ```
-
 
 ```python
 loader = PolarsDataFrameLoader(df, page_content_column="Team")
 ```
 
-
 ```python
 loader.load()
 ```
-
-
 
 ```output
 [Document(page_content='Nationals', metadata={' "Payroll (millions)"': 81.34, ' "Wins"': 98}),
@@ -88,10 +77,8 @@ loader.load()
  Document(page_content='Astros', metadata={' "Payroll (millions)"': 60.65, ' "Wins"': 55})]
 ```
 
-
-
 ```python
-# Use lazy load for larger table, which won't read the full table into memory
+# 对于较大的表格使用惰性加载，这样不会将整个表格读入内存
 for i in loader.lazy_load():
     print(i)
 ```
@@ -128,7 +115,7 @@ page_content='Cubs' metadata={' "Payroll (millions)"': 88.19, ' "Wins"': 61}
 page_content='Astros' metadata={' "Payroll (millions)"': 60.65, ' "Wins"': 55}
 ```
 
-## Related
+## 相关
 
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

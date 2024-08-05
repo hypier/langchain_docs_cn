@@ -1,15 +1,16 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_transformers/doctran_extract_properties.ipynb
 ---
-# Doctran: extract properties
 
-We can extract useful features of documents using the [Doctran](https://github.com/psychic-api/doctran) library, which uses OpenAI's function calling feature to extract specific metadata.
+# Doctran: 提取属性
 
-Extracting metadata from documents is helpful for a variety of tasks, including:
+我们可以使用 [Doctran](https://github.com/psychic-api/doctran) 库提取文档的有用特征，该库使用 OpenAI 的函数调用功能来提取特定的元数据。
 
-* **Classification:** classifying documents into different categories
-* **Data mining:** Extract structured data that can be used for data analysis
-* **Style transfer:** Change the way text is written to more closely match expected user input, improving vector search results
+从文档中提取元数据对各种任务非常有帮助，包括：
+
+* **分类：** 将文档分类到不同的类别中
+* **数据挖掘：** 提取可以用于数据分析的结构化数据
+* **风格转移：** 改变文本的写作方式，使其更接近预期的用户输入，从而改善向量搜索结果
 
 
 ```python
@@ -37,10 +38,8 @@ load_dotenv()
 True
 ```
 
-
-## Input
-This is the document we'll extract properties from.
-
+## 输入
+这是我们将提取属性的文档。
 
 ```python
 sample_text = """[Generated with ChatGPT]
@@ -122,25 +121,25 @@ documents = [Document(page_content=sample_text)]
 properties = [
     {
         "name": "category",
-        "description": "What type of email this is.",
+        "description": "这封邮件是什么类型的。",
         "type": "string",
         "enum": ["update", "action_item", "customer_feedback", "announcement", "other"],
         "required": True,
     },
     {
         "name": "mentions",
-        "description": "A list of all people mentioned in this email.",
+        "description": "这封邮件中提到的所有人的名单。",
         "type": "array",
         "items": {
             "name": "full_name",
-            "description": "The full name of the person mentioned.",
+            "description": "提到的人的全名。",
             "type": "string",
         },
         "required": True,
     },
     {
         "name": "eli5",
-        "description": "Explain this email to me like I'm 5 years old.",
+        "description": "像我五岁一样解释这封邮件。",
         "type": "string",
         "required": True,
     },
@@ -148,16 +147,14 @@ properties = [
 property_extractor = DoctranPropertyExtractor(properties=properties)
 ```
 
-## Output
-After extracting properties from a document, the result will be returned as a new document with properties provided in the metadata
-
+## 输出
+从文档中提取属性后，结果将作为新文档返回，并在元数据中提供属性。
 
 ```python
 extracted_document = property_extractor.transform_documents(
     documents, properties=properties
 )
 ```
-
 
 ```python
 print(json.dumps(extracted_document[0].metadata, indent=2))

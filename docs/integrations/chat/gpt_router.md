@@ -2,15 +2,16 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/gpt_router.ipynb
 sidebar_label: GPTRouter
 ---
+
 # GPTRouter
 
-[GPTRouter](https://github.com/Writesonic/GPTRouter) is an open source LLM API Gateway that offers a universal API for 30+ LLMs, vision, and image models, with smart fallbacks based on uptime and latency, automatic retries, and streaming.
+[GPTRouter](https://github.com/Writesonic/GPTRouter) 是一个开源 LLM API 网关，提供 30 多个 LLM、视觉和图像模型的通用 API，具有基于正常运行时间和延迟的智能回退、自动重试和流式传输功能。
 
  
-This notebook covers how to get started with using Langchain + the GPTRouter I/O library. 
+本笔记本介绍如何开始使用 Langchain + GPTRouter I/O 库。 
 
-* Set `GPT_ROUTER_API_KEY` environment variable
-* or use the `gpt_router_api_key` keyword argument
+* 设置 `GPT_ROUTER_API_KEY` 环境变量
+* 或使用 `gpt_router_api_key` 关键字参数
 
 
 ```python
@@ -31,9 +32,9 @@ Requirement already satisfied: httpcore==1.* in /Users/sirjan-ws/.pyenv/versions
 Requirement already satisfied: h11<0.15,>=0.13 in /Users/sirjan-ws/.pyenv/versions/3.10.13/envs/langchain_venv5/lib/python3.10/site-packages (from httpcore==1.*->httpx>=0.25.2->GPTRouter) (0.14.0)
 Requirement already satisfied: exceptiongroup in /Users/sirjan-ws/.pyenv/versions/3.10.13/envs/langchain_venv5/lib/python3.10/site-packages (from anyio->httpx>=0.25.2->GPTRouter) (1.2.0)
 
-[1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m A new release of pip is available: [0m[31;49m23.0.1[0m[39;49m -> [0m[32;49m23.3.2[0m
-[1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m To update, run: [0m[32;49mpip install --upgrade pip[0m
-Note: you may need to restart the kernel to use updated packages.
+[1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m 新版本的 pip 可用: [0m[31;49m23.0.1[0m[39;49m -> [0m[32;49m23.3.2[0m
+[1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m 要更新，请运行: [0m[32;49mpip install --upgrade pip[0m
+注意: 您可能需要重启内核以使用更新的包。
 ```
 
 ```python
@@ -68,26 +69,19 @@ chat(messages)
 AIMessage(content=" J'aime programmer.")
 ```
 
-
-## `GPTRouter` also supports async and streaming functionality:
-
+## `GPTRouter` 还支持异步和流式功能：
 
 ```python
 from langchain_core.callbacks import CallbackManager, StreamingStdOutCallbackHandler
 ```
 
-
 ```python
 await chat.agenerate([messages])
 ```
 
-
-
 ```output
 LLMResult(generations=[[ChatGeneration(text=" J'aime programmer.", generation_info={'finish_reason': 'stop_sequence'}, message=AIMessage(content=" J'aime programmer."))]], llm_output={}, run=[RunInfo(run_id=UUID('9885f27f-c35a-4434-9f37-c254259762a5'))])
 ```
-
-
 
 ```python
 chat = GPTRouter(
@@ -102,14 +96,11 @@ chat(messages)
  J'aime programmer.
 ```
 
-
 ```output
 AIMessage(content=" J'aime programmer.")
 ```
 
+## 相关
 
-
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

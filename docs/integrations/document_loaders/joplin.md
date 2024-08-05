@@ -1,22 +1,23 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/joplin.ipynb
 ---
+
 # Joplin
 
->[Joplin](https://joplinapp.org/) is an open-source note-taking app. Capture your thoughts and securely access them from any device.
+>[Joplin](https://joplinapp.org/) 是一个开源笔记应用程序。捕捉您的想法，并从任何设备安全访问它们。
 
-This notebook covers how to load documents from a `Joplin` database.
+本笔记本涵盖如何从 `Joplin` 数据库加载文档。
 
-`Joplin` has a [REST API](https://joplinapp.org/api/references/rest_api/) for accessing its local database. This loader uses the API to retrieve all notes in the database and their metadata. This requires an access token that can be obtained from the app by following these steps:
+`Joplin` 提供了一个 [REST API](https://joplinapp.org/api/references/rest_api/) 用于访问其本地数据库。此加载器使用 API 检索数据库中的所有笔记及其元数据。这需要一个访问令牌，可以通过以下步骤从应用程序获取：
 
-1. Open the `Joplin` app. The app must stay open while the documents are being loaded.
-2. Go to settings / options and select "Web Clipper".
-3. Make sure that the Web Clipper service is enabled.
-4. Under "Advanced Options", copy the authorization token.
+1. 打开 `Joplin` 应用程序。在加载文档时，应用程序必须保持打开状态。
+2. 转到设置 / 选项并选择“网页剪辑器”。
+3. 确保已启用网页剪辑器服务。
+4. 在“高级选项”下，复制授权令牌。
 
-You may either initialize the loader directly with the access token, or store it in the environment variable JOPLIN_ACCESS_TOKEN.
+您可以直接用访问令牌初始化加载器，或者将其存储在环境变量 JOPLIN_ACCESS_TOKEN 中。
 
-An alternative to this approach is to export the `Joplin`'s note database to Markdown files (optionally, with Front Matter metadata) and use a Markdown loader, such as ObsidianLoader, to load them.
+另一种方法是将 `Joplin` 的笔记数据库导出为 Markdown 文件（可选地，带有 Front Matter 元数据），并使用 Markdown 加载器，例如 ObsidianLoader，来加载它们。
 
 
 ```python
@@ -33,8 +34,7 @@ loader = JoplinLoader(access_token="<access-token>")
 docs = loader.load()
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

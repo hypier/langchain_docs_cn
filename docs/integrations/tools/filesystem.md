@@ -1,18 +1,19 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/filesystem.ipynb
 ---
-# File System
 
-LangChain provides tools for interacting with a local file system out of the box. This notebook walks through some of them.
+# 文件系统
 
-**Note:** these tools are not recommended for use outside a sandboxed environment! 
+LangChain 提供了与本地文件系统交互的工具。这本笔记本将介绍其中的一些。
+
+**注意：** 这些工具不建议在沙盒环境之外使用！ 
 
 
 ```python
 %pip install -qU langchain-community
 ```
 
-First, we'll import the tools.
+首先，我们将导入这些工具。
 
 
 ```python
@@ -20,26 +21,22 @@ from tempfile import TemporaryDirectory
 
 from langchain_community.agent_toolkits import FileManagementToolkit
 
-# We'll make a temporary directory to avoid clutter
+# 我们将创建一个临时目录以避免杂乱
 working_directory = TemporaryDirectory()
 ```
 
-## The FileManagementToolkit
+## 文件管理工具包
 
-If you want to provide all the file tooling to your agent, it's easy to do so with the toolkit. We'll pass the temporary directory in as a root directory as a workspace for the LLM.
+如果您想为您的代理提供所有文件工具，使用该工具包非常简单。我们将临时目录作为根目录传入，作为 LLM 的工作空间。
 
-It's recommended to always pass in a root directory, since without one, it's easy for the LLM to pollute the working directory, and without one, there isn't any validation against
-straightforward prompt injection.
-
+建议始终传入根目录，因为如果没有根目录，LLM 很容易污染工作目录，并且没有根目录就无法进行简单的提示注入验证。
 
 ```python
 toolkit = FileManagementToolkit(
     root_dir=str(working_directory.name)
-)  # If you don't provide a root_dir, operations will default to the current working directory
+)  # 如果您不提供 root_dir，操作将默认为当前工作目录
 toolkit.get_tools()
 ```
-
-
 
 ```output
 [CopyFileTool(root_dir='/tmp/tmprdvsw3tg'),
@@ -51,11 +48,9 @@ toolkit.get_tools()
  ListDirectoryTool(root_dir='/tmp/tmprdvsw3tg')]
 ```
 
+### 选择文件系统工具
 
-### Selecting File System Tools
-
-If you only want to select certain tools, you can pass them in as arguments when initializing the toolkit, or you can individually initialize the desired tools.
-
+如果您只想选择某些工具，可以在初始化工具包时将它们作为参数传递，或者您可以单独初始化所需的工具。
 
 ```python
 tools = FileManagementToolkit(
@@ -65,43 +60,31 @@ tools = FileManagementToolkit(
 tools
 ```
 
-
-
 ```output
 [ReadFileTool(root_dir='/tmp/tmprdvsw3tg'),
  WriteFileTool(root_dir='/tmp/tmprdvsw3tg'),
  ListDirectoryTool(root_dir='/tmp/tmprdvsw3tg')]
 ```
 
-
-
 ```python
 read_tool, write_tool, list_tool = tools
 write_tool.invoke({"file_path": "example.txt", "text": "Hello World!"})
 ```
 
-
-
 ```output
 'File written successfully to example.txt.'
 ```
 
-
-
 ```python
-# List files in the working directory
+# 列出工作目录中的文件
 list_tool.invoke({})
 ```
-
-
 
 ```output
 'example.txt'
 ```
 
+## 相关
 
-
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [使用指南](/docs/how_to/#tools)

@@ -1,20 +1,19 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/bing_search.ipynb
 ---
-# Bing Search
 
-> [Bing Search](https://learn.microsoft.com/en-us/bing/search-apis/bing-web-search/) is an Azure service and enables safe, ad-free, location-aware search results, surfacing relevant information from billions of web documents. Help your users find what they're looking for from the world-wide-web by harnessing Bing's ability to comb billions of webpages, images, videos, and news with a single API call. 
+# Bing搜索
 
-## Setup
-Following the [instruction](https://learn.microsoft.com/en-us/bing/search-apis/bing-web-search/create-bing-search-service-resource) to create Azure Bing Search v7 service, and get the subscription key
+> [Bing搜索](https://learn.microsoft.com/en-us/bing/search-apis/bing-web-search/) 是一项Azure服务，提供安全、无广告、基于位置的搜索结果，从数十亿个网页文档中提取相关信息。通过利用Bing一次API调用的能力，帮助您的用户在全球网络中找到他们所寻找的内容，涵盖数十亿个网页、图像、视频和新闻。
 
-The integration lives in the `langchain-community` package.
+## 设置
+按照 [说明](https://learn.microsoft.com/en-us/bing/search-apis/bing-web-search/create-bing-search-service-resource) 创建 Azure Bing Search v7 服务，并获取订阅密钥
 
+集成位于 `langchain-community` 包中。
 
 ```python
 %pip install -U langchain-community
 ```
-
 
 ```python
 import getpass
@@ -24,30 +23,24 @@ os.environ["BING_SUBSCRIPTION_KEY"] = getpass.getpass()
 os.environ["BING_SEARCH_URL"] = "https://api.bing.microsoft.com/v7.0/search"
 ```
 
-
 ```python
 from langchain_community.utilities import BingSearchAPIWrapper
 ```
-
 
 ```python
 search = BingSearchAPIWrapper(k=4)
 ```
 
-
 ```python
 search.run("python")
 ```
-
-
 
 ```output
 '<b>Python is a</b> versatile and powerful language that lets you work quickly and integrate systems more effectively. Learn how to get started, download the latest version, access documentation, find jobs, and join the Python community. <b>Python is a</b> popular programming language for various purposes. Find the latest version of Python for different operating systems, download release notes, and learn about the development process. Learn <b>Python,</b> a popular programming language for web applications, with examples, exercises, and references. Get certified by completing the PYTHON <b>course</b> at W3Schools. Learn the basic concepts and features of <b>Python,</b> a powerful and easy to learn programming language. The tutorial covers topics such as data structures, modules, classes, exceptions, input and output, and more. Learn why and how to use <b>Python,</b> a popular and easy-to-learn programming language. Find installation guides, tutorials, documentation, resources and FAQs for beginners and experienced programmers. Learn about <b>Python,</b> a high-level, general-purpose programming language with a focus on code readability and multiple paradigms. Find out its history, design, features, libraries, implementations, popularity, uses, and influences. Real <b>Python</b> offers tutorials, books, courses, and news for <b>Python</b> developers of all skill levels. Whether you want to learn <b>Python</b> basics, web development, data science, or machine learning, you can find useful articles and code examples here. Learn how to install, use, and extend <b>Python</b> 3.12.3, a popular programming language. Find tutorials, library references, API guides, FAQs, and more. <b>Python</b> is a powerful, fast, friendly and open-source language that runs everywhere. Learn how to get started, explore applications, join the community and access the latest news and events. Learn the basics of <b>Python</b> programming language with examples of numbers, text, variables, and operators. This tutorial covers the syntax, types, and features of <b>Python</b> for beginners.'
 ```
 
-
-## Number of results
-You can use the `k` parameter to set the number of results
+## 结果数量
+您可以使用 `k` 参数来设置结果数量
 
 
 ```python
@@ -65,14 +58,13 @@ search.run("python")
 '<b>Python</b> is a versatile and powerful language that lets you work quickly and integrate systems more effectively. Learn how to get started, download the latest version, access documentation, find jobs, and join the Python community.'
 ```
 
+## 元数据结果
 
-## Metadata Results
+通过 BingSearch 运行查询并返回摘要、标题和链接元数据。
 
-Run query through BingSearch and return snippet, title, and link metadata.
-
-- Snippet: The description of the result.
-- Title: The title of the result.
-- Link: The link to the result.
+- 摘要：结果的描述。
+- 标题：结果的标题。
+- 链接：结果的链接。
 
 
 ```python
@@ -87,25 +79,24 @@ search.results("apples", 5)
 
 
 ```output
-[{'snippet': 'Learn about the nutrients, antioxidants, and potential health effects of<b> apples.</b> Find out how<b> apples</b> may help with weight loss, diabetes, heart disease, and cancer.',
-  'title': 'Apples 101: Nutrition Facts and Health Benefits',
+[{'snippet': '了解<b>苹果</b>的营养成分、抗氧化剂和潜在健康影响。发现<b>苹果</b>如何帮助减肥、糖尿病、心脏病和癌症。',
+  'title': '苹果 101：营养事实和健康益处',
   'link': 'https://www.healthline.com/nutrition/foods/apples'},
- {'snippet': 'Learn how<b> apples</b> can improve your health with their fiber, antioxidants, and phytochemicals. Find out the best types of<b> apples</b> for different purposes, how to buy and store them, and what side effects to watch out for.',
-  'title': 'Apples: Nutrition and Health Benefits - WebMD',
+ {'snippet': '了解<b>苹果</b>如何通过其纤维、抗氧化剂和植物化学物质改善您的健康。找出不同用途的最佳<b>苹果</b>类型、如何购买和储存它们，以及需要注意的副作用。',
+  'title': '苹果：营养和健康益处 - WebMD',
   'link': 'https://www.webmd.com/food-recipes/benefits-apples'},
- {'snippet': '<b>Apples</b> are nutritious, filling, and versatile fruits that may lower your risk of various diseases. Learn how<b> apples</b> can support your weight loss, heart health, gut health, and brain health with scientific evidence.',
-  'title': '10 Impressive Health Benefits of Apples',
+ {'snippet': '<b>苹果</b>是营养丰富、饱腹且多用途的水果，可能降低各种疾病的风险。了解<b>苹果</b>如何通过科学证据支持您的减肥、心脏健康、肠道健康和大脑健康。',
+  'title': '苹果的 10 种显著健康益处',
   'link': 'https://www.healthline.com/nutrition/10-health-benefits-of-apples'},
- {'snippet': 'An apple is a round, edible fruit produced by an apple tree (Malus spp., among them the domestic or orchard apple; Malus domestica).Apple trees are cultivated worldwide and are the most widely grown species in the genus Malus.The tree originated in Central Asia, where its wild ancestor, Malus sieversii, is still found.<b>Apples</b> have been grown for thousands of years in Eurasia and were introduced ...',
-  'title': 'Apple - Wikipedia',
+ {'snippet': '苹果是一种由苹果树（Malus spp.，其中包括家苹果或园艺苹果；Malus domestica）生产的圆形可食用水果。苹果树在全球范围内栽培，是 Malus 属中种植最广泛的物种。该树起源于中亚，其野生祖先 Malus sieversii 仍然存在。<b>苹果</b>在欧亚地区种植已有数千年，并被引入 ...',
+  'title': '苹果 - 维基百科',
   'link': 'https://en.wikipedia.org/wiki/Apple'},
- {'snippet': 'Learn about the most popular and diverse<b> apples</b> in the world, from ambrosia to winesap, with photos and descriptions. Find out their origins, flavors, uses, and nutritional benefits in this comprehensive guide to<b> apples.</b>',
-  'title': '29 Types Of Apples From A to Z (With Photos!) - Live Eat Learn',
+ {'snippet': '了解世界上最受欢迎和多样化的<b>苹果</b>，从琼浆到酒苹果，附带照片和描述。通过这本全面的<b>苹果</b>指南，发现它们的起源、风味、用途和营养益处。',
+  'title': '从 A 到 Z 的 29 种苹果（附照片！） - 生活学习',
   'link': 'https://www.liveeatlearn.com/types-of-apples/'}]
 ```
 
-
-## Tool Usage
+## 工具使用
 
 
 ```python
@@ -131,27 +122,26 @@ BingSearchResults(api_wrapper=BingSearchAPIWrapper(bing_subscription_key='<your 
 import json
 
 # .invoke wraps utility.results
-response = tool.invoke("What is the weather in Shanghai?")
+response = tool.invoke("上海的天气怎么样？")
 response = json.loads(response.replace("'", '"'))
 for item in response:
     print(item)
 ```
 ```output
-{'snippet': '<b>Shanghai</b>, <b>Shanghai</b>, China <b>Weather</b> Forecast, with current conditions, wind, air quality, and what to expect for the next 3 days.', 'title': 'Shanghai, Shanghai, China Weather Forecast | AccuWeather', 'link': 'https://www.accuweather.com/en/cn/shanghai/106577/weather-forecast/106577'}
-{'snippet': 'Current <b>weather</b> <b>in Shanghai</b> and forecast for today, tomorrow, and next 14 days', 'title': 'Weather for Shanghai, Shanghai Municipality, China - timeanddate.com', 'link': 'https://www.timeanddate.com/weather/china/shanghai'}
-{'snippet': '<b>Shanghai</b> 14 Day Extended Forecast. <b>Weather</b> Today <b>Weather</b> Hourly 14 Day Forecast Yesterday/Past <b>Weather</b> Climate (Averages) Currently: 73 °F. Rain showers. Partly sunny. (<b>Weather</b> station: <b>Shanghai</b> Hongqiao Airport, China). See more current <b>weather</b>.', 'title': 'Shanghai, Shanghai Municipality, China 14 day weather forecast', 'link': 'https://www.timeanddate.com/weather/china/shanghai/ext'}
-{'snippet': '<b>Shanghai</b> - <b>Weather</b> warnings issued 14-day forecast. <b>Weather</b> warnings issued. Forecast - <b>Shanghai</b>. Day by day forecast. Last updated today at 18:00. Tonight, A clear sky and a gentle breeze. Clear Sky.', 'title': 'Shanghai - BBC Weather', 'link': 'https://www.bbc.com/weather/1796236'}
+{'snippet': '<b>上海</b>, <b>上海</b>, 中国 <b>天气</b> 预报，包含当前天气、风速、空气质量及未来3天的预报。', 'title': '上海，上海，中国天气预报 | AccuWeather', 'link': 'https://www.accuweather.com/en/cn/shanghai/106577/weather-forecast/106577'}
+{'snippet': '当前 <b>天气</b> <b>在上海</b> 和今天、明天及未来14天的预报', 'title': '上海，上海市，中国的天气 - timeanddate.com', 'link': 'https://www.timeanddate.com/weather/china/shanghai'}
+{'snippet': '<b>上海</b> 14天扩展预报。<b>今天的天气</b> <b>天气</b> 每小时14天预报 昨天/过去的<b>天气</b> 气候（平均）当前：73°F。阵雨。部分多云。(<b>天气</b>站：<b>上海</b>虹桥机场，中国)。查看更多当前的<b>天气</b>。', 'title': '上海，上海市，中国14天天气预报', 'link': 'https://www.timeanddate.com/weather/china/shanghai/ext'}
+{'snippet': '<b>上海</b> - <b>天气</b>预警发布14天预报。<b>天气</b>预警发布。预报 - <b>上海</b>。逐日预报。最后更新于今天18:00。今晚，晴朗的天空和微风。晴空。', 'title': '上海 - BBC天气', 'link': 'https://www.bbc.com/weather/1796236'}
 ```
-## Chaining
 
-We show here how to use it as part of an [agent](/docs/tutorials/agents). We use the OpenAI Functions Agent, so we will need to setup and install the required dependencies for that. We will also use [LangSmith Hub](https://smith.langchain.com/hub) to pull the prompt from, so we will need to install that.
+## 链接
 
+我们在这里展示如何将其用作 [agent](/docs/tutorials/agents) 的一部分。我们使用 OpenAI Functions Agent，因此我们需要设置和安装所需的依赖项。我们还将使用 [LangSmith Hub](https://smith.langchain.com/hub) 来提取提示，因此我们需要安装它。
 
 ```python
 # you need a model to use in the chain
 %pip install --upgrade --quiet langchain langchain-openai langchainhub langchain-community
 ```
-
 
 ```python
 import getpass
@@ -197,16 +187,12 @@ Invoking: `bing_search_results_json` with `{'query': 'latest burning man floods'
 
 [1m> Finished chain.[0m
 ```
-
-
 ```output
 {'input': 'What happened in the latest burning man floods?',
  'output': 'In the latest Burning Man festival, heavy rains caused flooding and resulted in thousands of attendees being stranded. The festival took place in Black Rock Forest, Nevada, and around 70,000 people were gathered for the event. The excessive rainfall led to flash flooding in some parts of the area. As a result, camp sites were filled with ankle-deep mud, making it difficult for people to leave. Authorities were investigating a death at the festival site, which was affected by the flooding. However, in the following days, thousands of Burning Man attendees were able to make a mass exodus after the rain subsided.'}
 ```
 
+## 相关
 
-
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

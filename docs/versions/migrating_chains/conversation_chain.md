@@ -1,23 +1,21 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/versions/migrating_chains/conversation_chain.ipynb
-title: Migrating from ConversationalChain
+title: 从 ConversationalChain 迁移
 ---
 
-[`ConversationChain`](https://api.python.langchain.com/en/latest/chains/langchain.chains.conversation.base.ConversationChain.html) incorporates a memory of previous messages to sustain a stateful conversation.
+[`ConversationChain`](https://api.python.langchain.com/en/latest/chains/langchain.chains.conversation.base.ConversationChain.html) 结合了先前消息的记忆，以维持有状态的对话。
 
-Some advantages of switching to the LCEL implementation are:
+切换到 LCEL 实现的一些优点包括：
 
-- Innate support for threads/separate sessions. To make this work with `ConversationChain`, you'd need to instantiate a separate memory class outside the chain.
-- More explicit parameters. `ConversationChain` contains a hidden default prompt, which can cause confusion.
-- Streaming support. `ConversationChain` only supports streaming via callbacks.
+- 天生支持线程/独立会话。要使其与 `ConversationChain` 一起工作，您需要在链外实例化一个单独的内存类。
+- 更明确的参数。`ConversationChain` 包含一个隐藏的默认提示，这可能会导致混淆。
+- 支持流式传输。`ConversationChain` 仅通过回调支持流式传输。
 
-`RunnableWithMessageHistory` implements sessions via configuration parameters. It should be instantiated with a callable that returns a [chat message history](https://api.python.langchain.com/en/latest/chat_history/langchain_core.chat_history.BaseChatMessageHistory.html). By default, it expects this function to take a single argument `session_id`.
-
+`RunnableWithMessageHistory` 通过配置参数实现会话。它应该与返回 [聊天消息历史](https://api.python.langchain.com/en/latest/chat_history/langchain_core.chat_history.BaseChatMessageHistory.html) 的可调用对象一起实例化。默认情况下，它期望此函数接受一个参数 `session_id`。
 
 ```python
 %pip install --upgrade --quiet langchain langchain-openai
 ```
-
 
 ```python
 import os
@@ -31,7 +29,7 @@ import { ColumnContainer, Column } from "@theme/Columns";
 <ColumnContainer>
 <Column>
 
-#### Legacy
+#### 旧版
 
 
 
@@ -122,8 +120,7 @@ wrapped_chain.invoke({"input": "how are you?"})
 </Column>
 </ColumnContainer>
 
-The above example uses the same `history` for all sessions. The example below shows how to use a different chat history for each session.
-
+上述示例对所有会话使用相同的 `history`。下面的示例演示如何为每个会话使用不同的聊天历史。
 
 ```python
 from langchain_core.chat_history import BaseChatMessageHistory
@@ -158,9 +155,8 @@ wrapped_chain.invoke(
 'Ahoy there, me hearty! What can this old pirate do for ye today?'
 ```
 
+## 下一步
 
-## Next steps
+查看[本教程](/docs/tutorials/chatbot)，获取有关使用[`RunnableWithMessageHistory`](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.history.RunnableWithMessageHistory.html)的更完整的构建指南。
 
-See [this tutorial](/docs/tutorials/chatbot) for a more end-to-end guide on building with [`RunnableWithMessageHistory`](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.history.RunnableWithMessageHistory.html).
-
-Check out the [LCEL conceptual docs](/docs/concepts/#langchain-expression-language-lcel) for more background information.
+查看[LCEL 概念文档](/docs/concepts/#langchain-expression-language-lcel)，以获取更多背景信息。

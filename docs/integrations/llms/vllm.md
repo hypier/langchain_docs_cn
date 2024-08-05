@@ -1,18 +1,19 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/vllm.ipynb
 ---
+
 # vLLM
 
-[vLLM](https://vllm.readthedocs.io/en/latest/index.html) is a fast and easy-to-use library for LLM inference and serving, offering:
+[vLLM](https://vllm.readthedocs.io/en/latest/index.html) 是一个快速且易于使用的 LLM 推理和服务库，提供：
 
-* State-of-the-art serving throughput 
-* Efficient management of attention key and value memory with PagedAttention
-* Continuous batching of incoming requests
-* Optimized CUDA kernels
+* 最先进的服务吞吐量
+* 使用 PagedAttention 高效管理注意力键和值内存
+* 持续批处理传入请求
+* 优化的 CUDA 内核
 
-This notebooks goes over how to use a LLM with langchain and vLLM.
+本笔记本介绍如何使用 langchain 和 vLLM 进行 LLM。
 
-To use, you should have the `vllm` python package installed.
+使用前，请确保已安装 `vllm` python 包。
 
 
 ```python
@@ -45,7 +46,8 @@ What is the capital of France ? The capital of France is Paris.
 ``````output
 
 ```
-## Integrate the model in an LLMChain
+
+## 在LLMChain中集成模型
 
 
 ```python
@@ -68,18 +70,19 @@ Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.34s
 ``````output
 
 
-1. The first Pokemon game was released in 1996.
-2. The president was Bill Clinton.
-3. Clinton was president from 1993 to 2001.
-4. The answer is Clinton.
+1. 第一款Pokemon游戏于1996年发布。
+2. 总统是比尔·克林顿。
+3. 克林顿在1993年至2001年期间担任总统。
+4. 答案是克林顿。
 ``````output
 
 ```
-## Distributed Inference
 
-vLLM supports distributed tensor-parallel inference and serving. 
+## 分布式推理
 
-To run multi-GPU inference with the LLM class, set the `tensor_parallel_size` argument to the number of GPUs you want to use. For example, to run inference on 4 GPUs
+vLLM 支持分布式张量并行推理和服务。
+
+要使用 LLM 类运行多 GPU 推理，请将 `tensor_parallel_size` 参数设置为您想要使用的 GPU 数量。例如，要在 4 个 GPU 上运行推理
 
 
 ```python
@@ -94,9 +97,9 @@ llm = VLLM(
 llm.invoke("What is the future of AI?")
 ```
 
-## Quantization
+## 量化
 
-vLLM supports `awq` quantization. To enable it, pass `quantization` to `vllm_kwargs`.
+vLLM 支持 `awq` 量化。要启用它，请将 `quantization` 传递给 `vllm_kwargs`。
 
 
 ```python
@@ -108,13 +111,13 @@ llm_q = VLLM(
 )
 ```
 
-## OpenAI-Compatible Server
+## OpenAI兼容服务器
 
-vLLM can be deployed as a server that mimics the OpenAI API protocol. This allows vLLM to be used as a drop-in replacement for applications using OpenAI API.
+vLLM可以作为一个服务器进行部署，模仿OpenAI API协议。这使得vLLM可以作为使用OpenAI API的应用程序的替代品。
 
-This server can be queried in the same format as OpenAI API.
+该服务器可以使用与OpenAI API相同的格式进行查询。
 
-### OpenAI-Compatible Completion
+### OpenAI兼容的完成
 
 
 ```python
@@ -132,7 +135,7 @@ print(llm.invoke("Rome is"))
  a city that is filled with history, ancient buildings, and art around every corner
 ```
 
-## Related
+## 相关
 
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

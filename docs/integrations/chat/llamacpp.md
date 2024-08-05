@@ -1,48 +1,48 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/llamacpp.ipynb
 ---
+
 # ChatLlamaCpp
 
-This notebook provides a quick overview for getting started with chat model intergrated with [llama cpp python](https://github.com/abetlen/llama-cpp-python).
+本笔记本提供了与 [llama cpp python](https://github.com/abetlen/llama-cpp-python) 集成的聊天模型入门的快速概述。
 
-## Overview
+## 概述
 
-### Integration details
-| Class | Package | Local | Serializable | JS support |
+### 集成细节
+| 类别 | 包 | 本地 | 可序列化 | JS 支持 |
 | :--- | :--- | :---: | :---: |  :---: |
 | [ChatLlamaCpp](https://api.python.langchain.com/en/latest/chat_models/langchain_community.chat_models.llamacpp.ChatLlamaCpp.html) | [langchain-community](https://api.python.langchain.com/en/latest/community_api_reference.html) | ✅ | ❌ | ❌ |
 
-### Model features
-| [Tool calling](/docs/how_to/tool_calling) | [Structured output](/docs/how_to/structured_output/) | JSON mode | Image input | Audio input | Video input | [Token-level streaming](/docs/how_to/chat_streaming/) | Native async | [Token usage](/docs/how_to/chat_token_usage_tracking/) | [Logprobs](/docs/how_to/logprobs/) |
+### 模型特性
+| [工具调用](/docs/how_to/tool_calling) | [结构化输出](/docs/how_to/structured_output/) | JSON 模式 | 图像输入 | 音频输入 | 视频输入 | [令牌级流式传输](/docs/how_to/chat_streaming/) | 原生异步 | [令牌使用](/docs/how_to/chat_token_usage_tracking/) | [Logprobs](/docs/how_to/logprobs/) |
 | :---: | :---: | :---: | :---: |  :---: | :---: | :---: | :---: | :---: | :---: |
-| ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ✅ | 
+| ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ✅ |
 
-## Setup
+## 设置
 
-To get started and use **all** the features show below, we reccomend using a model that has been fine-tuned for tool-calling.
+要开始使用下面展示的**所有**功能，我们建议使用一个经过工具调用微调的模型。
 
-We will use [
-Hermes-2-Pro-Llama-3-8B-GGUF](https://huggingface.co/NousResearch/Hermes-2-Pro-Llama-3-8B-GGUF) from NousResearch. 
+我们将使用 [
+Hermes-2-Pro-Llama-3-8B-GGUF](https://huggingface.co/NousResearch/Hermes-2-Pro-Llama-3-8B-GGUF) 来自NousResearch。
 
-> Hermes 2 Pro is an upgraded version of Nous Hermes 2, consisting of an updated and cleaned version of the OpenHermes 2.5 Dataset, as well as a newly introduced Function Calling and JSON Mode dataset developed in-house. This new version of Hermes maintains its excellent general task and conversation capabilities - but also excels at Function Calling
+> Hermes 2 Pro是Nous Hermes 2的升级版本，包含更新和清理后的OpenHermes 2.5数据集，以及新引入的内部开发的函数调用和JSON模式数据集。这个新版本的Hermes保持了其出色的通用任务和对话能力——同时在函数调用方面也表现出色。
 
-See our guides on local models to go deeper:
+请查看我们的本地模型指南以深入了解：
 
-* [Run LLMs locally](https://python.langchain.com/v0.1/docs/guides/development/local_llms/)
-* [Using local models with RAG](https://python.langchain.com/v0.1/docs/use_cases/question_answering/local_retrieval_qa/)
+* [本地运行LLMs](https://python.langchain.com/v0.1/docs/guides/development/local_llms/)
+* [将本地模型与RAG结合使用](https://python.langchain.com/v0.1/docs/use_cases/question_answering/local_retrieval_qa/)
 
-### Installation
+### 安装
 
-The LangChain LlamaCpp integration lives in the `langchain-community` and `llama-cpp-python` packages:
-
+LangChain LlamaCpp 集成位于 `langchain-community` 和 `llama-cpp-python` 包中：
 
 ```python
 %pip install -qU langchain-community llama-cpp-python
 ```
 
-## Instantiation
+## 实例化
 
-Now we can instantiate our model object and generate chat completions:
+现在我们可以实例化我们的模型对象并生成聊天完成内容：
 
 
 ```python
@@ -70,7 +70,7 @@ llm = ChatLlamaCpp(
 )
 ```
 
-## Invocation
+## 调用
 
 
 ```python
@@ -91,17 +91,17 @@ ai_msg
 print(ai_msg.content)
 ```
 ```output
-J'aime programmer. (In France, "programming" is often used in its original sense of scheduling or organizing events.) 
+J'aime programmer. (在法国，“编程”通常用于其原始意义，即安排或组织活动。)
 
-If you meant computer-programming: 
+如果你指的是计算机编程：
 Je suis amoureux de la programmation informatique.
 
-(You might also say simply 'programmation', which would be understood as both meanings - depending on context).
+（你也可以简单地说“programmation”，这在上下文中会被理解为两种含义。）
 ```
-## Chaining
 
-We can [chain](/docs/how_to/sequence/) our model with a prompt template like so:
+## 链接
 
+我们可以通过一个提示模板来[链接](/docs/how_to/sequence/)我们的模型，如下所示：
 
 ```python
 from langchain_core.prompts import ChatPromptTemplate
@@ -126,13 +126,13 @@ chain.invoke(
 )
 ```
 
-## Tool calling
+## 工具调用
 
-Firstly, it works mostly the same as OpenAI Function Calling
+首先，它的工作方式与 OpenAI 函数调用大致相同。
 
-OpenAI has a [tool calling](https://platform.openai.com/docs/guides/function-calling) (we use "tool calling" and "function calling" interchangeably here) API that lets you describe tools and their arguments, and have the model return a JSON object with a tool to invoke and the inputs to that tool. tool-calling is extremely useful for building tool-using chains and agents, and for getting structured outputs from models more generally.
+OpenAI 有一个 [工具调用](https://platform.openai.com/docs/guides/function-calling)（在这里我们将“工具调用”和“函数调用”互换使用）API，允许您描述工具及其参数，并让模型返回一个包含要调用的工具及其输入的 JSON 对象。工具调用对于构建使用工具的链和代理非常有用，并且通常可以从模型中获取结构化输出。
 
-With `ChatLlamaCpp.bind_tools`, we can easily pass in Pydantic classes, dict schemas, LangChain tools, or even functions as tools to the model. Under the hood these are converted to an OpenAI tool schemas, which looks like:
+通过 `ChatLlamaCpp.bind_tools`，我们可以轻松地将 Pydantic 类、字典模式、LangChain 工具或甚至函数作为工具传递给模型。在底层，这些被转换为 OpenAI 工具模式，格式如下：
 ```
 {
     "name": "...",
@@ -140,10 +140,9 @@ With `ChatLlamaCpp.bind_tools`, we can easily pass in Pydantic classes, dict sch
     "parameters": {...}  # JSONSchema
 }
 ```
-and passed in every model invocation.
+并在每次模型调用中传递。
 
-
-However, it cannot automatically trigger a function/tool, we need to force it by specifying the 'tool choice' parameter. This parameter is typically formatted as described below.
+然而，它无法自动触发一个函数/工具，我们需要通过指定“工具选择”参数来强制执行。该参数通常按照以下格式进行格式化。
 
 ```{"type": "function", "function": {"name": <<tool_name>>}}.```
 
@@ -154,14 +153,14 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 
 
 class WeatherInput(BaseModel):
-    location: str = Field(description="The city and state, e.g. San Francisco, CA")
+    location: str = Field(description="城市和州，例如：旧金山，加州")
     unit: str = Field(enum=["celsius", "fahrenheit"])
 
 
 @tool("get_current_weather", args_schema=WeatherInput)
 def get_weather(location: str, unit: str):
-    """Get the current weather in a given location"""
-    return f"Now the weather in {location} is 22 {unit}"
+    """获取给定位置的当前天气"""
+    return f"现在{location}的天气是22 {unit}"
 
 
 llm_with_tools = llm.bind_tools(
@@ -173,7 +172,7 @@ llm_with_tools = llm.bind_tools(
 
 ```python
 ai_msg = llm_with_tools.invoke(
-    "what is the weather like in HCMC in celsius",
+    "HCMC的天气怎么样，单位为摄氏度",
 )
 ```
 
@@ -186,7 +185,7 @@ ai_msg.tool_calls
 
 ```output
 [{'name': 'get_current_weather',
-  'args': {'location': 'Ho Chi Minh City', 'unit': 'celsius'},
+  'args': {'location': '胡志明市', 'unit': 'celsius'},
   'id': 'call__0_get_current_weather_cmpl-394d9943-0a1f-425b-8139-d2826c1431f2'}]
 ```
 
@@ -194,12 +193,12 @@ ai_msg.tool_calls
 
 ```python
 class MagicFunctionInput(BaseModel):
-    magic_function_input: int = Field(description="The input value for magic function")
+    magic_function_input: int = Field(description="魔法函数的输入值")
 
 
 @tool("get_magic_function", args_schema=MagicFunctionInput)
 def magic_function(magic_function_input: int):
-    """Get the value of magic function for an input."""
+    """获取给定输入的魔法函数值。"""
     return magic_function_input + 2
 
 
@@ -209,7 +208,7 @@ llm_with_tools = llm.bind_tools(
 )
 
 ai_msg = llm_with_tools.invoke(
-    "What is magic function of 3?",
+    "3的魔法函数是什么？",
 )
 
 ai_msg
@@ -228,8 +227,7 @@ ai_msg.tool_calls
   'id': 'call__0_get_magic_function_cmpl-cd83a994-b820-4428-957c-48076c68335a'}]
 ```
 
-
-# Structured output
+# 结构化输出
 
 
 ```python
@@ -238,7 +236,7 @@ from langchain_core.utils.function_calling import convert_to_openai_tool
 
 
 class Joke(BaseModel):
-    """A setup to a joke and the punchline."""
+    """一个笑话的开场和结尾。"""
 
     setup: str
     punchline: str
@@ -246,7 +244,7 @@ class Joke(BaseModel):
 
 dict_schema = convert_to_openai_tool(Joke)
 structured_llm = llm.with_structured_output(dict_schema)
-result = structured_llm.invoke("Tell me a joke about birds")
+result = structured_llm.invoke("告诉我一个关于鸟的笑话")
 result
 ```
 
@@ -258,12 +256,11 @@ result
 
 
 ```output
-{'setup': '- Why did the chicken cross the playground?',
- 'punchline': '\n\n- To get to its gilded cage on the other side!'}
+{'setup': '- 为什么鸡要穿越游乐场?',
+ 'punchline': '\n\n- 为了到达另一边的华丽鸟笼!'}
 ```
 
-
-# Streaming
+# 流式传输
 
 
 
@@ -272,12 +269,11 @@ for chunk in llm.stream("what is 25x5"):
     print(chunk.content, end="\n", flush=True)
 ```
 
-## API reference
+## API 参考
 
-For detailed documentation of all ChatLlamaCpp features and configurations head to the API reference: https://api.python.langchain.com/en/latest/chat_models/langchain_community.chat_models.llamacpp.ChatLlamaCpp.html
+有关所有 ChatLlamaCpp 功能和配置的详细文档，请访问 API 参考： https://api.python.langchain.com/en/latest/chat_models/langchain_community.chat_models.llamacpp.ChatLlamaCpp.html
 
+## 相关
 
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

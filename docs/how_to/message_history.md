@@ -2,71 +2,71 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/message_history.ipynb
 keywords: [memory]
 ---
-# How to add message history
 
-:::info Prerequisites
+# 如何添加消息历史
 
-This guide assumes familiarity with the following concepts:
-- [LangChain Expression Language (LCEL)](/docs/concepts/#langchain-expression-language)
-- [Chaining runnables](/docs/how_to/sequence/)
-- [Configuring chain parameters at runtime](/docs/how_to/configure)
-- [Prompt templates](/docs/concepts/#prompt-templates)
-- [Chat Messages](/docs/concepts/#message-types)
+:::info 前提条件
+
+本指南假设您熟悉以下概念：
+- [LangChain 表达语言 (LCEL)](/docs/concepts/#langchain-expression-language)
+- [链接可运行对象](/docs/how_to/sequence/)
+- [在运行时配置链参数](/docs/how_to/configure)
+- [提示模板](/docs/concepts/#prompt-templates)
+- [聊天消息](/docs/concepts/#message-types)
 
 :::
 
-Passing conversation state into and out a chain is vital when building a chatbot. The [`RunnableWithMessageHistory`](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.history.RunnableWithMessageHistory.html#langchain_core.runnables.history.RunnableWithMessageHistory) class lets us add message history to certain types of chains. It wraps another Runnable and manages the chat message history for it. Specifically, it loads previous messages in the conversation BEFORE passing it to the Runnable, and it saves the generated response as a message AFTER calling the runnable. This class also enables multiple conversations by saving each conversation with a `session_id` - it then expects a `session_id` to be passed in the config when calling the runnable, and uses that to look up the relevant conversation history.
+在构建聊天机器人时，将对话状态传入和传出链是至关重要的。[`RunnableWithMessageHistory`](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.history.RunnableWithMessageHistory.html#langchain_core.runnables.history.RunnableWithMessageHistory) 类允许我们将消息历史添加到某些类型的链中。它包装另一个可运行对象并管理其聊天消息历史。具体来说，它在将之前的消息传递给可运行对象之前加载对话中的先前消息，并在调用可运行对象之后将生成的响应保存为消息。该类还通过用 `session_id` 保存每个对话来支持多会话 - 然后它期望在调用可运行对象时在配置中传递 `session_id`，并使用该 ID 查找相关的对话历史。
 
 ![index_diagram](../../static/img/message_history.png)
 
-In practice this looks something like:
+在实际操作中，这看起来像是：
 
 ```python
 from langchain_core.runnables.history import RunnableWithMessageHistory
 
 
 with_message_history = RunnableWithMessageHistory(
-    # The underlying runnable
+    # 底层可运行对象
     runnable,  
-    # A function that takes in a session id and returns a memory object
+    # 一个接受会话 ID 并返回内存对象的函数
     get_session_history,  
-    # Other parameters that may be needed to align the inputs/outputs
-    # of the Runnable with the memory object
+    # 可能需要的其他参数，以使可运行对象的输入/输出与内存对象对齐
     ...  
 )
 
 with_message_history.invoke(
-    # The same input as before
+    # 与之前相同的输入
     {"ability": "math", "input": "What does cosine mean?"},
-    # Configuration specifying the `session_id`,
-    # which controls which conversation to load
+    # 配置指定 `session_id`，
+    # 控制加载哪个会话
     config={"configurable": {"session_id": "abc123"}},
 )
 ```
 
 
-In order to properly set this up there are two main things to consider:
+为了正确设置这一点，有两个主要事项需要考虑：
 
-1. How to store and load messages? (this is `get_session_history` in the example above)
-2. What is the underlying Runnable you are wrapping and what are its inputs/outputs? (this is `runnable` in the example above, as well any additional parameters you pass to `RunnableWithMessageHistory` to align the inputs/outputs)
+1. 如何存储和加载消息？（这就是上面示例中的 `get_session_history`）
+2. 您包装的底层可运行对象是什么，它的输入/输出是什么？（这就是上面示例中的 `runnable`，以及您传递给 `RunnableWithMessageHistory` 的任何其他参数，以使输入/输出对齐）
 
-Let's walk through these pieces (and more) below.
+让我们在下面逐步了解这些内容（以及更多）。
 
-## How to store and load messages
+## 如何存储和加载消息
 
-A key part of this is storing and loading messages.
-When constructing `RunnableWithMessageHistory` you need to pass in a `get_session_history` function.
-This function should take in a `session_id` and return a `BaseChatMessageHistory` object.
+这其中一个关键部分是存储和加载消息。
+构造 `RunnableWithMessageHistory` 时，需要传入一个 `get_session_history` 函数。
+该函数应该接收一个 `session_id` 并返回一个 `BaseChatMessageHistory` 对象。
 
-**What is `session_id`?** 
+**什么是 `session_id`？**
 
-`session_id` is an identifier for the session (conversation) thread that these input messages correspond to. This allows you to maintain several conversations/threads with the same chain at the same time.
+`session_id` 是与这些输入消息对应的会话（对话）线程的标识符。这使您能够同时与同一链维护多个对话/线程。
 
-**What is `BaseChatMessageHistory`?** 
+**什么是 `BaseChatMessageHistory`？**
 
-`BaseChatMessageHistory` is a class that can load and save message objects. It will be called by `RunnableWithMessageHistory` to do exactly that. These classes are usually initialized with a session id.
+`BaseChatMessageHistory` 是一个可以加载和保存消息对象的类。它将被 `RunnableWithMessageHistory` 调用以执行此操作。这些类通常使用会话 id 初始化。
 
-Let's create a `get_session_history` object to use for this example. To keep things simple, we will use a simple SQLiteMessage
+让我们创建一个 `get_session_history` 对象来用于这个示例。为了简单起见，我们将使用一个简单的 SQLiteMessage
 
 
 ```python
@@ -82,27 +82,27 @@ def get_session_history(session_id):
     return SQLChatMessageHistory(session_id, "sqlite:///memory.db")
 ```
 
-Check out the [memory integrations](https://integrations.langchain.com/memory) page for implementations of chat message histories using other providers (Redis, Postgres, etc).
+查看 [memory integrations](https://integrations.langchain.com/memory) 页面，以获取使用其他提供商（Redis、Postgres 等）实现的聊天消息历史记录。
 
-## What is the runnable you are trying to wrap?
+## 你想要包装的 runnable 是什么？
 
-`RunnableWithMessageHistory` can only wrap certain types of Runnables. Specifically, it can be used for any Runnable that takes as input one of:
+`RunnableWithMessageHistory` 只能包装某些类型的 Runnables。具体来说，它可以用于任何输入为以下之一的 Runnable：
 
-* a sequence of [`BaseMessages`](/docs/concepts/#message-types)
-* a dict with a key that takes a sequence of `BaseMessages`
-* a dict with a key that takes the latest message(s) as a string or sequence of `BaseMessages`, and a separate key that takes historical messages
+* 一个 [`BaseMessages`](/docs/concepts/#message-types) 的序列
+* 一个包含键的字典，该键对应一个 `BaseMessages` 的序列
+* 一个包含键的字典，该键对应最新的消息（作为字符串或 `BaseMessages` 的序列），以及一个单独的键对应历史消息
 
-And returns as output one of
+并且输出为以下之一
 
-* a string that can be treated as the contents of an `AIMessage`
-* a sequence of `BaseMessage`
-* a dict with a key that contains a sequence of `BaseMessage`
+* 可以作为 `AIMessage` 内容处理的字符串
+* 一个 `BaseMessage` 的序列
+* 一个包含 `BaseMessage` 序列的字典
 
-Let's take a look at some examples to see how it works. 
+让我们看一些例子来了解它是如何工作的。
 
-### Setup
+### 设置
 
-First we construct a runnable (which here accepts a dict as input and returns a message as output):
+首先，我们构建一个可运行的（这里接受一个字典作为输入并返回一条消息作为输出）：
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
@@ -116,11 +116,11 @@ from langchain_core.messages import HumanMessage
 from langchain_core.runnables.history import RunnableWithMessageHistory
 ```
 
-### Messages input, message(s) output
+### 消息输入，消息输出
 
-The simplest form is just adding memory to a ChatModel.
-ChatModels accept a list of messages as input and output a message.
-This makes it very easy to use `RunnableWithMessageHistory` - no additional configuration is needed!
+最简单的形式就是为 ChatModel 添加内存。
+ChatModels 接受一个消息列表作为输入，并输出一条消息。
+这使得使用 `RunnableWithMessageHistory` 非常简单 - 不需要额外的配置！
 
 
 ```python
@@ -162,11 +162,11 @@ AIMessage(content='I\'m afraid I don\'t actually know your name - you introduced
 
 :::info
 
-Note that in this case the context is preserved via the chat history for the provided `session_id`, so the model knows the users name.
+请注意，在这种情况下，上下文通过提供的 `session_id` 的聊天记录得以保留，因此模型知道用户的名字。
 
 :::
 
-We can now try this with a new session id and see that it does not remember.
+现在我们可以尝试使用一个新的会话 ID，看看它是否不记得。
 
 
 ```python
@@ -185,20 +185,19 @@ AIMessage(content="I'm afraid I don't actually know your name. As an AI assistan
 
 :::info      
 
-When we pass a different `session_id`, we start a new chat history, so the model does not know what the user's name is. 
+当我们传递一个不同的 `session_id` 时，我们开始了新的聊天记录，因此模型不知道用户的名字。
 
 :::
 
-### Dictionary input, message(s) output
+### 字典输入，消息输出
 
-Besides just wrapping a raw model, the next step up is wrapping a prompt + LLM. This now changes the input to be a **dictionary** (because the input to a prompt is a dictionary). This adds two bits of complication.
+除了简单地封装原始模型，下一步是封装提示 + LLM。这将输入更改为 **字典**（因为提示的输入是一个字典）。这增加了两个复杂性。
 
-First: a dictionary can have multiple keys, but we only want to save ONE as input. In order to do this, we now now need to specify a key to save as the input.
+首先：字典可以有多个键，但我们只想保存一个作为输入。为了做到这一点，我们现在需要指定一个键作为输入。
 
-Second: once we load the messages, we need to know how to save them to the dictionary. That equates to know which key in the dictionary to save them in. Therefore, we need to specify a key to save the loaded messages in.
+其次：一旦加载了消息，我们需要知道如何将它们保存到字典中。这相当于知道将它们保存到字典中的哪个键。因此，我们需要指定一个键来保存加载的消息。
 
-Putting it all together, that ends up looking something like:
-
+将所有内容放在一起，最终看起来像这样：
 
 ```python
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -226,10 +225,9 @@ runnable_with_history = RunnableWithMessageHistory(
 
 :::info
 
-Note that we've specified `input_messages_key` (the key to be treated as the latest input message) and `history_messages_key` (the key to add historical messages to).
+请注意，我们已经指定了 `input_messages_key`（要被视为最新输入消息的键）和 `history_messages_key`（用于添加历史消息的键）。
 
 :::
-
 
 ```python
 runnable_with_history.invoke(
@@ -238,13 +236,9 @@ runnable_with_history.invoke(
 )
 ```
 
-
-
 ```output
 AIMessage(content='Ciao Bob! È un piacere conoscerti. Come stai oggi?', response_metadata={'id': 'msg_0121ADUEe4G1hMC6zbqFWofr', 'model': 'claude-3-haiku-20240307', 'stop_reason': 'end_turn', 'stop_sequence': None, 'usage': {'input_tokens': 29, 'output_tokens': 23}}, id='run-246a70df-aad6-43d6-a7e8-166d96e0d67e-0', usage_metadata={'input_tokens': 29, 'output_tokens': 23, 'total_tokens': 52})
 ```
-
-
 
 ```python
 runnable_with_history.invoke(
@@ -253,21 +247,17 @@ runnable_with_history.invoke(
 )
 ```
 
-
-
 ```output
 AIMessage(content='Bob, il tuo nome è Bob.', response_metadata={'id': 'msg_01EDUZG6nRLGeti9KhFN5cek', 'model': 'claude-3-haiku-20240307', 'stop_reason': 'end_turn', 'stop_sequence': None, 'usage': {'input_tokens': 60, 'output_tokens': 12}}, id='run-294b4a72-81bc-4c43-b199-3aafdff87cb3-0', usage_metadata={'input_tokens': 60, 'output_tokens': 12, 'total_tokens': 72})
 ```
 
-
 :::info
 
-Note that in this case the context is preserved via the chat history for the provided `session_id`, so the model knows the users name.
+请注意，在这种情况下，上下文通过提供的 `session_id` 的聊天历史得以保留，因此模型知道用户的名字。
 
 :::
 
-We can now try this with a new session id and see that it does not remember.
-
+我们现在可以尝试使用新的会话 ID，看看它是否不记得。
 
 ```python
 runnable_with_history.invoke(
@@ -276,22 +266,19 @@ runnable_with_history.invoke(
 )
 ```
 
-
-
 ```output
 AIMessage(content='Mi dispiace, non so il tuo nome. Come posso aiutarti?', response_metadata={'id': 'msg_01Lyd9FAGQJTxxAZoFi3sQpQ', 'model': 'claude-3-haiku-20240307', 'stop_reason': 'end_turn', 'stop_sequence': None, 'usage': {'input_tokens': 30, 'output_tokens': 23}}, id='run-19a82197-3b1c-4b5f-a68d-f91f4a2ba523-0', usage_metadata={'input_tokens': 30, 'output_tokens': 23, 'total_tokens': 53})
 ```
 
-
 :::info      
 
-When we pass a different `session_id`, we start a new chat history, so the model does not know what the user's name is. 
+当我们传递不同的 `session_id` 时，我们开始了新的聊天历史，因此模型不知道用户的名字是什么。
 
 :::
 
-### Messages input, dict output
+### 消息输入，字典输出
 
-This format is useful when you are using a model to generate one key in a dictionary.
+当您使用模型生成字典中的一个键时，此格式非常有用。
 
 
 ```python
@@ -310,7 +297,7 @@ runnable_with_history = RunnableWithMessageHistory(
 
 :::info
 
-Note that we've specified `output_messages_key` (the key to be treated as the output to save).
+请注意，我们已指定 `output_messages_key`（作为输出保存的键）。
 
 :::
 
@@ -346,12 +333,11 @@ runnable_with_history.invoke(
 
 :::info
 
-Note that in this case the context is preserved via the chat history for the provided `session_id`, so the model knows the users name.
+请注意，在这种情况下，上下文通过提供的 `session_id` 的聊天历史得以保留，因此模型知道用户的名字。
 
 :::
 
-We can now try this with a new session id and see that it does not remember.
-
+现在我们可以尝试使用新的会话 ID，看看它是否不记得。
 
 ```python
 runnable_with_history.invoke(
@@ -369,14 +355,13 @@ runnable_with_history.invoke(
 
 :::info      
 
-When we pass a different `session_id`, we start a new chat history, so the model does not know what the user's name is. 
+当我们传递不同的 `session_id` 时，我们开始一个新的聊天历史，因此模型不知道用户的名字。 
 
 :::
 
-### Dict with single key for all messages input, messages output
+### 单键字典用于所有消息输入和输出
 
-This is a specific case of "Dictionary input, message(s) output". In this situation, because there is only a single key we don't need to specify as much - we only need to specify the `input_messages_key`.
-
+这是“字典输入，消息输出”的特定情况。在这种情况下，由于只有一个单一的键，我们不需要指定太多内容 - 我们只需指定 `input_messages_key`。
 
 ```python
 from operator import itemgetter
@@ -390,7 +375,7 @@ runnable_with_history = RunnableWithMessageHistory(
 
 :::info
 
-Note that we've specified `input_messages_key` (the key to be treated as the latest input message).
+请注意，我们已指定 `input_messages_key`（作为最新输入消息处理的键）。
 
 :::
 
@@ -426,12 +411,11 @@ AIMessage(content='I\'m afraid I don\'t actually know your name - you introduced
 
 :::info
 
-Note that in this case the context is preserved via the chat history for the provided `session_id`, so the model knows the users name.
+请注意，在这种情况下，使用提供的 `session_id` 通过聊天历史记录保留了上下文，因此模型知道用户的名字。
 
 :::
 
-We can now try this with a new session id and see that it does not remember.
-
+现在我们可以尝试使用新的会话 ID，看看它是否不记得。
 
 ```python
 runnable_with_history.invoke(
@@ -449,14 +433,13 @@ AIMessage(content="I'm afraid I don't actually know your name. As an AI assistan
 
 :::info      
 
-When we pass a different `session_id`, we start a new chat history, so the model does not know what the user's name is. 
+当我们传递一个不同的 `session_id` 时，我们开始一个新的聊天历史，因此模型不知道用户的名字。
 
 :::
 
-## Customization
+## 自定义
 
-The configuration parameters by which we track message histories can be customized by passing in a list of ``ConfigurableFieldSpec`` objects to the ``history_factory_config`` parameter. Below, we use two parameters: a `user_id` and `conversation_id`.
-
+我们可以通过将一组 ``ConfigurableFieldSpec`` 对象传递给 ``history_factory_config`` 参数来定制用于跟踪消息历史的配置参数。下面，我们使用两个参数：`user_id` 和 `conversation_id`。
 
 ```python
 from langchain_core.runnables import ConfigurableFieldSpec
@@ -475,16 +458,16 @@ with_message_history = RunnableWithMessageHistory(
         ConfigurableFieldSpec(
             id="user_id",
             annotation=str,
-            name="User ID",
-            description="Unique identifier for the user.",
+            name="用户 ID",
+            description="用户的唯一标识符。",
             default="",
             is_shared=True,
         ),
         ConfigurableFieldSpec(
             id="conversation_id",
             annotation=str,
-            name="Conversation ID",
-            description="Unique identifier for the conversation.",
+            name="对话 ID",
+            description="对话的唯一标识符。",
             default="",
             is_shared=True,
         ),
@@ -506,7 +489,7 @@ AIMessage(content='Ciao Bob! È un piacere conoscerti. Come stai oggi?', respons
 
 
 ```python
-# remembers
+# 记住
 with_message_history.invoke(
     {"language": "italian", "input": "whats my name?"},
     config={"configurable": {"user_id": "123", "conversation_id": "1"}},
@@ -522,7 +505,7 @@ AIMessage(content='Bob, il tuo nome è Bob.', response_metadata={'id': 'msg_01Kk
 
 
 ```python
-# New user_id --> does not remember
+# 新的 user_id --> 不记住
 with_message_history.invoke(
     {"language": "italian", "input": "whats my name?"},
     config={"configurable": {"user_id": "456", "conversation_id": "1"}},
@@ -536,4 +519,4 @@ AIMessage(content='Mi dispiace, non so il tuo nome. Come posso aiutarti?', respo
 ```
 
 
-Note that in this case the context was preserved for the same `user_id`, but once we changed it, the new chat history was started, even though the `conversation_id` was the same.
+注意，在这种情况下，使用相同的 `user_id` 保留了上下文，但一旦我们更改了它，即使 `conversation_id` 相同，新的聊天历史也开始了。

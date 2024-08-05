@@ -1,14 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/runnable_runtime_secrets.ipynb
 ---
-# How to pass runtime secrets to runnables
 
-:::info Requires `langchain-core >= 0.2.22`
+# 如何将运行时机密传递给可运行对象
+
+:::info 需要 `langchain-core >= 0.2.22`
 
 :::
 
-We can pass in secrets to our runnables at runtime using the `RunnableConfig`. Specifically we can pass in secrets with a `__` prefix to the `configurable` field. This will ensure that these secrets aren't traced as part of the invocation:
-
+我们可以使用 `RunnableConfig` 在运行时将机密传递给我们的可运行对象。具体来说，我们可以将带有 `__` 前缀的机密传递给 `configurable` 字段。这将确保这些机密不会作为调用的一部分被追踪：
 
 ```python
 from langchain_core.runnables import RunnableConfig
@@ -31,4 +31,4 @@ foo.invoke({"x": 5}, {"configurable": {"__top_secret_int": 2, "traced_key": "bar
 ```
 
 
-Looking at the LangSmith trace for this run, we can see that "traced_key" was recorded (as part of Metadata) while our secret int was not: https://smith.langchain.com/public/aa7e3289-49ca-422d-a408-f6b927210170/r
+查看此运行的 LangSmith 跟踪，我们可以看到 "traced_key" 被记录（作为元数据的一部分），而我们的机密整数没有被记录： https://smith.langchain.com/public/aa7e3289-49ca-422d-a408-f6b927210170/r

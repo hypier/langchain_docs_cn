@@ -1,38 +1,38 @@
-# Text embedding models
+# 文本嵌入模型
 
 :::info
-Head to [Integrations](/docs/integrations/text_embedding/) for documentation on built-in integrations with text embedding model providers.
+前往 [Integrations](/docs/integrations/text_embedding/) 获取与文本嵌入模型提供者的内置集成文档。
 :::
 
-The Embeddings class is a class designed for interfacing with text embedding models. There are lots of embedding model providers (OpenAI, Cohere, Hugging Face, etc) - this class is designed to provide a standard interface for all of them.
+Embeddings 类是一个用于与文本嵌入模型接口的类。现在有很多嵌入模型提供者（如 OpenAI、Cohere、Hugging Face 等） - 该类旨在为它们提供一个标准接口。
 
-Embeddings create a vector representation of a piece of text. This is useful because it means we can think about text in the vector space, and do things like semantic search where we look for pieces of text that are most similar in the vector space.
+Embeddings 创建文本的向量表示。这很有用，因为这意味着我们可以在向量空间中考虑文本，并进行语义搜索，寻找在向量空间中最相似的文本片段。
 
-The base Embeddings class in LangChain provides two methods: one for embedding documents and one for embedding a query. The former, `.embed_documents`, takes as input multiple texts, while the latter, `.embed_query`, takes a single text. The reason for having these as two separate methods is that some embedding providers have different embedding methods for documents (to be searched over) vs queries (the search query itself). 
-`.embed_query` will return a list of floats, whereas `.embed_documents` returns a list of lists of floats.
+LangChain 中的基础 Embeddings 类提供了两个方法：一个用于嵌入文档，一个用于嵌入查询。前者 `.embed_documents` 接受多个文本作为输入，而后者 `.embed_query` 接受单个文本。将这两个方法分开的原因是某些嵌入提供者对文档（进行搜索的对象）和查询（搜索查询本身）有不同的嵌入方法。
+`.embed_query` 将返回一个浮点数列表，而 `.embed_documents` 返回一个浮点数列表的列表。
 
-## Get started
+## 开始使用
 
-### Setup
+### 设置
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 <Tabs>
   <TabItem value="openai" label="OpenAI" default>
-To start we'll need to install the OpenAI partner package:
+要开始，我们需要安装 OpenAI 合作伙伴包：
 
 ```bash
 pip install langchain-openai
 ```
 
-Accessing the API requires an API key, which you can get by creating an account and heading [here](https://platform.openai.com/account/api-keys). Once we have a key we'll want to set it as an environment variable by running:
+访问 API 需要一个 API 密钥，您可以通过创建一个帐户并前往 [这里](https://platform.openai.com/account/api-keys) 来获取。一旦我们有了密钥，我们希望通过运行以下命令将其设置为环境变量：
 
 ```bash
 export OPENAI_API_KEY="..."
 ```
 
-If you'd prefer not to set an environment variable you can pass the key in directly via the `api_key` named parameter when initiating the OpenAI LLM class:
+如果您不想设置环境变量，可以在初始化 OpenAI LLM 类时直接通过 `api_key` 命名参数传递密钥：
 
 ```python
 from langchain_openai import OpenAIEmbeddings
@@ -40,7 +40,7 @@ from langchain_openai import OpenAIEmbeddings
 embeddings_model = OpenAIEmbeddings(api_key="...")
 ```
 
-Otherwise you can initialize without any params:
+否则，您可以在没有任何参数的情况下初始化：
 ```python
 from langchain_openai import OpenAIEmbeddings
 
@@ -50,19 +50,19 @@ embeddings_model = OpenAIEmbeddings()
   </TabItem>
   <TabItem value="cohere" label="Cohere">
 
-To start we'll need to install the Cohere SDK package:
+要开始，我们需要安装 Cohere SDK 包：
 
 ```bash
 pip install langchain-cohere
 ```
 
-Accessing the API requires an API key, which you can get by creating an account and heading [here](https://dashboard.cohere.com/api-keys). Once we have a key we'll want to set it as an environment variable by running:
+访问 API 需要一个 API 密钥，您可以通过创建一个帐户并前往 [这里](https://dashboard.cohere.com/api-keys) 来获取。一旦我们有了密钥，我们希望通过运行以下命令将其设置为环境变量：
 
 ```shell
 export COHERE_API_KEY="..."
 ```
 
-If you'd prefer not to set an environment variable you can pass the key in directly via the `cohere_api_key` named parameter when initiating the Cohere LLM class:
+如果您不想设置环境变量，可以在初始化 Cohere LLM 类时直接通过 `cohere_api_key` 命名参数传递密钥：
 
 ```python
 from langchain_cohere import CohereEmbeddings
@@ -70,24 +70,24 @@ from langchain_cohere import CohereEmbeddings
 embeddings_model = CohereEmbeddings(cohere_api_key="...", model='embed-english-v3.0')
 ```
 
-Otherwise you can initialize simply as shown below:
+否则，您可以简单地按如下方式初始化：
 ```python
 from langchain_cohere import CohereEmbeddings
 
 embeddings_model = CohereEmbeddings(model='embed-english-v3.0')
 ```
-Do note that it is mandatory to pass the model parameter while initializing the CohereEmbeddings class.
+请注意，在初始化 CohereEmbeddings 类时，传递模型参数是强制性的。
 
   </TabItem>
   <TabItem value="huggingface" label="Hugging Face">
 
-To start we'll need to install the Hugging Face partner package:
+要开始，我们需要安装 Hugging Face 合作伙伴包：
 
 ```bash
 pip install langchain-huggingface
 ```
 
-You can then load any [Sentence Transformers model](https://huggingface.co/models?library=sentence-transformers) from the Hugging Face Hub.
+然后，您可以从 Hugging Face Hub 加载任何 [Sentence Transformers 模型](https://huggingface.co/models?library=sentence-transformers)。
 
 ```python
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -95,7 +95,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 embeddings_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
 ```
 
-You can also leave the `model_name` blank to use the default [sentence-transformers/all-mpnet-base-v2](https://huggingface.co/sentence-transformers/all-mpnet-base-v2) model.
+您也可以将 `model_name` 留空以使用默认的 [sentence-transformers/all-mpnet-base-v2](https://huggingface.co/sentence-transformers/all-mpnet-base-v2) 模型。
 
 ```python
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -107,9 +107,9 @@ embeddings_model = HuggingFaceEmbeddings()
 </Tabs>
 
 ### `embed_documents`
-#### Embed list of texts
+#### 嵌入文本列表
 
-Use `.embed_documents` to embed a list of strings, recovering a list of embeddings:
+使用 `.embed_documents` 来嵌入字符串列表，返回嵌入列表：
 
 ```python
 embeddings = embeddings_model.embed_documents(
@@ -133,8 +133,8 @@ len(embeddings), len(embeddings[0])
 </CodeOutputBlock>
 
 ### `embed_query`
-#### Embed single query
-Use `.embed_query` to embed a single piece of text (e.g., for the purpose of comparing to other embedded pieces of texts).
+#### 嵌入单个查询
+使用 `.embed_query` 嵌入一段文本（例如，用于与其他嵌入文本进行比较）。
 
 ```python
 embedded_query = embeddings_model.embed_query("What was the name mentioned in the conversation?")

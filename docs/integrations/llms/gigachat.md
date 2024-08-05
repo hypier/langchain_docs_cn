@@ -1,18 +1,18 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/gigachat.ipynb
 ---
-# GigaChat
-This notebook shows how to use LangChain with [GigaChat](https://developers.sber.ru/portal/products/gigachat).
-To use you need to install ```gigachat``` python package.
 
+# GigaChat
+本笔记本展示了如何将 LangChain 与 [GigaChat](https://developers.sber.ru/portal/products/gigachat) 结合使用。
+要使用该功能，您需要安装 ```gigachat``` python 包。
 
 ```python
 %pip install --upgrade --quiet  gigachat
 ```
 
-To get GigaChat credentials you need to [create account](https://developers.sber.ru/studio/login) and [get access to API](https://developers.sber.ru/docs/ru/gigachat/individuals-quickstart)
+要获取 GigaChat 凭证，您需要 [创建账户](https://developers.sber.ru/studio/login) 并 [获取 API 访问权限](https://developers.sber.ru/docs/ru/gigachat/individuals-quickstart)
 
-## Example
+## 示例
 
 
 ```python
@@ -47,7 +47,7 @@ print(generated["text"])
 The capital of Russia is Moscow.
 ```
 
-## Related
+## 相关
 
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

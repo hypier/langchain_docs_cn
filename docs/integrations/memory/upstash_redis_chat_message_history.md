@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/upstash_redis_chat_message_history.ipynb
 ---
+
 # Upstash Redis
 
->[Upstash](https://upstash.com/docs/introduction) is a provider of the serverless `Redis`, `Kafka`, and `QStash` APIs.
+>[Upstash](https://upstash.com/docs/introduction) 是一个无服务器的 `Redis`、`Kafka` 和 `QStash` API 提供商。
 
-This notebook goes over how to use `Upstash Redis` to store chat message history.
+本笔记本介绍如何使用 `Upstash Redis` 存储聊天消息历史记录。
 
 
 ```python

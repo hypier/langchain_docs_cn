@@ -1,29 +1,27 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/callbacks/trubrics.ipynb
 ---
+
 # Trubrics
 
-
->[Trubrics](https://trubrics.com) is an LLM user analytics platform that lets you collect, analyse and manage user
-prompts & feedback on AI models.
+>[Trubrics](https://trubrics.com) 是一个 LLM 用户分析平台，允许您收集、分析和管理用户对 AI 模型的提示和反馈。
 >
->Check out [Trubrics repo](https://github.com/trubrics/trubrics-sdk) for more information on `Trubrics`.
+>查看 [Trubrics repo](https://github.com/trubrics/trubrics-sdk) 获取有关 `Trubrics` 的更多信息。
 
-In this guide, we will go over how to set up the `TrubricsCallbackHandler`. 
+在本指南中，我们将介绍如何设置 `TrubricsCallbackHandler`。
 
-
-## Installation and Setup
+## 安装与设置
 
 
 ```python
 %pip install --upgrade --quiet  trubrics langchain langchain-community
 ```
 
-### Getting Trubrics Credentials
+### 获取 Trubrics 凭证
 
-If you do not have a Trubrics account, create one on [here](https://trubrics.streamlit.app/). In this tutorial, we will use the `default` project that is built upon account creation.
+如果您没有 Trubrics 账户，请在 [这里](https://trubrics.streamlit.app/) 创建一个。在本教程中，我们将使用在账户创建时生成的 `default` 项目。
 
-Now set your credentials as environment variables:
+现在将您的凭证设置为环境变量：
 
 
 ```python
@@ -38,9 +36,9 @@ os.environ["TRUBRICS_PASSWORD"] = "***"
 from langchain_community.callbacks.trubrics_callback import TrubricsCallbackHandler
 ```
 
-### Usage
+### 用法
 
-The `TrubricsCallbackHandler` can receive various optional arguments. See [here](https://trubrics.github.io/trubrics-sdk/platform/user_prompts/#saving-prompts-to-trubrics) for kwargs that can be passed to Trubrics prompts.
+`TrubricsCallbackHandler` 可以接收各种可选参数。有关可以传递给 Trubrics 提示的 kwargs，请参见 [这里](https://trubrics.github.io/trubrics-sdk/platform/user_prompts/#saving-prompts-to-trubrics)。
 
 ```python
 class TrubricsCallbackHandler(BaseCallbackHandler):
@@ -56,16 +54,16 @@ class TrubricsCallbackHandler(BaseCallbackHandler):
     """
 ```
 
-## Examples
+## 示例
 
-Here are two examples of how to use the `TrubricsCallbackHandler` with Langchain [LLMs](/docs/how_to#llms) or [Chat Models](/docs/how_to#chat-models). We will use OpenAI models, so set your `OPENAI_API_KEY` key here:
+以下是如何使用 `TrubricsCallbackHandler` 与 Langchain [LLMs](/docs/how_to#llms) 或 [聊天模型](/docs/how_to#chat-models) 的两个示例。我们将使用 OpenAI 模型，因此在此处设置您的 `OPENAI_API_KEY` 密钥：
 
 
 ```python
 os.environ["OPENAI_API_KEY"] = "sk-***"
 ```
 
-### 1. With an LLM
+### 1. 使用 LLM
 
 
 ```python
@@ -77,15 +75,15 @@ from langchain_openai import OpenAI
 llm = OpenAI(callbacks=[TrubricsCallbackHandler()])
 ```
 ```output
-[32m2023-09-26 11:30:02.149[0m | [1mINFO    [0m | [36mtrubrics.platform.auth[0m:[36mget_trubrics_auth_token[0m:[36m61[0m - [1mUser jeff.kayne@trubrics.com has been authenticated.[0m
+[32m2023-09-26 11:30:02.149[0m | [1mINFO    [0m | [36mtrubrics.platform.auth[0m:[36mget_trubrics_auth_token[0m:[36m61[0m - [1m用户 jeff.kayne@trubrics.com 已通过身份验证。[0m
 ```
 
 ```python
 res = llm.generate(["Tell me a joke", "Write me a poem"])
 ```
 ```output
-[32m2023-09-26 11:30:07.760[0m | [1mINFO    [0m | [36mtrubrics.platform[0m:[36mlog_prompt[0m:[36m102[0m - [1mUser prompt saved to Trubrics.[0m
-[32m2023-09-26 11:30:08.042[0m | [1mINFO    [0m | [36mtrubrics.platform[0m:[36mlog_prompt[0m:[36m102[0m - [1mUser prompt saved to Trubrics.[0m
+[32m2023-09-26 11:30:07.760[0m | [1mINFO    [0m | [36mtrubrics.platform[0m:[36mlog_prompt[0m:[36m102[0m - [1m用户提示已保存到 Trubrics。[0m
+[32m2023-09-26 11:30:08.042[0m | [1mINFO    [0m | [36mtrubrics.platform[0m:[36mlog_prompt[0m:[36m102[0m - [1m用户提示已保存到 Trubrics。[0m
 ```
 
 ```python
@@ -128,7 +126,8 @@ But I am ready to take the leap.
 I am ready to take the lead,
 And to create my own destiny.
 ```
-### 2. With a chat model
+
+### 2. 使用聊天模型
 
 
 ```python
@@ -154,20 +153,20 @@ chat_llm = ChatOpenAI(
 ```python
 chat_res = chat_llm.invoke(
     [
-        SystemMessage(content="Every answer of yours must be about OpenAI."),
-        HumanMessage(content="Tell me a joke"),
+        SystemMessage(content="你的每个回答都必须与OpenAI有关。"),
+        HumanMessage(content="给我讲个笑话"),
     ]
 )
 ```
 ```output
-[32m2023-09-26 11:30:10.550[0m | [1mINFO    [0m | [36mtrubrics.platform[0m:[36mlog_prompt[0m:[36m102[0m - [1mUser prompt saved to Trubrics.[0m
+[32m2023-09-26 11:30:10.550[0m | [1mINFO    [0m | [36mtrubrics.platform[0m:[36mlog_prompt[0m:[36m102[0m - [1m用户提示已保存到Trubrics。[0m
 ```
 
 ```python
 print(chat_res.content)
 ```
 ```output
-Why did the OpenAI computer go to the party?
+为什么OpenAI的计算机去参加派对？
 
-Because it wanted to meet its AI friends and have a byte of fun!
+因为它想见见它的AI朋友们，享受一下乐趣！
 ```

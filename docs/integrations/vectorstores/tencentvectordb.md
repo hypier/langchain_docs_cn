@@ -1,15 +1,16 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/tencentvectordb.ipynb
 ---
-# Tencent Cloud VectorDB
 
->[Tencent Cloud VectorDB](https://cloud.tencent.com/document/product/1709) is a fully managed, self-developed, enterprise-level distributed database service designed for storing, retrieving, and analyzing multi-dimensional vector data. The database supports multiple index types and similarity calculation methods. A single index can support a vector scale of up to 1 billion and can support millions of QPS and millisecond-level query latency. Tencent Cloud Vector Database can not only provide an external knowledge base for large models to improve the accuracy of large model responses but can also be widely used in AI fields such as recommendation systems, NLP services, computer vision, and intelligent customer service.
+# 腾讯云 VectorDB
 
-This notebook shows how to use functionality related to the Tencent vector database.
+>[腾讯云 VectorDB](https://cloud.tencent.com/document/product/1709) 是一款完全托管、自主研发的企业级分布式数据库服务，旨在存储、检索和分析多维向量数据。该数据库支持多种索引类型和相似度计算方法。单个索引可以支持高达 10 亿的向量规模，并能够支持数百万的 QPS 和毫秒级的查询延迟。腾讯云向量数据库不仅可以为大型模型提供外部知识库，以提高大型模型响应的准确性，还可以广泛应用于推荐系统、自然语言处理服务、计算机视觉和智能客服等 AI 领域。
 
-To run, you should have a [Database instance.](https://cloud.tencent.com/document/product/1709/95101).
+本笔记本演示了如何使用与腾讯向量数据库相关的功能。
 
-## Basic Usage
+要运行，您需要一个 [数据库实例。](https://cloud.tencent.com/document/product/1709/95101).
+
+## 基本用法
 
 
 
@@ -26,7 +27,7 @@ from langchain_community.vectorstores.tencentvectordb import ConnectionParams
 from langchain_text_splitters import CharacterTextSplitter
 ```
 
-load the documents, split them into chunks.
+加载文档，将其拆分为多个块。
 
 
 ```python
@@ -36,33 +37,33 @@ text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
 docs = text_splitter.split_documents(documents)
 ```
 
-we support two ways to embed the documents:
-- Use any Embeddings models compatible with Langchain Embeddings.
-- Specify the Embedding model name of the Tencent VectorStore DB, choices are:
-    - `bge-base-zh`, dimension: 768
-    - `m3e-base`, dimension: 768
-    - `text2vec-large-chinese`, dimension: 1024
-    - `e5-large-v2`, dimension: 1024
-    - `multilingual-e5-base`, dimension: 768 
+我们支持两种嵌入文档的方式：
+- 使用与 Langchain Embeddings 兼容的任何嵌入模型。
+- 指定腾讯向量数据库的嵌入模型名称，选择如下：
+    - `bge-base-zh`, 维度：768
+    - `m3e-base`, 维度：768
+    - `text2vec-large-chinese`, 维度：1024
+    - `e5-large-v2`, 维度：1024
+    - `multilingual-e5-base`, 维度：768 
 
-flowing code shows both ways to embed the documents, you can choose one of them by commenting the other:
+以下代码展示了两种嵌入文档的方式，您可以通过注释掉其中一种来选择其中一种：
 
 
 ```python
-##  you can use a Langchain Embeddings model, like OpenAIEmbeddings:
+##  您可以使用 Langchain Embeddings 模型，例如 OpenAIEmbeddings：
 
 # from langchain_community.embeddings.openai import OpenAIEmbeddings
 #
 # embeddings = OpenAIEmbeddings()
 # t_vdb_embedding = None
 
-## Or you can use a Tencent Embedding model, like `bge-base-zh`:
+## 或者您可以使用腾讯嵌入模型，例如 `bge-base-zh`：
 
-t_vdb_embedding = "bge-base-zh"  # bge-base-zh is the default model
+t_vdb_embedding = "bge-base-zh"  # bge-base-zh 是默认模型
 embeddings = None
 ```
 
-now we can create a TencentVectorDB instance, you must provide at least one of the `embeddings` or `t_vdb_embedding` parameters. if both are provided, the `embeddings` parameter will be used:
+现在我们可以创建一个 TencentVectorDB 实例，您必须提供 `embeddings` 或 `t_vdb_embedding` 参数中的至少一个。如果两个参数都提供，则将使用 `embeddings` 参数：
 
 
 ```python
@@ -80,7 +81,7 @@ vector_db = TencentVectorDB.from_documents(
 
 
 ```python
-query = "What did the president say about Ketanji Brown Jackson"
+query = "总统对凯坦吉·布朗·杰克逊说了什么"
 docs = vector_db.similarity_search(query)
 docs[0].page_content
 ```
@@ -88,7 +89,7 @@ docs[0].page_content
 
 
 ```output
-'Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And while you’re at it, pass the Disclose Act so Americans can know who is funding our elections. \n\nTonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. \n\nOne of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. \n\nAnd I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.'
+'今晚。我呼吁参议院：通过《投票自由法》。通过《约翰·刘易斯投票权法》。而且在此期间，通过《披露法》，让美国人知道谁在资助我们的选举。\n\n今晚，我想表彰一位为国家奉献一生的人：斯蒂芬·布雷耶大法官——一位退伍军人、宪法学者，以及即将退休的美国最高法院大法官。布雷耶大法官，感谢您的服务。\n\n总统最严重的宪法责任之一是提名某人担任美国最高法院法官。\n\n四天前，我提名了巡回上诉法院法官凯坦吉·布朗·杰克逊。她是我们国家顶尖的法律人才之一，将继续布雷耶大法官卓越的遗产。'
 ```
 
 
@@ -96,8 +97,8 @@ docs[0].page_content
 ```python
 vector_db = TencentVectorDB(embeddings, conn_params)
 
-vector_db.add_texts(["Ankush went to Princeton"])
-query = "Where did Ankush go to college?"
+vector_db.add_texts(["安库什去了普林斯顿"])
+query = "安库什去哪所大学？"
 docs = vector_db.max_marginal_relevance_search(query)
 docs[0].page_content
 ```
@@ -105,16 +106,14 @@ docs[0].page_content
 
 
 ```output
-'Ankush went to Princeton'
+'安库什去了普林斯顿'
 ```
 
+## 元数据和过滤
 
-## Metadata and filtering
+腾讯 VectorDB 支持元数据和 [过滤](https://cloud.tencent.com/document/product/1709/95099#c6f6d3a3-02c5-4891-b0a1-30fe4daf18d8)。您可以向文档添加元数据，并根据元数据过滤搜索结果。
 
-Tencent VectorDB supports metadata and [filtering](https://cloud.tencent.com/document/product/1709/95099#c6f6d3a3-02c5-4891-b0a1-30fe4daf18d8). You can add metadata to the documents and filter the search results based on the metadata.
-
-now we will create a new TencentVectorDB collection with metadata and demonstrate how to filter the search results based on the metadata:
-
+现在我们将创建一个新的 TencentVectorDB 集合，并演示如何根据元数据过滤搜索结果：
 
 ```python
 from langchain_community.vectorstores.tencentvectordb import (
@@ -205,9 +204,7 @@ result
  Document(page_content='Inception is a 2010 science fiction action film written and directed by Christopher Nolan.', metadata={'year': 2010, 'rating': '8.8', 'genre': 'science fiction', 'director': 'Christopher Nolan'})]
 ```
 
+## 相关
 
-
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

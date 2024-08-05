@@ -2,19 +2,19 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/promptlayer_chatopenai.ipynb
 sidebar_label: PromptLayer ChatOpenAI
 ---
+
 # PromptLayerChatOpenAI
 
-This example showcases how to connect to [PromptLayer](https://www.promptlayer.com) to start recording your ChatOpenAI requests.
+此示例展示了如何连接到 [PromptLayer](https://www.promptlayer.com) 以开始记录您的 ChatOpenAI 请求。
 
-## Install PromptLayer
-The `promptlayer` package is required to use PromptLayer with OpenAI. Install `promptlayer` using pip.
-
+## 安装 PromptLayer
+要使用 OpenAI 的 PromptLayer，必须安装 `promptlayer` 包。使用 pip 安装 `promptlayer`。
 
 ```python
 pip install promptlayer
 ```
 
-## Imports
+## 导入
 
 
 ```python
@@ -24,18 +24,18 @@ from langchain_community.chat_models import PromptLayerChatOpenAI
 from langchain_core.messages import HumanMessage
 ```
 
-## Set the Environment API Key
-You can create a PromptLayer API Key at [www.promptlayer.com](https://www.promptlayer.com) by clicking the settings cog in the navbar.
+## 设置环境 API 密钥
+您可以通过点击导航栏中的设置图标，在 [www.promptlayer.com](https://www.promptlayer.com) 创建一个 PromptLayer API 密钥。
 
-Set it as an environment variable called `PROMPTLAYER_API_KEY`.
+将其设置为名为 `PROMPTLAYER_API_KEY` 的环境变量。
 
 
 ```python
 os.environ["PROMPTLAYER_API_KEY"] = "**********"
 ```
 
-## Use the PromptLayerOpenAI LLM like normal
-*You can optionally pass in `pl_tags` to track your requests with PromptLayer's tagging feature.*
+## 像正常一样使用 PromptLayerOpenAI LLM
+*你可以选择性地传入 `pl_tags` 来通过 PromptLayer 的标签功能跟踪你的请求。*
 
 
 ```python
@@ -50,11 +50,10 @@ AIMessage(content='to take a nap in a cozy spot. I search around for a suitable 
 ```
 
 
-**The above request should now appear on your [PromptLayer dashboard](https://www.promptlayer.com).**
+**上述请求现在应该出现在你的 [PromptLayer 控制面板](https://www.promptlayer.com) 上。**
 
-## Using PromptLayer Track
-If you would like to use any of the [PromptLayer tracking features](https://magniv.notion.site/Track-4deee1b1f7a34c1680d085f82567dab9), you need to pass the argument `return_pl_id` when instantiating the PromptLayer LLM to get the request id.  
-
+## 使用 PromptLayer 跟踪
+如果您想使用任何 [PromptLayer 跟踪功能](https://magniv.notion.site/Track-4deee1b1f7a34c1680d085f82567dab9)，在实例化 PromptLayer LLM 时需要传递参数 `return_pl_id` 以获取请求 ID。  
 
 ```python
 import promptlayer
@@ -67,11 +66,9 @@ for res in chat_results.generations:
     promptlayer.track.score(request_id=pl_request_id, score=100)
 ```
 
-Using this allows you to track the performance of your model in the PromptLayer dashboard. If you are using a prompt template, you can attach a template to a request as well.
-Overall, this gives you the opportunity to track the performance of different templates and models in the PromptLayer dashboard.
+使用此功能可以让您在 PromptLayer 仪表板中跟踪模型的性能。如果您使用的是提示模板，您还可以将模板附加到请求中。总体而言，这使您有机会在 PromptLayer 仪表板中跟踪不同模板和模型的性能。
 
+## 相关
 
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

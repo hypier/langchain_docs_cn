@@ -1,51 +1,45 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/edenai.ipynb
 ---
+
 # Eden AI
 
-Eden AI is revolutionizing the AI landscape by uniting the best AI providers, empowering users to unlock limitless possibilities and tap into the true potential of artificial intelligence. With an all-in-one comprehensive and hassle-free platform, it allows users to deploy AI features to production lightning fast, enabling effortless access to the full breadth of AI capabilities via a single API. (website: https://edenai.co/)
+Eden AI 正在通过联合最佳的 AI 提供商，彻底改变 AI 领域，赋能用户释放无限可能，挖掘人工智能的真正潜力。通过一个全面且无忧的平台，它使用户能够快速将 AI 功能部署到生产中，通过单一 API 轻松访问全面的 AI 能力。 (网站: https://edenai.co/)
 
-This example goes over how to use LangChain to interact with Eden AI models
+这个示例介绍了如何使用 LangChain 与 Eden AI 模型进行交互
 
 -----------------------------------------------------------------------------------
 
+访问 EDENAI 的 API 需要一个 API 密钥，
 
-Accessing the EDENAI's API requires an API key, 
+您可以通过创建一个帐户 https://app.edenai.run/user/register 并前往此处 https://app.edenai.run/admin/account/settings 获取密钥。
 
-which you can get by creating an account https://app.edenai.run/user/register  and heading here https://app.edenai.run/admin/account/settings
-
-Once we have a key we'll want to set it as an environment variable by running:
+一旦我们有了密钥，我们想通过运行以下命令将其设置为环境变量：
 
 ```bash
 export EDENAI_API_KEY="..."
 ```
 
-If you'd prefer not to set an environment variable you can pass the key in directly via the edenai_api_key named parameter
-
- when initiating the EdenAI LLM class:
-
-
-
+如果您不想设置环境变量，可以在初始化 EdenAI LLM 类时直接通过名为 edenai_api_key 的参数传递密钥：
 
 ```python
 from langchain_community.llms import EdenAI
 ```
 
-
 ```python
 llm = EdenAI(edenai_api_key="...", provider="openai", temperature=0.2, max_tokens=250)
 ```
 
-## Calling a model
+## 调用模型
 
 
-The EdenAI API brings together various providers, each offering multiple models.
+EdenAI API 汇集了多个提供商，每个提供商都提供多个模型。
 
-To access a specific model, you can simply add 'model' during instantiation.
+要访问特定模型，您只需在实例化时添加 'model'。
 
-For instance, let's explore the models provided by OpenAI, such as GPT3.5 
+例如，让我们探索 OpenAI 提供的模型，如 GPT3.5
 
-### text generation
+### 文本生成
 
 
 ```python
@@ -68,7 +62,7 @@ Assistant:
 llm(prompt)
 ```
 
-### image generation
+### 图像生成
 
 
 ```python
@@ -99,7 +93,7 @@ text2image = EdenAI(feature="image", provider="openai", resolution="512x512")
 
 
 ```python
-image_output = text2image("A cat riding a motorcycle by Picasso")
+image_output = text2image("一只骑摩托车的猫，毕加索风格")
 ```
 
 
@@ -107,7 +101,7 @@ image_output = text2image("A cat riding a motorcycle by Picasso")
 print_base64_image(image_output)
 ```
 
-### text generation with callback
+### 使用回调的文本生成
 
 
 ```python
@@ -128,7 +122,7 @@ Assistant:
 print(llm.invoke(prompt))
 ```
 
-## Chaining Calls
+## 链式调用
 
 
 ```python
@@ -146,7 +140,7 @@ text2image = EdenAI(feature="image", provider="openai", resolution="512x512")
 ```python
 prompt = PromptTemplate(
     input_variables=["product"],
-    template="What is a good name for a company that makes {product}?",
+    template="为制造 {product} 的公司起个好名字是什么？",
 )
 
 chain = LLMChain(llm=llm, prompt=prompt)
@@ -156,7 +150,7 @@ chain = LLMChain(llm=llm, prompt=prompt)
 ```python
 second_prompt = PromptTemplate(
     input_variables=["company_name"],
-    template="Write a description of a logo for this company: {company_name}, the logo should not contain text at all ",
+    template="为这个公司写一个logo的描述：{company_name}，logo中不应包含任何文字",
 )
 chain_two = LLMChain(llm=llm, prompt=second_prompt)
 ```
@@ -172,21 +166,20 @@ chain_three = LLMChain(llm=text2image, prompt=third_prompt)
 
 
 ```python
-# Run the chain specifying only the input variable for the first chain.
+# 运行链，仅指定第一个链的输入变量。
 overall_chain = SimpleSequentialChain(
     chains=[chain, chain_two, chain_three], verbose=True
 )
-output = overall_chain.run("hats")
+output = overall_chain.run("帽子")
 ```
 
 
 ```python
-# print the image
+# 打印图像
 print_base64_image(output)
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

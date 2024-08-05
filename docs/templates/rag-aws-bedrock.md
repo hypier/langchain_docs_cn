@@ -1,75 +1,74 @@
-
 # rag-aws-bedrock
 
-This template is designed to connect with the AWS Bedrock service, a managed server that offers a set of foundation models.
+此模板旨在与 AWS Bedrock 服务连接，这是一个提供一组基础模型的托管服务器。
 
-It primarily uses the `Anthropic Claude` for text generation and `Amazon Titan` for text embedding, and utilizes FAISS as the vectorstore.
+它主要使用 `Anthropic Claude` 进行文本生成，使用 `Amazon Titan` 进行文本嵌入，并利用 FAISS 作为向量存储。
 
-For additional context on the RAG pipeline, refer to [this notebook](https://github.com/aws-samples/amazon-bedrock-workshop/blob/main/03_QuestionAnswering/01_qa_w_rag_claude.ipynb).
+有关 RAG 管道的更多信息，请参阅 [此笔记本](https://github.com/aws-samples/amazon-bedrock-workshop/blob/main/03_QuestionAnswering/01_qa_w_rag_claude.ipynb)。
 
-## Environment Setup
+## 环境设置
 
-Before you can use this package, ensure that you have configured `boto3` to work with your AWS account. 
+在使用此包之前，请确保您已配置 `boto3` 以与您的 AWS 账户配合使用。
 
-For details on how to set up and configure `boto3`, visit [this page](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#configuration).
+有关如何设置和配置 `boto3` 的详细信息，请访问 [此页面](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#configuration)。
 
-In addition, you need to install the `faiss-cpu` package to work with the FAISS vector store:
+此外，您需要安装 `faiss-cpu` 包以使用 FAISS 向量存储：
 
 ```bash
 pip install faiss-cpu
 ```
 
-You should also set the following environment variables to reflect your AWS profile and region (if you're not using the `default` AWS profile and `us-east-1` region):
+您还应设置以下环境变量，以反映您的 AWS 配置文件和区域（如果您不是在使用 `default` AWS 配置文件和 `us-east-1` 区域）：
 
 * `AWS_DEFAULT_REGION`
 * `AWS_PROFILE`
 
-## Usage
+## 使用方法
 
-First, install the LangChain CLI:
+首先，安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package:
+要创建一个新的 LangChain 项目并将其作为唯一的包安装：
 
 ```shell
 langchain app new my-app --package rag-aws-bedrock
 ```
 
-To add this package to an existing project:
+要将此包添加到现有项目中：
 
 ```shell
 langchain app add rag-aws-bedrock
 ```
 
-Then add the following code to your `server.py` file:
+然后将以下代码添加到您的 `server.py` 文件中：
 ```python
 from rag_aws_bedrock import chain as rag_aws_bedrock_chain
 
 add_routes(app, rag_aws_bedrock_chain, path="/rag-aws-bedrock")
 ```
 
-(Optional) If you have access to LangSmith, you can configure it to trace, monitor, and debug LangChain applications. If you don't have access, you can skip this section.
+（可选）如果您可以访问 LangSmith，您可以将其配置为跟踪、监控和调试 LangChain 应用程序。如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, you can spin up a LangServe instance directly by:
+如果您在此目录中，可以直接通过以下方式启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server running locally at [http://localhost:8000](http://localhost:8000)
+这将启动 FastAPI 应用程序，服务器在本地运行，地址为 [http://localhost:8000](http://localhost:8000)
 
-You can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) and access the playground at [http://127.0.0.1:8000/rag-aws-bedrock/playground](http://127.0.0.1:8000/rag-aws-bedrock/playground).  
+您可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板，并在 [http://127.0.0.1:8000/rag-aws-bedrock/playground](http://127.0.0.1:8000/rag-aws-bedrock/playground) 访问游乐场。
 
-You can access the template from code with:
+您可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable

@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/mosaicml.ipynb
 ---
+
 # MosaicML
 
-[MosaicML](https://docs.mosaicml.com/en/latest/inference.html) offers a managed inference service. You can either use a variety of open-source models, or deploy your own.
+[MosaicML](https://docs.mosaicml.com/en/latest/inference.html) 提供了一个托管推理服务。您可以使用多种开源模型，或者部署您自己的模型。
 
-This example goes over how to use LangChain to interact with MosaicML Inference for text completion.
+这个示例介绍了如何使用 LangChain 与 MosaicML 推理进行文本补全的交互。
 
 
 ```python
@@ -54,8 +55,7 @@ question = "What is one good reason why you should train a large language model 
 llm_chain.run(question)
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

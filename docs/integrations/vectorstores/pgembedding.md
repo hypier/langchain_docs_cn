@@ -1,30 +1,31 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/pgembedding.ipynb
 ---
-# Postgres Embedding
 
-> [Postgres Embedding](https://github.com/neondatabase/pg_embedding) is an open-source vector similarity search for `Postgres` that uses  `Hierarchical Navigable Small Worlds (HNSW)` for approximate nearest neighbor search.
+# Postgres 嵌入
 
->It supports:
->- exact and approximate nearest neighbor search using HNSW
->- L2 distance
+> [Postgres 嵌入](https://github.com/neondatabase/pg_embedding) 是一个开源向量相似性搜索工具，适用于 `Postgres`，使用 `Hierarchical Navigable Small Worlds (HNSW)` 进行近似最近邻搜索。
 
-This notebook shows how to use the Postgres vector database (`PGEmbedding`).
+> 它支持：
+>- 使用 HNSW 进行精确和近似最近邻搜索
+>- L2 距离
 
-> The PGEmbedding integration creates the pg_embedding extension for you, but you run the following Postgres query to add it:
+本笔记本展示了如何使用 Postgres 向量数据库 (`PGEmbedding`)。
+
+> PGEmbedding 集成为您创建了 pg_embedding 扩展，但您需要运行以下 Postgres 查询以添加它：
 ```sql
 CREATE EXTENSION embedding;
 ```
 
 
 ```python
-# Pip install necessary package
+# 安装必要的包
 %pip install --upgrade --quiet  langchain-openai langchain-community
 %pip install --upgrade --quiet  psycopg2-binary
 %pip install --upgrade --quiet  tiktoken
 ```
 
-Add the OpenAI API Key to the environment variables to use `OpenAIEmbeddings`.
+将 OpenAI API 密钥添加到环境变量中以使用 `OpenAIEmbeddings`。
 
 
 ```python
@@ -38,7 +39,7 @@ OpenAI API Key:········
 ```
 
 ```python
-## Loading Environment Variables
+## 加载环境变量
 from typing import List, Tuple
 ```
 
@@ -79,7 +80,7 @@ db = PGEmbedding.from_documents(
     connection_string=connection_string,
 )
 
-query = "What did the president say about Ketanji Brown Jackson"
+query = "总统关于 Ketanji Brown Jackson 说了什么"
 docs_with_score: List[Tuple[Document, float]] = db.similarity_search_with_score(query)
 ```
 
@@ -92,10 +93,9 @@ for doc, score in docs_with_score:
     print("-" * 80)
 ```
 
-## Working with vectorstore in Postgres
+## 在 Postgres 中使用 vectorstore
 
-### Uploading a vectorstore in PG 
-
+### 在PG中上传向量存储
 
 ```python
 db = PGEmbedding.from_documents(
@@ -107,9 +107,8 @@ db = PGEmbedding.from_documents(
 )
 ```
 
-### Create HNSW Index
-By default, the extension performs a sequential scan search, with 100% recall. You might consider creating an HNSW index for approximate nearest neighbor (ANN) search to speed up `similarity_search_with_score` execution time. To create the HNSW index on your vector column, use a `create_hnsw_index` function:
-
+### 创建 HNSW 索引
+默认情况下，扩展执行顺序扫描搜索，具有 100% 的召回率。您可能考虑为近似最近邻 (ANN) 搜索创建 HNSW 索引，以加快 `similarity_search_with_score` 的执行时间。要在您的向量列上创建 HNSW 索引，可以使用 `create_hnsw_index` 函数：
 
 ```python
 PGEmbedding.create_hnsw_index(
@@ -117,22 +116,22 @@ PGEmbedding.create_hnsw_index(
 )
 ```
 
-The function above is equivalent to running the below SQL query:
+上述函数相当于运行以下 SQL 查询：
 ```sql
 CREATE INDEX ON vectors USING hnsw(vec) WITH (maxelements=10000, dims=1536, m=3, efconstruction=16, efsearch=16);
 ```
-The HNSW index options used in the statement above include:
+上述语句中使用的 HNSW 索引选项包括：
 
-- maxelements: Defines the maximum number of elements indexed. This is a required parameter. The example shown above has a value of 3. A real-world example would have a much large value, such as 1000000. An "element" refers to a data point (a vector) in the dataset, which is represented as a node in the HNSW graph. Typically, you would set this option to a value able to accommodate the number of rows in your in your dataset.
-- dims: Defines the number of dimensions in your vector data. This is a required parameter. A small value is used in the example above. If you are storing data generated using OpenAI's text-embedding-ada-002 model, which supports 1536 dimensions, you would define a value of 1536, for example.
-- m: Defines the maximum number of bi-directional links (also referred to as "edges") created for each node during graph construction.
-The following additional index options are supported:
+- maxelements: 定义索引的最大元素数量。这是一个必需的参数。上面的示例值为 3。实际示例的值通常会更大，例如 1000000。“元素”指的是数据集中表示为 HNSW 图中节点的数据点（向量）。通常，您应将此选项设置为能够容纳数据集中行数的值。
+- dims: 定义向量数据中的维度数量。这是一个必需的参数。上面的示例使用了较小的值。如果您存储的是使用 OpenAI 的 text-embedding-ada-002 模型生成的数据，该模型支持 1536 维度，则可以定义为 1536。
+- m: 定义在图构建过程中为每个节点创建的最大双向链接（也称为“边”）的数量。
+以下附加索引选项也受支持：
 
-- efConstruction: Defines the number of nearest neighbors considered during index construction. The default value is 32.
-- efsearch: Defines the number of nearest neighbors considered during index search. The default value is 32.
-For information about how you can configure these options to influence the HNSW algorithm, refer to [Tuning the HNSW algorithm](https://neon.tech/docs/extensions/pg_embedding#tuning-the-hnsw-algorithm).
+- efConstruction: 定义在索引构建过程中考虑的最近邻数量。默认值为 32。
+- efsearch: 定义在索引搜索过程中考虑的最近邻数量。默认值为 32。
+有关如何配置这些选项以影响 HNSW 算法的信息，请参阅 [调优 HNSW 算法](https://neon.tech/docs/extensions/pg_embedding#tuning-the-hnsw-algorithm)。
 
-### Retrieving a vectorstore in PG
+### 在PG中检索向量存储
 
 
 ```python
@@ -179,8 +178,7 @@ for doc, score in docs_with_score:
     print("-" * 80)
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

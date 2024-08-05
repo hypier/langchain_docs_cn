@@ -1,13 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/sceneXplain.ipynb
 ---
+
 # SceneXplain
 
+[SceneXplain](https://scenex.jina.ai/) 是一个可以通过 SceneXplain 工具访问的图像描述服务。
 
-[SceneXplain](https://scenex.jina.ai/) is an ImageCaptioning service accessible through the SceneXplain Tool.
-
-To use this tool, you'll need to make an account and fetch your API Token [from the website](https://scenex.jina.ai/api). Then you can instantiate the tool.
-
+要使用此工具，您需要注册一个账户并从 [网站](https://scenex.jina.ai/api) 获取您的 API 令牌。然后，您可以实例化该工具。
 
 ```python
 import os
@@ -15,15 +14,13 @@ import os
 os.environ["SCENEX_API_KEY"] = "<YOUR_API_KEY>"
 ```
 
-
 ```python
 from langchain.agents import load_tools
 
 tools = load_tools(["sceneXplain"])
 ```
 
-Or directly instantiate the tool.
-
+或者直接实例化该工具。
 
 ```python
 from langchain_community.tools import SceneXplainTool
@@ -31,10 +28,9 @@ from langchain_community.tools import SceneXplainTool
 tool = SceneXplainTool()
 ```
 
-## Usage in an Agent
+## 在代理中的使用
 
-The tool can be used in any LangChain agent as follows:
-
+该工具可以在任何 LangChain 代理中使用，如下所示：
 
 ```python
 from langchain.agents import initialize_agent
@@ -63,19 +59,19 @@ print(output)
 Thought: Do I need to use a tool? Yes
 Action: Image Explainer
 Action Input: https://storage.googleapis.com/causal-diffusion.appspot.com/imagePrompts%2F0rw369i5h9t%2Foriginal.png[0m
-Observation: [36;1m[1;3mIn a charmingly whimsical scene, a young girl is seen braving the rain alongside her furry companion, the lovable Totoro. The two are depicted standing on a bustling street corner, where they are sheltered from the rain by a bright yellow umbrella. The girl, dressed in a cheerful yellow frock, holds onto the umbrella with both hands while gazing up at Totoro with an expression of wonder and delight.
+Observation: [36;1m[1;3m在一个迷人的奇幻场景中，一个小女孩与她毛茸茸的伙伴可爱的龙猫一起勇敢地面对着雨水。两人被描绘在一个繁忙的街角，明亮的黄色雨伞为他们遮挡住了雨水。小女孩穿着一条欢快的黄色裙子，双手握住雨伞，仰望着龙猫，脸上流露出惊奇和喜悦的表情。
 
-Totoro, meanwhile, stands tall and proud beside his young friend, holding his own umbrella aloft to protect them both from the downpour. His furry body is rendered in rich shades of grey and white, while his large ears and wide eyes lend him an endearing charm.
+与此同时，龙猫高高站立在他的小朋友旁边，举着自己的雨伞来保护他们俩免受倾盆大雨的侵袭。他毛茸茸的身体呈现出丰富的灰白色调，而他的大耳朵和宽大的眼睛则赋予了他一种可爱的魅力。
 
-In the background of the scene, a street sign can be seen jutting out from the pavement amidst a flurry of raindrops. A sign with Chinese characters adorns its surface, adding to the sense of cultural diversity and intrigue. Despite the dreary weather, there is an undeniable sense of joy and camaraderie in this heartwarming image.[0m
+在场景的背景中，可以看到一个街道标志从人行道上突出来，雨滴在周围飞舞。一个带有中文字符的标志装饰着其表面，增加了文化多样性和趣味性。尽管天气阴沉，这幅温馨的图像中却传递出一种不可否认的快乐和友谊。[0m
 Thought:[32;1m[1;3m Do I need to use a tool? No
-AI: This image appears to be a still from the 1988 Japanese animated fantasy film My Neighbor Totoro. The film follows two young girls, Satsuki and Mei, as they explore the countryside and befriend the magical forest spirits, including the titular character Totoro.[0m
+AI: 这幅图像似乎是1988年日本动画奇幻电影《龙猫》的一个静止画面。影片讲述了两个小女孩小月和小梅在乡村探险并结识魔法森林精灵的故事，其中包括主角龙猫。[0m
 
 [1m> Finished chain.[0m
-This image appears to be a still from the 1988 Japanese animated fantasy film My Neighbor Totoro. The film follows two young girls, Satsuki and Mei, as they explore the countryside and befriend the magical forest spirits, including the titular character Totoro.
+这幅图像似乎是1988年日本动画奇幻电影《龙猫》的一个静止画面。影片讲述了两个小女孩小月和小梅在乡村探险并结识魔法森林精灵的故事，其中包括主角龙猫。
 ```
 
-## Related
+## 相关
 
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

@@ -1,27 +1,26 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/graphs/azure_cosmosdb_gremlin.ipynb
 ---
+
 # Azure Cosmos DB for Apache Gremlin
 
->[Azure Cosmos DB for Apache Gremlin](https://learn.microsoft.com/en-us/azure/cosmos-db/gremlin/introduction) is a graph database service that can be used to store massive graphs with billions of vertices and edges. You can query the graphs with millisecond latency and evolve the graph structure easily.
+>[Azure Cosmos DB for Apache Gremlin](https://learn.microsoft.com/en-us/azure/cosmos-db/gremlin/introduction) 是一种图形数据库服务，可用于存储数十亿个顶点和边的大型图形。您可以以毫秒级延迟查询图形，并轻松演变图形结构。
 >
->[Gremlin](https://en.wikipedia.org/wiki/Gremlin_(query_language)) is a graph traversal language and virtual machine developed by `Apache TinkerPop` of the `Apache Software Foundation`.
+>[Gremlin](https://en.wikipedia.org/wiki/Gremlin_(query_language)) 是由 `Apache TinkerPop` 的 `Apache Software Foundation` 开发的图形遍历语言和虚拟机。
 
-This notebook shows how to use LLMs to provide a natural language interface to a graph database you can query with the `Gremlin` query language.
+此笔记本展示了如何使用 LLM 提供自然语言接口，以便使用 `Gremlin` 查询语言查询图形数据库。
 
-## Setting up
+## 设置
 
-Install a library:
-
+安装一个库：
 
 ```python
 !pip3 install gremlinpython
 ```
 
-You will need an Azure CosmosDB Graph database instance. One option is to create a [free CosmosDB Graph database instance in Azure](https://learn.microsoft.com/en-us/azure/cosmos-db/free-tier). 
+您需要一个 Azure CosmosDB 图形数据库实例。一个选项是在 Azure 中创建一个 [免费的 CosmosDB 图形数据库实例](https://learn.microsoft.com/en-us/azure/cosmos-db/free-tier)。
 
-When you create your Cosmos DB account and Graph, use `/type` as a partition key.
-
+当您创建 Cosmos DB 账户和图形时，请使用 `/type` 作为分区键。
 
 ```python
 cosmosdb_name = "mycosmosdb"
@@ -29,7 +28,6 @@ cosmosdb_db_id = "graphtesting"
 cosmosdb_db_graph_id = "mygraph"
 cosmosdb_access_Key = "longstring=="
 ```
-
 
 ```python
 import nest_asyncio
@@ -40,7 +38,6 @@ from langchain_core.documents import Document
 from langchain_openai import AzureChatOpenAI
 ```
 
-
 ```python
 graph = GremlinGraph(
     url=f"=wss://{cosmosdb_name}.gremlin.cosmos.azure.com:443/",
@@ -49,14 +46,11 @@ graph = GremlinGraph(
 )
 ```
 
-## Seeding the database
+## 填充数据库
 
-Assuming your database is empty, you can populate it using the GraphDocuments
+假设您的数据库是空的，您可以使用 GraphDocuments 来填充它。
 
-For Gremlin, always add property called 'label' for each Node.
-If no label is set, Node.type is used as a label.
-For cosmos using natural id's make sense, as they are visible in the graph explorer.
-
+对于 Gremlin，始终为每个节点添加名为 'label' 的属性。如果未设置标签，则使用 Node.type 作为标签。对于 Cosmos，使用自然 ID 是有意义的，因为它们在图形浏览器中可见。
 
 ```python
 source_doc = Document(
@@ -107,7 +101,6 @@ graph_doc = GraphDocument(
 )
 ```
 
-
 ```python
 # The underlying python-gremlin has a problem when running in notebook
 # The following line is a workaround to fix the problem
@@ -117,8 +110,8 @@ nest_asyncio.apply()
 graph.add_graph_documents([graph_doc])
 ```
 
-## Refresh graph schema information
-If the schema of database changes (after updates), you can refresh the schema information.
+## 刷新图形架构信息
+如果数据库的架构发生变化（在更新之后），您可以刷新架构信息。
 
 
 
@@ -131,10 +124,9 @@ graph.refresh_schema()
 print(graph.schema)
 ```
 
-## Querying the graph
+## 查询图形
 
-We can now use the gremlin QA chain to ask question of the graph
-
+我们现在可以使用 gremlin QA 链来询问图形
 
 ```python
 chain = GremlinQAChain.from_llm(
@@ -147,11 +139,9 @@ chain = GremlinQAChain.from_llm(
 )
 ```
 
-
 ```python
 chain.invoke("Who played in The Matrix?")
 ```
-
 
 ```python
 chain.run("How many people played in The Matrix?")

@@ -1,20 +1,21 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/ctransformers.ipynb
 ---
+
 # C Transformers
 
-The [C Transformers](https://github.com/marella/ctransformers) library provides Python bindings for GGML models.
+[C Transformers](https://github.com/marella/ctransformers)库提供了GGML模型的Python绑定。
 
-This example goes over how to use LangChain to interact with `C Transformers` [models](https://github.com/marella/ctransformers#supported-models).
+本示例介绍如何使用LangChain与`C Transformers` [模型](https://github.com/marella/ctransformers#supported-models)进行交互。
 
-**Install**
+**安装**
 
 
 ```python
 %pip install --upgrade --quiet  ctransformers
 ```
 
-**Load Model**
+**加载模型**
 
 
 ```python
@@ -23,14 +24,14 @@ from langchain_community.llms import CTransformers
 llm = CTransformers(model="marella/gpt-2-ggml")
 ```
 
-**Generate Text**
+**生成文本**
 
 
 ```python
 print(llm.invoke("AI is going to"))
 ```
 
-**Streaming**
+**流式处理**
 
 
 ```python
@@ -61,8 +62,7 @@ llm_chain = LLMChain(prompt=prompt, llm=llm)
 response = llm_chain.run("What is AI?")
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

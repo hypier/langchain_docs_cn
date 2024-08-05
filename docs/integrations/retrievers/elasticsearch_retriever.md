@@ -5,30 +5,29 @@ sidebar_label: Elasticsearch
 
 # ElasticsearchRetriever
 
-## Overview
->[Elasticsearch](https://www.elastic.co/elasticsearch/) is a distributed, RESTful search and analytics engine. It provides a distributed, multitenant-capable full-text search engine with an HTTP web interface and schema-free JSON documents. It supports keyword search, vector search, hybrid search and complex filtering.
+## 概述
+>[Elasticsearch](https://www.elastic.co/elasticsearch/) 是一个分布式的、RESTful 的搜索和分析引擎。它提供了一个分布式的、多租户支持的全文搜索引擎，具有 HTTP Web 接口和无模式的 JSON 文档。它支持关键词搜索、向量搜索、混合搜索和复杂过滤。
 
-The `ElasticsearchRetriever` is a generic wrapper to enable flexible access to all `Elasticsearch` features through the [Query DSL](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html).  For most use cases the other classes (`ElasticsearchStore`, `ElasticsearchEmbeddings`, etc.) should suffice, but if they don't you can use `ElasticsearchRetriever`.
+`ElasticsearchRetriever` 是一个通用包装器，能够通过 [Query DSL](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html) 灵活访问所有 `Elasticsearch` 功能。对于大多数用例，其他类（`ElasticsearchStore`、`ElasticsearchEmbeddings` 等）应该足够，但如果不够，您可以使用 `ElasticsearchRetriever`。
 
-This guide will help you getting started with the Elasticsearch [retriever](/docs/concepts/#retrievers). For detailed documentation of all `ElasticsearchRetriever` features and configurations head to the [API reference](https://api.python.langchain.com/en/latest/retrievers/langchain_elasticsearch.retrievers.ElasticsearchRetriever.html).
+本指南将帮助您入门使用 Elasticsearch [检索器](/docs/concepts/#retrievers)。有关所有 `ElasticsearchRetriever` 功能和配置的详细文档，请访问 [API 参考](https://api.python.langchain.com/en/latest/retrievers/langchain_elasticsearch.retrievers.ElasticsearchRetriever.html)。
 
-### Integration details
+### 集成细节
 
-| Retriever | Self-host | Cloud offering | Package |
+| 检索器 | 自托管 | 云服务 | 包 |
 | :--- | :--- | :---: | :---: |
 [ElasticsearchRetriever](https://api.python.langchain.com/en/latest/retrievers/langchain_elasticsearch.retrievers.ElasticsearchRetriever.html) | ✅ | ✅ | langchain_elasticsearch |
 
+## 设置
 
-## Setup
+设置 Elasticsearch 实例主要有两种方式：
 
-There are two main ways to set up an Elasticsearch instance:
+- Elastic Cloud: [Elastic Cloud](https://cloud.elastic.co/) 是一个托管的 Elasticsearch 服务。注册以获取 [免费试用](https://www.elastic.co/cloud/cloud-trial-overview)。
+要连接到一个不需要登录凭据的 Elasticsearch 实例（以启用安全性启动 docker 实例），请将 Elasticsearch URL 和索引名称与嵌入对象一起传递给构造函数。
 
-- Elastic Cloud: [Elastic Cloud](https://cloud.elastic.co/) is a managed Elasticsearch service. Sign up for a [free trial](https://www.elastic.co/cloud/cloud-trial-overview).
-To connect to an Elasticsearch instance that does not require login credentials (starting the docker instance with security enabled), pass the Elasticsearch URL and index name along with the embedding object to the constructor.
+- 本地安装 Elasticsearch: 通过本地运行 Elasticsearch 开始使用。最简单的方法是使用官方的 Elasticsearch Docker 镜像。有关更多信息，请参见 [Elasticsearch Docker 文档](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html)。
 
-- Local Install Elasticsearch: Get started with Elasticsearch by running it locally. The easiest way is to use the official Elasticsearch Docker image. See the [Elasticsearch Docker documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html) for more information.
-
-If you want to get automated tracing from individual queries, you can also set your [LangSmith](https://docs.smith.langchain.com/) API key by uncommenting below:
+如果您想从单个查询获取自动化跟踪，您还可以通过取消下面的注释来设置您的 [LangSmith](https://docs.smith.langchain.com/) API 密钥：
 
 
 ```python
@@ -36,10 +35,9 @@ If you want to get automated tracing from individual queries, you can also set y
 # os.environ["LANGSMITH_TRACING"] = "true"
 ```
 
-### Installation
+### 安装
 
-This retriever lives in the `langchain-elasticsearch` package. For demonstration purposes, we will also install `langchain-community` to generate text [embeddings](/docs/concepts/#embedding-models).
-
+这个检索器位于 `langchain-elasticsearch` 包中。为了演示，我们还将安装 `langchain-community` 以生成文本 [嵌入](/docs/concepts/#embedding-models)。
 
 ```python
 %pip install -qU langchain-community langchain-elasticsearch
@@ -57,10 +55,9 @@ from langchain_core.embeddings import Embeddings
 from langchain_elasticsearch import ElasticsearchRetriever
 ```
 
-### Configure
+### 配置
 
-Here we define the conncection to Elasticsearch. In this example we use a locally running instance. Alternatively, you can make an account in [Elastic Cloud](https://cloud.elastic.co/) and start a [free trial](https://www.elastic.co/cloud/cloud-trial-overview).
-
+在这里，我们定义与Elasticsearch的连接。在这个示例中，我们使用一个本地运行的实例。或者，您可以在[Elastic Cloud](https://cloud.elastic.co/)上创建一个帐户并开始[免费试用](https://www.elastic.co/cloud/cloud-trial-overview)。
 
 ```python
 es_url = "http://localhost:9200"
@@ -68,15 +65,13 @@ es_client = Elasticsearch(hosts=[es_url])
 es_client.info()
 ```
 
-For vector search, we are going to use random embeddings just for illustration. For real use cases, pick one of the available LangChain [Embeddings](/docs/integrations/text_embedding) classes.
-
+对于向量搜索，我们将使用随机嵌入，仅用于说明。对于实际用例，请选择可用的LangChain [Embeddings](/docs/integrations/text_embedding) 类之一。
 
 ```python
 embeddings = DeterministicFakeEmbedding(size=3)
 ```
 
-#### Define example data
-
+#### 定义示例数据
 
 ```python
 index_name = "test-langchain-retriever"
@@ -94,10 +89,9 @@ texts = [
 ]
 ```
 
-#### Index data
+#### 索引数据
 
-Typically, users make use of `ElasticsearchRetriever` when they already have data in an Elasticsearch index. Here we index some example text documents. If you created an index for example using `ElasticsearchStore.from_documents` that's also fine.
-
+通常，当用户已经在Elasticsearch索引中拥有数据时，会使用`ElasticsearchRetriever`。在这里，我们索引一些示例文本文档。如果您使用`ElasticsearchStore.from_documents`创建了一个索引，那也是可以的。
 
 ```python
 def create_index(
@@ -153,23 +147,19 @@ def index_data(
     return len(requests)
 ```
 
-
 ```python
 index_data(es_client, index_name, text_field, dense_vector_field, embeddings, texts)
 ```
-
-
 
 ```output
 7
 ```
 
+## 实例化
 
-## Instantiation
+### 向量搜索
 
-### Vector search
-
-Dense vector retrival using fake embeddings in this example.
+在这个示例中使用假嵌入进行密集向量检索。
 
 
 ```python
@@ -205,10 +195,9 @@ vector_retriever.invoke("foo")
  Document(page_content='foo bar', metadata={'_index': 'test-langchain-index', '_id': '5', '_score': 0.2086992, '_source': {'fake_embedding': [0.2533670476638539, 0.08100381646160418, 0.7763644080870179], 'num_characters': 7}})]
 ```
 
-
 ### BM25
 
-Traditional keyword matching.
+传统关键词匹配。
 
 
 ```python
@@ -240,11 +229,9 @@ bm25_retriever.invoke("foo")
  Document(page_content='bla bla foo', metadata={'_index': 'test-langchain-index', '_id': '6', '_score': 0.6025789, '_source': {'fake_embedding': [1.7365927060137358, -0.5230400847844948, 0.7978339724186192], 'num_characters': 11}})]
 ```
 
+### 混合搜索
 
-### Hybrid search
-
-The combination of vector search and BM25 search using [Reciprocal Rank Fusion](https://www.elastic.co/guide/en/elasticsearch/reference/current/rrf.html) (RRF) to combine the result sets.
-
+使用 [Reciprocal Rank Fusion](https://www.elastic.co/guide/en/elasticsearch/reference/current/rrf.html) (RRF) 结合向量搜索和 BM25 搜索以合并结果集。
 
 ```python
 def hybrid_query(search_query: str) -> Dict:
@@ -283,11 +270,9 @@ hybrid_retriever.invoke("foo")
  Document(page_content='bla bla foo', metadata={'_index': 'test-langchain-index', '_id': '6', '_score': 0.6025789, '_source': {'fake_embedding': [1.7365927060137358, -0.5230400847844948, 0.7978339724186192], 'num_characters': 11}})]
 ```
 
+### 模糊匹配
 
-### Fuzzy matching
-
-Keyword matching with typo tolerance.
-
+带有错别字容忍的关键词匹配。
 
 ```python
 def fuzzy_query(search_query: str) -> Dict:
@@ -321,10 +306,9 @@ fuzzy_retriever.invoke("fox")  # note the character tolernace
  Document(page_content='bla bla foo', metadata={'_index': 'test-langchain-index', '_id': '6', '_score': 0.40171927, '_source': {'fake_embedding': [1.7365927060137358, -0.5230400847844948, 0.7978339724186192], 'num_characters': 11}})]
 ```
 
+### 复杂过滤
 
-### Complex filtering
-
-Combination of filters on different fields.
+不同字段上的过滤器组合。
 
 
 ```python
@@ -366,11 +350,11 @@ filtering_retriever.invoke("foo")
 ```
 
 
-Note that the query match is on top. The other documents that got passed the filter are also in the result set, but they all have the same score.
+请注意，查询匹配在顶部。通过过滤的其他文档也在结果集中，但它们的分数都是相同的。
 
-### Custom document mapper
+### 自定义文档映射器
 
-It is possible to cusomize the function tha maps an Elasticsearch result (hit) to a LangChain document.
+可以自定义将 Elasticsearch 结果（命中）映射到 LangChain 文档的函数。
 
 
 ```python
@@ -402,20 +386,17 @@ custom_mapped_retriever.invoke("foo")
  Document(page_content='This document has 5 characters', metadata={'text_content': 'hello'})]
 ```
 
+## 用法
 
-## Usage
+根据上述示例，我们使用 `.invoke` 来发出单个查询。由于检索器是 Runnables，我们也可以使用 [Runnable interface](/docs/concepts/#runnable-interface) 中的任何方法，例如 `.batch`。
 
-Following the above examples, we use `.invoke` to issue a single query. Because retrievers are Runnables, we can use any method in the [Runnable interface](/docs/concepts/#runnable-interface), such as `.batch`, as well.
+## 在链中使用
 
-## Use within a chain
-
-We can also incorporate retrievers into [chains](/docs/how_to/sequence/) to build larger applications, such as a simple [RAG](/docs/tutorials/rag/) application. For demonstration purposes, we instantiate an OpenAI chat model as well.
-
+我们还可以将检索器纳入[链](/docs/how_to/sequence/)中，以构建更大的应用程序，例如一个简单的[RAG](/docs/tutorials/rag/)应用程序。为了演示，我们还实例化一个OpenAI聊天模型。
 
 ```python
 %pip install -qU langchain-openai
 ```
-
 
 ```python
 from langchain_core.output_parsers import StrOutputParser
@@ -446,17 +427,15 @@ chain = (
 )
 ```
 
-
 ```python
 chain.invoke("what is foo?")
 ```
 
-## API reference
+## API 参考
 
-For detailed documentation of all `ElasticsearchRetriever` features and configurations head to the [API reference](https://api.python.langchain.com/en/latest/retrievers/langchain_elasticsearch.retrievers.ElasticsearchRetriever.html).
+有关所有 `ElasticsearchRetriever` 功能和配置的详细文档，请访问 [API 参考](https://api.python.langchain.com/en/latest/retrievers/langchain_elasticsearch.retrievers.ElasticsearchRetriever.html)。
 
+## 相关
 
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

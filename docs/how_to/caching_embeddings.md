@@ -1,40 +1,37 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/caching_embeddings.ipynb
 ---
-# Caching
 
-Embeddings can be stored or temporarily cached to avoid needing to recompute them.
+# 缓存
 
-Caching embeddings can be done using a `CacheBackedEmbeddings`. The cache backed embedder is a wrapper around an embedder that caches
-embeddings in a key-value store. The text is hashed and the hash is used as the key in the cache.
+嵌入可以被存储或临时缓存，以避免需要重新计算它们。
 
-The main supported way to initialize a `CacheBackedEmbeddings` is `from_bytes_store`. It takes the following parameters:
+缓存嵌入可以使用 `CacheBackedEmbeddings` 来完成。缓存支持的嵌入器是一个围绕嵌入器的包装器，它在键值存储中缓存嵌入。文本被哈希处理，哈希值被用作缓存中的键。
 
-- underlying_embedder: The embedder to use for embedding.
-- document_embedding_cache: Any [`ByteStore`](/docs/integrations/stores/) for caching document embeddings.
-- batch_size: (optional, defaults to `None`) The number of documents to embed between store updates.
-- namespace: (optional, defaults to `""`) The namespace to use for document cache. This namespace is used to avoid collisions with other caches. For example, set it to the name of the embedding model used.
-- query_embedding_cache: (optional, defaults to `None` or not caching) A [`ByteStore`](/docs/integrations/stores/) for caching query embeddings, or `True` to use the same store as `document_embedding_cache`.
+初始化 `CacheBackedEmbeddings` 的主要支持方式是 `from_bytes_store`。它接受以下参数：
 
-**Attention**:
+- underlying_embedder: 用于嵌入的嵌入器。
+- document_embedding_cache: 用于缓存文档嵌入的任何 [`ByteStore`](/docs/integrations/stores/)。
+- batch_size: （可选，默认为 `None`）在存储更新之间要嵌入的文档数量。
+- namespace: （可选，默认为 `""`）用于文档缓存的命名空间。该命名空间用于避免与其他缓存的冲突。例如，可以将其设置为使用的嵌入模型的名称。
+- query_embedding_cache: （可选，默认为 `None` 或不缓存）用于缓存查询嵌入的 [`ByteStore`](/docs/integrations/stores/)，或者设置为 `True` 以使用与 `document_embedding_cache` 相同的存储。
 
-- Be sure to set the `namespace` parameter to avoid collisions of the same text embedded using different embeddings models.
-- `CacheBackedEmbeddings` does not cache query embeddings by default. To enable query caching, one need to specify a `query_embedding_cache`.
+**注意**：
 
+- 确保设置 `namespace` 参数以避免使用不同嵌入模型嵌入的相同文本之间的冲突。
+- `CacheBackedEmbeddings` 默认不缓存查询嵌入。要启用查询缓存，需要指定 `query_embedding_cache`。
 
 ```python
 from langchain.embeddings import CacheBackedEmbeddings
 ```
 
-## Using with a Vector Store
+## 使用向量存储
 
-First, let's see an example that uses the local file system for storing embeddings and uses FAISS vector store for retrieval.
-
+首先，让我们看一个使用本地文件系统存储嵌入并使用 FAISS 向量存储进行检索的示例。
 
 ```python
 %pip install --upgrade --quiet  langchain-openai faiss-cpu
 ```
-
 
 ```python
 from langchain.storage import LocalFileStore
@@ -52,22 +49,17 @@ cached_embedder = CacheBackedEmbeddings.from_bytes_store(
 )
 ```
 
-The cache is empty prior to embedding:
-
+在嵌入之前，缓存是空的：
 
 ```python
 list(store.yield_keys())
 ```
 
-
-
 ```output
 []
 ```
 
-
-Load the document, split it into chunks, embed each chunk and load it into the vector store.
-
+加载文档，将其拆分为块，对每个块进行嵌入并加载到向量存储中。
 
 ```python
 raw_documents = TextLoader("state_of_the_union.txt").load()
@@ -75,8 +67,7 @@ text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
 documents = text_splitter.split_documents(raw_documents)
 ```
 
-Create the vector store:
-
+创建向量存储：
 
 ```python
 %%time
@@ -86,8 +77,7 @@ db = FAISS.from_documents(documents, cached_embedder)
 CPU times: user 218 ms, sys: 29.7 ms, total: 248 ms
 Wall time: 1.02 s
 ```
-If we try to create the vector store again, it'll be much faster since it does not need to re-compute any embeddings.
-
+如果我们尝试再次创建向量存储，它会快得多，因为它不需要重新计算任何嵌入。
 
 ```python
 %%time
@@ -97,14 +87,11 @@ db2 = FAISS.from_documents(documents, cached_embedder)
 CPU times: user 15.7 ms, sys: 2.22 ms, total: 18 ms
 Wall time: 17.2 ms
 ```
-And here are some of the embeddings that got created:
-
+以下是一些创建的嵌入：
 
 ```python
 list(store.yield_keys())[:5]
 ```
-
-
 
 ```output
 ['text-embedding-ada-00217a6727d-8916-54eb-b196-ec9c9d6ca472',
@@ -114,10 +101,9 @@ list(store.yield_keys())[:5]
  'text-embedding-ada-0021297d37a-2bc1-5e19-bf13-6c950f075062']
 ```
 
+# 交换 `ByteStore`
 
-# Swapping the `ByteStore`
-
-In order to use a different `ByteStore`, just use it when creating your `CacheBackedEmbeddings`. Below, we create an equivalent cached embeddings object, except using the non-persistent `InMemoryByteStore` instead:
+为了使用不同的 `ByteStore`，只需在创建 `CacheBackedEmbeddings` 时使用它。下面，我们创建一个等效的缓存嵌入对象，但使用的是非持久的 `InMemoryByteStore`：
 
 
 ```python

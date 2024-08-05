@@ -2,27 +2,28 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/stores/astradb.ipynb
 sidebar_label: AstraDB
 ---
+
 # AstraDBByteStore
 
-This will help you get started with Astra DB [key-value stores](/docs/concepts/#key-value-stores). For detailed documentation of all `AstraDBByteStore` features and configurations head to the [API reference](https://api.python.langchain.com/en/latest/storage/langchain_astradb.storage.AstraDBByteStore.html).
+这将帮助您开始使用 Astra DB [键值存储](/docs/concepts/#key-value-stores)。有关所有 `AstraDBByteStore` 功能和配置的详细文档，请访问 [API 参考](https://api.python.langchain.com/en/latest/storage/langchain_astradb.storage.AstraDBByteStore.html)。
 
-## Overview
+## 概述
 
-DataStax [Astra DB](https://docs.datastax.com/en/astra/home/astra.html) is a serverless vector-capable database built on Cassandra and made conveniently available through an easy-to-use JSON API.
+DataStax [Astra DB](https://docs.datastax.com/en/astra/home/astra.html) 是一个无服务器的支持向量的数据库，基于 Cassandra 构建，并通过易于使用的 JSON API 方便地提供。
 
-### Integration details
+### 集成细节
 
-| Class | Package | Local | JS support | Package downloads | Package latest |
+| 类 | 包 | 本地 | JS 支持 | 包下载量 | 包最新版本 |
 | :--- | :--- | :---: | :---: |  :---: | :---: |
 | [AstraDBByteStore](https://api.python.langchain.com/en/latest/storage/langchain_astradb.storage.AstraDBByteStore.html) | [langchain_astradb](https://api.python.langchain.com/en/latest/astradb_api_reference.html) | ❌ | ❌ | ![PyPI - Downloads](https://img.shields.io/pypi/dm/langchain_astradb?style=flat-square&label=%20) | ![PyPI - Version](https://img.shields.io/pypi/v/langchain_astradb?style=flat-square&label=%20) |
 
-## Setup
+## 设置
 
-To create an `AstraDBByteStore` byte store, you'll need to [create a DataStax account](https://www.datastax.com/products/datastax-astra).
+要创建一个 `AstraDBByteStore` 字节存储，您需要 [创建一个 DataStax 账户](https://www.datastax.com/products/datastax-astra)。
 
-### Credentials
+### 凭证
 
-After signing up, set the following credentials:
+注册后，设置以下凭证：
 
 
 ```python
@@ -32,18 +33,18 @@ ASTRA_DB_API_ENDPOINT = getpass("ASTRA_DB_API_ENDPOINT = ")
 ASTRA_DB_APPLICATION_TOKEN = getpass("ASTRA_DB_APPLICATION_TOKEN = ")
 ```
 
-### Installation
+### 安装
 
-The LangChain AstraDB integration lives in the `langchain_astradb` package:
+LangChain AstraDB 集成位于 `langchain_astradb` 包中：
 
 
 ```python
 %pip install -qU langchain_astradb
 ```
 
-## Instantiation
+## 实例化
 
-Now we can instantiate our byte store:
+现在我们可以实例化我们的字节存储：
 
 
 ```python
@@ -56,9 +57,9 @@ kv_store = AstraDBByteStore(
 )
 ```
 
-## Usage
+## 用法
 
-You can set data under keys like this using the `mset` method:
+您可以使用 `mset` 方法在键下设置数据，如下所示：
 
 
 ```python
@@ -84,7 +85,7 @@ kv_store.mget(
 ```
 
 
-And you can delete data using the `mdelete` method:
+您可以使用 `mdelete` 方法删除数据：
 
 
 ```python
@@ -110,13 +111,12 @@ kv_store.mget(
 ```
 
 
-You can use an `AstraDBByteStore` anywhere you'd use other ByteStores, including as a [cache for embeddings](/docs/how_to/caching_embeddings).
+您可以在任何需要使用其他 ByteStores 的地方使用 `AstraDBByteStore`，包括作为 [嵌入的缓存](/docs/how_to/caching_embeddings)。
 
-## API reference
+## API 参考
 
-For detailed documentation of all `AstraDBByteStore` features and configurations, head to the API reference: https://api.python.langchain.com/en/latest/storage/langchain_astradb.storage.AstraDBByteStore.html
+有关所有 `AstraDBByteStore` 功能和配置的详细文档，请访问 API 参考： https://api.python.langchain.com/en/latest/storage/langchain_astradb.storage.AstraDBByteStore.html
 
+## 相关
 
-## Related
-
-- [Key-value store conceptual guide](/docs/concepts/#key-value-stores)
+- [键值存储概念指南](/docs/concepts/#key-value-stores)

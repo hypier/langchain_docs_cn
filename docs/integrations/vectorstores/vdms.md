@@ -1,25 +1,25 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/vdms.ipynb
 ---
-# Intel's Visual Data Management System (VDMS)
 
->Intel's [VDMS](https://github.com/IntelLabs/vdms) is a storage solution for efficient access of big-”visual”-data that aims to achieve cloud scale by searching for relevant visual data via visual metadata stored as a graph and enabling machine friendly enhancements to visual data for faster access. VDMS is licensed under MIT.
+# 英特尔的视觉数据管理系统 (VDMS)
 
-VDMS supports:
-* K nearest neighbor search
-* Euclidean distance (L2) and inner product (IP)
-* Libraries for indexing and computing distances: TileDBDense, TileDBSparse, FaissFlat (Default), FaissIVFFlat, Flinng
-* Embeddings for text, images, and video
-* Vector and metadata searches
+> 英特尔的 [VDMS](https://github.com/IntelLabs/vdms) 是一个用于高效访问大“视觉”数据的存储解决方案，旨在通过搜索存储为图的相关视觉数据的视觉元数据来实现云规模，并为视觉数据启用机器友好的增强，以便更快地访问。VDMS 采用 MIT 许可证。
 
-VDMS has server and client components. To setup the server, see the [installation instructions](https://github.com/IntelLabs/vdms/blob/master/INSTALL.md) or use the [docker image](https://hub.docker.com/r/intellabs/vdms).
+VDMS 支持：
+* K 最近邻搜索
+* 欧几里得距离 (L2) 和内积 (IP)
+* 用于索引和计算距离的库：TileDBDense, TileDBSparse, FaissFlat (默认), FaissIVFFlat, Flinng
+* 文本、图像和视频的嵌入
+* 向量和元数据搜索
 
-This notebook shows how to use VDMS as a vector store using the docker image.
+VDMS 具有服务器和客户端组件。要设置服务器，请参见 [安装说明](https://github.com/IntelLabs/vdms/blob/master/INSTALL.md) 或使用 [docker 镜像](https://hub.docker.com/r/intellabs/vdms)。
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
+本笔记本展示了如何使用 docker 镜像将 VDMS 用作向量存储。
 
-To begin, install the Python packages for the VDMS client and Sentence Transformers:
+您需要使用 `pip install -qU langchain-community` 安装 `langchain-community` 以使用此集成。
 
+首先，安装 VDMS 客户端和句子变换器的 Python 包：
 
 ```python
 # Pip install necessary package
@@ -28,9 +28,9 @@ To begin, install the Python packages for the VDMS client and Sentence Transform
 ```output
 Note: you may need to restart the kernel to use updated packages.
 ```
-## Start VDMS Server
-Here we start the VDMS server with port 55555.
 
+## 启动 VDMS 服务器
+在这里，我们使用端口 55555 启动 VDMS 服务器。
 
 ```python
 !docker run --rm -d -p 55555:55555 --name vdms_vs_test_nb intellabs/vdms:latest
@@ -38,15 +38,14 @@ Here we start the VDMS server with port 55555.
 ```output
 b26917ffac236673ef1d035ab9c91fe999e29c9eb24aa6c7103d7baa6bf2f72d
 ```
-## Basic Example (using the Docker Container)
 
-In this basic example, we demonstrate adding documents into VDMS and using it as a vector database.
+## 基本示例（使用 Docker 容器）
 
-You can run the VDMS Server in a Docker container separately to use with LangChain which connects to the server via the VDMS Python Client. 
+在这个基本示例中，我们演示了如何将文档添加到 VDMS 并将其用作向量数据库。
 
-VDMS has the ability to handle multiple collections of documents, but the LangChain interface expects one, so we need to specify the name of the collection . The default collection name used by LangChain is "langchain".
+您可以单独在 Docker 容器中运行 VDMS 服务器，以便与通过 VDMS Python 客户端连接到服务器的 LangChain 一起使用。
 
-
+VDMS 具有处理多个文档集合的能力，但 LangChain 接口期望只有一个，因此我们需要指定集合的名称。LangChain 使用的默认集合名称是 "langchain"。
 
 ```python
 import time
@@ -67,8 +66,7 @@ DELIMITER = "-" * 50
 vdms_client = VDMS_Client(host="localhost", port=55555)
 ```
 
-Here are some helper functions for printing results.
-
+以下是一些用于打印结果的辅助函数。
 
 ```python
 def print_document_details(doc):
@@ -100,11 +98,10 @@ def print_response(list_of_entities):
         print(f"{DELIMITER}\n")
 ```
 
-### Load Document and Obtain Embedding Function
-Here we load the most recent State of the Union Address and split the document into chunks. 
+### 加载文档并获取嵌入函数
+在这里，我们加载最新的国情咨文并将文档拆分为多个块。
 
-LangChain vector stores use a string/keyword `id` for bookkeeping documents. By default, `id` is a uuid but here we're defining it as an integer cast as a string. Additional metadata is also provided with the documents and the HuggingFaceEmbeddings are used for this example as the embedding function.
-
+LangChain 向量存储使用字符串/关键字 `id` 来记录文档。默认情况下，`id` 是 uuid，但在这里我们将其定义为转换为字符串的整数。文档还提供了额外的元数据，并且在此示例中使用 HuggingFaceEmbeddings 作为嵌入函数。
 
 ```python
 # load the document and split it into chunks
@@ -135,10 +132,10 @@ print(
 # Documents: 42
 # Embedding Dimensions: 768
 ```
-### Similarity Search using Faiss Flat and Euclidean Distance (Default)
 
-In this section, we add the documents to VDMS using FAISS IndexFlat indexing (default) and Euclidena distance (default) as the distance metric for simiarity search. We search for three documents (`k=3`) related to the query `What did the president say about Ketanji Brown Jackson`.
+### 使用 Faiss Flat 和欧几里得距离（默认）的相似性搜索
 
+在本节中，我们使用 FAISS IndexFlat 索引（默认）和欧几里得距离（默认）作为相似性搜索的距离度量，将文档添加到 VDMS。我们搜索与查询 `What did the president say about Ketanji Brown Jackson` 相关的三个文档（`k=3`）。
 
 ```python
 # add data
@@ -157,69 +154,7 @@ query = "What did the president say about Ketanji Brown Jackson"
 returned_docs = db_FaissFlat.similarity_search(query, k=k, filter=None)
 print_results(returned_docs, score=False)
 ```
-```output
---------------------------------------------------
 
-Content:
-	Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And while you’re at it, pass the Disclose Act so Americans can know who is funding our elections. 
-
-Tonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. 
-
-One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. 
-
-And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
-
-Metadata:
-	id:	32
-	page_number:	32
-	president_included:	True
-	source:	../../how_to/state_of_the_union.txt
---------------------------------------------------
-
-Content:
-	As Frances Haugen, who is here with us tonight, has shown, we must hold social media platforms accountable for the national experiment they’re conducting on our children for profit. 
-
-It’s time to strengthen privacy protections, ban targeted advertising to children, demand tech companies stop collecting personal data on our children. 
-
-And let’s get all Americans the mental health services they need. More people they can turn to for help, and full parity between physical and mental health care. 
-
-Third, support our veterans. 
-
-Veterans are the best of us. 
-
-I’ve always believed that we have a sacred obligation to equip all those we send to war and care for them and their families when they come home. 
-
-My administration is providing assistance with job training and housing, and now helping lower-income veterans get VA care debt-free.  
-
-Our troops in Iraq and Afghanistan faced many dangers.
-
-Metadata:
-	id:	37
-	page_number:	37
-	president_included:	False
-	source:	../../how_to/state_of_the_union.txt
---------------------------------------------------
-
-Content:
-	A former top litigator in private practice. A former federal public defender. And from a family of public school educators and police officers. A consensus builder. Since she’s been nominated, she’s received a broad range of support—from the Fraternal Order of Police to former judges appointed by Democrats and Republicans. 
-
-And if we are to advance liberty and justice, we need to secure the Border and fix the immigration system. 
-
-We can do both. At our border, we’ve installed new technology like cutting-edge scanners to better detect drug smuggling.  
-
-We’ve set up joint patrols with Mexico and Guatemala to catch more human traffickers.  
-
-We’re putting in place dedicated immigration judges so families fleeing persecution and violence can have their cases heard faster. 
-
-We’re securing commitments and supporting partners in South and Central America to host more refugees and secure their own borders.
-
-Metadata:
-	id:	33
-	page_number:	33
-	president_included:	False
-	source:	../../how_to/state_of_the_union.txt
---------------------------------------------------
-```
 
 ```python
 # Query (with filtering)
@@ -229,79 +164,10 @@ query = "What did the president say about Ketanji Brown Jackson"
 returned_docs = db_FaissFlat.similarity_search(query, k=k, filter=constraints)
 print_results(returned_docs, score=False)
 ```
-```output
---------------------------------------------------
 
-Content:
-	Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And while you’re at it, pass the Disclose Act so Americans can know who is funding our elections. 
+### 使用 Faiss IVFFlat 和内积 (IP) 距离进行相似性搜索
 
-Tonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. 
-
-One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. 
-
-And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
-
-Metadata:
-	id:	32
-	page_number:	32
-	president_included:	True
-	source:	../../how_to/state_of_the_union.txt
---------------------------------------------------
-
-Content:
-	And for our LGBTQ+ Americans, let’s finally get the bipartisan Equality Act to my desk. The onslaught of state laws targeting transgender Americans and their families is wrong. 
-
-As I said last year, especially to our younger transgender Americans, I will always have your back as your President, so you can be yourself and reach your God-given potential. 
-
-While it often appears that we never agree, that isn’t true. I signed 80 bipartisan bills into law last year. From preventing government shutdowns to protecting Asian-Americans from still-too-common hate crimes to reforming military justice. 
-
-And soon, we’ll strengthen the Violence Against Women Act that I first wrote three decades ago. It is important for us to show the nation that we can come together and do big things. 
-
-So tonight I’m offering a Unity Agenda for the Nation. Four big things we can do together.  
-
-First, beat the opioid epidemic.
-
-Metadata:
-	id:	35
-	page_number:	35
-	president_included:	True
-	source:	../../how_to/state_of_the_union.txt
---------------------------------------------------
-
-Content:
-	Last month, I announced our plan to supercharge  
-the Cancer Moonshot that President Obama asked me to lead six years ago. 
-
-Our goal is to cut the cancer death rate by at least 50% over the next 25 years, turn more cancers from death sentences into treatable diseases.  
-
-More support for patients and families. 
-
-To get there, I call on Congress to fund ARPA-H, the Advanced Research Projects Agency for Health. 
-
-It’s based on DARPA—the Defense Department project that led to the Internet, GPS, and so much more.  
-
-ARPA-H will have a singular purpose—to drive breakthroughs in cancer, Alzheimer’s, diabetes, and more. 
-
-A unity agenda for the nation. 
-
-We can do this. 
-
-My fellow Americans—tonight , we have gathered in a sacred space—the citadel of our democracy. 
-
-In this Capitol, generation after generation, Americans have debated great questions amid great strife, and have done great things. 
-
-We have fought for freedom, expanded liberty, defeated totalitarianism and terror.
-
-Metadata:
-	id:	40
-	page_number:	40
-	president_included:	True
-	source:	../../how_to/state_of_the_union.txt
---------------------------------------------------
-```
-### Similarity Search using Faiss IVFFlat and Inner Product (IP) Distance
-
-In this section, we add the documents to VDMS using Faiss IndexIVFFlat indexing and IP as the distance metric for similarity search. We search for three documents (`k=3`) related to the query `What did the president say about Ketanji Brown Jackson` and also return the score along with the document.
+在本节中，我们使用 Faiss IndexIVFFlat 索引将文档添加到 VDMS，并使用 IP 作为相似性搜索的距离度量。我们搜索与查询 `What did the president say about Ketanji Brown Jackson` 相关的三个文档 (`k=3`)，并返回文档及其分数。
 
 
 
@@ -321,79 +187,10 @@ query = "What did the president say about Ketanji Brown Jackson"
 docs_with_score = db_FaissIVFFlat.similarity_search_with_score(query, k=k, filter=None)
 print_results(docs_with_score)
 ```
-```output
---------------------------------------------------
 
-Score:	1.2032090425
+### 使用 FLINNG 和 IP 距离的相似性搜索
 
-Content:
-	Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And while you’re at it, pass the Disclose Act so Americans can know who is funding our elections. 
-
-Tonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. 
-
-One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. 
-
-And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
-
-Metadata:
-	id:	32
-	page_number:	32
-	president_included:	True
-	source:	../../how_to/state_of_the_union.txt
---------------------------------------------------
-
-Score:	1.4952471256
-
-Content:
-	As Frances Haugen, who is here with us tonight, has shown, we must hold social media platforms accountable for the national experiment they’re conducting on our children for profit. 
-
-It’s time to strengthen privacy protections, ban targeted advertising to children, demand tech companies stop collecting personal data on our children. 
-
-And let’s get all Americans the mental health services they need. More people they can turn to for help, and full parity between physical and mental health care. 
-
-Third, support our veterans. 
-
-Veterans are the best of us. 
-
-I’ve always believed that we have a sacred obligation to equip all those we send to war and care for them and their families when they come home. 
-
-My administration is providing assistance with job training and housing, and now helping lower-income veterans get VA care debt-free.  
-
-Our troops in Iraq and Afghanistan faced many dangers.
-
-Metadata:
-	id:	37
-	page_number:	37
-	president_included:	False
-	source:	../../how_to/state_of_the_union.txt
---------------------------------------------------
-
-Score:	1.5008399487
-
-Content:
-	A former top litigator in private practice. A former federal public defender. And from a family of public school educators and police officers. A consensus builder. Since she’s been nominated, she’s received a broad range of support—from the Fraternal Order of Police to former judges appointed by Democrats and Republicans. 
-
-And if we are to advance liberty and justice, we need to secure the Border and fix the immigration system. 
-
-We can do both. At our border, we’ve installed new technology like cutting-edge scanners to better detect drug smuggling.  
-
-We’ve set up joint patrols with Mexico and Guatemala to catch more human traffickers.  
-
-We’re putting in place dedicated immigration judges so families fleeing persecution and violence can have their cases heard faster. 
-
-We’re securing commitments and supporting partners in South and Central America to host more refugees and secure their own borders.
-
-Metadata:
-	id:	33
-	page_number:	33
-	president_included:	False
-	source:	../../how_to/state_of_the_union.txt
---------------------------------------------------
-```
-### Similarity Search using FLINNG and IP Distance
-
-In this section, we add the documents to VDMS using Filters to Identify Near-Neighbor Groups (FLINNG) indexing and IP as the distance metric for similarity search. We search for three documents (`k=3`) related to the query `What did the president say about Ketanji Brown Jackson` and also return the score along with the document.
-
+在本节中，我们使用过滤器来识别近邻组（FLINNG）索引并使用 IP 作为相似性搜索的距离度量将文档添加到 VDMS。我们搜索与查询 `What did the president say about Ketanji Brown Jackson` 相关的三份文档（`k=3`），并返回分数和文档。
 
 ```python
 db_Flinng = VDMS.from_documents(
@@ -411,81 +208,10 @@ query = "What did the president say about Ketanji Brown Jackson"
 docs_with_score = db_Flinng.similarity_search_with_score(query, k=k, filter=None)
 print_results(docs_with_score)
 ```
-```output
---------------------------------------------------
 
-Score:	1.2032090425
+### 使用TileDBDense和欧几里得距离进行相似性搜索
 
-Content:
-	Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And while you’re at it, pass the Disclose Act so Americans can know who is funding our elections. 
-
-Tonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. 
-
-One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. 
-
-And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
-
-Metadata:
-	id:	32
-	page_number:	32
-	president_included:	True
-	source:	../../how_to/state_of_the_union.txt
---------------------------------------------------
-
-Score:	1.4952471256
-
-Content:
-	As Frances Haugen, who is here with us tonight, has shown, we must hold social media platforms accountable for the national experiment they’re conducting on our children for profit. 
-
-It’s time to strengthen privacy protections, ban targeted advertising to children, demand tech companies stop collecting personal data on our children. 
-
-And let’s get all Americans the mental health services they need. More people they can turn to for help, and full parity between physical and mental health care. 
-
-Third, support our veterans. 
-
-Veterans are the best of us. 
-
-I’ve always believed that we have a sacred obligation to equip all those we send to war and care for them and their families when they come home. 
-
-My administration is providing assistance with job training and housing, and now helping lower-income veterans get VA care debt-free.  
-
-Our troops in Iraq and Afghanistan faced many dangers.
-
-Metadata:
-	id:	37
-	page_number:	37
-	president_included:	False
-	source:	../../how_to/state_of_the_union.txt
---------------------------------------------------
-
-Score:	1.5008399487
-
-Content:
-	A former top litigator in private practice. A former federal public defender. And from a family of public school educators and police officers. A consensus builder. Since she’s been nominated, she’s received a broad range of support—from the Fraternal Order of Police to former judges appointed by Democrats and Republicans. 
-
-And if we are to advance liberty and justice, we need to secure the Border and fix the immigration system. 
-
-We can do both. At our border, we’ve installed new technology like cutting-edge scanners to better detect drug smuggling.  
-
-We’ve set up joint patrols with Mexico and Guatemala to catch more human traffickers.  
-
-We’re putting in place dedicated immigration judges so families fleeing persecution and violence can have their cases heard faster. 
-
-We’re securing commitments and supporting partners in South and Central America to host more refugees and secure their own borders.
-
-Metadata:
-	id:	33
-	page_number:	33
-	president_included:	False
-	source:	../../how_to/state_of_the_union.txt
---------------------------------------------------
-```
-### Similarity Search using TileDBDense and Euclidean Distance
-
-In this section, we add the documents to VDMS using TileDB Dense indexing and L2 as the distance metric for similarity search. We search for three documents (`k=3`) related to the query `What did the president say about Ketanji Brown Jackson` and also return the score along with the document.
-
-
-
+在本节中，我们使用TileDB Dense索引和L2作为相似性搜索的距离度量，将文档添加到VDMS。我们搜索与查询`What did the president say about Ketanji Brown Jackson`相关的三个文档（`k=3`），并返回得分和文档。
 
 ```python
 db_tiledbD = VDMS.from_documents(
@@ -503,81 +229,12 @@ query = "What did the president say about Ketanji Brown Jackson"
 docs_with_score = db_tiledbD.similarity_search_with_score(query, k=k, filter=None)
 print_results(docs_with_score)
 ```
-```output
---------------------------------------------------
 
-Score:	1.2032090425
+### 更新和删除
 
-Content:
-	Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And while you’re at it, pass the Disclose Act so Americans can know who is funding our elections. 
+在构建真实应用程序的过程中，您希望超越添加数据，还要更新和删除数据。
 
-Tonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. 
-
-One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. 
-
-And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
-
-Metadata:
-	id:	32
-	page_number:	32
-	president_included:	True
-	source:	../../how_to/state_of_the_union.txt
---------------------------------------------------
-
-Score:	1.4952471256
-
-Content:
-	As Frances Haugen, who is here with us tonight, has shown, we must hold social media platforms accountable for the national experiment they’re conducting on our children for profit. 
-
-It’s time to strengthen privacy protections, ban targeted advertising to children, demand tech companies stop collecting personal data on our children. 
-
-And let’s get all Americans the mental health services they need. More people they can turn to for help, and full parity between physical and mental health care. 
-
-Third, support our veterans. 
-
-Veterans are the best of us. 
-
-I’ve always believed that we have a sacred obligation to equip all those we send to war and care for them and their families when they come home. 
-
-My administration is providing assistance with job training and housing, and now helping lower-income veterans get VA care debt-free.  
-
-Our troops in Iraq and Afghanistan faced many dangers.
-
-Metadata:
-	id:	37
-	page_number:	37
-	president_included:	False
-	source:	../../how_to/state_of_the_union.txt
---------------------------------------------------
-
-Score:	1.5008399487
-
-Content:
-	A former top litigator in private practice. A former federal public defender. And from a family of public school educators and police officers. A consensus builder. Since she’s been nominated, she’s received a broad range of support—from the Fraternal Order of Police to former judges appointed by Democrats and Republicans. 
-
-And if we are to advance liberty and justice, we need to secure the Border and fix the immigration system. 
-
-We can do both. At our border, we’ve installed new technology like cutting-edge scanners to better detect drug smuggling.  
-
-We’ve set up joint patrols with Mexico and Guatemala to catch more human traffickers.  
-
-We’re putting in place dedicated immigration judges so families fleeing persecution and violence can have their cases heard faster. 
-
-We’re securing commitments and supporting partners in South and Central America to host more refugees and secure their own borders.
-
-Metadata:
-	id:	33
-	page_number:	33
-	president_included:	False
-	source:	../../how_to/state_of_the_union.txt
---------------------------------------------------
-```
-### Update and Delete
-
-While building toward a real application, you want to go beyond adding data, and also update and delete data.
-
-Here is a basic example showing how to do so.  First, we will update the metadata for the document most relevant to the query by adding a date. 
-
+以下是一个基本示例，展示如何做到这一点。首先，我们将通过添加日期来更新与查询最相关的文档的元数据。
 
 ```python
 from datetime import datetime
@@ -606,42 +263,8 @@ response, response_array = db_FaissFlat.get(
 print(f"UPDATED ENTRY (id={id_to_update}):")
 print_response([response[0]["FindDescriptor"]["entities"][0]])
 ```
-```output
-Original metadata: 
-	{'id': '32', 'page_number': 32, 'president_included': True, 'source': '../../how_to/state_of_the_union.txt'}
-new metadata: 
-	{'id': '32', 'page_number': 32, 'president_included': True, 'source': '../../how_to/state_of_the_union.txt', 'last_date_read': {'_date': '2024-05-01T14:30:00'}}
---------------------------------------------------
 
-UPDATED ENTRY (id=32):
-
-content:
-	Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And while you’re at it, pass the Disclose Act so Americans can know who is funding our elections. 
-
-Tonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. 
-
-One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. 
-
-And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
-
-id:
-	32
-
-last_date_read:
-	2024-05-01T14:30:00+00:00
-
-page_number:
-	32
-
-president_included:
-	True
-
-source:
-	../../how_to/state_of_the_union.txt
---------------------------------------------------
-```
-Next we will delete the last document by ID (id=42).
-
+接下来，我们将通过 ID（id=42）删除最后一个文档。
 
 ```python
 print("Documents before deletion: ", db_FaissFlat.count(collection_name))
@@ -656,14 +279,14 @@ print(
 Documents before deletion:  42
 Documents after deletion (id=42): 41
 ```
-## Other Information
-VDMS supports various types of visual data and operations. Some of the capabilities are integrated in the LangChain interface but additional workflow improvements will be added as VDMS is under continuous development.
 
-Addtional capabilities integrated into LangChain are below.
+## 其他信息
+VDMS 支持多种类型的视觉数据和操作。部分功能已集成在 LangChain 接口中，但随着 VDMS 的持续开发，将会增加更多的工作流程改进。
 
-### Similarity search by vector
-Instead of searching by string query, you can also search by embedding/vector.
+集成到 LangChain 中的其他功能如下。
 
+### 基于向量的相似性搜索
+除了通过字符串查询进行搜索外，您还可以通过嵌入/向量进行搜索。
 
 ```python
 embedding_vector = embedding.embed_query(query)
@@ -689,12 +312,12 @@ Metadata:
 	president_included:	True
 	source:	../../how_to/state_of_the_union.txt
 ```
-### Filtering on metadata
 
-It can be helpful to narrow down the collection before working with it.
+### 基于元数据的过滤
 
-For example, collections can be filtered on metadata using the get method. A dictionary is used to filter metadata. Here we retrieve the document where `id = 2` and remove it from the vector store.
+在处理集合之前，缩小范围可能会有所帮助。
 
+例如，可以使用 get 方法根据元数据过滤集合。使用字典来过滤元数据。在这里，我们检索 `id = 2` 的文档并将其从向量存储中移除。
 
 ```python
 response, response_array = db_FaissFlat.get(
@@ -750,14 +373,15 @@ source:
 	../../how_to/state_of_the_union.txt
 --------------------------------------------------
 ```
-### Retriever options
 
-This section goes over different options for how to use VDMS as a retriever.
+### 检索器选项
+
+本节介绍如何将 VDMS 用作检索器的不同选项。
 
 
-#### Simiarity Search
+#### 相似性搜索
 
-Here we use similarity search in the retriever object.
+在这里，我们在检索器对象中使用相似性搜索。
 
 
 
@@ -784,9 +408,9 @@ Metadata:
 	president_included:	True
 	source:	../../how_to/state_of_the_union.txt
 ```
-#### Maximal Marginal Relevance Search (MMR)
+#### 最大边际相关性搜索 (MMR)
 
-In addition to using similarity search in the retriever object, you can also use `mmr`.
+除了在检索器对象中使用相似性搜索外，您还可以使用 `mmr`。
 
 
 ```python
@@ -812,69 +436,16 @@ Metadata:
 	president_included:	True
 	source:	../../how_to/state_of_the_union.txt
 ```
-We can also use MMR directly.
+我们还可以直接使用 MMR。
 
 
 ```python
 mmr_resp = db_FaissFlat.max_marginal_relevance_search_with_score(query, k=2, fetch_k=10)
 print_results(mmr_resp)
 ```
-```output
---------------------------------------------------
 
-Score:	1.2032091618
-
-Content:
-	Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And while you’re at it, pass the Disclose Act so Americans can know who is funding our elections. 
-
-Tonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. 
-
-One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. 
-
-And I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.
-
-Metadata:
-	id:	32
-	last_date_read:	2024-05-01T14:30:00+00:00
-	page_number:	32
-	president_included:	True
-	source:	../../how_to/state_of_the_union.txt
---------------------------------------------------
-
-Score:	1.50705266
-
-Content:
-	But cancer from prolonged exposure to burn pits ravaged Heath’s lungs and body. 
-
-Danielle says Heath was a fighter to the very end. 
-
-He didn’t know how to stop fighting, and neither did she. 
-
-Through her pain she found purpose to demand we do better. 
-
-Tonight, Danielle—we are. 
-
-The VA is pioneering new ways of linking toxic exposures to diseases, already helping more veterans get benefits. 
-
-And tonight, I’m announcing we’re expanding eligibility to veterans suffering from nine respiratory cancers. 
-
-I’m also calling on Congress: pass a law to make sure veterans devastated by toxic exposures in Iraq and Afghanistan finally get the benefits and comprehensive health care they deserve. 
-
-And fourth, let’s end cancer as we know it. 
-
-This is personal to me and Jill, to Kamala, and to so many of you. 
-
-Cancer is the #2 cause of death in America–second only to heart disease.
-
-Metadata:
-	id:	39
-	page_number:	39
-	president_included:	False
-	source:	../../how_to/state_of_the_union.txt
---------------------------------------------------
-```
-### Delete collection
-Previously, we removed documents based on its `id`. Here, all documents are removed since no ID is provided.
+### 删除集合
+之前，我们是根据 `id` 删除文档。在这里，由于未提供 ID，所有文档都被删除。
 
 
 ```python
@@ -888,22 +459,23 @@ print("Documents after deletion: ", db_FaissFlat.count(collection_name))
 Documents before deletion:  40
 Documents after deletion:  0
 ```
-## Stop VDMS Server
+
+## 停止 VDMS 服务器
 
 
 ```python
 !docker kill vdms_vs_test_nb
 ```
 ```output
-huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
-To disable this warning, you can either:
-	- Avoid using `tokenizers` before the fork if possible
-	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: 当前进程刚刚被分叉，已经使用了并行性。禁用并行性以避免死锁...
+要禁用此警告，您可以：
+	- 如果可能，避免在分叉之前使用 `tokenizers`
+	- 明确设置环境变量 TOKENIZERS_PARALLELISM=(true | false)
 ``````output
 vdms_vs_test_nb
 ```
 
-## Related
+## 相关
 
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

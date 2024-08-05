@@ -1,32 +1,33 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/zep_memory.ipynb
 ---
-# Zep Open Source Memory
-> Recall, understand, and extract data from chat histories. Power personalized AI experiences.
 
->[Zep](https://www.getzep.com) is a long-term memory service for AI Assistant apps.
-> With Zep, you can provide AI assistants with the ability to recall past conversations, no matter how distant,
-> while also reducing hallucinations, latency, and cost.
+# Zep 开源记忆
+> 回忆、理解并从聊天记录中提取数据。增强个性化的 AI 体验。
 
-> Interested in Zep Cloud? See [Zep Cloud Installation Guide](https://help.getzep.com/sdks) and [Zep Cloud Memory Example](https://help.getzep.com/langchain/examples/messagehistory-example)
+>[Zep](https://www.getzep.com) 是一个用于 AI 助手应用的长期记忆服务。
+> 使用 Zep，您可以为 AI 助手提供回忆过去对话的能力，无论时间多么久远，
+> 同时减少幻觉、延迟和成本。
 
-## Open Source Installation and Setup
+> 对 Zep Cloud 感兴趣吗？请参阅 [Zep Cloud 安装指南](https://help.getzep.com/sdks) 和 [Zep Cloud 记忆示例](https://help.getzep.com/langchain/examples/messagehistory-example)
 
-> Zep Open Source project: [https://github.com/getzep/zep](https://github.com/getzep/zep)
+## 开源安装和设置
+
+> Zep 开源项目: [https://github.com/getzep/zep](https://github.com/getzep/zep)
 >
-> Zep Open Source Docs: [https://docs.getzep.com/](https://docs.getzep.com/)
+> Zep 开源文档: [https://docs.getzep.com/](https://docs.getzep.com/)
 
-## Example
+## 示例
 
-This notebook demonstrates how to use [Zep](https://www.getzep.com/) as memory for your chatbot.
-REACT Agent Chat Message History with Zep - A long-term memory store for LLM applications.
+本笔记本演示如何使用 [Zep](https://www.getzep.com/) 作为您的聊天机器人的记忆。
+REACT 代理聊天消息历史与 Zep - LLM 应用的长期记忆存储。
 
-We'll demonstrate:
+我们将演示：
 
-1. Adding conversation history to Zep.
-2. Running an agent and having message automatically added to the store.
-3. Viewing the enriched messages.
-4. Vector search over the conversation history.
+1. 将对话历史添加到 Zep。
+2. 运行代理并自动将消息添加到存储中。
+3. 查看丰富的消息。
+4. 对对话历史进行向量搜索。
 
 
 ```python
@@ -61,7 +62,7 @@ openai_key = getpass.getpass()
 zep_api_key = getpass.getpass()
 ```
 
-### Initialize the Zep Chat Message History Class and initialize the Agent
+### 初始化 Zep 聊天消息历史类并初始化代理
 
 
 
@@ -97,67 +98,64 @@ agent_chain = initialize_agent(
 )
 ```
 
-### Add some history data
+### 添加一些历史数据
 
 
 
 ```python
 # Preload some messages into the memory. The default message window is 12 messages. We want to push beyond this to demonstrate auto-summarization.
 test_history = [
-    {"role": "human", "content": "Who was Octavia Butler?"},
+    {"role": "human", "content": "谁是奥克塔维亚·巴特勒？"},
     {
         "role": "ai",
         "content": (
-            "Octavia Estelle Butler (June 22, 1947 – February 24, 2006) was an American"
-            " science fiction author."
+            "奥克塔维亚·埃斯特尔·巴特勒（1947年6月22日 – 2006年2月24日）是一位美国"
+            "科幻小说作家。"
         ),
     },
-    {"role": "human", "content": "Which books of hers were made into movies?"},
+    {"role": "human", "content": "她的哪些书被改编成电影？"},
     {
         "role": "ai",
         "content": (
-            "The most well-known adaptation of Octavia Butler's work is the FX series"
-            " Kindred, based on her novel of the same name."
+            "奥克塔维亚·巴特勒作品中最著名的改编是FX系列"
+            "《亲缘关系》，基于她同名小说改编。"
         ),
     },
-    {"role": "human", "content": "Who were her contemporaries?"},
+    {"role": "human", "content": "她的同时代人是谁？"},
     {
         "role": "ai",
         "content": (
-            "Octavia Butler's contemporaries included Ursula K. Le Guin, Samuel R."
-            " Delany, and Joanna Russ."
+            "奥克塔维亚·巴特勒的同时代人包括乌苏拉·K·勒古恩、塞缪尔·R·德拉尼和乔安娜·拉斯。"
         ),
     },
-    {"role": "human", "content": "What awards did she win?"},
+    {"role": "human", "content": "她获得了哪些奖项？"},
     {
         "role": "ai",
         "content": (
-            "Octavia Butler won the Hugo Award, the Nebula Award, and the MacArthur"
-            " Fellowship."
+            "奥克塔维亚·巴特勒获得了雨果奖、星云奖和麦克阿瑟"
+            "奖学金。"
         ),
     },
     {
         "role": "human",
-        "content": "Which other women sci-fi writers might I want to read?",
+        "content": "还有哪些女性科幻作家值得我阅读？",
     },
     {
         "role": "ai",
-        "content": "You might want to read Ursula K. Le Guin or Joanna Russ.",
+        "content": "你可能想阅读乌苏拉·K·勒古恩或乔安娜·拉斯的作品。",
     },
     {
         "role": "human",
         "content": (
-            "Write a short synopsis of Butler's book, Parable of the Sower. What is it"
-            " about?"
+            "写一篇关于巴特勒的书《播种者的寓言》的简短概要。它讲述了什么？"
         ),
     },
     {
         "role": "ai",
         "content": (
-            "Parable of the Sower is a science fiction novel by Octavia Butler,"
-            " published in 1993. It follows the story of Lauren Olamina, a young woman"
-            " living in a dystopian future where society has collapsed due to"
-            " environmental disasters, poverty, and violence."
+            "《播种者的寓言》是奥克塔维亚·巴特勒于1993年出版的一部科幻小说。"
+            "它讲述了劳伦·奥拉米纳的故事，一个生活在因环境灾难、贫困和暴力而崩溃的"
+            "反乌托邦未来的年轻女性。"
         ),
         "metadata": {"foo": "bar"},
     },
@@ -174,38 +172,37 @@ for msg in test_history:
     )
 ```
 
-### Run the agent
+### 运行代理
 
-Doing so will automatically add the input and response to the Zep memory.
+这样做将自动将输入和响应添加到 Zep 内存中。
 
 
 
 ```python
 agent_chain.run(
-    input="What is the book's relevance to the challenges facing contemporary society?",
+    input="这本书与当代社会面临的挑战有什么关系？",
 )
 ```
 ```output
 
 
-[1m> Entering new  chain...[0m
-[32;1m[1;3mThought: Do I need to use a tool? No
-AI: Parable of the Sower is a prescient novel that speaks to the challenges facing contemporary society, such as climate change, inequality, and violence. It is a cautionary tale that warns of the dangers of unchecked greed and the need for individuals to take responsibility for their own lives and the lives of those around them.[0m
+[1m> 正在进入新链...[0m
+[32;1m[1;3m思考：我需要使用工具吗？不需要
+AI: 《播种者的寓言》是一部具有先见之明的小说，讲述了当代社会面临的挑战，如气候变化、不平等和暴力。它是一个警示故事，警告人们无节制的贪婪所带来的危险，以及个人需要对自己的生活和周围人的生活负责。[0m
 
-[1m> Finished chain.[0m
+[1m> 完成链。[0m
 ```
 
 
 ```output
-'Parable of the Sower is a prescient novel that speaks to the challenges facing contemporary society, such as climate change, inequality, and violence. It is a cautionary tale that warns of the dangers of unchecked greed and the need for individuals to take responsibility for their own lives and the lives of those around them.'
+'《播种者的寓言》是一部具有先见之明的小说，讲述了当代社会面临的挑战，如气候变化、不平等和暴力。它是一个警示故事，警告人们无节制的贪婪所带来的危险，以及个人需要对自己的生活和周围人的生活负责。'
 ```
 
+### 检查 Zep 内存
 
-### Inspect the Zep memory
+注意摘要，以及历史记录已通过令牌计数、UUID 和时间戳进行了丰富。
 
-Note the summary, and that the history has been enriched with token counts, UUIDs, and timestamps.
-
-Summaries are biased towards the most recent messages.
+摘要偏向于最近的消息。
 
 
 
@@ -242,11 +239,12 @@ human :
 ai :
  {'content': 'Parable of the Sower is a prescient novel that speaks to the challenges facing contemporary society, such as climate change, inequality, and violence. It is a cautionary tale that warns of the dangers of unchecked greed and the need for individuals to take responsibility for their own lives and the lives of those around them.', 'additional_kwargs': {'uuid': '3e14ac8f-b7c1-4360-958b-9f3eae1f784f', 'created_at': '2023-07-09T19:23:19.332517Z', 'token_count': 66, 'metadata': {'system': {'entities': [{'Label': 'GPE', 'Matches': [{'End': 20, 'Start': 15, 'Text': 'Sower'}], 'Name': 'Sower'}], 'intent': 'The subject is providing an analysis and evaluation of the novel "Parable of the Sower" and highlighting its relevance to contemporary societal challenges.'}}}, 'example': False}
 ```
-### Vector search over the Zep memory
 
-Zep provides native vector search over historical conversation memory via the `ZepRetriever`.
+### Zep内存上的向量搜索
 
-You can use the `ZepRetriever` with chains that support passing in a Langchain `Retriever` object.
+Zep通过`ZepRetriever`提供对历史对话记忆的原生向量搜索。
+
+您可以在支持传入Langchain `Retriever`对象的链中使用`ZepRetriever`。
 
 
 

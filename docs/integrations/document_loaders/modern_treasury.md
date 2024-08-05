@@ -1,70 +1,66 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/modern_treasury.ipynb
 ---
-# Modern Treasury
 
->[Modern Treasury](https://www.moderntreasury.com/) simplifies complex payment operations. It is a unified platform to power products and processes that move money.
->- Connect to banks and payment systems
->- Track transactions and balances in real-time
->- Automate payment operations for scale
+# 现代财务
 
-This notebook covers how to load data from the `Modern Treasury REST API` into a format that can be ingested into LangChain, along with example usage for vectorization.
+>[现代财务](https://www.moderntreasury.com/) 简化了复杂的支付操作。它是一个统一的平台，用于支持移动资金的产品和流程。
+>- 连接到银行和支付系统
+>- 实时跟踪交易和余额
+>- 自动化支付操作以实现规模化
 
+本笔记本介绍如何从 `Modern Treasury REST API` 加载数据到可以被 LangChain 吞吐的格式，以及向量化的示例用法。
 
 ```python
 from langchain.indexes import VectorstoreIndexCreator
 from langchain_community.document_loaders import ModernTreasuryLoader
 ```
 
-The Modern Treasury API requires an organization ID and API key, which can be found in the Modern Treasury dashboard within developer settings.
+现代财务 API 需要一个组织 ID 和 API 密钥，这可以在现代财务仪表板的开发者设置中找到。
 
-This document loader also requires a `resource` option which defines what data you want to load.
+该文档加载器还需要一个 `resource` 选项，用于定义您想要加载的数据。
 
-Following resources are available:
+可用的资源如下：
 
-`payment_orders` [Documentation](https://docs.moderntreasury.com/reference/payment-order-object)
+`payment_orders` [文档](https://docs.moderntreasury.com/reference/payment-order-object)
 
-`expected_payments` [Documentation](https://docs.moderntreasury.com/reference/expected-payment-object)
+`expected_payments` [文档](https://docs.moderntreasury.com/reference/expected-payment-object)
 
-`returns` [Documentation](https://docs.moderntreasury.com/reference/return-object)
+`returns` [文档](https://docs.moderntreasury.com/reference/return-object)
 
-`incoming_payment_details` [Documentation](https://docs.moderntreasury.com/reference/incoming-payment-detail-object)
+`incoming_payment_details` [文档](https://docs.moderntreasury.com/reference/incoming-payment-detail-object)
 
-`counterparties` [Documentation](https://docs.moderntreasury.com/reference/counterparty-object)
+`counterparties` [文档](https://docs.moderntreasury.com/reference/counterparty-object)
 
-`internal_accounts` [Documentation](https://docs.moderntreasury.com/reference/internal-account-object)
+`internal_accounts` [文档](https://docs.moderntreasury.com/reference/internal-account-object)
 
-`external_accounts` [Documentation](https://docs.moderntreasury.com/reference/external-account-object)
+`external_accounts` [文档](https://docs.moderntreasury.com/reference/external-account-object)
 
-`transactions` [Documentation](https://docs.moderntreasury.com/reference/transaction-object)
+`transactions` [文档](https://docs.moderntreasury.com/reference/transaction-object)
 
-`ledgers` [Documentation](https://docs.moderntreasury.com/reference/ledger-object)
+`ledgers` [文档](https://docs.moderntreasury.com/reference/ledger-object)
 
-`ledger_accounts` [Documentation](https://docs.moderntreasury.com/reference/ledger-account-object)
+`ledger_accounts` [文档](https://docs.moderntreasury.com/reference/ledger-account-object)
 
-`ledger_transactions` [Documentation](https://docs.moderntreasury.com/reference/ledger-transaction-object)
+`ledger_transactions` [文档](https://docs.moderntreasury.com/reference/ledger-transaction-object)
 
-`events` [Documentation](https://docs.moderntreasury.com/reference/events)
+`events` [文档](https://docs.moderntreasury.com/reference/events)
 
-`invoices` [Documentation](https://docs.moderntreasury.com/reference/invoices)
-
-
+`invoices` [文档](https://docs.moderntreasury.com/reference/invoices)
 
 ```python
 modern_treasury_loader = ModernTreasuryLoader("payment_orders")
 ```
 
-
 ```python
-# Create a vectorstore retriever from the loader
-# see https://python.langchain.com/en/latest/modules/data_connection/getting_started.html for more details
+# 从加载器创建一个向量存储检索器
+# 详见 https://python.langchain.com/en/latest/modules/data_connection/getting_started.html 获取更多细节
 
 index = VectorstoreIndexCreator().from_loaders([modern_treasury_loader])
 modern_treasury_doc_retriever = index.vectorstore.as_retriever()
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

@@ -2,24 +2,23 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/query_few_shot.ipynb
 sidebar_position: 2
 ---
-# How to add examples to the prompt for query analysis
 
-As our query analysis becomes more complex, the LLM may struggle to understand how exactly it should respond in certain scenarios. In order to improve performance here, we can add examples to the prompt to guide the LLM.
+# 如何为查询分析添加示例
 
-Let's take a look at how we can add examples for the LangChain YouTube video query analyzer we built in the [Quickstart](/docs/tutorials/query_analysis).
+随着我们的查询分析变得越来越复杂，LLM 可能会在某些场景中难以理解它应该如何准确响应。为了提高性能，我们可以在提示中添加示例以引导 LLM。
 
-## Setup
-#### Install dependencies
+让我们看看如何为我们在 [Quickstart](/docs/tutorials/query_analysis) 中构建的 LangChain YouTube 视频查询分析器添加示例。
 
+## 设置
+#### 安装依赖
 
 ```python
 # %pip install -qU langchain-core langchain-openai
 ```
 
-#### Set environment variables
+#### 设置环境变量
 
-We'll use OpenAI in this example:
-
+我们将在这个例子中使用 OpenAI：
 
 ```python
 import getpass
@@ -27,15 +26,14 @@ import os
 
 os.environ["OPENAI_API_KEY"] = getpass.getpass()
 
-# Optional, uncomment to trace runs with LangSmith. Sign up here: https://smith.langchain.com.
+# 可选，取消注释以使用 LangSmith 追踪运行。在此注册： https://smith.langchain.com.
 # os.environ["LANGCHAIN_TRACING_V2"] = "true"
 # os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 ```
 
-## Query schema
+## 查询架构
 
-We'll define a query schema that we want our model to output. To make our query analysis a bit more interesting, we'll add a `sub_queries` field that contains more narrow questions derived from the top level question.
-
+我们将定义一个查询架构，期望我们的模型输出。为了使我们的查询分析更加有趣，我们将添加一个 `sub_queries` 字段，该字段包含从顶层问题派生出的更具体的问题。
 
 ```python
 from typing import List, Optional
@@ -43,28 +41,28 @@ from typing import List, Optional
 from langchain_core.pydantic_v1 import BaseModel, Field
 
 sub_queries_description = """\
-If the original question contains multiple distinct sub-questions, \
-or if there are more generic questions that would be helpful to answer in \
-order to answer the original question, write a list of all relevant sub-questions. \
-Make sure this list is comprehensive and covers all parts of the original question. \
-It's ok if there's redundancy in the sub-questions. \
-Make sure the sub-questions are as narrowly focused as possible."""
+如果原始问题包含多个不同的子问题，\
+或者如果有更一般的问题可以帮助回答原始问题，\
+请写出所有相关子问题的列表。\
+确保这个列表是全面的，涵盖原始问题的所有部分。\
+如果子问题之间有冗余是可以的。\
+确保子问题尽可能集中于特定主题。"""
 
 
 class Search(BaseModel):
-    """Search over a database of tutorial videos about a software library."""
+    """在关于软件库的教程视频数据库中进行搜索。"""
 
     query: str = Field(
         ...,
-        description="Primary similarity search query applied to video transcripts.",
+        description="应用于视频转录的主要相似性搜索查询。",
     )
     sub_queries: List[str] = Field(
         default_factory=list, description=sub_queries_description
     )
-    publish_year: Optional[int] = Field(None, description="Year video was published")
+    publish_year: Optional[int] = Field(None, description="视频发布年份")
 ```
 
-## Query generation
+## 查询生成
 
 
 ```python
@@ -90,12 +88,12 @@ structured_llm = llm.with_structured_output(Search)
 query_analyzer = {"question": RunnablePassthrough()} | prompt | structured_llm
 ```
 
-Let's try out our query analyzer without any examples in the prompt:
+让我们在没有示例的提示中尝试我们的查询分析器：
 
 
 ```python
 query_analyzer.invoke(
-    "what's the difference between web voyager and reflection agents? do both use langgraph?"
+    "web voyager和reflection agents之间有什么区别？两者都使用langgraph吗？"
 )
 ```
 
@@ -105,60 +103,54 @@ query_analyzer.invoke(
 Search(query='web voyager vs reflection agents', sub_queries=['difference between web voyager and reflection agents', 'do web voyager and reflection agents use langgraph'], publish_year=None)
 ```
 
+## 添加示例并调整提示
 
-## Adding examples and tuning the prompt
+这工作得相当不错，但我们可能希望更进一步分解问题，以便将有关 Web Voyager 和 Reflection Agents 的查询分开。
 
-This works pretty well, but we probably want it to decompose the question even further to separate the queries about Web Voyager and Reflection Agents.
-
-To tune our query generation results, we can add some examples of inputs questions and gold standard output queries to our prompt.
-
+为了调整我们的查询生成结果，我们可以在提示中添加一些输入问题和标准输出查询的示例。
 
 ```python
 examples = []
 ```
 
-
 ```python
-question = "What's chat langchain, is it a langchain template?"
+question = "什么是 chat langchain，它是 langchain 模板吗？"
 query = Search(
-    query="What is chat langchain and is it a langchain template?",
-    sub_queries=["What is chat langchain", "What is a langchain template"],
+    query="什么是 chat langchain，它是 langchain 模板吗？",
+    sub_queries=["什么是 chat langchain", "什么是 langchain 模板"],
 )
 examples.append({"input": question, "tool_calls": [query]})
 ```
 
-
 ```python
-question = "How to build multi-agent system and stream intermediate steps from it"
+question = "如何构建多智能体系统并从中流式传输中间步骤"
 query = Search(
-    query="How to build multi-agent system and stream intermediate steps from it",
+    query="如何构建多智能体系统并从中流式传输中间步骤",
     sub_queries=[
-        "How to build multi-agent system",
-        "How to stream intermediate steps from multi-agent system",
-        "How to stream intermediate steps",
+        "如何构建多智能体系统",
+        "如何从多智能体系统中流式传输中间步骤",
+        "如何流式传输中间步骤",
     ],
 )
 
 examples.append({"input": question, "tool_calls": [query]})
 ```
 
-
 ```python
-question = "LangChain agents vs LangGraph?"
+question = "LangChain agents 和 LangGraph 有什么区别？"
 query = Search(
-    query="What's the difference between LangChain agents and LangGraph? How do you deploy them?",
+    query="LangChain agents 和 LangGraph 之间有什么区别？如何部署它们？",
     sub_queries=[
-        "What are LangChain agents",
-        "What is LangGraph",
-        "How do you deploy LangChain agents",
-        "How do you deploy LangGraph",
+        "什么是 LangChain agents",
+        "什么是 LangGraph",
+        "如何部署 LangChain agents",
+        "如何部署 LangGraph",
     ],
 )
 examples.append({"input": question, "tool_calls": [query]})
 ```
 
-Now we need to update our prompt template and chain so that the examples are included in each prompt. Since we're working with OpenAI function-calling, we'll need to do a bit of extra structuring to send example inputs and outputs to the model. We'll create a `tool_example_to_messages` helper function to handle this for us:
-
+现在我们需要更新我们的提示模板和链，以便在每个提示中包含示例。由于我们正在使用 OpenAI 的函数调用，我们需要进行一些额外的结构化，以便将示例输入和输出发送到模型。我们将创建一个 `tool_example_to_messages` 辅助函数来处理这个问题：
 
 ```python
 import uuid
@@ -191,7 +183,7 @@ def tool_example_to_messages(example: Dict) -> List[BaseMessage]:
         AIMessage(content="", additional_kwargs={"tool_calls": openai_tool_calls})
     )
     tool_outputs = example.get("tool_outputs") or [
-        "You have correctly called this tool."
+        "您已正确调用此工具。"
     ] * len(openai_tool_calls)
     for output, tool_call in zip(tool_outputs, openai_tool_calls):
         messages.append(ToolMessage(content=output, tool_call_id=tool_call["id"]))
@@ -200,7 +192,6 @@ def tool_example_to_messages(example: Dict) -> List[BaseMessage]:
 
 example_msgs = [msg for ex in examples for msg in tool_example_to_messages(ex)]
 ```
-
 
 ```python
 from langchain_core.prompts import MessagesPlaceholder
@@ -212,20 +203,16 @@ query_analyzer_with_examples = (
 )
 ```
 
-
 ```python
 query_analyzer_with_examples.invoke(
-    "what's the difference between web voyager and reflection agents? do both use langgraph?"
+    "web voyager 和 reflection agents 之间有什么区别？两者都使用 langgraph 吗？"
 )
 ```
 
-
-
 ```output
-Search(query='Difference between web voyager and reflection agents, do they both use LangGraph?', sub_queries=['What is Web Voyager', 'What are Reflection agents', 'Do Web Voyager and Reflection agents use LangGraph'], publish_year=None)
+Search(query='web voyager 和 reflection agents 之间的区别，两者都使用 LangGraph 吗？', sub_queries=['什么是 Web Voyager', '什么是 Reflection agents', 'Web Voyager 和 Reflection agents 是否使用 LangGraph'], publish_year=None)
 ```
 
+由于我们的示例，我们得到了稍微更分解的搜索查询。通过更多的提示工程和示例调整，我们可以进一步改善查询生成。
 
-Thanks to our examples we get a slightly more decomposed search query. With some more prompt engineering and tuning of our examples we could improve query generation even more.
-
-You can see that the examples are passed to the model as messages in the [LangSmith trace](https://smith.langchain.com/public/aeaaafce-d2b1-4943-9a61-bc954e8fc6f2/r).
+您可以看到，示例作为消息传递给模型，具体请参见 [LangSmith trace](https://smith.langchain.com/public/aeaaafce-d2b1-4943-9a61-bc954e8fc6f2/r)。

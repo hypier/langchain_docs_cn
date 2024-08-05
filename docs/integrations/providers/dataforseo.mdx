@@ -1,13 +1,13 @@
 # DataForSEO
 
->[DataForSeo](https://dataforseo.com/) provides comprehensive SEO and digital marketing data solutions via API.
+>[DataForSeo](https://dataforseo.com/) 提供通过 API 的全面 SEO 和数字营销数据解决方案。
 
-This page provides instructions on how to use the DataForSEO search APIs within LangChain.
+本页面提供有关如何在 LangChain 中使用 DataForSEO 搜索 API 的说明。
 
-## Installation and Setup
+## 安装与设置
 
-Get a [DataForSEO API Access login and password](https://app.dataforseo.com/register), and set them as environment variables 
-(`DATAFORSEO_LOGIN` and `DATAFORSEO_PASSWORD` respectively).
+获取 [DataForSEO API 访问登录和密码](https://app.dataforseo.com/register)，并将其设置为环境变量 
+(`DATAFORSEO_LOGIN` 和 `DATAFORSEO_PASSWORD` 分别)。
 
 ```python
 import os
@@ -16,27 +16,26 @@ os.environ["DATAFORSEO_LOGIN"] = "your_login"
 os.environ["DATAFORSEO_PASSWORD"] = "your_password"
 ```
 
+## 实用工具
 
-## Utility
-
-The DataForSEO utility wraps the API. To import this utility, use:
+DataForSEO 实用工具封装了 API。要导入此实用工具，请使用：
 
 ```python
 from langchain_community.utilities.dataforseo_api_search import DataForSeoAPIWrapper
 ```
 
-For a detailed walkthrough of this wrapper, see [this notebook](/docs/integrations/tools/dataforseo).
+有关此包装器的详细说明，请参见 [此笔记本](/docs/integrations/tools/dataforseo)。
 
-## Tool
+## 工具
 
-You can also load this wrapper as a Tool to use with an Agent:
+您还可以将此包装器加载为工具，以便与代理一起使用：
 
 ```python
 from langchain.agents import load_tools
 tools = load_tools(["dataforseo-api-search"])
 ```
 
-## Example usage
+## 示例用法
 
 ```python
 dataforseo = DataForSeoAPIWrapper(api_login="your_login", api_password="your_password")

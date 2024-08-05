@@ -1,15 +1,16 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/document_loader_html.ipynb
 ---
-# How to load HTML
 
-The HyperText Markup Language or [HTML](https://en.wikipedia.org/wiki/HTML) is the standard markup language for documents designed to be displayed in a web browser.
+# 如何加载 HTML
 
-This covers how to load `HTML` documents into a LangChain [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html#langchain_core.documents.base.Document) objects that we can use downstream.
+超文本标记语言或 [HTML](https://en.wikipedia.org/wiki/HTML) 是为在网页浏览器中显示的文档设计的标准标记语言。
 
-Parsing HTML files often requires specialized tools. Here we demonstrate parsing via [Unstructured](https://unstructured-io.github.io/unstructured/) and [BeautifulSoup4](https://beautiful-soup-4.readthedocs.io/en/latest/), which can be installed via pip. Head over to the integrations page to find integrations with additional services, such as [Azure AI Document Intelligence](/docs/integrations/document_loaders/azure_document_intelligence) or [FireCrawl](/docs/integrations/document_loaders/firecrawl).
+这部分介绍如何将 `HTML` 文档加载到 LangChain [Document](https://api.python.langchain.com/en/latest/documents/langchain_core.documents.base.Document.html#langchain_core.documents.base.Document) 对象中，以便我们在后续使用。
 
-## Loading HTML with Unstructured
+解析 HTML 文件通常需要专门的工具。在这里，我们通过 [Unstructured](https://unstructured-io.github.io/unstructured/) 和 [BeautifulSoup4](https://beautiful-soup-4.readthedocs.io/en/latest/) 演示解析，这些工具可以通过 pip 安装。请访问集成页面，以查找与其他服务的集成，例如 [Azure AI Document Intelligence](/docs/integrations/document_loaders/azure_document_intelligence) 或 [FireCrawl](/docs/integrations/document_loaders/firecrawl)。
+
+## 使用 Unstructured 加载 HTML
 
 
 ```python
@@ -30,15 +31,14 @@ print(data)
 ```output
 [Document(page_content='My First Heading\n\nMy first paragraph.', metadata={'source': '../../docs/integrations/document_loaders/example_data/fake-content.html'})]
 ```
-## Loading HTML with BeautifulSoup4
 
-We can also use `BeautifulSoup4` to load HTML documents using the `BSHTMLLoader`.  This will extract the text from the HTML into `page_content`, and the page title as `title` into `metadata`.
+## 使用 BeautifulSoup4 加载 HTML
 
+我们也可以使用 `BeautifulSoup4` 通过 `BSHTMLLoader` 加载 HTML 文档。这将从 HTML 中提取文本到 `page_content`，并将页面标题作为 `title` 提取到 `metadata`。
 
 ```python
 %pip install bs4
 ```
-
 
 ```python
 from langchain_community.document_loaders import BSHTMLLoader

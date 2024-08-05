@@ -1,13 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/svm.ipynb
 ---
+
 # SVM
 
->[Support vector machines (SVMs)](https://scikit-learn.org/stable/modules/svm.html#support-vector-machines) are a set of supervised learning methods used for classification, regression and outliers detection.
+>[支持向量机 (SVM)](https://scikit-learn.org/stable/modules/svm.html#support-vector-machines) 是一组用于分类、回归和异常值检测的监督学习方法。
 
-This notebook goes over how to use a retriever that under the hood uses an `SVM` using `scikit-learn` package.
+本笔记本介绍如何使用一个底层使用 `SVM` 的检索器，该检索器使用 `scikit-learn` 包。
 
-Largely based on https://github.com/karpathy/randomfun/blob/master/knn_vs_svm.html
+主要基于 https://github.com/karpathy/randomfun/blob/master/knn_vs_svm.html
 
 
 ```python
@@ -19,7 +20,7 @@ Largely based on https://github.com/karpathy/randomfun/blob/master/knn_vs_svm.ht
 %pip install --upgrade --quiet  lark
 ```
 
-We want to use `OpenAIEmbeddings` so we have to get the OpenAI API Key.
+我们想使用 `OpenAIEmbeddings`，因此我们需要获取 OpenAI API 密钥。
 
 
 ```python
@@ -37,7 +38,7 @@ from langchain_community.retrievers import SVMRetriever
 from langchain_openai import OpenAIEmbeddings
 ```
 
-## Create New Retriever with Texts
+## 使用文本创建新的检索器
 
 
 ```python
@@ -46,9 +47,9 @@ retriever = SVMRetriever.from_texts(
 )
 ```
 
-## Use Retriever
+## 使用检索器
 
-We can now use the retriever!
+我们现在可以使用检索器了！
 
 
 ```python
@@ -69,9 +70,7 @@ result
  Document(page_content='world', metadata={})]
 ```
 
+## 相关
 
-
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

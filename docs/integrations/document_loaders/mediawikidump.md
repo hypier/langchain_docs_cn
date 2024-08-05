@@ -1,38 +1,36 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/mediawikidump.ipynb
 ---
+
 # MediaWiki Dump
 
->[MediaWiki XML Dumps](https://www.mediawiki.org/wiki/Manual:Importing_XML_dumps) contain the content of a wiki (wiki pages with all their revisions), without the site-related data. A XML dump does not create a full backup of the wiki database, the dump does not contain user accounts, images, edit logs, etc.
+>[MediaWiki XML Dumps](https://www.mediawiki.org/wiki/Manual:Importing_XML_dumps) 包含了一个维基的内容（维基页面及其所有修订），但不包括与站点相关的数据。XML 转储并不创建维基数据库的完整备份，转储中不包含用户帐户、图像、编辑日志等。
 
-This covers how to load a MediaWiki XML dump file into a document format that we can use downstream.
+这部分内容涵盖了如何将 MediaWiki XML 转储文件加载到我们可以在下游使用的文档格式中。
 
-It uses `mwxml` from `mediawiki-utilities` to dump and `mwparserfromhell` from `earwig` to parse MediaWiki wikicode.
+它使用 `mediawiki-utilities` 中的 `mwxml` 进行转储，并使用 `earwig` 中的 `mwparserfromhell` 解析 MediaWiki 的维基代码。
 
-Dump files can be obtained with dumpBackup.php or on the Special:Statistics page of the Wiki.
-
+转储文件可以通过 dumpBackup.php 获取，或者在维基的 Special:Statistics 页面上找到。
 
 ```python
-# mediawiki-utilities supports XML schema 0.11 in unmerged branches
+# mediawiki-utilities 支持未合并分支中的 XML schema 0.11
 %pip install --upgrade --quiet git+https://github.com/mediawiki-utilities/python-mwtypes@updates_schema_0.11
-# mediawiki-utilities mwxml has a bug, fix PR pending
+# mediawiki-utilities mwxml 有一个 bug，修复 PR 待处理
 %pip install --upgrade --quiet git+https://github.com/gdedrouas/python-mwxml@xml_format_0.11
 %pip install --upgrade --quiet mwparserfromhell
 ```
-
 
 ```python
 from langchain_community.document_loaders import MWDumpLoader
 ```
 
-
 ```python
 loader = MWDumpLoader(
     file_path="example_data/testmw_pages_current.xml",
     encoding="utf8",
-    # namespaces = [0,2,3] Optional list to load only specific namespaces. Loads all namespaces by default.
-    skip_redirects=True,  # will skip over pages that just redirect to other pages (or not if False)
-    stop_on_error=False,  # will skip over pages that cause parsing errors (or not if False)
+    # namespaces = [0,2,3] 可选列表，仅加载特定命名空间。默认加载所有命名空间。
+    skip_redirects=True,  # 将跳过仅重定向到其他页面的页面（如果为 False 则不跳过）
+    stop_on_error=False,  # 将跳过导致解析错误的页面（如果为 False 则不跳过）
 )
 documents = loader.load()
 print(f"You have {len(documents)} document(s) in your data ")
@@ -45,8 +43,6 @@ You have 177 document(s) in your data
 documents[:5]
 ```
 
-
-
 ```output
 [Document(page_content='\t\n\t\n\tArtist\n\tReleased\n\tRecorded\n\tLength\n\tLabel\n\tProducer', metadata={'source': 'Album'}),
  Document(page_content='{| class="article-table plainlinks" style="width:100%;"\n|- style="font-size:18px;"\n! style="padding:0px;" | Template documentation\n|-\n| Note: portions of the template sample may not be visible without values provided.\n|-\n| View or edit this documentation. (About template documentation)\n|-\n| Editors can experiment in this template\'s [ sandbox] and [ test case] pages.\n|}Category:Documentation templates', metadata={'source': 'Documentation'}),
@@ -55,9 +51,7 @@ documents[:5]
  Document(page_content='\t\n\t\t    \n\t\n\t\t    Aliases\n\t    Relatives\n\t    Affiliation\n        Occupation\n    \n            Biographical information\n        Marital status\n    \tDate of birth\n        Place of birth\n        Date of death\n        Place of death\n    \n            Physical description\n        Species\n        Gender\n        Height\n        Weight\n        Eye color\n\t\n           Appearances\n       Portrayed by\n       Appears in\n       Debut\n    ', metadata={'source': 'Character'})]
 ```
 
+## 相关
 
-
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

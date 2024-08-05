@@ -1,26 +1,25 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/text_embedding/ibm_watsonx.ipynb
 ---
+
 # IBM watsonx.ai
 
->WatsonxEmbeddings is a wrapper for IBM [watsonx.ai](https://www.ibm.com/products/watsonx-ai) foundation models.
+>WatsonxEmbeddings 是 IBM [watsonx.ai](https://www.ibm.com/products/watsonx-ai) 基础模型的封装。
 
-This example shows how to communicate with `watsonx.ai` models using `LangChain`.
+此示例演示了如何使用 `LangChain` 与 `watsonx.ai` 模型进行通信。
 
-## Setting up
+## 设置
 
-Install the package `langchain-ibm`.
-
+安装包 `langchain-ibm`。
 
 ```python
 !pip install -qU langchain-ibm
 ```
 
-This cell defines the WML credentials required to work with watsonx Embeddings.
+此单元定义了与 watsonx Embeddings 一起使用所需的 WML 凭据。
 
-**Action:** Provide the IBM Cloud user API key. For details, see
-[documentation](https://cloud.ibm.com/docs/account?topic=account-userapikey&interface=ui).
-
+**操作：** 提供 IBM Cloud 用户 API 密钥。有关详细信息，请参见
+[文档](https://cloud.ibm.com/docs/account?topic=account-userapikey&interface=ui)。
 
 ```python
 import os
@@ -30,8 +29,7 @@ watsonx_api_key = getpass()
 os.environ["WATSONX_APIKEY"] = watsonx_api_key
 ```
 
-Additionaly you are able to pass additional secrets as an environment variable. 
-
+此外，您还可以将其他密钥作为环境变量传递。
 
 ```python
 import os
@@ -43,10 +41,9 @@ os.environ["WATSONX_USERNAME"] = "your username for accessing the CPD cluster"
 os.environ["WATSONX_INSTANCE_ID"] = "your instance_id for accessing the CPD cluster"
 ```
 
-## Load the model
+## 加载模型
 
-You might need to adjust model `parameters` for different models.
-
+您可能需要为不同的模型调整 `parameters`。
 
 ```python
 from ibm_watsonx_ai.metanames import EmbedTextParamsMetaNames
@@ -57,19 +54,16 @@ embed_params = {
 }
 ```
 
-Initialize the `WatsonxEmbeddings` class with previously set parameters.
+使用之前设置的参数初始化 `WatsonxEmbeddings` 类。
 
+**注意**：
 
-**Note**: 
+- 为了提供 API 调用的上下文，您必须添加 `project_id` 或 `space_id`。有关更多信息，请参见 [documentation](https://www.ibm.com/docs/en/watsonx-as-a-service?topic=projects)。
+- 根据您所配置的服务实例的区域，使用 [这里](https://ibm.github.io/watsonx-ai-python-sdk/setup_cloud.html#authentication) 描述的其中一个 URL。
 
-- To provide context for the API call, you must add `project_id` or `space_id`. For more information see [documentation](https://www.ibm.com/docs/en/watsonx-as-a-service?topic=projects).
-- Depending on the region of your provisioned service instance, use one of the urls described [here](https://ibm.github.io/watsonx-ai-python-sdk/setup_cloud.html#authentication).
+在此示例中，我们将使用 `project_id` 和达拉斯 URL。
 
-In this example, we’ll use the `project_id` and Dallas url.
-
-
-You need to specify `model_id` that will be used for inferencing.
-
+您需要指定将用于推理的 `model_id`。
 
 ```python
 from langchain_ibm import WatsonxEmbeddings
@@ -82,8 +76,7 @@ watsonx_embedding = WatsonxEmbeddings(
 )
 ```
 
-Alternatively you can use Cloud Pak for Data credentials. For details, see [documentation](https://ibm.github.io/watsonx-ai-python-sdk/setup_cpd.html).    
-
+您也可以使用 Cloud Pak for Data 凭据。有关详细信息，请参见 [documentation](https://ibm.github.io/watsonx-ai-python-sdk/setup_cpd.html)。
 
 ```python
 watsonx_embedding = WatsonxEmbeddings(
@@ -98,8 +91,7 @@ watsonx_embedding = WatsonxEmbeddings(
 )
 ```
 
-For certain requirements, there is an option to pass the IBM's [`APIClient`](https://ibm.github.io/watsonx-ai-python-sdk/base.html#apiclient) object into the `WatsonxEmbeddings` class.
-
+对于某些要求，可以将 IBM 的 [`APIClient`](https://ibm.github.io/watsonx-ai-python-sdk/base.html#apiclient) 对象传递到 `WatsonxEmbeddings` 类中。
 
 ```python
 from ibm_watsonx_ai import APIClient
@@ -112,9 +104,9 @@ watsonx_llm = WatsonxEmbeddings(
 )
 ```
 
-## Usage
+## 用法
 
-### Embed query
+### 嵌入查询
 
 
 ```python
@@ -130,8 +122,7 @@ query_result[:5]
 [0.0094472, -0.024981909, -0.026013248, -0.040483925, -0.057804465]
 ```
 
-
-### Embed documents
+### 嵌入文档
 
 
 ```python
@@ -147,9 +138,7 @@ doc_result[0][:5]
 [0.009447193, -0.024981918, -0.026013244, -0.040483937, -0.057804447]
 ```
 
+## 相关
 
-
-## Related
-
-- Embedding model [conceptual guide](/docs/concepts/#embedding-models)
-- Embedding model [how-to guides](/docs/how_to/#embedding-models)
+- 嵌入模型 [概念指南](/docs/concepts/#embedding-models)
+- 嵌入模型 [操作指南](/docs/how_to/#embedding-models)

@@ -1,44 +1,44 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/tools_human.ipynb
 ---
-# How to add a human-in-the-loop for tools
 
-There are certain tools that we don't trust a model to execute on its own. One thing we can do in such situations is require human approval before the tool is invoked.
+# 如何为工具添加人工干预
+
+有些工具我们不信任模型单独执行。在这种情况下，我们可以要求在调用工具之前获得人工批准。
 
 :::info
 
-This how-to guide shows a simple way to add human-in-the-loop for code running in a jupyter notebook or in a terminal.
+本指南展示了一种简单的方法，用于在 jupyter notebook 或终端中为代码运行添加人工干预。
 
-To build a production application, you will need to do more work to keep track of application state appropriately.
+要构建生产应用程序，您需要做更多工作以适当地跟踪应用程序状态。
 
-We recommend using `langgraph` for powering such a capability. For more details, please see this [guide](https://langchain-ai.github.io/langgraph/how-tos/human-in-the-loop/).
+我们建议使用 `langgraph` 来支持这种能力。有关更多详细信息，请参阅此 [指南](https://langchain-ai.github.io/langgraph/how-tos/human-in-the-loop/)。
 :::
 
+## 设置
 
-## Setup
-
-We'll need to install the following packages:
+我们需要安装以下软件包：
 
 
 ```python
 %pip install --upgrade --quiet langchain
 ```
 
-And set these environment variables:
+并设置这些环境变量：
 
 
 ```python
 import getpass
 import os
 
-# If you'd like to use LangSmith, uncomment the below:
+# 如果您想使用 LangSmith，请取消注释以下内容：
 # os.environ["LANGCHAIN_TRACING_V2"] = "true"
 # os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 ```
 
-## Chain
+## 链
 
-Let's create a few simple (dummy) tools and a tool-calling chain:
+让我们创建几个简单的（虚拟）工具和一个工具调用链：
 
 import ChatModelTabs from "@theme/ChatModelTabs";
 
@@ -91,12 +91,11 @@ chain.invoke("how many emails did i get in the last 5 days?")
   'output': 10}]
 ```
 
+## 添加人工审批
 
-## Adding human approval
+让我们在链中添加一个步骤，询问一个人是否批准或拒绝高呼叫请求。
 
-Let's add a step in the chain that will ask a person to approve or reject the tall call request.
-
-On rejection, the step will raise an exception which will stop execution of the rest of the chain.
+在拒绝时，该步骤将引发异常，这将停止链中其余部分的执行。
 
 
 ```python
@@ -104,38 +103,38 @@ import json
 
 
 class NotApproved(Exception):
-    """Custom exception."""
+    """自定义异常."""
 
 
 def human_approval(msg: AIMessage) -> AIMessage:
-    """Responsible for passing through its input or raising an exception.
+    """负责传递其输入或引发异常。
 
     Args:
-        msg: output from the chat model
+        msg: 聊天模型的输出
 
     Returns:
-        msg: original output from the msg
+        msg: msg 的原始输出
     """
     tool_strs = "\n\n".join(
         json.dumps(tool_call, indent=2) for tool_call in msg.tool_calls
     )
     input_msg = (
-        f"Do you approve of the following tool invocations\n\n{tool_strs}\n\n"
-        "Anything except 'Y'/'Yes' (case-insensitive) will be treated as a no.\n >>>"
+        f"您是否批准以下工具调用\n\n{tool_strs}\n\n"
+        "除 'Y'/'Yes'（不区分大小写）之外的任何内容都将被视为否。\n >>>"
     )
     resp = input(input_msg)
     if resp.lower() not in ("yes", "y"):
-        raise NotApproved(f"Tool invocations not approved:\n\n{tool_strs}")
+        raise NotApproved(f"工具调用未获得批准:\n\n{tool_strs}")
     return msg
 ```
 
 
 ```python
 chain = llm_with_tools | human_approval | call_tools
-chain.invoke("how many emails did i get in the last 5 days?")
+chain.invoke("我在过去 5 天内收到了多少封电子邮件？")
 ```
 ```output
-Do you approve of the following tool invocations
+您是否批准以下工具调用
 
 {
   "name": "count_emails",
@@ -145,7 +144,7 @@ Do you approve of the following tool invocations
   "id": "toolu_01WbD8XeMoQaRFtsZezfsHor"
 }
 
-Anything except 'Y'/'Yes' (case-insensitive) will be treated as a no.
+除 'Y'/'Yes'（不区分大小写）之外的任何内容都将被视为否。
  >>> yes
 ```
 
@@ -161,13 +160,13 @@ Anything except 'Y'/'Yes' (case-insensitive) will be treated as a no.
 
 ```python
 try:
-    chain.invoke("Send sally@gmail.com an email saying 'What's up homie'")
+    chain.invoke("给 sally@gmail.com 发一封邮件，内容是 'What's up homie'")
 except NotApproved as e:
     print()
     print(e)
 ```
 ```output
-Do you approve of the following tool invocations
+您是否批准以下工具调用
 
 {
   "name": "send_email",
@@ -178,11 +177,11 @@ Do you approve of the following tool invocations
   "id": "toolu_014XccHFzBiVcc9GV1harV9U"
 }
 
-Anything except 'Y'/'Yes' (case-insensitive) will be treated as a no.
+除 'Y'/'Yes'（不区分大小写）之外的任何内容都将被视为否。
  >>> no
 ``````output
 
-Tool invocations not approved:
+工具调用未获得批准:
 
 {
   "name": "send_email",

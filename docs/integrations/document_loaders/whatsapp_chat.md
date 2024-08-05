@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/whatsapp_chat.ipynb
 ---
-# WhatsApp Chat
 
->[WhatsApp](https://www.whatsapp.com/) (also called `WhatsApp Messenger`) is a freeware, cross-platform, centralized instant messaging (IM) and voice-over-IP (VoIP) service. It allows users to send text and voice messages, make voice and video calls, and share images, documents, user locations, and other content.
+# WhatsApp聊天
 
-This notebook covers how to load data from the `WhatsApp Chats` into a format that can be ingested into LangChain.
+>[WhatsApp](https://www.whatsapp.com/)（也称为`WhatsApp Messenger`）是一款免费、跨平台的集中式即时消息（IM）和语音通信（VoIP）服务。它允许用户发送文本和语音消息，进行语音和视频通话，并分享图片、文档、用户位置及其他内容。
+
+本笔记本涵盖如何将`WhatsApp Chats`中的数据加载到可以被LangChain处理的格式中。
 
 
 ```python
@@ -22,8 +23,7 @@ loader = WhatsAppChatLoader("example_data/whatsapp_chat.txt")
 loader.load()
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

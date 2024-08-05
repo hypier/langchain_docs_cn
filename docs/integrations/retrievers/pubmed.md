@@ -1,29 +1,24 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/retrievers/pubmed.ipynb
 ---
+
 # PubMed
 
+>[PubMed®](https://pubmed.ncbi.nlm.nih.gov/) 由 `国家生物技术信息中心，国家医学图书馆` 提供，包含超过 3500 万条生物医学文献的引用，来源于 `MEDLINE`、生命科学期刊和在线书籍。引用可能包括指向 `PubMed Central` 和出版商网站的全文内容的链接。
 
->[PubMed®](https://pubmed.ncbi.nlm.nih.gov/) by `The National Center for Biotechnology Information, National Library of Medicine` comprises more than 35 million citations for biomedical literature from `MEDLINE`, life science journals, and online books. Citations may include links to full text content from `PubMed Central` and publisher web sites.
-
-This notebook goes over how to use `PubMed` as a retriever
-
+本笔记本介绍如何使用 `PubMed` 作为检索工具。
 
 ```python
 from langchain_community.retrievers import PubMedRetriever
 ```
 
-
 ```python
 retriever = PubMedRetriever()
 ```
 
-
 ```python
 retriever.invoke("chatgpt")
 ```
-
-
 
 ```output
 [Document(page_content='', metadata={'uid': '37549050', 'Title': 'ChatGPT: "To Be or Not to Be" in Bikini Bottom.', 'Published': '--', 'Copyright Information': ''}),
@@ -31,9 +26,7 @@ retriever.invoke("chatgpt")
  Document(page_content='', metadata={'uid': '37548971', 'Title': "Large Language Models Answer Medical Questions Accurately, but Can't Match Clinicians' Knowledge.", 'Published': '2023-08-07', 'Copyright Information': ''})]
 ```
 
+## 相关
 
-
-## Related
-
-- Retriever [conceptual guide](/docs/concepts/#retrievers)
-- Retriever [how-to guides](/docs/how_to/#retrievers)
+- Retriever [概念指南](/docs/concepts/#retrievers)
+- Retriever [操作指南](/docs/how_to/#retrievers)

@@ -1,26 +1,25 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/ecloud_vector_search.ipynb
 ---
-# China Mobile ECloud ElasticSearch VectorSearch
 
->[China Mobile ECloud VectorSearch](https://ecloud.10086.cn/portal/product/elasticsearch) is a fully managed, enterprise-level distributed search and analysis service. China Mobile ECloud VectorSearch provides low-cost, high-performance, and reliable retrieval and analysis platform level product services for structured/unstructured data. As a vector database , it supports multiple index types and similarity distance methods. 
+# 中国移动ECloud ElasticSearch VectorSearch
 
-You'll need to install `langchain-community` with `pip install -qU langchain-community` to use this integration
+>[中国移动ECloud VectorSearch](https://ecloud.10086.cn/portal/product/elasticsearch) 是一项完全托管的企业级分布式搜索和分析服务。中国移动ECloud VectorSearch为结构化/非结构化数据提供低成本、高性能和可靠的检索与分析平台级产品服务。作为一个向量数据库，它支持多种索引类型和相似度距离方法。
 
-This notebook shows how to use functionality related to the `ECloud ElasticSearch VectorStore`.
-To run, you should have an [China Mobile ECloud VectorSearch](https://ecloud.10086.cn/portal/product/elasticsearch) instance up and running:
+您需要使用 `pip install -qU langchain-community` 安装 `langchain-community` 以使用此集成。
 
-Read the [help document](https://ecloud.10086.cn/op-help-center/doc/category/1094) to quickly familiarize and configure China Mobile ECloud ElasticSearch instance.
+本笔记本展示了如何使用与 `ECloud ElasticSearch VectorStore` 相关的功能。
+要运行，您应该有一个正在运行的 [中国移动ECloud VectorSearch](https://ecloud.10086.cn/portal/product/elasticsearch) 实例：
 
-After the instance is up and running, follow these steps to split documents, get embeddings, connect to the baidu cloud elasticsearch instance, index documents, and perform vector retrieval.
+阅读 [帮助文档](https://ecloud.10086.cn/op-help-center/doc/category/1094) 以快速熟悉和配置中国移动ECloud ElasticSearch实例。
 
+在实例启动并运行后，按照以下步骤拆分文档、获取嵌入、连接到百度云ElasticSearch实例、索引文档并执行向量检索。
 
 ```python
 #!pip install elasticsearch == 7.10.1
 ```
 
-First, we want to use `OpenAIEmbeddings` so we have to get the OpenAI API Key.
-
+首先，我们想使用 `OpenAIEmbeddings`，因此我们需要获取OpenAI API密钥。
 
 ```python
 import getpass
@@ -29,8 +28,7 @@ import os
 os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API Key:")
 ```
 
-Secondly, split documents and get embeddings.
-
+其次，拆分文档并获取嵌入。
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -38,7 +36,6 @@ from langchain_community.vectorstores import EcloudESVectorStore
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import CharacterTextSplitter
 ```
-
 
 ```python
 loader = TextLoader("../../../state_of_the_union.txt")
@@ -54,8 +51,7 @@ PASSWORD = "your password"
 indexname = "your index name"
 ```
 
-then, index documents
-
+然后，索引文档。
 
 ```python
 docsearch = EcloudESVectorStore.from_documents(
@@ -69,8 +65,7 @@ docsearch = EcloudESVectorStore.from_documents(
 )
 ```
 
-Finally, Query and retrive data
-
+最后，查询和检索数据。
 
 ```python
 query = "What did the president say about Ketanji Brown Jackson"
@@ -78,15 +73,14 @@ docs = docsearch.similarity_search(query, k=10)
 print(docs[0].page_content)
 ```
 
-A commonly used case
-
+一个常用的案例。
 
 ```python
 def test_dense_float_vectore_lsh_cosine() -> None:
     """
-    Test indexing with vectore type knn_dense_float_vector and  model-similarity of lsh-cosine
-    this mapping is compatible with model of exact and similarity of l2/cosine
-    this mapping is compatible with model of lsh and similarity of cosine
+    测试使用向量类型 knn_dense_float_vector 和模型相似度 lsh-cosine 的索引
+    此映射与精确模型和 l2/cosine 相似度兼容
+    此映射与 lsh 模型和余弦相似度兼容
     """
     docsearch = EcloudESVectorStore.from_documents(
         docs,
@@ -151,14 +145,13 @@ def test_dense_float_vectore_lsh_cosine() -> None:
     print(docs[0].page_content)
 ```
 
-With filter case
-
+带过滤器的案例。
 
 ```python
 def test_dense_float_vectore_exact_with_filter() -> None:
     """
-    Test indexing with vectore type knn_dense_float_vector and default model/similarity
-    this mapping is compatible with model of exact and similarity of l2/cosine
+    测试使用向量类型 knn_dense_float_vector 和默认模型/相似度的索引
+    此映射与精确模型和 l2/cosine 相似度兼容
     """
     docsearch = EcloudESVectorStore.from_documents(
         docs,
@@ -172,7 +165,7 @@ def test_dense_float_vectore_exact_with_filter() -> None:
         vector_field="my_vec",
         vector_type="knn_dense_float_vector",
     )
-    # filter={"match_all": {}} ,default
+    # filter={"match_all": {}} ,默认
     docs = docsearch.similarity_search(
         query,
         k=10,
@@ -213,8 +206,7 @@ def test_dense_float_vectore_exact_with_filter() -> None:
     print(docs[0].page_content)
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

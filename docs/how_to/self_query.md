@@ -1,28 +1,27 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/self_query.ipynb
 ---
-# How to do "self-querying" retrieval
+
+# 如何进行“自查询”检索
 
 :::info
 
-Head to [Integrations](/docs/integrations/retrievers/self_query) for documentation on vector stores with built-in support for self-querying.
+前往 [Integrations](/docs/integrations/retrievers/self_query) 查看关于具有自查询支持的向量存储的文档。
 
 :::
 
-A self-querying retriever is one that, as the name suggests, has the ability to query itself. Specifically, given any natural language query, the retriever uses a query-constructing LLM chain to write a structured query and then applies that structured query to its underlying VectorStore. This allows the retriever to not only use the user-input query for semantic similarity comparison with the contents of stored documents but to also extract filters from the user query on the metadata of stored documents and to execute those filters.
+自查询检索器顾名思义，具备自我查询的能力。具体来说，给定任何自然语言查询，检索器使用查询构造的 LLM 链来编写结构化查询，然后将该结构化查询应用于其底层的 VectorStore。这使得检索器不仅可以使用用户输入的查询与存储文档的内容进行语义相似性比较，还可以从用户查询中提取关于存储文档元数据的过滤器并执行这些过滤器。
 
 ![](../../static/img/self_querying.jpg)
 
-## Get started
-For demonstration purposes we'll use a `Chroma` vector store. We've created a small demo set of documents that contain summaries of movies.
+## 开始
+为了演示，我们将使用 `Chroma` 向量存储。我们创建了一小组包含电影摘要的演示文档。
 
-**Note:** The self-query retriever requires you to have `lark` package installed.
-
+**注意：** 自查询检索器需要您安装 `lark` 包。
 
 ```python
 %pip install --upgrade --quiet  lark langchain-chroma
 ```
-
 
 ```python
 from langchain_chroma import Chroma
@@ -63,10 +62,9 @@ docs = [
 vectorstore = Chroma.from_documents(docs, OpenAIEmbeddings())
 ```
 
-### Creating our self-querying retriever
+### 创建自查询检索器
 
-Now we can instantiate our retriever. To do this we'll need to provide some information upfront about the metadata fields that our documents support and a short description of the document contents.
-
+现在我们可以实例化我们的检索器。为此，我们需要提前提供一些关于文档支持的元数据字段的信息以及文档内容的简要描述。
 
 ```python
 from langchain.chains.query_constructor.base import AttributeInfo
@@ -103,9 +101,9 @@ retriever = SelfQueryRetriever.from_llm(
 )
 ```
 
-### Testing it out
+### 测试一下
 
-And now we can actually try using our retriever!
+现在我们可以尝试使用我们的检索器了！
 
 
 ```python
@@ -162,13 +160,11 @@ retriever.invoke(
 [Document(page_content='Toys come alive and have a blast doing so', metadata={'genre': 'animated', 'year': 1995})]
 ```
 
+### 过滤 k
 
-### Filter k
+我们还可以使用自查询检索器来指定 `k`：要获取的文档数量。
 
-We can also use the self query retriever to specify `k`: the number of documents to fetch.
-
-We can do this by passing `enable_limit=True` to the constructor.
-
+我们可以通过将 `enable_limit=True` 传递给构造函数来实现这一点。
 
 ```python
 retriever = SelfQueryRetriever.from_llm(
@@ -183,20 +179,16 @@ retriever = SelfQueryRetriever.from_llm(
 retriever.invoke("What are two movies about dinosaurs")
 ```
 
-
-
 ```output
 [Document(page_content='A bunch of scientists bring back dinosaurs and mayhem breaks loose', metadata={'genre': 'science fiction', 'rating': 7.7, 'year': 1993}),
  Document(page_content='Toys come alive and have a blast doing so', metadata={'genre': 'animated', 'year': 1995})]
 ```
 
+## 从头开始构建 LCEL
 
-## Constructing from scratch with LCEL
+为了了解背后的工作原理，并拥有更多的自定义控制，我们可以从头开始重建我们的检索器。
 
-To see what's going on under the hood, and to have more custom control, we can reconstruct our retriever from scratch.
-
-First, we need to create a query-construction chain. This chain will take a user query and generated a `StructuredQuery` object which captures the filters specified by the user. We provide some helper functions for creating a prompt and output parser. These have a number of tunable params that we'll ignore here for simplicity.
-
+首先，我们需要创建一个查询构建链。该链将接受用户查询并生成一个 `StructuredQuery` 对象，该对象捕获用户指定的过滤条件。我们提供了一些帮助函数来创建提示和输出解析器。为了简单起见，这里我们将忽略一些可调参数。
 
 ```python
 from langchain.chains.query_constructor.base import (
@@ -212,8 +204,7 @@ output_parser = StructuredQueryOutputParser.from_components()
 query_constructor = prompt | llm | output_parser
 ```
 
-Let's look at our prompt:
-
+让我们看一下我们的提示：
 
 ```python
 print(prompt.format(query="dummy question"))
@@ -368,10 +359,9 @@ StructuredQuery(query='taxi driver', filter=Operation(operator=<Operator.AND: 'a
 ```
 
 
-The query constructor is the key element of the self-query retriever. To make a great retrieval system you'll need to make sure your query constructor works well. Often this requires adjusting the prompt, the examples in the prompt, the attribute descriptions, etc. For an example that walks through refining a query constructor on some hotel inventory data, [check out this cookbook](https://github.com/langchain-ai/langchain/blob/master/cookbook/self_query_hotel_search.ipynb).
+查询构造器是自查询检索器的关键元素。要构建一个优秀的检索系统，您需要确保查询构造器运行良好。这通常需要调整提示、提示中的示例、属性描述等。有关逐步完善某些酒店库存数据的查询构造器的示例，请 [查看此食谱](https://github.com/langchain-ai/langchain/blob/master/cookbook/self_query_hotel_search.ipynb)。
 
-The next key element is the structured query translator. This is the object responsible for translating the generic `StructuredQuery` object into a metadata filter in the syntax of the vector store you're using. LangChain comes with a number of built-in translators. To see them all head to the [Integrations section](/docs/integrations/retrievers/self_query).
-
+下一个关键元素是结构化查询翻译器。该对象负责将通用的 `StructuredQuery` 对象翻译为您使用的向量存储的元数据过滤器。LangChain 提供了许多内置翻译器。要查看所有翻译器，请前往 [集成部分](/docs/integrations/retrievers/self_query)。
 
 ```python
 from langchain.retrievers.self_query.chroma import ChromaTranslator
@@ -395,4 +385,3 @@ retriever.invoke(
 ```output
 [Document(page_content='Toys come alive and have a blast doing so', metadata={'genre': 'animated', 'year': 1995})]
 ```
-

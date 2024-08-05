@@ -1,48 +1,44 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/custom_retriever.ipynb
-title: Custom Retriever
+title: 自定义检索器
 ---
-# How to create a custom Retriever
 
-## Overview
+# 如何创建自定义检索器
 
-Many LLM applications involve retrieving information from external data sources using a `Retriever`. 
+## 概述
 
-A retriever is responsible for retrieving a list of relevant `Documents` to a given user `query`.
+许多 LLM 应用涉及使用 `Retriever` 从外部数据源检索信息。
 
-The retrieved documents are often formatted into prompts that are fed into an LLM, allowing the LLM to use the information in the to generate an appropriate response (e.g., answering a user question based on a knowledge base).
+检索器负责检索与给定用户 `query` 相关的 `Documents` 列表。
 
-## Interface
+检索到的文档通常被格式化为提示，并输入到 LLM 中，使 LLM 能够利用这些信息生成适当的响应（例如，根据知识库回答用户问题）。
 
-To create your own retriever, you need to extend the `BaseRetriever` class and implement the following methods:
+## 接口
 
-| Method                         | Description                                      | Required/Optional |
-|--------------------------------|--------------------------------------------------|-------------------|
-| `_get_relevant_documents`      | Get documents relevant to a query.               | Required          |
-| `_aget_relevant_documents`     | Implement to provide async native support.       | Optional          |
+要创建自己的检索器，您需要扩展 `BaseRetriever` 类并实现以下方法：
+
+| 方法                             | 描述                                              | 必需/可选         |
+|----------------------------------|--------------------------------------------------|-------------------|
+| `_get_relevant_documents`        | 获取与查询相关的文档。                           | 必需              |
+| `_aget_relevant_documents`       | 实现以提供异步原生支持。                         | 可选              |
 
 
-The logic inside of `_get_relevant_documents` can involve arbitrary calls to a database or to the web using requests.
+`_get_relevant_documents` 内部的逻辑可以涉及对数据库或通过请求访问网络的任意调用。
 
 :::tip
-By inherting from `BaseRetriever`, your retriever automatically becomes a LangChain [Runnable](/docs/concepts#interface) and will gain the standard `Runnable` functionality out of the box!
+通过继承 `BaseRetriever`，您的检索器将自动成为 LangChain [Runnable](/docs/concepts#interface)，并将开箱即用地获得标准的 `Runnable` 功能！
 :::
 
 
 :::info
-You can use a `RunnableLambda` or `RunnableGenerator` to implement a retriever.
+您可以使用 `RunnableLambda` 或 `RunnableGenerator` 来实现检索器。
 
-The main benefit of implementing a retriever as a `BaseRetriever` vs. a `RunnableLambda` (a custom [runnable function](/docs/how_to/functions)) is that a `BaseRetriever` is a well
-known LangChain entity so some tooling for monitoring may implement specialized behavior for retrievers. Another difference
-is that a `BaseRetriever` will behave slightly differently from `RunnableLambda` in some APIs; e.g., the `start` event
-in `astream_events` API will be `on_retriever_start` instead of `on_chain_start`.
+将检索器实现为 `BaseRetriever` 而不是 `RunnableLambda`（自定义 [可运行函数](/docs/how_to/functions)）的主要好处是，`BaseRetriever` 是一个众所周知的 LangChain 实体，因此某些监控工具可能会为检索器实现专门的行为。另一个区别是，`BaseRetriever` 在某些 API 中的行为与 `RunnableLambda` 会略有不同；例如，`astream_events` API 中的 `start` 事件将是 `on_retriever_start` 而不是 `on_chain_start`。
 :::
 
+## 示例
 
-## Example
-
-Let's implement a toy retriever that returns all documents whose text contains the text in the user query.
-
+让我们实现一个玩具检索器，该检索器返回所有文本中包含用户查询文本的文档。
 
 ```python
 from typing import List
@@ -53,26 +49,24 @@ from langchain_core.retrievers import BaseRetriever
 
 
 class ToyRetriever(BaseRetriever):
-    """A toy retriever that contains the top k documents that contain the user query.
+    """一个玩具检索器，包含包含用户查询的前 k 个文档。
 
-    This retriever only implements the sync method _get_relevant_documents.
+    该检索器仅实现同步方法 _get_relevant_documents。
 
-    If the retriever were to involve file access or network access, it could benefit
-    from a native async implementation of `_aget_relevant_documents`.
+    如果检索器涉及文件访问或网络访问，它可以受益于 `_aget_relevant_documents` 的原生异步实现。
 
-    As usual, with Runnables, there's a default async implementation that's provided
-    that delegates to the sync implementation running on another thread.
+    和往常一样，对于 Runnables，提供了一个默认的异步实现，该实现委托给在另一个线程上运行的同步实现。
     """
 
     documents: List[Document]
-    """List of documents to retrieve from."""
+    """要检索的文档列表。"""
     k: int
-    """Number of top results to return"""
+    """要返回的前结果数量"""
 
     def _get_relevant_documents(
         self, query: str, *, run_manager: CallbackManagerForRetrieverRun
     ) -> List[Document]:
-        """Sync implementations for retriever."""
+        """检索器的同步实现。"""
         matching_documents = []
         for document in documents:
             if len(matching_documents) > self.k:
@@ -82,23 +76,23 @@ class ToyRetriever(BaseRetriever):
                 matching_documents.append(document)
         return matching_documents
 
-    # Optional: Provide a more efficient native implementation by overriding
+    # 可选：通过重写提供更高效的原生实现
     # _aget_relevant_documents
     # async def _aget_relevant_documents(
     #     self, query: str, *, run_manager: AsyncCallbackManagerForRetrieverRun
     # ) -> List[Document]:
-    #     """Asynchronously get documents relevant to a query.
+    #     """异步获取与查询相关的文档。
 
-    #     Args:
-    #         query: String to find relevant documents for
-    #         run_manager: The callbacks handler to use
+    #     参数：
+    #         query: 要查找相关文档的字符串
+    #         run_manager: 要使用的回调处理程序
 
-    #     Returns:
-    #         List of relevant documents
+    #     返回：
+    #         相关文档列表
     #     """
 ```
 
-## Test it 🧪
+## 测试它 🧪
 
 
 ```python
@@ -140,7 +134,7 @@ retriever.invoke("that")
 ```
 
 
-It's a **runnable** so it'll benefit from the standard Runnable Interface! 🤩
+这是一个**可运行的**，因此它将受益于标准的可运行接口！🤩
 
 
 ```python
@@ -178,23 +172,24 @@ async for event in retriever.astream_events("bar", version="v1"):
 {'event': 'on_retriever_stream', 'run_id': 'f96f268d-8383-4921-b175-ca583924d9ff', 'tags': [], 'metadata': {}, 'name': 'ToyRetriever', 'data': {'chunk': []}}
 {'event': 'on_retriever_end', 'name': 'ToyRetriever', 'run_id': 'f96f268d-8383-4921-b175-ca583924d9ff', 'tags': [], 'metadata': {}, 'data': {'output': []}}
 ```
-## Contributing
 
-We appreciate contributions of interesting retrievers!
+## 贡献
 
-Here's a checklist to help make sure your contribution gets added to LangChain:
+我们欢迎有趣的检索器的贡献！
 
-Documentation:
+以下是一个清单，帮助确保你的贡献能够被添加到 LangChain：
 
-* The retriever contains doc-strings for all initialization arguments, as these will be surfaced in the [API Reference](https://api.python.langchain.com/en/stable/langchain_api_reference.html).
-* The class doc-string for the model contains a link to any relevant APIs used for the retriever (e.g., if the retriever is retrieving from wikipedia, it'll be good to link to the wikipedia API!)
+文档：
 
-Tests:
+* 检索器包含所有初始化参数的文档字符串，因为这些将在 [API 参考](https://api.python.langchain.com/en/stable/langchain_api_reference.html) 中展示。
+* 模型的类文档字符串包含指向检索器所使用的任何相关 API 的链接（例如，如果检索器是从维基百科检索的，最好链接到维基百科 API！）
 
-* [ ] Add unit or integration tests to verify that `invoke` and `ainvoke` work.
+测试：
 
-Optimizations:
+* [ ] 添加单元测试或集成测试，以验证 `invoke` 和 `ainvoke` 的工作情况。
 
-If the retriever is connecting to external data sources (e.g., an API or a file), it'll almost certainly benefit from an async native optimization!
- 
-* [ ] Provide a native async implementation of `_aget_relevant_documents` (used by `ainvoke`)
+优化：
+
+如果检索器连接到外部数据源（例如，API 或文件），那么它几乎肯定会受益于原生异步优化！
+
+* [ ] 提供 `_aget_relevant_documents` 的原生异步实现（由 `ainvoke` 使用）

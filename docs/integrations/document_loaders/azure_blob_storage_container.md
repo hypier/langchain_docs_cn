@@ -1,19 +1,20 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/azure_blob_storage_container.ipynb
 ---
-# Azure Blob Storage Container
 
->[Azure Blob Storage](https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction) is Microsoft's object storage solution for the cloud. Blob Storage is optimized for storing massive amounts of unstructured data. Unstructured data is data that doesn't adhere to a particular data model or definition, such as text or binary data.
+# Azure Blob Storage 容器
 
-`Azure Blob Storage` is designed for:
-- Serving images or documents directly to a browser.
-- Storing files for distributed access.
-- Streaming video and audio.
-- Writing to log files.
-- Storing data for backup and restore, disaster recovery, and archiving.
-- Storing data for analysis by an on-premises or Azure-hosted service.
+>[Azure Blob Storage](https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction) 是微软的云对象存储解决方案。Blob 存储经过优化，适合存储大量非结构化数据。非结构化数据是指不遵循特定数据模型或定义的数据，例如文本或二进制数据。
 
-This notebook covers how to load document objects from a container on `Azure Blob Storage`.
+`Azure Blob Storage` 的设计目标包括：
+- 直接向浏览器提供图像或文档。
+- 存储供分布式访问的文件。
+- 流式传输视频和音频。
+- 写入日志文件。
+- 存储用于备份和恢复、灾难恢复及归档的数据。
+- 存储供本地或 Azure 托管服务分析的数据。
+
+本笔记本介绍如何从 `Azure Blob Storage` 的容器中加载文档对象。
 
 
 ```python
@@ -41,10 +42,8 @@ loader.load()
 [Document(page_content='Lorem ipsum dolor sit amet.', lookup_str='', metadata={'source': '/var/folders/y6/8_bzdg295ld6s1_97_12m4lr0000gn/T/tmpaa9xl6ch/fake.docx'}, lookup_index=0)]
 ```
 
-
-## Specifying a prefix
-You can also specify a prefix for more finegrained control over what files to load.
-
+## 指定前缀
+您还可以指定前缀，以便更精细地控制要加载的文件。
 
 ```python
 loader = AzureBlobStorageContainerLoader(
@@ -52,20 +51,15 @@ loader = AzureBlobStorageContainerLoader(
 )
 ```
 
-
 ```python
 loader.load()
 ```
-
-
 
 ```output
 [Document(page_content='Lorem ipsum dolor sit amet.', lookup_str='', metadata={'source': '/var/folders/y6/8_bzdg295ld6s1_97_12m4lr0000gn/T/tmpujbkzf_l/fake.docx'}, lookup_index=0)]
 ```
 
+## 相关
 
-
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

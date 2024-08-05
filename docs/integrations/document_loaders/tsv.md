@@ -1,14 +1,14 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/tsv.ipynb
 ---
+
 # TSV
 
->A [tab-separated values (TSV)](https://en.wikipedia.org/wiki/Tab-separated_values) file is a simple, text-based file format for storing tabular data.[3] Records are separated by newlines, and values within a record are separated by tab characters.
+>一个 [制表符分隔值 (TSV)](https://en.wikipedia.org/wiki/Tab-separated_values) 文件是一种简单的文本文件格式，用于存储表格数据。[3] 记录由换行符分隔，记录内的值由制表符分隔。
 
 ## `UnstructuredTSVLoader`
 
-You can also load the table using the `UnstructuredTSVLoader`. One advantage of using `UnstructuredTSVLoader` is that if you use it in `"elements"` mode, an HTML representation of the table will be available in the metadata.
-
+您还可以使用 `UnstructuredTSVLoader` 加载表格。使用 `UnstructuredTSVLoader` 的一个优点是，如果您在 `"elements"` 模式下使用它，表格的 HTML 表示将在元数据中提供。
 
 ```python
 from langchain_community.document_loaders.tsv import UnstructuredTSVLoader
@@ -120,7 +120,7 @@ print(docs[0].metadata["text_as_html"])
 </table>
 ```
 
-## Related
+## 相关
 
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

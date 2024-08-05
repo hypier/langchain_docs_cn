@@ -1,25 +1,25 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/dropbox.ipynb
 ---
+
 # Dropbox
 
-[Dropbox](https://en.wikipedia.org/wiki/Dropbox) is a file hosting service that brings everything-traditional files, cloud content, and web shortcuts together in one place.
+[Dropbox](https://en.wikipedia.org/wiki/Dropbox) 是一个文件托管服务，将传统文件、云内容和网页快捷方式集中在一个地方。
 
-This notebook covers how to load documents from *Dropbox*. In addition to common files such as text and PDF files, it also supports *Dropbox Paper* files.
+本笔记本涵盖如何从 *Dropbox* 加载文档。除了文本和 PDF 文件等常见文件外，它还支持 *Dropbox Paper* 文件。
 
-## Prerequisites
+## 前提条件
 
-1. Create a Dropbox app.
-2. Give the app these scope permissions: `files.metadata.read` and `files.content.read`.
-3. Generate access token: https://www.dropbox.com/developers/apps/create.
-4. `pip install dropbox` (requires `pip install "unstructured[pdf]"` for PDF filetype).
+1. 创建一个Dropbox应用。
+2. 为应用授予以下权限范围：`files.metadata.read` 和 `files.content.read`。
+3. 生成访问令牌： https://www.dropbox.com/developers/apps/create。
+4. `pip install dropbox` （需要 `pip install "unstructured[pdf]"` 来支持PDF文件类型）。
 
-## Instructions
+## 使用说明
 
-`DropboxLoader`` requires you to create a Dropbox App and generate an access token. This can be done from https://www.dropbox.com/developers/apps/create. You also need to have the Dropbox Python SDK installed (pip install dropbox).
+`DropboxLoader` 需要您创建一个 Dropbox 应用并生成访问令牌。这可以在 https://www.dropbox.com/developers/apps/create 上完成。您还需要安装 Dropbox Python SDK（pip install dropbox）。
 
-DropboxLoader can load data from a list of Dropbox file paths or a single Dropbox folder path. Both paths should be relative to the root directory of the Dropbox account linked to the access token.
-
+DropboxLoader 可以从一系列 Dropbox 文件路径或单个 Dropbox 文件夹路径加载数据。两个路径都应相对于与访问令牌链接的 Dropbox 帐户的根目录。
 
 ```python
 pip install dropbox
@@ -43,9 +43,9 @@ from langchain_community.document_loaders import DropboxLoader
 
 
 ```python
-# Generate access token: https://www.dropbox.com/developers/apps/create.
+# 生成访问令牌: https://www.dropbox.com/developers/apps/create.
 dropbox_access_token = "<DROPBOX_ACCESS_TOKEN>"
-# Dropbox root folder
+# Dropbox 根文件夹
 dropbox_folder_path = ""
 ```
 
@@ -72,8 +72,7 @@ for document in documents:
     print(document)
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

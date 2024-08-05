@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 sidebar_class_name: hidden
-keywords: [compatibility]
+keywords: [兼容性]
 custom_edit_url:
 ---
 
@@ -9,20 +9,20 @@ custom_edit_url:
 
 :::info
 
-If you'd like to write your own LLM, see [this how-to](/docs/how_to/custom_llm/).
-If you'd like to contribute an integration, see [Contributing integrations](/docs/contributing/integrations/).
+如果您想自己编写 LLM，请参见 [此指南](/docs/how_to/custom_llm/)。  
+如果您想贡献一个集成，请参见 [贡献集成](/docs/contributing/integrations/)。
 
 :::
 
-## Features (natively supported)
-All LLMs implement the Runnable interface, which comes with default implementations of all methods, ie. `ainvoke`, `batch`, `abatch`, `stream`, `astream`. This gives all LLMs basic support for async, streaming and batch, which by default is implemented as below:
-- *Async* support defaults to calling the respective sync method in asyncio's default thread pool executor. This lets other async functions in your application make progress while the LLM is being executed, by moving this call to a background thread.
-- *Streaming* support defaults to returning an `Iterator` (or `AsyncIterator` in the case of async streaming) of a single value, the final result returned by the underlying LLM provider. This obviously doesn't give you token-by-token streaming, which requires native support from the LLM provider, but ensures your code that expects an iterator of tokens can work for any of our LLM integrations.
-- *Batch* support defaults to calling the underlying LLM in parallel for each input by making use of a thread pool executor (in the sync batch case) or `asyncio.gather` (in the async batch case). The concurrency can be controlled with the `max_concurrency` key in `RunnableConfig`.
+## 特性（原生支持）
+所有 LLM 都实现了 Runnable 接口，该接口提供了所有方法的默认实现，即 `ainvoke`、`batch`、`abatch`、`stream`、`astream`。这使得所有 LLM 对异步、流式和批处理提供了基本支持，默认实现如下：
+- *异步* 支持默认调用 asyncio 的默认线程池执行器中的相应同步方法。这允许您应用程序中的其他异步函数在 LLM 执行时继续进展，通过将此调用移至后台线程。
+- *流式* 支持默认返回一个 `Iterator`（在异步流式情况下为 `AsyncIterator`），其单个值为底层 LLM 提供者返回的最终结果。这显然不能提供逐个令牌的流式支持，这需要 LLM 提供者的原生支持，但确保期望令牌迭代器的代码可以在我们的任何 LLM 集成中正常工作。
+- *批处理* 支持默认通过使用线程池执行器（在同步批处理情况下）或 `asyncio.gather`（在异步批处理情况下）并行调用底层 LLM 处理每个输入。并发性可以通过 `RunnableConfig` 中的 `max_concurrency` 键进行控制。
 
-Each LLM integration can optionally provide native implementations for async, streaming or batch, which, for providers that support it, can be more efficient. The table shows, for each integration, which features have been implemented with native support.
+每个 LLM 集成可以选择性地提供异步、流式或批处理的原生实现，对于支持它的提供者，这可能更有效。下表显示了每个集成的特性及其原生支持情况。
 
-Model|Invoke|Async invoke|Stream|Async stream|Batch|Async batch
+模型|调用|异步调用|流式|异步流式|批处理|异步批处理
 :-|:-:|:-:|:-:|:-:|:-:|:-:
 AI21|✅|❌|❌|❌|❌|❌
 AlephAlpha|✅|❌|❌|❌|❌|❌
@@ -121,4 +121,3 @@ YandexGPT|✅|✅|❌|❌|❌|❌
 YiLLM|✅|❌|❌|❌|❌|❌
 You|✅|❌|✅|❌|❌|❌
 Yuan2|✅|❌|❌|❌|❌|❌
-

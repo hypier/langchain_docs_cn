@@ -1,83 +1,80 @@
 # OpenAI Functions Agent - Gmail
 
-Ever struggled to reach inbox zero? 
+是否曾经为达到收件箱零而苦恼？
 
-Using this template, you can create and customize your very own AI assistant to manage your Gmail account. Using the default Gmail tools, it can read, search through, and draft emails to respond on your behalf. It also has access to a Tavily search engine so it can search for relevant information about any topics or people in the email thread before writing, ensuring the drafts include all the relevant information needed to sound well-informed.
+使用此模板，您可以创建和定制您自己的 AI 助手来管理您的 Gmail 帐户。借助默认的 Gmail 工具，它可以读取、搜索和草拟电子邮件，以代表您进行回复。它还可以访问 Tavily 搜索引擎，因此在撰写之前可以搜索电子邮件线程中任何主题或人物的相关信息，确保草稿包含所有必要的信息，以显得信息丰富。
 
+## 详细信息
 
+该助手使用 OpenAI 的 [函数调用](https://python.langchain.com/docs/modules/chains/how_to/openai_functions) 支持，可靠地选择并调用您提供的工具。
 
-## The details
+此模板还直接从 [langchain-core](https://pypi.org/project/langchain-core/) 和 [`langchain-community`](https://pypi.org/project/langchain-community/) 导入，适当时使用。我们已重新构建 LangChain，以便您可以选择满足您用例的特定集成。虽然您仍然可以从 `langchain` 导入（我们正在使此过渡向后兼容），但我们已将大多数类的归属分开，以反映所有权并使您的依赖列表更轻。您所需的大多数集成可以在 `langchain-community` 包中找到，如果您仅使用核心表达语言 API，您甚至可以仅基于 `langchain-core` 构建。
 
-This assistant uses OpenAI's [function calling](https://python.langchain.com/docs/modules/chains/how_to/openai_functions) support to reliably select and invoke the tools you've provided
+## 环境设置
 
-This template also imports directly from [langchain-core](https://pypi.org/project/langchain-core/) and [`langchain-community`](https://pypi.org/project/langchain-community/) where appropriate. We have restructured LangChain to let you select the specific integrations needed for your use case. While you can still import from `langchain` (we are making this transition backwards-compatible), we have separated the homes of most of the classes to reflect ownership and to make your dependency lists lighter. Most of the integrations you need can be found in the `langchain-community` package, and if you are just using the core expression language API's, you can even build solely based on `langchain-core`.
+需要设置以下环境变量：
 
-## Environment Setup
+设置 `OPENAI_API_KEY` 环境变量以访问 OpenAI 模型。
 
-The following environment variables need to be set:
+设置 `TAVILY_API_KEY` 环境变量以访问 Tavily 搜索。
 
-Set the `OPENAI_API_KEY` environment variable to access the OpenAI models.
+创建一个 [`credentials.json`](https://developers.google.com/gmail/api/quickstart/python#authorize_credentials_for_a_desktop_application) 文件，包含您来自 Gmail 的 OAuth 客户端 ID。要自定义身份验证，请参见下面的 [Customize Auth](#customize-auth) 部分。
 
-Set the `TAVILY_API_KEY` environment variable to access Tavily search.
+_*注意:* 第一次运行此应用程序时，它将强制您经历用户身份验证流程。_
 
-Create a [`credentials.json`](https://developers.google.com/gmail/api/quickstart/python#authorize_credentials_for_a_desktop_application) file containing your OAuth client ID from Gmail. To customize authentication, see the [Customize Auth](#customize-auth) section below.
+（可选）：将 `GMAIL_AGENT_ENABLE_SEND` 设置为 `true`（或修改此模板中的 `agent.py` 文件），以允许其访问“发送”工具。这将使您的助手在没有您明确审核的情况下发送电子邮件，这不推荐。
 
-_*Note:* The first time you run this app, it will force you to go through a user authentication flow._
+## 使用方法
 
-(Optional): Set `GMAIL_AGENT_ENABLE_SEND`  to `true` (or modify the `agent.py` file in this template) to give it access to the "Send" tool. This will give your assistant permissions to send emails on your behalf without your explicit review, which is not recommended.
-
-
-## Usage
-
-To use this package, you should first have the LangChain CLI installed:
+要使用此包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this as the only package, you can do:
+要创建一个新的 LangChain 项目并将其作为唯一的包安装，您可以执行：
 
 ```shell
 langchain app new my-app --package openai-functions-agent-gmail
 ```
 
-If you want to add this to an existing project, you can just run:
+如果您想将其添加到现有项目中，只需运行：
 
 ```shell
 langchain app add openai-functions-agent-gmail
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 ```python
 from openai_functions_agent import agent_executor as openai_functions_agent_chain
 
 add_routes(app, openai_functions_agent_chain, path="/openai-functions-agent-gmail")
 ```
 
-(Optional) Let's now configure LangSmith. 
-LangSmith will help us trace, monitor and debug LangChain applications. 
-You can sign up for LangSmith [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
+（可选）现在让我们配置 LangSmith。 
+LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。 
+您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。 
+如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接通过以下方式启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server is running locally at 
+这将启动 FastAPI 应用程序，服务器在本地运行，地址为 
 [http://localhost:8000](http://localhost:8000)
 
-We can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-We can access the playground at [http://127.0.0.1:8000/openai-functions-agent-gmail/playground](http://127.0.0.1:8000/openai-functions-agent/playground)  
+我们可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板
+我们可以在 [http://127.0.0.1:8000/openai-functions-agent-gmail/playground](http://127.0.0.1:8000/openai-functions-agent/playground) 访问游乐场  
 
-We can access the template from code with:
+我们可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable
@@ -85,7 +82,7 @@ from langserve.client import RemoteRunnable
 runnable = RemoteRunnable("http://localhost:8000/openai-functions-agent-gmail")
 ```
 
-## Customize Auth
+## 自定义认证
 
 ```
 from langchain_community.tools.gmail.utils import build_resource_service, get_gmail_credentials

@@ -3,28 +3,27 @@ custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs
 sidebar_position: 7
 keywords: [ConfigurableField, configurable_fields, ConfigurableAlternatives, configurable_alternatives, LCEL]
 ---
-# How to configure runtime chain internals
 
-:::info Prerequisites
+# 如何配置运行时链内部
 
-This guide assumes familiarity with the following concepts:
-- [LangChain Expression Language (LCEL)](/docs/concepts/#langchain-expression-language)
-- [Chaining runnables](/docs/how_to/sequence/)
-- [Binding runtime arguments](/docs/how_to/binding/)
+:::info 前提条件
+
+本指南假设您熟悉以下概念：
+- [LangChain 表达式语言 (LCEL)](/docs/concepts/#langchain-expression-language)
+- [链接可运行对象](/docs/how_to/sequence/)
+- [绑定运行时参数](/docs/how_to/binding/)
 
 :::
 
-Sometimes you may want to experiment with, or even expose to the end user, multiple different ways of doing things within your chains.
-This can include tweaking parameters such as temperature or even swapping out one model for another.
-In order to make this experience as easy as possible, we have defined two methods.
+有时您可能希望在链中尝试多种不同的方式，甚至向最终用户展示这些方式。这可以包括调整温度等参数，甚至将一个模型替换为另一个模型。为了使这一体验尽可能简单，我们定义了两种方法。
 
-- A `configurable_fields` method. This lets you configure particular fields of a runnable.
-  - This is related to the [`.bind`](/docs/how_to/binding) method on runnables, but allows you to specify parameters for a given step in a chain at runtime rather than specifying them beforehand.
-- A `configurable_alternatives` method. With this method, you can list out alternatives for any particular runnable that can be set during runtime, and swap them for those specified alternatives.
+- `configurable_fields` 方法。此方法允许您配置可运行对象的特定字段。
+  - 这与可运行对象上的 [`.bind`](/docs/how_to/binding) 方法相关，但允许您在运行时为链中的特定步骤指定参数，而不是事先指定。
+- `configurable_alternatives` 方法。通过此方法，您可以列出在运行时可以设置的任何特定可运行对象的替代方案，并将其替换为那些指定的替代方案。
 
-## Configurable Fields
+## 可配置字段
 
-Let's walk through an example that configures chat model fields like temperature at runtime:
+让我们通过一个示例来演示如何在运行时配置聊天模型字段，例如温度：
 
 
 ```python
@@ -45,8 +44,8 @@ from langchain_openai import ChatOpenAI
 model = ChatOpenAI(temperature=0).configurable_fields(
     temperature=ConfigurableField(
         id="llm_temperature",
-        name="LLM Temperature",
-        description="The temperature of the LLM",
+        name="LLM 温度",
+        description="LLM 的温度",
     )
 )
 
@@ -60,7 +59,7 @@ AIMessage(content='17', response_metadata={'token_usage': {'completion_tokens': 
 ```
 
 
-Above, we defined `temperature` as a [`ConfigurableField`](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.utils.ConfigurableField.html#langchain_core.runnables.utils.ConfigurableField) that we can set at runtime. To do so, we use the [`with_config`](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.with_config) method like this:
+在上面，我们将 `temperature` 定义为一个 [`ConfigurableField`](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.utils.ConfigurableField.html#langchain_core.runnables.utils.ConfigurableField)，可以在运行时进行设置。为此，我们使用 [`with_config`](https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable.with_config) 方法，如下所示：
 
 
 ```python
@@ -74,9 +73,9 @@ AIMessage(content='12', response_metadata={'token_usage': {'completion_tokens': 
 ```
 
 
-Note that the passed `llm_temperature` entry in the dict has the same key as the `id` of the `ConfigurableField`.
+请注意，字典中传递的 `llm_temperature` 条目的键与 `ConfigurableField` 的 `id` 相同。
 
-We can also do this to affect just one step that's part of a chain:
+我们还可以这样做，只影响链中某一步：
 
 
 ```python
@@ -104,10 +103,9 @@ chain.with_config(configurable={"llm_temperature": 0.9}).invoke({"x": 0})
 AIMessage(content='35', response_metadata={'token_usage': {'completion_tokens': 1, 'prompt_tokens': 14, 'total_tokens': 15}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': 'fp_c2295e73ad', 'finish_reason': 'stop', 'logprobs': None}, id='run-a916602b-3460-46d3-a4a8-7c926ec747c0-0')
 ```
 
+### 使用 HubRunnables
 
-### With HubRunnables
-
-This is useful to allow for switching of prompts
+这对于切换提示非常有用
 
 
 ```python
@@ -117,7 +115,7 @@ prompt = HubRunnable("rlm/rag-prompt").configurable_fields(
     owner_repo_commit=ConfigurableField(
         id="hub_commit",
         name="Hub Commit",
-        description="The Hub commit to pull from",
+        description="要拉取的 Hub 提交",
     )
 )
 
@@ -127,7 +125,7 @@ prompt.invoke({"question": "foo", "context": "bar"})
 
 
 ```output
-ChatPromptValue(messages=[HumanMessage(content="You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.\nQuestion: foo \nContext: bar \nAnswer:")])
+ChatPromptValue(messages=[HumanMessage(content="你是一个用于问答任务的助手。使用以下检索到的上下文片段来回答问题。如果你不知道答案，就说你不知道。最多使用三句话并保持答案简洁。\n问题: foo \n上下文: bar \n答案:")])
 ```
 
 
@@ -141,15 +139,14 @@ prompt.with_config(configurable={"hub_commit": "rlm/rag-prompt-llama"}).invoke(
 
 
 ```output
-ChatPromptValue(messages=[HumanMessage(content="[INST]<<SYS>> You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.<</SYS>> \nQuestion: foo \nContext: bar \nAnswer: [/INST]")])
+ChatPromptValue(messages=[HumanMessage(content="[INST]<<SYS>> 你是一个用于问答任务的助手。使用以下检索到的上下文片段来回答问题。如果你不知道答案，就说你不知道。最多使用三句话并保持答案简洁。<</SYS>> \n问题: foo \n上下文: bar \n答案: [/INST]")])
 ```
 
-
-## Configurable Alternatives
-
+## 可配置的替代方案
 
 
-The `configurable_alternatives()` method allows us to swap out steps in a chain with an alternative. Below, we swap out one chat model for another:
+
+`configurable_alternatives()` 方法允许我们在链中用替代步骤进行替换。下面，我们将一个聊天模型替换为另一个：
 
 
 ```python
@@ -226,92 +223,81 @@ chain.with_config(configurable={"llm": "anthropic"}).invoke({"topic": "bears"})
 AIMessage(content="Here's a bear joke for you:\n\nWhy don't bears wear socks? \nBecause they have bear feet!\n\nHow's that? I tried to come up with a simple, silly pun-based joke about bears. Puns and wordplay are a common way to create humorous bear jokes. Let me know if you'd like to hear another one!", response_metadata={'id': 'msg_01BZvbmnEPGBtcxRWETCHkct', 'model': 'claude-3-haiku-20240307', 'stop_reason': 'end_turn', 'stop_sequence': None, 'usage': {'input_tokens': 13, 'output_tokens': 80}}, id='run-59b6ee44-a1cd-41b8-a026-28ee67cdd718-0')
 ```
 
+### 使用提示
 
-### With Prompts
-
-We can do a similar thing, but alternate between prompts
-
-
+我们可以做类似的事情，但在提示之间交替
 
 ```python
 llm = ChatAnthropic(model="claude-3-haiku-20240307", temperature=0)
 prompt = PromptTemplate.from_template(
-    "Tell me a joke about {topic}"
+    "告诉我一个关于 {topic} 的笑话"
 ).configurable_alternatives(
-    # This gives this field an id
-    # When configuring the end runnable, we can then use this id to configure this field
+    # 这给这个字段一个 id
+    # 当配置最终可运行项时，我们可以使用这个 id 来配置这个字段
     ConfigurableField(id="prompt"),
-    # This sets a default_key.
-    # If we specify this key, the default LLM (ChatAnthropic initialized above) will be used
+    # 这设置了一个 default_key。
+    # 如果我们指定这个键，将使用默认的 LLM（上述初始化的 ChatAnthropic）
     default_key="joke",
-    # This adds a new option, with name `poem`
-    poem=PromptTemplate.from_template("Write a short poem about {topic}"),
-    # You can add more configuration options here
+    # 这添加了一个新选项，名称为 `poem`
+    poem=PromptTemplate.from_template("写一首关于 {topic} 的短诗"),
+    # 你可以在这里添加更多配置选项
 )
 chain = prompt | llm
 
-# By default it will write a joke
+# 默认情况下，它将写一个笑话
 chain.invoke({"topic": "bears"})
 ```
 
-
-
 ```output
-AIMessage(content="Here's a bear joke for you:\n\nWhy don't bears wear socks? \nBecause they have bear feet!", response_metadata={'id': 'msg_01DtM1cssjNFZYgeS3gMZ49H', 'model': 'claude-3-haiku-20240307', 'stop_reason': 'end_turn', 'stop_sequence': None, 'usage': {'input_tokens': 13, 'output_tokens': 28}}, id='run-8199af7d-ea31-443d-b064-483693f2e0a1-0')
+AIMessage(content="这是一个关于熊的笑话：\n\n为什么熊不穿袜子？ \n因为它们有熊脚！", response_metadata={'id': 'msg_01DtM1cssjNFZYgeS3gMZ49H', 'model': 'claude-3-haiku-20240307', 'stop_reason': 'end_turn', 'stop_sequence': None, 'usage': {'input_tokens': 13, 'output_tokens': 28}}, id='run-8199af7d-ea31-443d-b064-483693f2e0a1-0')
 ```
 
-
-
 ```python
-# We can configure it write a poem
+# 我们可以配置它写一首诗
 chain.with_config(configurable={"prompt": "poem"}).invoke({"topic": "bears"})
 ```
 
-
-
 ```output
-AIMessage(content="Here is a short poem about bears:\n\nMajestic bears, strong and true,\nRoaming the forests, wild and free.\nPowerful paws, fur soft and brown,\nCommanding respect, nature's crown.\n\nForaging for berries, fishing streams,\nProtecting their young, fierce and keen.\nMighty bears, a sight to behold,\nGuardians of the wilderness, untold.\n\nIn the wild they reign supreme,\nEmbodying nature's grand theme.\nBears, a symbol of strength and grace,\nCaptivating all who see their face.", response_metadata={'id': 'msg_01Wck3qPxrjURtutvtodaJFn', 'model': 'claude-3-haiku-20240307', 'stop_reason': 'end_turn', 'stop_sequence': None, 'usage': {'input_tokens': 13, 'output_tokens': 134}}, id='run-69414a1e-51d7-4bec-a307-b34b7d61025e-0')
+AIMessage(content="这是关于熊的短诗：\n\n雄伟的熊，强壮而真实，\n在森林中游荡，自由而狂野。\n强大的爪子，柔软的棕色毛发，\n威严的尊重，自然的王冠。\n\n觅食浆果，捕鱼溪流，\n保护幼崽，凶猛而敏锐。\n强大的熊，令人瞩目的景象，\n荒野的守护者，未曾诉说。\n\n在野外它们统治至高无上，\n体现自然的宏伟主题。\n熊，力量与优雅的象征，\n吸引着所有看到它们面孔的人。", response_metadata={'id': 'msg_01Wck3qPxrjURtutvtodaJFn', 'model': 'claude-3-haiku-20240307', 'stop_reason': 'end_turn', 'stop_sequence': None, 'usage': {'input_tokens': 13, 'output_tokens': 134}}, id='run-69414a1e-51d7-4bec-a307-b34b7d61025e-0')
 ```
 
+### 使用提示和LLMs
 
-### With Prompts and LLMs
-
-We can also have multiple things configurable!
-Here's an example doing that with both prompts and LLMs.
-
+我们也可以配置多个内容！
+这是一个同时使用提示和LLMs的示例。
 
 ```python
 llm = ChatAnthropic(
     model="claude-3-haiku-20240307", temperature=0
 ).configurable_alternatives(
-    # This gives this field an id
-    # When configuring the end runnable, we can then use this id to configure this field
+    # 这给这个字段一个id
+    # 在配置最终可运行的内容时，我们可以使用这个id来配置这个字段
     ConfigurableField(id="llm"),
-    # This sets a default_key.
-    # If we specify this key, the default LLM (ChatAnthropic initialized above) will be used
+    # 这设置一个default_key。
+    # 如果我们指定这个key，将使用默认的LLM（上述初始化的ChatAnthropic）
     default_key="anthropic",
-    # This adds a new option, with name `openai` that is equal to `ChatOpenAI()`
+    # 这添加一个新选项，名称为`openai`，等于`ChatOpenAI()`
     openai=ChatOpenAI(),
-    # This adds a new option, with name `gpt4` that is equal to `ChatOpenAI(model="gpt-4")`
+    # 这添加一个新选项，名称为`gpt4`，等于`ChatOpenAI(model="gpt-4")`
     gpt4=ChatOpenAI(model="gpt-4"),
-    # You can add more configuration options here
+    # 你可以在这里添加更多配置选项
 )
 prompt = PromptTemplate.from_template(
-    "Tell me a joke about {topic}"
+    "告诉我一个关于{topic}的笑话"
 ).configurable_alternatives(
-    # This gives this field an id
-    # When configuring the end runnable, we can then use this id to configure this field
+    # 这给这个字段一个id
+    # 在配置最终可运行的内容时，我们可以使用这个id来配置这个字段
     ConfigurableField(id="prompt"),
-    # This sets a default_key.
-    # If we specify this key, the default LLM (ChatAnthropic initialized above) will be used
+    # 这设置一个default_key。
+    # 如果我们指定这个key，将使用默认的LLM（上述初始化的ChatAnthropic）
     default_key="joke",
-    # This adds a new option, with name `poem`
-    poem=PromptTemplate.from_template("Write a short poem about {topic}"),
-    # You can add more configuration options here
+    # 这添加一个新选项，名称为`poem`
+    poem=PromptTemplate.from_template("写一首关于{topic}的短诗"),
+    # 你可以在这里添加更多配置选项
 )
 chain = prompt | llm
 
-# We can configure it write a poem with OpenAI
+# 我们可以配置它写一首用OpenAI的诗
 chain.with_config(configurable={"prompt": "poem", "llm": "openai"}).invoke(
     {"topic": "bears"}
 )
@@ -320,26 +306,25 @@ chain.with_config(configurable={"prompt": "poem", "llm": "openai"}).invoke(
 
 
 ```output
-AIMessage(content="In the forest deep and wide,\nBears roam with grace and pride.\nWith fur as dark as night,\nThey rule the land with all their might.\n\nIn winter's chill, they hibernate,\nIn spring they emerge, hungry and great.\nWith claws sharp and eyes so keen,\nThey hunt for food, fierce and lean.\n\nBut beneath their tough exterior,\nLies a gentle heart, warm and superior.\nThey love their cubs with all their might,\nProtecting them through day and night.\n\nSo let us admire these majestic creatures,\nIn awe of their strength and features.\nFor in the wild, they reign supreme,\nThe mighty bears, a timeless dream.", response_metadata={'token_usage': {'completion_tokens': 133, 'prompt_tokens': 13, 'total_tokens': 146}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': 'fp_c2295e73ad', 'finish_reason': 'stop', 'logprobs': None}, id='run-5eec0b96-d580-49fd-ac4e-e32a0803b49b-0')
+AIMessage(content="在广阔而深邃的森林中，\n熊以优雅和骄傲漫游。\n毛发如夜色般黑暗，\n它们以全部的力量统治这片土地。\n\n在冬天的寒冷中，它们冬眠，\n春天它们苏醒，饥饿而伟大。\n锋利的爪子和敏锐的眼睛，\n它们寻找食物，凶猛而瘦削。\n\n但在它们坚硬的外表下，\n藏着一颗温暖而高贵的心。\n它们用尽全力爱护幼崽，\n在白天和黑夜中保护它们。\n\n所以让我们欣赏这些雄伟的生物，\n对它们的力量和特征感到敬畏。\n因为在野外，它们是至高无上的，\n强大的熊，永恒的梦想。", response_metadata={'token_usage': {'completion_tokens': 133, 'prompt_tokens': 13, 'total_tokens': 146}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': 'fp_c2295e73ad', 'finish_reason': 'stop', 'logprobs': None}, id='run-5eec0b96-d580-49fd-ac4e-e32a0803b49b-0')
 ```
 
 
 
 ```python
-# We can always just configure only one if we want
+# 如果我们只想配置一个，也可以
 chain.with_config(configurable={"llm": "openai"}).invoke({"topic": "bears"})
 ```
 
 
 
 ```output
-AIMessage(content="Why don't bears wear shoes?\n\nBecause they have bear feet!", response_metadata={'token_usage': {'completion_tokens': 13, 'prompt_tokens': 13, 'total_tokens': 26}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': 'fp_c2295e73ad', 'finish_reason': 'stop', 'logprobs': None}, id='run-c1b14c9c-4988-49b8-9363-15bfd479973a-0')
+AIMessage(content="为什么熊不穿鞋子？\n\n因为它们有熊掌！", response_metadata={'token_usage': {'completion_tokens': 13, 'prompt_tokens': 13, 'total_tokens': 26}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': 'fp_c2295e73ad', 'finish_reason': 'stop', 'logprobs': None}, id='run-c1b14c9c-4988-49b8-9363-15bfd479973a-0')
 ```
 
+### 保存配置
 
-### Saving configurations
-
-We can also easily save configured chains as their own objects
+我们还可以轻松地将配置好的链保存为它们自己的对象
 
 
 ```python
@@ -354,11 +339,10 @@ openai_joke.invoke({"topic": "bears"})
 AIMessage(content="Why did the bear break up with his girlfriend? \nBecause he couldn't bear the relationship anymore!", response_metadata={'token_usage': {'completion_tokens': 20, 'prompt_tokens': 13, 'total_tokens': 33}, 'model_name': 'gpt-3.5-turbo', 'system_fingerprint': 'fp_c2295e73ad', 'finish_reason': 'stop', 'logprobs': None}, id='run-391ebd55-9137-458b-9a11-97acaff6a892-0')
 ```
 
+## 下一步
 
-## Next steps
+您现在知道如何在运行时配置链的内部步骤。
 
-You now know how to configure a chain's internal steps at runtime.
+要了解更多信息，请参阅本节中关于可运行对象的其他操作指南，包括：
 
-To learn more, see the other how-to guides on runnables in this section, including:
-
-- Using [.bind()](/docs/how_to/binding) as a simpler way to set a runnable's runtime parameters
+- 使用 [.bind()](/docs/how_to/binding) 作为设置可运行对象运行时参数的更简单方法

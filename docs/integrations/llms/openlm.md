@@ -1,16 +1,16 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/openlm.ipynb
 ---
+
 # OpenLM
-[OpenLM](https://github.com/r2d4/openlm) is a zero-dependency OpenAI-compatible LLM provider that can call different inference endpoints directly via HTTP. 
+[OpenLM](https://github.com/r2d4/openlm) 是一个零依赖的 OpenAI 兼容 LLM 提供者，可以通过 HTTP 直接调用不同的推理端点。
 
+它实现了 OpenAI Completion 类，因此可以作为 OpenAI API 的替代品使用。此更改集利用了 BaseOpenAI 以减少代码的增加。
 
-It implements the OpenAI Completion class so that it can be used as a drop-in replacement for the OpenAI API. This changeset utilizes BaseOpenAI for minimal added code.
+本示例介绍了如何使用 LangChain 同时与 OpenAI 和 HuggingFace 进行交互。您需要从两者获取 API 密钥。
 
-This examples goes over how to use LangChain to interact with both OpenAI and HuggingFace. You'll need API keys from both.
-
-### Setup
-Install dependencies and set API keys.
+### 设置
+安装依赖项并设置 API 密钥。
 
 
 ```python
@@ -36,17 +36,15 @@ if "HF_API_TOKEN" not in os.environ:
     os.environ["HF_API_TOKEN"] = getpass()
 ```
 
-### Using LangChain with OpenLM
+### 使用 LangChain 与 OpenLM
 
-Here we're going to call two models in an LLMChain, `text-davinci-003` from OpenAI and `gpt2` on HuggingFace.
-
+在这里，我们将调用两个模型在 LLMChain 中，来自 OpenAI 的 `text-davinci-003` 和 HuggingFace 上的 `gpt2`。
 
 ```python
 from langchain.chains import LLMChain
 from langchain_community.llms import OpenLM
 from langchain_core.prompts import PromptTemplate
 ```
-
 
 ```python
 question = "What is the capital of France?"
@@ -74,7 +72,7 @@ Result: Question: What is the capital of France?
 Answer: Let's think step by step. I am not going to lie, this is a complicated issue, and I don't see any solutions to all this, but it is still far more
 ```
 
-## Related
+## 相关
 
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

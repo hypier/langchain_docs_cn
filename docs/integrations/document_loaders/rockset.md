@@ -1,29 +1,25 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/rockset.ipynb
 ---
+
 # Rockset
 
-> Rockset is a real-time analytics database which enables queries on massive, semi-structured data without operational burden. With Rockset, ingested data is queryable within one second and analytical queries against that data typically execute in milliseconds. Rockset is compute optimized, making it suitable for serving high concurrency applications in the sub-100TB range (or larger than 100s of TBs with rollups).
+> Rockset 是一个实时分析数据库，能够在没有操作负担的情况下对大量半结构化数据进行查询。使用 Rockset，摄取的数据在一秒内可查询，而对该数据的分析查询通常在毫秒级别内执行。Rockset 经过计算优化，适合用于支持高并发应用程序，数据量在 100TB 以下（或超过 100TB 的数据通过汇总处理）。
 
-This notebook demonstrates how to use Rockset as a document loader in langchain. To get started, make sure you have a Rockset account and an API key available.
+本笔记本演示了如何在 langchain 中使用 Rockset 作为文档加载器。要开始使用，请确保您拥有 Rockset 账户和可用的 API 密钥。
 
+## 设置环境
 
-
-
-## Setting up the environment
-
-1. Go to the [Rockset console](https://console.rockset.com/apikeys) and get an API key. Find your API region from the [API reference](https://rockset.com/docs/rest-api/#introduction). For the purpose of this notebook, we will assume you're using Rockset from `Oregon(us-west-2)`.
-2. Set your the environment variable `ROCKSET_API_KEY`.
-3. Install the Rockset python client, which will be used by langchain to interact with the Rockset database.
-
+1. 访问 [Rockset 控制台](https://console.rockset.com/apikeys) 并获取 API 密钥。从 [API 参考](https://rockset.com/docs/rest-api/#introduction) 中找到您的 API 区域。为了本笔记本的目的，我们将假设您在使用位于 `Oregon(us-west-2)` 的 Rockset。
+2. 设置环境变量 `ROCKSET_API_KEY`。
+3. 安装 Rockset python 客户端，langchain 将使用它与 Rockset 数据库进行交互。
 
 ```python
 %pip install --upgrade --quiet  rockset
 ```
 
-# Loading Documents
-The Rockset integration with LangChain allows you to load documents from Rockset collections with SQL queries. In order to do this you must construct a `RocksetLoader` object. Here is an example snippet that initializes a `RocksetLoader`.
-
+# 加载文档
+Rockset 与 LangChain 的集成允许您通过 SQL 查询从 Rockset 集合中加载文档。为此，您必须构造一个 `RocksetLoader` 对象。以下是初始化 `RocksetLoader` 的示例代码片段。
 
 ```python
 from langchain_community.document_loaders import RocksetLoader
@@ -31,35 +27,33 @@ from rockset import Regions, RocksetClient, models
 
 loader = RocksetLoader(
     RocksetClient(Regions.usw2a1, "<api key>"),
-    models.QueryRequestSql(query="SELECT * FROM langchain_demo LIMIT 3"),  # SQL query
-    ["text"],  # content columns
-    metadata_keys=["id", "date"],  # metadata columns
+    models.QueryRequestSql(query="SELECT * FROM langchain_demo LIMIT 3"),  # SQL 查询
+    ["text"],  # 内容列
+    metadata_keys=["id", "date"],  # 元数据列
 )
 ```
 
-Here, you can see that the following query is run:
+在这里，您可以看到运行了以下查询：
 
 ```sql
 SELECT * FROM langchain_demo LIMIT 3
 ```
 
-The `text` column in the collection is used as the page content, and the record's `id` and `date` columns are used as metadata (if you do not pass anything into `metadata_keys`, the whole Rockset document will be used as metadata). 
+集合中的 `text` 列用作页面内容，记录的 `id` 和 `date` 列用作元数据（如果您没有传入任何内容到 `metadata_keys`，则整个 Rockset 文档将用作元数据）。
 
-To execute the query and access an iterator over the resulting `Document`s, run:
-
+要执行查询并访问结果 `Document` 的迭代器，请运行：
 
 ```python
 loader.lazy_load()
 ```
 
-To execute the query and access all resulting `Document`s at once, run:
-
+要执行查询并一次性访问所有结果 `Document`，请运行：
 
 ```python
 loader.load()
 ```
 
-Here is an example response of `loader.load()`:
+以下是 `loader.load()` 的示例响应：
 ```python
 [
     Document(
@@ -77,10 +71,9 @@ Here is an example response of `loader.load()`:
 ]
 ```
 
-## Using multiple columns as content
+## 使用多个列作为内容
 
-You can choose to use multiple columns as content:
-
+您可以选择使用多个列作为内容：
 
 ```python
 from langchain_community.document_loaders import RocksetLoader
@@ -89,21 +82,20 @@ from rockset import Regions, RocksetClient, models
 loader = RocksetLoader(
     RocksetClient(Regions.usw2a1, "<api key>"),
     models.QueryRequestSql(query="SELECT * FROM langchain_demo LIMIT 1 WHERE id=38"),
-    ["sentence1", "sentence2"],  # TWO content columns
+    ["sentence1", "sentence2"],  # 两个内容列
 )
 ```
 
-Assuming the "sentence1" field is `"This is the first sentence."` and the "sentence2" field is `"This is the second sentence."`, the `page_content` of the resulting `Document` would be:
+假设“sentence1”字段为“`This is the first sentence.`”且“sentence2”字段为“`This is the second sentence.`”，则生成的`Document`的`page_content`将是：
 
 ```
 This is the first sentence.
 This is the second sentence.
 ```
 
-You can define you own function to join content columns by setting the `content_columns_joiner` argument in the `RocksetLoader` constructor. `content_columns_joiner` is a method that takes in a `List[Tuple[str, Any]]]` as an argument, representing a list of tuples of (column name, column value). By default, this is a method that joins each column value with a new line.
+您可以通过在`RocksetLoader`构造函数中设置`content_columns_joiner`参数来定义自己的函数以连接内容列。`content_columns_joiner`是一个方法，接受一个`List[Tuple[str, Any]]]`作为参数，表示一个包含（列名，列值）元组的列表。默认情况下，这是一个将每个列值用新行连接的方法。
 
-For example, if you wanted to join sentence1 and sentence2 with a space instead of a new line, you could set `content_columns_joiner` like so:
-
+例如，如果您想用空格而不是新行连接sentence1和sentence2，可以这样设置`content_columns_joiner`：
 
 ```python
 RocksetLoader(
@@ -112,18 +104,17 @@ RocksetLoader(
     ["sentence1", "sentence2"],
     content_columns_joiner=lambda docs: " ".join(
         [doc[1] for doc in docs]
-    ),  # join with space instead of /n
+    ),  # 用空格连接而不是/n
 )
 ```
 
-The `page_content` of the resulting `Document` would be:
+生成的`Document`的`page_content`将是：
 
 ```
 This is the first sentence. This is the second sentence.
 ```
 
-Oftentimes you want to include the column name in the `page_content`. You can do that like this:
-
+通常，您可能希望在`page_content`中包含列名。您可以这样做：
 
 ```python
 RocksetLoader(
@@ -136,15 +127,14 @@ RocksetLoader(
 )
 ```
 
-This would result in the following `page_content`:
+这将导致以下`page_content`：
 
 ```
 sentence1: This is the first sentence.
 sentence2: This is the second sentence.
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

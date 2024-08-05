@@ -1,28 +1,27 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/aws_dynamodb.ipynb
 ---
+
 # AWS DynamoDB
 
->[Amazon AWS DynamoDB](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/dynamodb/index.html) is a fully managed `NoSQL` database service that provides fast and predictable performance with seamless scalability.
+>[Amazon AWS DynamoDB](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/dynamodb/index.html) 是一个完全托管的 `NoSQL` 数据库服务，提供快速且可预测的性能，并具备无缝的可扩展性。
 
-This notebook goes over how to use `DynamoDB` to store chat message history with `DynamoDBChatMessageHistory` class.
+本笔记本介绍如何使用 `DynamoDB` 存储聊天消息历史记录，使用 `DynamoDBChatMessageHistory` 类。
 
-## Setup
+## 设置
 
-First make sure you have correctly configured the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html). Then make sure you have installed the `langchain-community` package, so we need to install that. We also need to install the `boto3` package.
+首先确保您已正确配置[AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)。然后确保您已安装`langchain-community`包，因此我们需要安装它。我们还需要安装`boto3`包。
 
 ```bash
 pip install -U langchain-community boto3
 ```
 
-It's also helpful (but not needed) to set up [LangSmith](https://smith.langchain.com/) for best-in-class observability
-
+设置[LangSmith](https://smith.langchain.com/)以获得最佳的可观察性也是有帮助的（但不是必需的）
 
 ```python
 # os.environ["LANGCHAIN_TRACING_V2"] = "true"
 # os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 ```
-
 
 ```python
 from langchain_community.chat_message_histories import (
@@ -30,9 +29,9 @@ from langchain_community.chat_message_histories import (
 )
 ```
 
-## Create Table
+## 创建表
 
-Now, create the `DynamoDB` Table where we will be storing messages:
+现在，创建 `DynamoDB` 表，我们将在其中存储消息：
 
 
 ```python
@@ -58,6 +57,7 @@ print(table.item_count)
 ```output
 0
 ```
+
 ## DynamoDBChatMessageHistory
 
 
@@ -80,11 +80,9 @@ history.messages
 [HumanMessage(content='hi!'), AIMessage(content='whats up?')]
 ```
 
+## DynamoDBChatMessageHistory 与自定义端点 URL
 
-## DynamoDBChatMessageHistory with Custom Endpoint URL
-
-Sometimes it is useful to specify the URL to the AWS endpoint to connect to. For instance, when you are running locally against [Localstack](https://localstack.cloud/). For those cases you can specify the URL via the `endpoint_url` parameter in the constructor.
-
+有时指定连接到 AWS 端点的 URL 是很有用的。例如，当您在本地使用 [Localstack](https://localstack.cloud/) 时。在这种情况下，您可以通过构造函数中的 `endpoint_url` 参数指定 URL。
 
 ```python
 history = DynamoDBChatMessageHistory(
@@ -94,19 +92,17 @@ history = DynamoDBChatMessageHistory(
 )
 ```
 
-## DynamoDBChatMessageHistory With Composite Keys
-The default key for DynamoDBChatMessageHistory is ```{"SessionId": self.session_id}```, but you can modify this to match your table design.
+## DynamoDBChatMessageHistory 与复合键
+DynamoDBChatMessageHistory 的默认键是 ```{"SessionId": self.session_id}```, 但您可以根据您的表设计进行修改。
 
-### Primary Key Name
-You may modify the primary key by passing in a primary_key_name value in the constructor, resulting in the following:
+### 主键名称
+您可以通过在构造函数中传递 primary_key_name 值来修改主键，从而得到以下结果：
 ```{self.primary_key_name: self.session_id}```
 
-### Composite Keys
-When using an existing DynamoDB table, you may need to modify the key structure from the default of to something including a Sort Key. To do this you may use the ```key``` parameter.
+### 复合键
+在使用现有的 DynamoDB 表时，您可能需要将键结构从默认值修改为包含排序键的结构。为此，您可以使用 ```key``` 参数。
 
-Passing a value for key will override the primary_key parameter, and the resulting key structure will be the passed value.
-
-
+传递一个值给 key 将覆盖 primary_key 参数，结果键结构将是传递的值。
 
 ```python
 composite_table = dynamodb.create_table(
@@ -122,10 +118,10 @@ composite_table = dynamodb.create_table(
     BillingMode="PAY_PER_REQUEST",
 )
 
-# Wait until the table exists.
+# 等待直到表存在。
 composite_table.meta.client.get_waiter("table_exists").wait(TableName="CompositeTable")
 
-# Print out some data about the table.
+# 打印一些关于表的数据。
 print(composite_table.item_count)
 ```
 ```output
@@ -150,18 +146,15 @@ composite_key_history.add_user_message("hello, composite dynamodb table!")
 composite_key_history.messages
 ```
 
-
-
 ```output
 [HumanMessage(content='hello, composite dynamodb table!')]
 ```
 
+## 链接
 
-## Chaining
+我们可以轻松地将此消息历史类与 [LCEL Runnables](/docs/how_to/message_history) 结合起来
 
-We can easily combine this message history class with [LCEL Runnables](/docs/how_to/message_history)
-
-To do this we will want to use OpenAI, so we need to install that
+为此，我们需要使用 OpenAI，因此我们需要安装它
 
 
 ```python
@@ -223,4 +216,3 @@ chain_with_history.invoke({"question": "Whats my name"}, config=config)
 ```output
 AIMessage(content='Your name is Bob! Is there anything specific you would like assistance with, Bob?')
 ```
-

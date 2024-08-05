@@ -1,23 +1,23 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/vald.ipynb
 ---
+
 # Vald
 
-> [Vald](https://github.com/vdaas/vald) is a highly scalable distributed fast approximate nearest neighbor (ANN) dense vector search engine.
+> [Vald](https://github.com/vdaas/vald) 是一个高度可扩展的分布式快速近似最近邻（ANN）稠密向量搜索引擎。
 
-This notebook shows how to use functionality related to the `Vald` database.
+本笔记本展示了如何使用与 `Vald` 数据库相关的功能。
 
-To run this notebook you need a running Vald cluster.
-Check [Get Started](https://github.com/vdaas/vald#get-started) for more information.
+要运行此笔记本，您需要一个正在运行的 Vald 集群。
+有关更多信息，请查看 [开始使用](https://github.com/vdaas/vald#get-started)。
 
-See the [installation instructions](https://github.com/vdaas/vald-client-python#install).
-
+请参阅 [安装说明](https://github.com/vdaas/vald-client-python#install)。
 
 ```python
 %pip install --upgrade --quiet  vald-client-python langchain-community
 ```
 
-## Basic Example
+## 基本示例
 
 
 ```python
@@ -40,7 +40,7 @@ docs = db.similarity_search(query)
 docs[0].page_content
 ```
 
-### Similarity search by vector
+### 基于向量的相似性搜索
 
 
 ```python
@@ -49,7 +49,7 @@ docs = db.similarity_search_by_vector(embedding_vector)
 docs[0].page_content
 ```
 
-### Similarity search with score
+### 相似性搜索与得分
 
 
 ```python
@@ -57,29 +57,27 @@ docs_and_scores = db.similarity_search_with_score(query)
 docs_and_scores[0]
 ```
 
-## Maximal Marginal Relevance Search (MMR)
+## 最大边际相关性搜索 (MMR)
 
-In addition to using similarity search in the retriever object, you can also use `mmr` as retriever.
-
+除了在检索器对象中使用相似性搜索外，您还可以将 `mmr` 用作检索器。
 
 ```python
 retriever = db.as_retriever(search_type="mmr")
 retriever.invoke(query)
 ```
 
-Or use `max_marginal_relevance_search` directly:
-
+或者直接使用 `max_marginal_relevance_search`：
 
 ```python
 db.max_marginal_relevance_search(query, k=2, fetch_k=10)
 ```
 
-## Example of using secure connection
-In order to run this notebook, it is necessary to run a Vald cluster with secure connection.
+## 使用安全连接的示例
+为了运行此笔记本，需要运行一个带有安全连接的 Vald 集群。
 
-Here is an example of a Vald cluster with the following configuration using [Athenz](https://github.com/AthenZ/athenz) authentication.
+以下是使用 [Athenz](https://github.com/AthenZ/athenz) 认证的 Vald 集群的示例配置。
 
-ingress(TLS) -> [authorization-proxy](https://github.com/AthenZ/authorization-proxy)(Check athenz-role-auth in grpc metadata) -> vald-lb-gateway
+ingress(TLS) -> [authorization-proxy](https://github.com/AthenZ/authorization-proxy)(检查 grpc 元数据中的 athenz-role-auth) -> vald-lb-gateway
 
 
 ```python
@@ -125,7 +123,7 @@ docs = db.similarity_search(query, grpc_metadata=metadata)
 docs[0].page_content
 ```
 
-### Similarity search by vector
+### 基于向量的相似性搜索
 
 
 ```python
@@ -134,7 +132,7 @@ docs = db.similarity_search_by_vector(embedding_vector, grpc_metadata=metadata)
 docs[0].page_content
 ```
 
-### Similarity search with score
+### 带分数的相似性搜索
 
 
 ```python
@@ -142,7 +140,7 @@ docs_and_scores = db.similarity_search_with_score(query, grpc_metadata=metadata)
 docs_and_scores[0]
 ```
 
-### Maximal Marginal Relevance Search (MMR)
+### 最大边际相关性搜索 (MMR)
 
 
 ```python
@@ -152,15 +150,14 @@ retriever = db.as_retriever(
 retriever.invoke(query, grpc_metadata=metadata)
 ```
 
-Or:
+或者：
 
 
 ```python
 db.max_marginal_relevance_search(query, k=2, fetch_k=10, grpc_metadata=metadata)
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

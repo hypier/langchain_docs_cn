@@ -1,40 +1,37 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/elasticsearch.ipynb
 ---
+
 # Elasticsearch
 
->[Elasticsearch](https://www.elastic.co/elasticsearch/) is a distributed, RESTful search and analytics engine, capable of performing both vector and lexical search. It is built on top of the Apache Lucene library. 
+>[Elasticsearch](https://www.elastic.co/elasticsearch/) 是一个分布式的、基于REST的搜索和分析引擎，能够执行向量和词汇搜索。它建立在Apache Lucene库之上。
 
-This notebook shows how to use functionality related to the `Elasticsearch` database.
-
+本笔记本展示了如何使用与`Elasticsearch`数据库相关的功能。
 
 ```python
 %pip install --upgrade --quiet langchain-elasticsearch langchain-openai tiktoken langchain
 ```
 
-## Running and connecting to Elasticsearch
+## 运行和连接到Elasticsearch
 
-There are two main ways to setup an Elasticsearch instance for use with:
+有两种主要方法可以设置Elasticsearch实例以供使用：
 
-1. Elastic Cloud: Elastic Cloud is a managed Elasticsearch service. Signup for a [free trial](https://cloud.elastic.co/registration?utm_source=langchain&utm_content=documentation).
+1. Elastic Cloud：Elastic Cloud是一个托管的Elasticsearch服务。注册以获取[免费试用](https://cloud.elastic.co/registration?utm_source=langchain&utm_content=documentation)。
 
-To connect to an Elasticsearch instance that does not require
-login credentials (starting the docker instance with security enabled), pass the Elasticsearch URL and index name along with the
-embedding object to the constructor.
+要连接到一个不需要登录凭据的Elasticsearch实例（以安全模式启动docker实例），请将Elasticsearch URL和索引名称与嵌入对象一起传递给构造函数。
 
-2. Local Install Elasticsearch: Get started with Elasticsearch by running it locally. The easiest way is to use the official Elasticsearch Docker image. See the [Elasticsearch Docker documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html) for more information.
+2. 本地安装Elasticsearch：通过在本地运行Elasticsearch来开始使用。最简单的方法是使用官方的Elasticsearch Docker镜像。有关更多信息，请参见[Elasticsearch Docker文档](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html)。
 
-
-### Running Elasticsearch via Docker 
-Example: Run a single-node Elasticsearch instance with security disabled. This is not recommended for production use.
+### 通过 Docker 运行 Elasticsearch
+示例：运行一个单节点的 Elasticsearch 实例，安全性已禁用。这不建议用于生产环境。
 
 ```bash
 docker run -p 9200:9200 -e "discovery.type=single-node" -e "xpack.security.enabled=false" -e "xpack.security.http.ssl.enabled=false" docker.elastic.co/elasticsearch/elasticsearch:8.12.1
 ```
 
-Once the Elasticsearch instance is running, you can connect to it using the Elasticsearch URL and index name along with the embedding object to the constructor.
+一旦 Elasticsearch 实例运行起来，您可以使用 Elasticsearch URL 和索引名称以及嵌入对象连接到构造函数。
 
-Example:
+示例：
 ```python
 from langchain_elasticsearch import ElasticsearchStore
 from langchain_openai import OpenAIEmbeddings
@@ -46,10 +43,11 @@ elastic_vector_search = ElasticsearchStore(
     embedding=embedding
 )
 ```
-### Authentication
-For production, we recommend you run with security enabled. To connect with login credentials, you can use the parameters `es_api_key` or `es_user` and `es_password`.
 
-Example:
+### 认证
+对于生产环境，我们建议您启用安全功能。要使用登录凭据进行连接，您可以使用参数 `es_api_key` 或 `es_user` 和 `es_password`。
+
+示例：
 ```python
 from langchain_elasticsearch import ElasticsearchStore
 from langchain_openai import OpenAIEmbeddings
@@ -64,9 +62,9 @@ elastic_vector_search = ElasticsearchStore(
 )
 ```
 
-You can also use an `Elasticsearch` client object that gives you more flexibility, for example to configure the maximum number of retries.
+您还可以使用 `Elasticsearch` 客户端对象，这样可以提供更多灵活性，例如配置最大重试次数。
 
-Example:
+示例：
 ```python
 import elasticsearch
 from langchain_elasticsearch import ElasticsearchStore
@@ -86,28 +84,28 @@ elastic_vector_search = ElasticsearchStore(
 )
 ```
 
-#### How to obtain a password for the default "elastic" user?
+#### 如何获取默认“elastic”用户的密码？
 
-To obtain your Elastic Cloud password for the default "elastic" user:
-1. Log in to the Elastic Cloud console at https://cloud.elastic.co
-2. Go to "Security" > "Users"
-3. Locate the "elastic" user and click "Edit"
-4. Click "Reset password"
-5. Follow the prompts to reset the password
+要获取默认“elastic”用户的 Elastic Cloud 密码：
+1. 登录到 Elastic Cloud 控制台 https://cloud.elastic.co
+2. 转到“安全” > “用户”
+3. 找到“elastic”用户并点击“编辑”
+4. 点击“重置密码”
+5. 按照提示重置密码
 
-#### How to obtain an API key?
+#### 如何获取 API 密钥？
 
-To obtain an API key:
-1. Log in to the Elastic Cloud console at https://cloud.elastic.co
-2. Open Kibana and go to Stack Management > API Keys
-3. Click "Create API key"
-4. Enter a name for the API key and click "Create"
-5. Copy the API key and paste it into the `api_key` parameter
+要获取 API 密钥：
+1. 登录到 Elastic Cloud 控制台 https://cloud.elastic.co
+2. 打开 Kibana 并转到 Stack Management > API Keys
+3. 点击“创建 API 密钥”
+4. 输入 API 密钥的名称并点击“创建”
+5. 复制 API 密钥并将其粘贴到 `api_key` 参数中
 
 ### Elastic Cloud
-To connect to an Elasticsearch instance on Elastic Cloud, you can use either the `es_cloud_id` parameter or `es_url`.
+要连接到 Elastic Cloud 上的 Elasticsearch 实例，您可以使用 `es_cloud_id` 参数或 `es_url`。
 
-Example:
+示例：
 ```python
 from langchain_elasticsearch import ElasticsearchStore
 from langchain_openai import OpenAIEmbeddings
@@ -122,8 +120,7 @@ elastic_vector_search = ElasticsearchStore(
 )
 ```
 
-To use the `OpenAIEmbeddings` we have to configure the OpenAI API Key in the environment.
-
+要使用 `OpenAIEmbeddings`，我们必须在环境中配置 OpenAI API 密钥。
 
 ```python
 import getpass
@@ -132,20 +129,17 @@ import os
 os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API Key:")
 ```
 
-## Basic Example
-This example we are going to load "state_of_the_union.txt" via the TextLoader, chunk the text into 500 word chunks, and then index each chunk into Elasticsearch.
+## 基本示例
+在这个示例中，我们将通过 TextLoader 加载 "state_of_the_union.txt"，将文本分成 500 字的块，然后将每个块索引到 Elasticsearch 中。
 
-Once the data is indexed, we perform a simple query to find the top 4 chunks that similar to the query "What did the president say about Ketanji Brown Jackson".
+数据索引完成后，我们执行一个简单的查询，以查找与查询 "总统对 Ketanji Brown Jackson 说了什么" 最相似的前 4 个块。
 
-Elasticsearch is running locally on localhost:9200 with [docker](#running-elasticsearch-via-docker). For more details on how to connect to Elasticsearch from Elastic Cloud, see [connecting with authentication](#authentication) above.
-
-
+Elasticsearch 在 localhost:9200 上本地运行，使用 [docker](#running-elasticsearch-via-docker)。有关如何从 Elastic Cloud 连接到 Elasticsearch 的更多详细信息，请参见上面的 [连接与身份验证](#authentication)。
 
 ```python
 from langchain_elasticsearch import ElasticsearchStore
 from langchain_openai import OpenAIEmbeddings
 ```
-
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -158,7 +152,6 @@ docs = text_splitter.split_documents(documents)
 
 embeddings = OpenAIEmbeddings()
 ```
-
 
 ```python
 db = ElasticsearchStore.from_documents(
@@ -177,10 +170,10 @@ print(results)
 ```output
 [Document(page_content='One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. \n\nAnd I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.', metadata={'source': '../../how_to/state_of_the_union.txt'}), Document(page_content='As I said last year, especially to our younger transgender Americans, I will always have your back as your President, so you can be yourself and reach your God-given potential. \n\nWhile it often appears that we never agree, that isn’t true. I signed 80 bipartisan bills into law last year. From preventing government shutdowns to protecting Asian-Americans from still-too-common hate crimes to reforming military justice.', metadata={'source': '../../how_to/state_of_the_union.txt'}), Document(page_content='A former top litigator in private practice. A former federal public defender. And from a family of public school educators and police officers. A consensus builder. Since she’s been nominated, she’s received a broad range of support—from the Fraternal Order of Police to former judges appointed by Democrats and Republicans. \n\nAnd if we are to advance liberty and justice, we need to secure the Border and fix the immigration system.', metadata={'source': '../../how_to/state_of_the_union.txt'}), Document(page_content='This is personal to me and Jill, to Kamala, and to so many of you. \n\nCancer is the #2 cause of death in America–second only to heart disease. \n\nLast month, I announced our plan to supercharge  \nthe Cancer Moonshot that President Obama asked me to lead six years ago. \n\nOur goal is to cut the cancer death rate by at least 50% over the next 25 years, turn more cancers from death sentences into treatable diseases.  \n\nMore support for patients and families.', metadata={'source': '../../how_to/state_of_the_union.txt'})]
 ```
-# Metadata
 
-`ElasticsearchStore` supports metadata to stored along with the document. This metadata dict object is stored in a metadata object field in the Elasticsearch document. Based on the metadata value, Elasticsearch will automatically setup the mapping by infering the data type of the metadata value. For example, if the metadata value is a string, Elasticsearch will setup the mapping for the metadata object field as a string type.
+# 元数据
 
+`ElasticsearchStore` 支持与文档一起存储的元数据。这个元数据字典对象存储在 Elasticsearch 文档中的元数据对象字段中。根据元数据值，Elasticsearch 会通过推断元数据值的数据类型自动设置映射。例如，如果元数据值是字符串，Elasticsearch 会将元数据对象字段的映射设置为字符串类型。
 
 ```python
 # Adding metadata to documents
@@ -200,11 +193,12 @@ print(docs[0].metadata)
 ```output
 {'source': '../../how_to/state_of_the_union.txt', 'date': '2016-01-01', 'rating': 2, 'author': 'John Doe'}
 ```
-## Filtering Metadata
-With metadata added to the documents, you can add metadata filtering at query time. 
 
-### Example: Filter by Exact keyword
-Notice: We are using the keyword subfield thats not analyzed
+## 过滤元数据
+通过在文档中添加元数据，您可以在查询时添加元数据过滤。
+
+### 示例：按精确关键词过滤
+注意：我们使用的是未分析的关键词子字段
 
 
 ```python
@@ -216,11 +210,11 @@ print(docs[0].metadata)
 ```output
 {'source': '../../how_to/state_of_the_union.txt', 'date': '2016-01-01', 'rating': 2, 'author': 'John Doe'}
 ```
-### Example: Filter by Partial Match
-This example shows how to filter by partial match. This is useful when you don't know the exact value of the metadata field. For example, if you want to filter by the metadata field `author` and you don't know the exact value of the author, you can use a partial match to filter by the author's last name. Fuzzy matching is also supported.
 
-"Jon" matches on "John Doe" as "Jon" is a close match to "John" token.
+### 示例：按部分匹配过滤
+本示例展示了如何按部分匹配进行过滤。当您不知道元数据字段的确切值时，这非常有用。例如，如果您想按元数据字段 `author` 进行过滤，但不知道作者的确切值，您可以使用部分匹配按作者的姓进行过滤。也支持模糊匹配。
 
+"Jon" 与 "John Doe" 匹配，因为 "Jon" 是与 "John" 令牌的近似匹配。
 
 ```python
 docs = db.similarity_search(
@@ -232,8 +226,8 @@ print(docs[0].metadata)
 ```output
 {'source': '../../how_to/state_of_the_union.txt', 'date': '2016-01-01', 'rating': 2, 'author': 'John Doe'}
 ```
-### Example: Filter by Date Range
 
+### 示例：按日期范围过滤
 
 ```python
 docs = db.similarity_search(
@@ -245,8 +239,8 @@ print(docs[0].metadata)
 ```output
 {'source': '../../how_to/state_of_the_union.txt', 'date': '2012-01-01', 'rating': 3, 'author': 'John Doe', 'geo_location': {'lat': 40.12, 'lon': -71.34}}
 ```
-### Example: Filter by Numeric Range
 
+### 示例：按数值范围过滤
 
 ```python
 docs = db.similarity_search(
@@ -257,9 +251,9 @@ print(docs[0].metadata)
 ```output
 {'source': '../../how_to/state_of_the_union.txt', 'date': '2012-01-01', 'rating': 3, 'author': 'John Doe', 'geo_location': {'lat': 40.12, 'lon': -71.34}}
 ```
-### Example: Filter by Geo Distance
-Requires an index with a geo_point mapping to be declared for `metadata.geo_location`.
 
+### 示例：按地理距离过滤
+需要为 `metadata.geo_location` 声明一个带有 geo_point 映射的索引。
 
 ```python
 docs = db.similarity_search(
@@ -276,23 +270,23 @@ docs = db.similarity_search(
 print(docs[0].metadata)
 ```
 
-Filter supports many more types of queries than above. 
+过滤器支持比上述更多类型的查询。
 
-Read more about them in the [documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html).
+在 [文档](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html) 中了解更多信息。
 
-# Distance Similarity Algorithm
-Elasticsearch supports the following vector distance similarity algorithms:
+# 距离相似度算法
+Elasticsearch 支持以下向量距离相似度算法：
 
 - cosine
 - euclidean
 - dot_product
 
-The cosine similarity algorithm is the default.
+cosine 相似度算法是默认的。
 
-You can specify the similarity Algorithm needed via the similarity parameter.
+您可以通过 similarity 参数指定所需的相似度算法。
 
-**NOTE**
-Depending on the retrieval strategy, the similarity algorithm cannot be changed at query time. It is needed to be set when creating the index mapping for field. If you need to change the similarity algorithm, you need to delete the index and recreate it with the correct distance_strategy.
+**注意**
+根据检索策略，相似度算法在查询时无法更改。它需要在创建字段的索引映射时设置。如果您需要更改相似度算法，您需要删除索引并使用正确的 distance_strategy 重新创建它。
 
 ```python
 
@@ -308,14 +302,13 @@ db = ElasticsearchStore.from_documents(
 
 ```
 
-# Retrieval Strategies
-Elasticsearch has big advantages over other vector only databases from its ability to support a wide range of retrieval strategies. In this notebook we will configure `ElasticsearchStore` to support some of the most common retrieval strategies. 
+# 检索策略
+Elasticsearch 相较于其他仅支持向量的数据库具有很大的优势，因为它能够支持广泛的检索策略。在本笔记本中，我们将配置 `ElasticsearchStore` 以支持一些最常见的检索策略。
 
-By default, `ElasticsearchStore` uses the `DenseVectorStrategy` (was called `ApproxRetrievalStrategy` prior to version 0.2.0).
+默认情况下，`ElasticsearchStore` 使用 `DenseVectorStrategy`（在 0.2.0 版本之前称为 `ApproxRetrievalStrategy`）。
 
 ## DenseVectorStrategy
-This will return the top `k` most similar vectors to the query vector.  The `k` parameter is set when the `ElasticsearchStore` is initialized. The default value is `10`.
-
+这将返回与查询向量最相似的前 `k` 个向量。 `k` 参数在初始化 `ElasticsearchStore` 时设置。 默认值为 `10`。
 
 ```python
 from langchain_elasticsearch import DenseVectorStrategy
@@ -333,12 +326,12 @@ docs = db.similarity_search(
 )
 ```
 
-### Example: Hybrid retrieval with dense vector and keyword search
-This example will show how to configure `ElasticsearchStore` to perform a hybrid retrieval, using a combination of approximate semantic search and keyword based search. 
+### 示例：使用密集向量和关键词搜索的混合检索
+本示例将演示如何配置 `ElasticsearchStore` 以执行混合检索，使用近似语义搜索和基于关键词的搜索的组合。
 
-We use RRF to balance the two scores from different retrieval methods.
+我们使用 RRF 来平衡来自不同检索方法的两个分数。
 
-To enable hybrid retrieval, we need to set `hybrid=True` in the `DenseVectorStrategy` constructor.
+要启用混合检索，我们需要在 `DenseVectorStrategy` 构造函数中设置 `hybrid=True`。
 
 ```python
 
@@ -351,11 +344,11 @@ db = ElasticsearchStore.from_documents(
 )
 ```
 
-When `hybrid` is enabled, the query performed will be a combination of approximate semantic search and keyword based search. 
+当启用 `hybrid` 时，执行的查询将是近似语义搜索和基于关键词的搜索的组合。
 
-It will use `rrf` (Reciprocal Rank Fusion) to balance the two scores from different retrieval methods.
+它将使用 `rrf`（互惠排名融合）来平衡来自不同检索方法的两个分数。
 
-**Note** RRF requires Elasticsearch 8.9.0 or above.
+**注意** RRF 需要 Elasticsearch 8.9.0 或更高版本。
 
 ```json
 {
@@ -376,12 +369,12 @@ It will use `rrf` (Reciprocal Rank Fusion) to balance the two scores from differ
 }
 ```
 
-### Example: Dense vector search with Embedding Model in Elasticsearch
-This example will show how to configure `ElasticsearchStore` to use the embedding model deployed in Elasticsearch for dense vector retrieval.
+### 示例：在Elasticsearch中使用嵌入模型进行稠密向量搜索
+本示例将展示如何配置`ElasticsearchStore`以使用在Elasticsearch中部署的嵌入模型进行稠密向量检索。
 
-To use this, specify the model_id in `DenseVectorStrategy` constructor via the `query_model_id` argument.
+要使用此功能，请通过`query_model_id`参数在`DenseVectorStrategy`构造函数中指定model_id。
 
-**NOTE** This requires the model to be deployed and running in Elasticsearch ml node. See [notebook example](https://github.com/elastic/elasticsearch-labs/blob/main/notebooks/integrations/hugging-face/loading-model-from-hugging-face.ipynb) on how to deploy the model with eland.
+**注意** 这要求模型已在Elasticsearch ml节点中部署并运行。请参阅[notebook示例](https://github.com/elastic/elasticsearch-labs/blob/main/notebooks/integrations/hugging-face/loading-model-from-hugging-face.ipynb)，了解如何使用eland部署模型。
 
 
 
@@ -453,12 +446,11 @@ db.similarity_search("hello world", k=10)
 ```
 
 ## SparseVectorStrategy (ELSER)
-This strategy uses Elasticsearch's sparse vector retrieval to retrieve the top-k results. We only support our own "ELSER" embedding model for now.
+该策略使用Elasticsearch的稀疏向量检索来获取前k个结果。目前我们仅支持我们自己的“ELSER”嵌入模型。
 
-**NOTE** This requires the ELSER model to be deployed and running in Elasticsearch ml node. 
+**注意** 这需要在Elasticsearch ml节点中部署并运行ELSER模型。
 
-To use this, specify `SparseVectorStrategy` (was called `SparseVectorRetrievalStrategy` prior to version 0.2.0) in the `ElasticsearchStore` constructor. You will need to provide a model ID.
-
+要使用此功能，请在`ElasticsearchStore`构造函数中指定`SparseVectorStrategy`（在0.2.0版本之前称为`SparseVectorRetrievalStrategy`）。您需要提供模型ID。
 
 ```python
 from langchain_elasticsearch import SparseVectorStrategy
@@ -484,10 +476,11 @@ print(results[0])
 ```output
 page_content='One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. \n\nAnd I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.' metadata={'source': '../../how_to/state_of_the_union.txt'}
 ```
-## DenseVectorScriptScoreStrategy
-This strategy uses Elasticsearch's script score query to perform exact vector retrieval (also known as brute force) to retrieve the top-k results. (This strategy was called `ExactRetrievalStrategy` prior to version 0.2.0.)
 
-To use this, specify `DenseVectorScriptScoreStrategy` in `ElasticsearchStore` constructor.
+## DenseVectorScriptScoreStrategy
+该策略使用Elasticsearch的脚本评分查询来执行精确向量检索（也称为暴力检索），以获取前k个结果。（在版本0.2.0之前，该策略被称为`ExactRetrievalStrategy`。）
+
+要使用此策略，请在`ElasticsearchStore`构造函数中指定`DenseVectorScriptScoreStrategy`。
 
 ```python
 from langchain_elasticsearch import SparseVectorStrategy
@@ -502,9 +495,9 @@ db = ElasticsearchStore.from_documents(
 ```
 
 ## BM25Strategy
-Finally, you can use full-text keyword search.
+最后，您可以使用全文关键字搜索。
 
-To use this, specify `BM25Strategy` in `ElasticsearchStore` constructor.
+要使用此功能，请在 `ElasticsearchStore` 构造函数中指定 `BM25Strategy`。
 
 ```python
 from langchain_elasticsearch import BM25Strategy
@@ -517,12 +510,12 @@ db = ElasticsearchStore.from_documents(
 )
 ```
 
-## BM25RetrievalStrategy
-This strategy allows the user to perform searches using pure BM25 without vector search.
+## BM25检索策略
+该策略允许用户仅使用纯BM25进行搜索，而不使用向量搜索。
 
-To use this, specify `BM25RetrievalStrategy` in `ElasticsearchStore` constructor.
+要使用此功能，请在`ElasticsearchStore`构造函数中指定`BM25RetrievalStrategy`。
 
-Note that in the example below, the embedding option is not specified, indicating that the search is conducted without using embeddings.
+请注意，在下面的示例中，没有指定嵌入选项，这表明搜索是在不使用嵌入的情况下进行的。
 
 
 ```python
@@ -544,9 +537,9 @@ print(results)
 ```output
 [Document(page_content='foo'), Document(page_content='foo bar'), Document(page_content='foo bar baz')]
 ```
-## Customise the Query
-With `custom_query` parameter at search, you are able to adjust the query that is used to retrieve documents from Elasticsearch. This is useful if you want to use a more complex query, to support linear boosting of fields.
 
+## 自定义查询
+通过搜索中的 `custom_query` 参数，您可以调整用于从 Elasticsearch 检索文档的查询。这在您想要使用更复杂的查询以支持字段的线性提升时非常有用。
 
 ```python
 # Example of a custom query thats just doing a BM25 search on the text field.
@@ -589,10 +582,10 @@ Query thats actually used in Elasticsearch:
 Results:
 page_content='One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. \n\nAnd I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.' metadata={'source': '../../how_to/state_of_the_union.txt'}
 ```
-# Customize the Document Builder
 
-With ```doc_builder``` parameter at search, you are able to adjust how a Document is being built using data retrieved from Elasticsearch. This is especially useful if you have indices which were not created using Langchain.
+# 自定义文档构建器
 
+通过在搜索中使用 ```doc_builder``` 参数，您可以调整如何使用从 Elasticsearch 检索的数据构建文档。如果您有未使用 Langchain 创建的索引，这尤其有用。
 
 ```python
 from typing import Dict
@@ -620,18 +613,18 @@ print("Results:")
 print(results[0])
 ```
 
-# FAQ
+# 常见问题解答
 
-## Question: Im getting timeout errors when indexing documents into Elasticsearch. How do I fix this?
-One possible issue is your documents might take longer to index into Elasticsearch. ElasticsearchStore uses the Elasticsearch bulk API which has a few defaults that you can adjust to reduce the chance of timeout errors.
+## 问题：我在将文档索引到Elasticsearch时遇到超时错误。该如何解决？
+一个可能的问题是您的文档在索引到Elasticsearch时可能需要更长的时间。ElasticsearchStore使用Elasticsearch批量API，该API有一些默认设置，您可以调整这些设置以减少超时错误的可能性。
 
-This is also a good idea when you're using SparseVectorRetrievalStrategy.
+当您使用SparseVectorRetrievalStrategy时，这也是一个不错的主意。
 
-The defaults are:
+默认设置为：
 - `chunk_size`: 500
 - `max_chunk_bytes`: 100MB
 
-To adjust these, you can pass in the `chunk_size` and `max_chunk_bytes` parameters to the ElasticsearchStore `add_texts` method.
+要调整这些设置，您可以将`chunk_size`和`max_chunk_bytes`参数传递给ElasticsearchStore的`add_texts`方法。
 
 ```python
     vector_store.add_texts(
@@ -643,17 +636,17 @@ To adjust these, you can pass in the `chunk_size` and `max_chunk_bytes` paramete
     )
 ```
 
-# Upgrading to ElasticsearchStore
+# 升级到 ElasticsearchStore
 
-If you're already using Elasticsearch in your langchain based project, you may be using the old implementations: `ElasticVectorSearch` and `ElasticKNNSearch` which are now deprecated. We've introduced a new implementation called `ElasticsearchStore` which is more flexible and easier to use. This notebook will guide you through the process of upgrading to the new implementation.
+如果您已经在基于 langchain 的项目中使用 Elasticsearch，您可能正在使用旧的实现：`ElasticVectorSearch` 和 `ElasticKNNSearch`，这些实现现在已被弃用。我们引入了一种新的实现，称为 `ElasticsearchStore`，它更灵活且更易于使用。此笔记本将指导您完成升级到新实现的过程。
 
-## What's new?
+## 有什么新变化？
 
-The new implementation is now one class called `ElasticsearchStore` which can be used for approximate dense vector, exact dense vector, sparse vector (ELSER), BM25 retrieval and hybrid retrieval, via strategies.
+新的实现现在是一个名为 `ElasticsearchStore` 的类，可用于近似密集向量、精确密集向量、稀疏向量（ELSER）、BM25 检索和混合检索，采用策略。
 
-## I am using ElasticKNNSearch
+## 我正在使用 ElasticKNNSearch
 
-Old implementation:
+旧实现：
 
 ```python
 
@@ -667,7 +660,7 @@ db = ElasticKNNSearch(
 
 ```
 
-New implementation:
+新实现：
 
 ```python
 
@@ -677,17 +670,17 @@ db = ElasticsearchStore(
   es_url="http://localhost:9200",
   index_name="test_index",
   embedding=embedding,
-  # if you use the model_id
+  # 如果您使用 model_id
   # strategy=DenseVectorStrategy(model_id="test_model")
-  # if you use hybrid search
+  # 如果您使用混合搜索
   # strategy=DenseVectorStrategy(hybrid=True)
 )
 
 ```
 
-## I am using ElasticVectorSearch
+## 我正在使用 ElasticVectorSearch
 
-Old implementation:
+旧实现：
 
 ```python
 
@@ -701,7 +694,7 @@ db = ElasticVectorSearch(
 
 ```
 
-New implementation:
+新实现：
 
 ```python
 
@@ -731,9 +724,7 @@ db.client.indices.delete(
 ObjectApiResponse({'acknowledged': True})
 ```
 
+## 相关
 
-
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

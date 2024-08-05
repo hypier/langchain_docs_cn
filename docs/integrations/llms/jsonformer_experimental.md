@@ -1,22 +1,23 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/jsonformer_experimental.ipynb
 ---
+
 # JSONFormer
 
-[JSONFormer](https://github.com/1rgs/jsonformer) is a library that wraps local Hugging Face pipeline models for structured decoding of a subset of the JSON Schema.
+[JSONFormer](https://github.com/1rgs/jsonformer) 是一个库，它封装了本地的 Hugging Face pipeline 模型，用于对 JSON Schema 的子集进行结构化解码。
 
-It works by filling in the structure tokens and then sampling the content tokens from the model.
+它通过填充结构标记，然后从模型中采样内容标记来工作。
 
-**Warning - this module is still experimental**
+**警告 - 此模块仍处于实验阶段**
 
 
 ```python
 %pip install --upgrade --quiet  jsonformer > /dev/null
 ```
 
-### Hugging Face Baseline
+### Hugging Face 基准
 
-First, let's establish a qualitative baseline by checking the output of the model without structured decoding.
+首先，让我们通过检查模型的输出，建立一个定性基准，而不使用结构化解码。
 
 
 ```python
@@ -38,7 +39,7 @@ HF_TOKEN = os.environ.get("HUGGINGFACE_API_KEY")
 
 @tool
 def ask_star_coder(query: str, temperature: float = 1.0, max_new_tokens: float = 250):
-    """Query the BigCode StarCoder model about coding questions."""
+    """查询 BigCode StarCoder 模型有关编码问题的信息。"""
     url = "https://api-inference.huggingface.co/models/bigcode/starcoder"
     headers = {
         "Authorization": f"Bearer {HF_TOKEN}",
@@ -107,12 +108,11 @@ Setting `pad_token_id` to `eos_token_id`:50256 for open-end generation.
 ``````output
  'What's the difference between an iterator and an iterable?'
 ```
-***That's not so impressive, is it? It didn't follow the JSON format at all! Let's try with the structured decoder.***
+***这并不令人印象深刻，是吗？它根本没有遵循 JSON 格式！让我们尝试使用结构化解码器。***
 
 ## JSONFormer LLM Wrapper
 
-Let's try that again, now providing a the Action input's JSON Schema to the model.
-
+让我们再试一次，这次为模型提供 Action 输入的 JSON Schema。
 
 ```python
 decoder_schema = {
@@ -128,13 +128,11 @@ decoder_schema = {
 }
 ```
 
-
 ```python
 from langchain_experimental.llms import JsonFormer
 
 json_former = JsonFormer(json_schema=decoder_schema, pipeline=hf_model)
 ```
-
 
 ```python
 results = json_former.predict(prompt, stop=["Observation:", "Human:"])
@@ -143,10 +141,9 @@ print(results)
 ```output
 {"action": "ask_star_coder", "action_input": {"query": "What's the difference between an iterator and an iter", "temperature": 0.0, "max_new_tokens": 50.0}}
 ```
-**Voila! Free of parsing errors.**
+**太好了！没有解析错误。**
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

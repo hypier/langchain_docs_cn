@@ -1,14 +1,15 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/couchbase.ipynb
 ---
+
 # Couchbase 
-[Couchbase](http://couchbase.com/) is an award-winning distributed NoSQL cloud database that delivers unmatched versatility, performance, scalability, and financial value for all of your cloud, mobile, AI, and edge computing applications. Couchbase embraces AI with coding assistance for developers and vector search for their applications.
+[Couchbase](http://couchbase.com/) 是一个屡获殊荣的分布式 NoSQL 云数据库，提供无与伦比的多功能性、性能、可扩展性和经济价值，适用于您的所有云、移动、人工智能和边缘计算应用程序。Couchbase 通过为开发人员提供编码辅助和为其应用程序提供向量搜索来拥抱人工智能。
 
-Vector Search is a part of the [Full Text Search Service](https://docs.couchbase.com/server/current/learn/services-and-indexes/services/search-service.html) (Search Service) in Couchbase.
+向量搜索是 Couchbase 中的 [全文搜索服务](https://docs.couchbase.com/server/current/learn/services-and-indexes/services/search-service.html)（搜索服务）的一部分。
 
-This tutorial explains how to use Vector Search in Couchbase. You can work with both [Couchbase Capella](https://www.couchbase.com/products/capella/) and your self-managed Couchbase Server.
+本教程将解释如何在 Couchbase 中使用向量搜索。您可以使用 [Couchbase Capella](https://www.couchbase.com/products/capella/) 和您自我管理的 Couchbase Server。
 
-## Installation
+## 安装
 
 
 ```python
@@ -23,30 +24,27 @@ import os
 os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API Key:")
 ```
 
-## Import the Vector Store and Embeddings
-
+## 导入向量存储和嵌入
 
 ```python
 from langchain_couchbase.vectorstores import CouchbaseVectorStore
 from langchain_openai import OpenAIEmbeddings
 ```
 
-## Create Couchbase Connection Object
-We create a connection to the Couchbase cluster initially and then pass the cluster object to the Vector Store. 
+## 创建 Couchbase 连接对象
+我们最初创建一个与 Couchbase 集群的连接，然后将集群对象传递给向量存储。
 
-Here, we are connecting using the username and password. You can also connect using any other supported way to your cluster. 
+在这里，我们使用用户名和密码进行连接。您也可以使用任何其他支持的方式连接到您的集群。
 
-For more information on connecting to the Couchbase cluster, please check the [Python SDK documentation](https://docs.couchbase.com/python-sdk/current/hello-world/start-using-sdk.html#connect).
-
+有关连接到 Couchbase 集群的更多信息，请查看 [Python SDK 文档](https://docs.couchbase.com/python-sdk/current/hello-world/start-using-sdk.html#connect)。
 
 ```python
 COUCHBASE_CONNECTION_STRING = (
-    "couchbase://localhost"  # or "couchbases://localhost" if using TLS
+    "couchbase://localhost"  # 或 "couchbases://localhost" 如果使用 TLS
 )
 DB_USERNAME = "Administrator"
 DB_PASSWORD = "Password"
 ```
-
 
 ```python
 from datetime import timedelta
@@ -59,14 +57,13 @@ auth = PasswordAuthenticator(DB_USERNAME, DB_PASSWORD)
 options = ClusterOptions(auth)
 cluster = Cluster(COUCHBASE_CONNECTION_STRING, options)
 
-# Wait until the cluster is ready for use.
+# 等待集群准备就绪。
 cluster.wait_until_ready(timedelta(seconds=5))
 ```
 
-We will now set the bucket, scope, and collection names in the Couchbase cluster that we want to use for Vector Search. 
+我们现在将设置在 Couchbase 集群中用于向量搜索的桶、范围和集合名称。
 
-For this example, we are using the default scope & collections.
-
+在本示例中，我们使用默认的范围和集合。
 
 ```python
 BUCKET_NAME = "testing"
@@ -75,35 +72,32 @@ COLLECTION_NAME = "_default"
 SEARCH_INDEX_NAME = "vector-index"
 ```
 
-For this tutorial, we will use OpenAI embeddings
-
+在本教程中，我们将使用 OpenAI 嵌入。
 
 ```python
 embeddings = OpenAIEmbeddings()
 ```
 
-## Create the Search Index
-Currently, the Search index needs to be created from the Couchbase Capella or Server UI or using the REST interface. 
+## 创建搜索索引
+目前，搜索索引需要通过 Couchbase Capella 或服务器 UI 创建，或者使用 REST 接口。
 
-Let us define a Search index with the name `vector-index` on the testing bucket
+让我们在测试桶上定义一个名为 `vector-index` 的搜索索引。
 
-For this example, let us use the Import Index feature on the Search Service on the UI. 
+在这个例子中，让我们使用 UI 上搜索服务的导入索引功能。
 
-We are defining an index on the `testing` bucket's `_default` scope on the `_default` collection with the vector field set to `embedding` with 1536 dimensions and the text field set to `text`. We are also indexing and storing all the fields under `metadata` in the document as a dynamic mapping to account for varying document structures. The similarity metric is set to `dot_product`.
+我们正在定义一个索引，位于 `testing` 桶的 `_default` 范围内，针对 `_default` 集合，向量字段设置为 `embedding`，维度为 1536，文本字段设置为 `text`。我们还将文档中 `metadata` 下的所有字段作为动态映射进行索引和存储，以适应不同的文档结构。相似度度量设置为 `dot_product`。
 
-### How to Import an Index to the Full Text Search service?
+### 如何将索引导入全文搜索服务？
  - [Couchbase Server](https://docs.couchbase.com/server/current/search/import-search-index.html)
-     - Click on Search -> Add Index -> Import
-     - Copy the following Index definition in the Import screen
-     - Click on Create Index to create the index.
+     - 点击搜索 -> 添加索引 -> 导入
+     - 在导入屏幕中复制以下索引定义
+     - 点击创建索引以创建索引。
  - [Couchbase Capella](https://docs.couchbase.com/cloud/search/import-search-index.html)
-     - Copy the index definition to a new file `index.json`
-     - Import the file in Capella using the instructions in the documentation.
-     - Click on Create Index to create the index.
-  
+     - 将索引定义复制到新文件 `index.json`
+     - 根据文档中的说明在 Capella 中导入该文件。
+     - 点击创建索引以创建索引。
 
-
-### Index Definition
+### 索引定义
 ```
 {
  "name": "vector-index",
@@ -177,15 +171,14 @@ We are defining an index on the `testing` bucket's `_default` scope on the `_def
 }
 ```
 
-For more details on how to create a Search index with support for Vector fields, please refer to the documentation.
+有关如何创建支持向量字段的搜索索引的更多详细信息，请参阅文档。
 
 - [Couchbase Capella](https://docs.couchbase.com/cloud/vector-search/create-vector-search-index-ui.html)
-  
+
 - [Couchbase Server](https://docs.couchbase.com/server/current/vector-search/create-vector-search-index-ui.html)
 
-## Create Vector Store
-We create the vector store object with the cluster information and the search index name.
-
+## 创建向量存储
+我们使用集群信息和搜索索引名称创建向量存储对象。
 
 ```python
 vector_store = CouchbaseVectorStore(
@@ -198,8 +191,8 @@ vector_store = CouchbaseVectorStore(
 )
 ```
 
-### Specify the Text & Embeddings Field
-You can optionally specify the text & embeddings field for the document using the `text_key` and `embedding_key` fields.
+### 指定文本和嵌入字段
+您可以选择性地使用 `text_key` 和 `embedding_key` 字段为文档指定文本和嵌入字段。
 ```
 vector_store = CouchbaseVectorStore(
     cluster=cluster,
@@ -213,12 +206,10 @@ vector_store = CouchbaseVectorStore(
 )
 ```
 
-## Basic Vector Search Example
-For this example, we are going to load the "state_of_the_union.txt" file via the TextLoader, chunk the text into 500 character chunks with no overlaps and index all these chunks into Couchbase.
+## 基本向量搜索示例
+在这个示例中，我们将通过 TextLoader 加载 "state_of_the_union.txt" 文件，将文本分割成 500 个字符的块，不重叠，并将所有这些块索引到 Couchbase 中。
 
-After the data is indexed, we perform a simple query to find the top 4 chunks that are similar to the query "What did president say about Ketanji Brown Jackson".
-
-
+数据索引后，我们执行一个简单的查询，以找到与查询 "总统对 Ketanji Brown Jackson 的评论是什么" 相似的前 4 个块。
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -229,7 +220,6 @@ documents = loader.load()
 text_splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=0)
 docs = text_splitter.split_documents(documents)
 ```
-
 
 ```python
 vector_store = CouchbaseVectorStore.from_documents(
@@ -243,7 +233,6 @@ vector_store = CouchbaseVectorStore.from_documents(
 )
 ```
 
-
 ```python
 query = "What did president say about Ketanji Brown Jackson"
 results = vector_store.similarity_search(query)
@@ -252,9 +241,9 @@ print(results[0])
 ```output
 page_content='One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. \n\nAnd I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.' metadata={'source': '../../how_to/state_of_the_union.txt'}
 ```
-## Similarity Search with Score
-You can fetch the scores for the results by calling the `similarity_search_with_score` method.
 
+## 带分数的相似性搜索
+您可以通过调用 `similarity_search_with_score` 方法来获取结果的分数。
 
 ```python
 query = "What did president say about Ketanji Brown Jackson"
@@ -267,14 +256,15 @@ print(f"Score: {score}")
 page_content='One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. \n\nAnd I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.' metadata={'source': '../../how_to/state_of_the_union.txt'}
 Score: 0.8211871385574341
 ```
-## Specifying Fields to Return
-You can specify the fields to return from the document using `fields` parameter in the searches. These fields are returned as part of the `metadata` object in the returned Document. You can fetch any field that is stored in the Search index. The `text_key` of the document is returned as part of the document's `page_content`.
 
-If you do not specify any fields to be fetched, all the fields stored in the index are returned.
+## 指定返回字段
+您可以使用 `fields` 参数在搜索中指定要从文档中返回的字段。这些字段作为返回文档的 `metadata` 对象的一部分返回。您可以提取存储在搜索索引中的任何字段。文档的 `text_key` 作为文档的 `page_content` 的一部分返回。
 
-If you want to fetch one of the fields in the metadata, you need to specify it using `.`
+如果您未指定要提取的字段，则返回索引中存储的所有字段。
 
-For example, to fetch the `source` field in the metadata, you need to specify `metadata.source`.
+如果您想提取元数据中的某个字段，则需要使用 `.` 指定它。
+
+例如，要提取元数据中的 `source` 字段，您需要指定 `metadata.source`。
 
 
 
@@ -286,18 +276,17 @@ print(results[0])
 ```output
 page_content='One of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. \n\nAnd I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.' metadata={'source': '../../how_to/state_of_the_union.txt'}
 ```
-## Hybrid Search
-Couchbase allows you to do hybrid searches by combining Vector Search results with searches on non-vector fields of the document like the `metadata` object. 
 
-The results will be based on the combination of the results from both Vector Search and the searches supported by Search Service. The scores of each of the component searches are added up to get the total score of the result.
+## 混合搜索
+Couchbase 允许通过将向量搜索结果与文档中非向量字段的搜索（如 `metadata` 对象）相结合来进行混合搜索。
 
-To perform hybrid searches, there is an optional parameter, `search_options` that can be passed to all the similarity searches.  
-The different search/query possibilities for the `search_options` can be found [here](https://docs.couchbase.com/server/current/search/search-request-params.html#query-object).
+结果将基于向量搜索和搜索服务支持的搜索结果的组合。每个组件搜索的分数相加以获得结果的总分。
 
-### Create Diverse Metadata for Hybrid Search
-In order to simulate hybrid search, let us create some random metadata from the existing documents. 
-We uniformly add three fields to the metadata, `date` between 2010 & 2020, `rating` between 1 & 5 and `author` set to either John Doe or Jane Doe. 
+要执行混合搜索，可以将一个可选参数 `search_options` 传递给所有相似性搜索。  
+有关 `search_options` 的不同搜索/查询可能性，请参见 [这里](https://docs.couchbase.com/server/current/search/search-request-params.html#query-object)。
 
+### 创建多样化的混合搜索元数据
+为了模拟混合搜索，让我们从现有文档中创建一些随机元数据。我们统一为元数据添加三个字段，`date` 在2010年到2020年之间，`rating` 在1到5之间，`author` 设置为 John Doe 或 Jane Doe。 
 
 ```python
 # Adding metadata to documents
@@ -315,9 +304,9 @@ print(results[0].metadata)
 ```output
 {'author': 'John Doe', 'date': '2016-01-01', 'rating': 2, 'source': '../../how_to/state_of_the_union.txt'}
 ```
-### Example: Search by Exact Value
-We can search for exact matches on a textual field like the author in the `metadata` object.
 
+### 示例：按精确值搜索
+我们可以在 `metadata` 对象中搜索文本字段的精确匹配，例如作者。
 
 ```python
 query = "What did the president say about Ketanji Brown Jackson"
@@ -331,11 +320,11 @@ print(results[0])
 ```output
 page_content='This is personal to me and Jill, to Kamala, and to so many of you. \n\nCancer is the #2 cause of death in America–second only to heart disease. \n\nLast month, I announced our plan to supercharge  \nthe Cancer Moonshot that President Obama asked me to lead six years ago. \n\nOur goal is to cut the cancer death rate by at least 50% over the next 25 years, turn more cancers from death sentences into treatable diseases.  \n\nMore support for patients and families.' metadata={'author': 'John Doe'}
 ```
-### Example: Search by Partial Match
-We can search for partial matches by specifying a fuzziness for the search. This is useful when you want to search for slight variations or misspellings of a search query.
 
-Here, "Jae" is close (fuzziness of 1) to "Jane".
+### 示例：按部分匹配搜索
+我们可以通过指定模糊性来搜索部分匹配。这在您想要搜索搜索查询的轻微变体或拼写错误时非常有用。
 
+在这里，“Jae”与“Jane”接近（模糊性为1）。
 
 ```python
 query = "What did the president say about Ketanji Brown Jackson"
@@ -351,9 +340,9 @@ print(results[0])
 ```output
 page_content='A former top litigator in private practice. A former federal public defender. And from a family of public school educators and police officers. A consensus builder. Since she’s been nominated, she’s received a broad range of support—from the Fraternal Order of Police to former judges appointed by Democrats and Republicans. \n\nAnd if we are to advance liberty and justice, we need to secure the Border and fix the immigration system.' metadata={'author': 'Jane Doe'}
 ```
-### Example: Search by Date Range Query
-We can search for documents that are within a date range query on a date field like `metadata.date`.
 
+### 示例：按日期范围查询搜索
+我们可以在日期字段如 `metadata.date` 上进行日期范围查询来搜索文档。
 
 ```python
 query = "Any mention about independence?"
@@ -374,9 +363,9 @@ print(results[0])
 ```output
 page_content='He will never extinguish their love of freedom. He will never weaken the resolve of the free world. \n\nWe meet tonight in an America that has lived through two of the hardest years this nation has ever faced. \n\nThe pandemic has been punishing. \n\nAnd so many families are living paycheck to paycheck, struggling to keep up with the rising cost of food, gas, housing, and so much more. \n\nI understand.' metadata={'author': 'Jane Doe', 'date': '2017-01-01', 'rating': 3, 'source': '../../how_to/state_of_the_union.txt'}
 ```
-### Example: Search by Numeric Range Query
-We can search for documents that are within a range for a numeric field like `metadata.rating`.
 
+### 示例：按数值范围查询
+我们可以搜索在数值字段如 `metadata.rating` 范围内的文档。
 
 ```python
 query = "Any mention about independence?"
@@ -397,11 +386,11 @@ print(results[0])
 ```output
 (Document(page_content='He will never extinguish their love of freedom. He will never weaken the resolve of the free world. \n\nWe meet tonight in an America that has lived through two of the hardest years this nation has ever faced. \n\nThe pandemic has been punishing. \n\nAnd so many families are living paycheck to paycheck, struggling to keep up with the rising cost of food, gas, housing, and so much more. \n\nI understand.', metadata={'author': 'Jane Doe', 'date': '2017-01-01', 'rating': 3, 'source': '../../how_to/state_of_the_union.txt'}), 0.9000703597577832)
 ```
-### Example: Combining Multiple Search Queries
-Different search queries can be combined using AND (conjuncts) or OR (disjuncts) operators.
 
-In this example, we are checking for documents with a rating between 3 & 4 and dated between 2015 & 2018.
+### 示例：组合多个搜索查询
+不同的搜索查询可以使用 AND（合取）或 OR（析取）运算符进行组合。
 
+在本示例中，我们正在检查评级在 3 和 4 之间，并且日期在 2015 年和 2018 年之间的文档。
 
 ```python
 query = "Any mention about independence?"
@@ -421,44 +410,42 @@ print(results[0])
 ```output
 (Document(page_content='He will never extinguish their love of freedom. He will never weaken the resolve of the free world. \n\nWe meet tonight in an America that has lived through two of the hardest years this nation has ever faced. \n\nThe pandemic has been punishing. \n\nAnd so many families are living paycheck to paycheck, struggling to keep up with the rising cost of food, gas, housing, and so much more. \n\nI understand.', metadata={'author': 'Jane Doe', 'date': '2017-01-01', 'rating': 3, 'source': '../../how_to/state_of_the_union.txt'}), 1.3598770370389914)
 ```
-### Other Queries
-Similarly, you can use any of the supported Query methods like Geo Distance, Polygon Search, Wildcard, Regular Expressions, etc in the `search_options` parameter. Please refer to the documentation for more details on the available query methods and their syntax.
+
+### 其他查询
+同样，您可以在 `search_options` 参数中使用任何支持的查询方法，如地理距离、区域搜索、通配符、正则表达式等。有关可用查询方法及其语法的更多详细信息，请参阅文档。
 
 - [Couchbase Capella](https://docs.couchbase.com/cloud/search/search-request-params.html#query-object)
 - [Couchbase Server](https://docs.couchbase.com/server/current/search/search-request-params.html#query-object)
 
-# Frequently Asked Questions
+# 常见问题解答
 
-## Question: Should I create the Search index before creating the CouchbaseVectorStore object?
-Yes, currently you need to create the Search index before creating the `CouchbaseVectoreStore` object.
+## 问题：我应该在创建 CouchbaseVectorStore 对象之前创建搜索索引吗？
+是的，目前您需要在创建 `CouchbaseVectoreStore` 对象之前创建搜索索引。
 
+## 问题：我在搜索结果中没有看到我指定的所有字段。
 
-## Question: I am not seeing all the fields that I specified in my search results. 
+在 Couchbase 中，我们只能返回存储在搜索索引中的字段。请确保您尝试在搜索结果中访问的字段是搜索索引的一部分。
 
-In Couchbase, we can only return the fields stored in the Search index. Please ensure that the field that you are trying to access in the search results is part of the Search index.
+处理此问题的一种方法是动态地在索引中索引和存储文档的字段。
 
-One way to handle this is to index and store a document's fields dynamically in the index. 
+- 在 Capella 中，您需要进入“高级模式”，然后在“常规设置”下的下拉菜单中，您可以勾选“[X] 存储动态字段”或“[X] 索引动态字段”
+- 在 Couchbase Server 中，在索引编辑器（而不是快速编辑器）下的下拉菜单“高级”中，您可以勾选“[X] 存储动态字段”或“[X] 索引动态字段”
 
-- In Capella, you need to go to "Advanced Mode" then under the chevron "General Settings" you can check "[X] Store Dynamic Fields" or "[X] Index Dynamic Fields"
-- In Couchbase Server, in the Index Editor (not Quick Editor) under the chevron  "Advanced" you can check "[X] Store Dynamic Fields" or "[X] Index Dynamic Fields"
+请注意，这些选项会增加索引的大小。
 
-Note that these options will increase the size of the index.
+有关动态映射的更多详细信息，请参阅 [文档](https://docs.couchbase.com/cloud/search/customize-index.html).
 
-For more details on dynamic mappings, please refer to the [documentation](https://docs.couchbase.com/cloud/search/customize-index.html).
+## 问题：我无法在搜索结果中看到元数据对象。
+这很可能是由于文档中的 `metadata` 字段没有被 Couchbase Search 索引索引和/或存储。为了将文档中的 `metadata` 字段进行索引，您需要将其作为子映射添加到索引中。
 
+如果您选择映射映射中的所有字段，您将能够通过所有元数据字段进行搜索。或者，为了优化索引，您可以选择 `metadata` 对象内的特定字段进行索引。您可以参考 [docs](https://docs.couchbase.com/cloud/search/customize-index.html) 了解更多关于索引子映射的信息。
 
-## Question: I am unable to see the metadata object in my search results. 
-This is most likely due to the `metadata` field in the document not being indexed and/or stored by the Couchbase Search index. In order to index the `metadata` field in the document, you need to add it to the index as a child mapping. 
-
-If you select to map all the fields in the mapping, you will be able to search by all metadata fields. Alternatively, to optimize the index, you can select the specific fields inside `metadata` object to be indexed. You can refer to the [docs](https://docs.couchbase.com/cloud/search/customize-index.html) to learn more about indexing child mappings.
-
-Creating Child Mappings
+创建子映射
 
 * [Couchbase Capella](https://docs.couchbase.com/cloud/search/create-child-mapping.html)
 * [Couchbase Server](https://docs.couchbase.com/server/current/search/create-child-mapping.html)
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

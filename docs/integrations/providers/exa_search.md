@@ -1,27 +1,26 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/providers/exa_search.ipynb
 ---
-# Exa Search
 
-Exa's search integration exists in its own [partner package](https://pypi.org/project/langchain-exa/). You can install it with:
+# Exa 搜索
+
+Exa 的搜索集成存在于其自己的 [合作伙伴包](https://pypi.org/project/langchain-exa/)。您可以通过以下命令安装它：
 
 
 ```python
 %pip install -qU langchain-exa
 ```
 
-In order to use the package, you will also need to set the `EXA_API_KEY` environment variable to your Exa API key.
+为了使用该包，您还需要将 `EXA_API_KEY` 环境变量设置为您的 Exa API 密钥。
 
 ## Retriever
 
-You can use the [`ExaSearchRetriever`](/docs/integrations/tools/exa_search#using-exasearchretriever) in a standard retrieval pipeline. You can import it as follows
-
+您可以在标准检索管道中使用 [`ExaSearchRetriever`](/docs/integrations/tools/exa_search#using-exasearchretriever)。您可以按如下方式导入它
 
 ```python
 from langchain_exa import ExaSearchRetriever
 ```
 
-## Tools
+## 工具
 
-You can use Exa as an agent tool as described in the [Exa tool calling docs](/docs/integrations/tools/exa_search#using-the-exa-sdk-as-langchain-agent-tools).
-
+您可以使用 Exa 作为代理工具，具体说明请参见 [Exa 工具调用文档](/docs/integrations/tools/exa_search#using-the-exa-sdk-as-langchain-agent-tools)。

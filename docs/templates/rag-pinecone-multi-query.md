@@ -1,39 +1,38 @@
-
 # rag-pinecone-multi-query
 
-This template performs RAG using Pinecone and OpenAI with a multi-query retriever. 
+此模板使用 Pinecone 和 OpenAI 执行 RAG，采用多查询检索器。
 
-It uses an LLM to generate multiple queries from different perspectives based on the user's input query. 
+它使用 LLM 根据用户输入的查询生成多个来自不同角度的查询。
 
-For each query, it retrieves a set of relevant documents and takes the unique union across all queries for answer synthesis.
+对于每个查询，它检索一组相关文档，并对所有查询进行唯一的联合，以合成答案。
 
-## Environment Setup
+## 环境设置
 
-This template uses Pinecone as a vectorstore and requires that `PINECONE_API_KEY`, `PINECONE_ENVIRONMENT`, and `PINECONE_INDEX` are set. 
+此模板使用 Pinecone 作为向量存储，并要求设置 `PINECONE_API_KEY`、`PINECONE_ENVIRONMENT` 和 `PINECONE_INDEX`。
 
-Set the `OPENAI_API_KEY` environment variable to access the OpenAI models.
+设置 `OPENAI_API_KEY` 环境变量以访问 OpenAI 模型。
 
-## Usage
+## 使用方法
 
-To use this package, you should first install the LangChain CLI:
+要使用此包，您首先需要安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-To create a new LangChain project and install this package, do:
+要创建一个新的 LangChain 项目并安装此包，请执行：
 
 ```shell
 langchain app new my-app --package rag-pinecone-multi-query
 ```
 
-To add this package to an existing project, run:
+要将此包添加到现有项目中，请运行：
 
 ```shell
 langchain app add rag-pinecone-multi-query
 ```
 
-And add the following code to your `server.py` file:
+并将以下代码添加到您的 `server.py` 文件中：
 
 ```python
 from rag_pinecone_multi_query import chain as rag_pinecone_multi_query_chain
@@ -41,26 +40,26 @@ from rag_pinecone_multi_query import chain as rag_pinecone_multi_query_chain
 add_routes(app, rag_pinecone_multi_query_chain, path="/rag-pinecone-multi-query")
 ```
 
-(Optional) Now, let's configure LangSmith. LangSmith will help us trace, monitor, and debug LangChain applications. You can sign up for LangSmith [here](https://smith.langchain.com/). If you don't have access, you can skip this section
+（可选）现在，让我们配置 LangSmith。LangSmith 将帮助我们跟踪、监控和调试 LangChain 应用程序。您可以在 [这里](https://smith.langchain.com/) 注册 LangSmith。如果您没有访问权限，可以跳过此部分。
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you are inside this directory, then you can spin up a LangServe instance directly by:
+如果您在此目录中，则可以直接通过以下方式启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This will start the FastAPI app with a server running locally at [http://localhost:8000](http://localhost:8000)
+这将启动 FastAPI 应用程序，服务器将在本地运行于 [http://localhost:8000](http://localhost:8000)
 
-You can see all templates at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-You can access the playground at [http://127.0.0.1:8000/rag-pinecone-multi-query/playground](http://127.0.0.1:8000/rag-pinecone-multi-query/playground)
+您可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看所有模板
+您可以在 [http://127.0.0.1:8000/rag-pinecone-multi-query/playground](http://127.0.0.1:8000/rag-pinecone-multi-query/playground) 访问游乐场
 
-To access the template from code, use:
+要从代码访问模板，请使用：
 
 ```python
 from langserve.client import RemoteRunnable

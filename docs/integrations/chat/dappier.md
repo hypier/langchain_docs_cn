@@ -1,28 +1,27 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat/dappier.ipynb
 ---
+
 # Dappier AI
 
-**Dappier: Powering AI with Dynamic, Real-Time Data Models**
+**Dappier：用动态实时数据模型驱动AI**
 
-Dappier offers a cutting-edge platform that grants developers immediate access to a wide array of real-time data models spanning news, entertainment, finance, market data, weather, and beyond. With our pre-trained data models, you can supercharge your AI applications, ensuring they deliver precise, up-to-date responses and minimize inaccuracies.
+Dappier提供了一个尖端平台，使开发者能够立即访问广泛的实时数据模型，涵盖新闻、娱乐、金融、市场数据、天气等多个领域。借助我们的预训练数据模型，您可以为您的AI应用程序提供强大的支持，确保它们提供准确、最新的响应，并减少不准确性。
 
-Dappier data models help you build next-gen LLM apps with trusted, up-to-date content from the world's leading brands. Unleash your creativity and enhance any GPT App or AI workflow with actionable, proprietary, data through a simple API. Augment your AI with proprietary data from trusted sources is the best way to ensure factual, up-to-date, responses with fewer hallucinations no matter the question.
+Dappier数据模型帮助您构建下一代LLM应用程序，提供来自世界领先品牌的可信、最新内容。通过简单的API释放您的创造力，增强任何GPT应用程序或AI工作流程，获取可操作的专有数据。使用来自可信来源的专有数据增强您的AI，是确保提供事实准确、最新响应的最佳方式，无论问题是什么，都能减少幻觉。
 
-For Developers, By Developers
-Designed with developers in mind, Dappier simplifies the journey from data integration to monetization, providing clear, straightforward paths to deploy and earn from your AI models. Experience the future of monetization infrastructure for the new internet at **https://dappier.com/**.
+为开发者而设计
+Dappier专为开发者设计，简化了从数据集成到货币化的旅程，提供明确、简单的路径来部署和从您的AI模型中获利。体验新互联网的货币化基础设施的未来，访问**https://dappier.com/**。
 
-This example goes over how to use LangChain to interact with Dappier AI models
+本示例介绍如何使用LangChain与Dappier AI模型进行交互
 
 -----------------------------------------------------------------------------------
 
-To use one of our Dappier AI Data Models, you will need an API key. Please visit Dappier Platform (https://platform.dappier.com/) to log in and create an API key in your profile.
+要使用我们的Dappier AI数据模型，您需要一个API密钥。请访问Dappier平台（https://platform.dappier.com/）登录并在您的个人资料中创建API密钥。
 
+您可以在API参考中找到更多详细信息： https://docs.dappier.com/introduction
 
-You can find more details on the API reference : https://docs.dappier.com/introduction
-
-To work with our Dappier Chat Model you can pass the key directly through the parameter named dappier_api_key when initiating the class
-or set as an environment variable.
+要使用我们的Dappier聊天模型，您可以通过名为dappier_api_key的参数直接传递密钥，或将其设置为环境变量。
 
 ```bash
 export DAPPIER_API_KEY="..."
@@ -68,9 +67,7 @@ await chat.ainvoke(messages)
 AIMessage(content='The Kansas City Chiefs won Super Bowl LVIII in 2024! 🏈')
 ```
 
+## 相关
 
-
-## Related
-
-- Chat model [conceptual guide](/docs/concepts/#chat-models)
-- Chat model [how-to guides](/docs/how_to/#chat-models)
+- 聊天模型 [概念指南](/docs/concepts/#chat-models)
+- 聊天模型 [操作指南](/docs/how_to/#chat-models)

@@ -1,32 +1,33 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/mintbase.ipynb
 ---
-# Near Blockchain
 
-## Overview
+# Near 区块链
 
-The intention of this notebook is to provide a means of testing functionality in the Langchain Document Loader for Near Blockchain.
+## 概述
 
-Initially this Loader supports:
+本笔记本的目的是提供一种测试Langchain Document Loader在Near区块链上功能的方法。
 
-*   Loading NFTs as Documents from NFT Smart Contracts (NEP-171 and NEP-177)
-*   Near Mainnnet, Near Testnet (default is mainnet)
-*   Mintbase's Graph API
+最初，该加载器支持：
 
-It can be extended if the community finds value in this loader.  Specifically:
+*   从NFT智能合约加载NFT作为文档（NEP-171和NEP-177）
+*   Near主网，Near测试网（默认是主网）
+*   Mintbase的Graph API
 
-*   Additional APIs can be added (e.g. Tranction-related APIs)
+如果社区认为该加载器有价值，可以进行扩展。具体来说：
 
-This Document Loader Requires:
+*   可以添加额外的API（例如，与交易相关的API）
 
-*   A free [Mintbase API Key](https://docs.mintbase.xyz/dev/mintbase-graph/)
+该文档加载器需要：
 
-The output takes the following format:
+*   一个免费的 [Mintbase API密钥](https://docs.mintbase.xyz/dev/mintbase-graph/)
 
-- pageContent= Individual NFT
+输出格式如下：
+
+- pageContent= 单个NFT
 - metadata={'source': 'nft.yearofchef.near', 'blockchain': 'mainnet', 'tokenId': '1846'}
 
-## Load NFTs into Document Loader
+## 将NFT加载到文档加载器
 
 
 ```python
@@ -35,13 +36,13 @@ The output takes the following format:
 mintbaseApiKey = "..."
 ```
 
-### Option 1: Ethereum Mainnet (default BlockchainType)
+### 选项 1：以太坊主网（默认 BlockchainType）
 
 
 ```python
 from MintbaseLoader import MintbaseDocumentLoader
 
-contractAddress = "nft.yearofchef.near"  # Year of chef contract address
+contractAddress = "nft.yearofchef.near"  # Year of chef 合约地址
 
 
 blockchainLoader = MintbaseDocumentLoader(
@@ -58,8 +59,7 @@ for doc in blockchainLoader.lazy_load():
     print(doc)
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

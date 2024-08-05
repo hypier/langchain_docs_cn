@@ -1,25 +1,23 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/tools/golden_query.ipynb
 ---
+
 # Golden Query
 
->[Golden](https://golden.com) provides a set of natural language APIs for querying and enrichment using the Golden Knowledge Graph e.g. queries such as: `Products from OpenAI`, `Generative ai companies with series a funding`, and `rappers who invest` can be used to retrieve structured data about relevant entities.
+>[Golden](https://golden.com) 提供了一组自然语言 API，用于通过 Golden Knowledge Graph 进行查询和丰富，例如：`Products from OpenAI`、`Generative ai companies with series a funding` 和 `rappers who invest` 等查询可用于检索相关实体的结构化数据。
 >
->The `golden-query` langchain tool is a wrapper on top of the [Golden Query API](https://docs.golden.com/reference/query-api) which enables programmatic access to these results.
->See the [Golden Query API docs](https://docs.golden.com/reference/query-api) for more information.
+>`golden-query` langchain 工具是 [Golden Query API](https://docs.golden.com/reference/query-api) 的一个封装，允许以编程方式访问这些结果。
+>有关更多信息，请参见 [Golden Query API 文档](https://docs.golden.com/reference/query-api)。
 
+本笔记本介绍如何使用 `golden-query` 工具。
 
-This notebook goes over how to use the `golden-query` tool.
-
-- Go to the [Golden API docs](https://docs.golden.com/) to get an overview about the Golden API.
-- Get your API key from the [Golden API Settings](https://golden.com/settings/api) page.
-- Save your API key into GOLDEN_API_KEY env variable
-
+- 前往 [Golden API 文档](https://docs.golden.com/) 以获取 Golden API 的概述。
+- 从 [Golden API 设置](https://golden.com/settings/api) 页面获取您的 API 密钥。
+- 将您的 API 密钥保存到 GOLDEN_API_KEY 环境变量中。
 
 ```python
 %pip install -qU langchain-community
 ```
-
 
 ```python
 import os
@@ -27,24 +25,19 @@ import os
 os.environ["GOLDEN_API_KEY"] = ""
 ```
 
-
 ```python
 from langchain_community.utilities.golden_query import GoldenQueryAPIWrapper
 ```
 
-
 ```python
 golden_query = GoldenQueryAPIWrapper()
 ```
-
 
 ```python
 import json
 
 json.loads(golden_query.run("companies in nanotech"))
 ```
-
-
 
 ```output
 {'results': [{'id': 4673886,
@@ -91,9 +84,7 @@ json.loads(golden_query.run("companies in nanotech"))
  'previous': None}
 ```
 
+## 相关
 
-
-## Related
-
-- Tool [conceptual guide](/docs/concepts/#tools)
-- Tool [how-to guides](/docs/how_to/#tools)
+- 工具 [概念指南](/docs/concepts/#tools)
+- 工具 [操作指南](/docs/how_to/#tools)

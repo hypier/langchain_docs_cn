@@ -1,30 +1,28 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/grobid.ipynb
 ---
+
 # Grobid
 
-GROBID is a machine learning library for extracting, parsing, and re-structuring raw documents.
+GROBID 是一个用于提取、解析和重构原始文档的机器学习库。
 
-It is designed and expected to be used to parse academic papers, where it works particularly well. Note: if the articles supplied to Grobid are large documents (e.g. dissertations) exceeding a certain number of elements, they might not be processed. 
+它旨在并预计用于解析学术论文，在这方面表现尤为出色。注意：如果提供给 Grobid 的文章是大型文档（例如，论文）并且超过一定数量的元素，则可能无法处理。
 
-This loader uses Grobid to parse PDFs into `Documents` that retain metadata associated with the section of text.
+该加载器使用 Grobid 将 PDF 解析为保留与文本部分相关的元数据的 `Documents`。
 
 ---
-The best approach is to install Grobid via docker, see https://grobid.readthedocs.io/en/latest/Grobid-docker/. 
+最佳方法是通过 docker 安装 Grobid，详见 https://grobid.readthedocs.io/en/latest/Grobid-docker/。
 
-(Note: additional instructions can be found [here](/docs/integrations/providers/grobid).)
+（注意：额外说明可以在 [这里](/docs/integrations/providers/grobid) 找到。）
 
-Once grobid is up-and-running you can interact as described below. 
+一旦 Grobid 启动并运行，您可以按照下面描述的方式进行交互。
 
-
-Now, we can use the data loader.
-
+现在，我们可以使用数据加载器。
 
 ```python
 from langchain_community.document_loaders.generic import GenericLoader
 from langchain_community.document_loaders.parsers import GrobidParser
 ```
-
 
 ```python
 loader = GenericLoader.from_filesystem(
@@ -36,24 +34,17 @@ loader = GenericLoader.from_filesystem(
 docs = loader.load()
 ```
 
-
 ```python
 docs[3].page_content
 ```
-
-
 
 ```output
 'Unlike Chinchilla, PaLM, or GPT-3, we only use publicly available data, making our work compatible with open-sourcing, while most existing models rely on data which is either not publicly available or undocumented (e.g."Books -2TB" or "Social media conversations").There exist some exceptions, notably OPT (Zhang et al., 2022), GPT-NeoX (Black et al., 2022), BLOOM (Scao et al., 2022) and GLM (Zeng et al., 2022), but none that are competitive with PaLM-62B or Chinchilla.'
 ```
 
-
-
 ```python
 docs[3].metadata
 ```
-
-
 
 ```output
 {'text': 'Unlike Chinchilla, PaLM, or GPT-3, we only use publicly available data, making our work compatible with open-sourcing, while most existing models rely on data which is either not publicly available or undocumented (e.g."Books -2TB" or "Social media conversations").There exist some exceptions, notably OPT (Zhang et al., 2022), GPT-NeoX (Black et al., 2022), BLOOM (Scao et al., 2022) and GLM (Zeng et al., 2022), but none that are competitive with PaLM-62B or Chinchilla.',
@@ -66,9 +57,7 @@ docs[3].metadata
  'file_path': '/Users/31treehaus/Desktop/Papers/2302.13971.pdf'}
 ```
 
+## 相关
 
-
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

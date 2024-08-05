@@ -1,33 +1,32 @@
 # MistralAI
 
->[Mistral AI](https://docs.mistral.ai/api/) is a platform that offers hosting for their powerful open source models.
+>[Mistral AI](https://docs.mistral.ai/api/) 是一个提供强大开源模型托管的平台。
 
+## 安装与设置
 
-## Installation and Setup
+需要一个有效的 [API key](https://console.mistral.ai/users/api-keys/) 来与 API 进行通信。
 
-A valid [API key](https://console.mistral.ai/users/api-keys/) is needed to communicate with the API.
-
-You will also need the `langchain-mistralai` package:
+您还需要 `langchain-mistralai` 包：
 
 ```bash
 pip install langchain-mistralai
 ```
 
-## Chat models
+## 聊天模型
 
 ### ChatMistralAI
 
-See a [usage example](/docs/integrations/chat/mistralai).
+查看 [使用示例](/docs/integrations/chat/mistralai)。
 
 ```python
 from langchain_mistralai.chat_models import ChatMistralAI
 ```
 
-## Embedding models
+## 嵌入模型
 
 ### MistralAIEmbeddings
 
-See a [usage example](/docs/integrations/text_embedding/mistralai).
+查看[使用示例](/docs/integrations/text_embedding/mistralai)。
 
 ```python
 from langchain_mistralai import MistralAIEmbeddings

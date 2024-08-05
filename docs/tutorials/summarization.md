@@ -1,46 +1,47 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/tutorials/summarization.ipynb
-title: Summarize Text
+title: 文本摘要
 sidebar_class_name: hidden
 ---
-# Summarize Text
 
-Suppose you have a set of documents (PDFs, Notion pages, customer questions, etc.) and you want to summarize the content. 
+# 文本摘要
 
-LLMs are a great tool for this given their proficiency in understanding and synthesizing text.
+假设您有一组文档（PDF、Notion 页面、客户问题等），您想要总结内容。
 
-In the context of [retrieval-augmented generation](/docs/tutorials/rag), summarizing text can help distill the information in a large number of retrieved documents to provide context for a LLM.
+LLMs 是一个很好的工具，因为它们在理解和综合文本方面非常熟练。
 
-In this walkthrough we'll go over how to summarize content from multiple documents using LLMs.
+在[检索增强生成](/docs/tutorials/rag)的背景下，文本摘要可以帮助提炼大量检索文档中的信息，为 LLM 提供上下文。
+
+在本指南中，我们将介绍如何使用 LLMs 从多个文档中总结内容。
 
 ![Image description](../../static/img/summarization_use_case_1.png)
 
-## Concepts
+## 概念
 
-Concepts we will cover are:
+我们将涵盖的概念包括：
 
-- Using [language models](/docs/concepts/#chat-models).
+- 使用 [language models](/docs/concepts/#chat-models)。
 
-- Using [document loaders](/docs/concepts/#document-loaders), specifically the [WebBaseLoader](https://api.python.langchain.com/en/latest/document_loaders/langchain_community.document_loaders.web_base.WebBaseLoader.html) to load content from an HTML webpage.
+- 使用 [document loaders](/docs/concepts/#document-loaders)，特别是 [WebBaseLoader](https://api.python.langchain.com/en/latest/document_loaders/langchain_community.document_loaders.web_base.WebBaseLoader.html) 从 HTML 网页加载内容。
 
-- Three ways to summarize or otherwise combine documents.
-  1. [Stuff](/docs/tutorials/summarization#stuff), which simply concatenates documents into a prompt;
-  2. [Map-reduce](/docs/tutorials/summarization#map-reduce), which splits documents into batches, summarizes those, and then summarizes the summaries;
-  3. [Refine](/docs/tutorials/summarization#refine), which updates a rolling summary be iterating over the documents in a sequence.
+- 三种总结或组合文档的方法。
+  1. [Stuff](/docs/tutorials/summarization#stuff)，它简单地将文档连接成一个提示；
+  2. [Map-reduce](/docs/tutorials/summarization#map-reduce)，它将文档拆分成批次，总结这些批次，然后总结这些总结；
+  3. [Refine](/docs/tutorials/summarization#refine)，它通过按顺序迭代文档来更新滚动摘要。
 
-That's a fair amount to cover! Let's dive in.
+这要涵盖的内容相当多！让我们开始吧。
 
-## Setup
+## 设置
 
 ### Jupyter Notebook
 
-This guide (and most of the other guides in the documentation) uses [Jupyter notebooks](https://jupyter.org/) and assumes the reader is as well. Jupyter notebooks are perfect for learning how to work with LLM systems because oftentimes things can go wrong (unexpected output, API down, etc) and going through guides in an interactive environment is a great way to better understand them.
+本指南（以及文档中的大多数其他指南）使用 [Jupyter notebooks](https://jupyter.org/) 并假设读者也使用它。Jupyter notebooks 非常适合学习如何使用 LLM 系统，因为很多时候事情可能会出错（意外输出、API 故障等），在交互式环境中浏览指南是更好地理解它们的好方法。
 
-This and other tutorials are perhaps most conveniently run in a Jupyter notebook. See [here](https://jupyter.org/install) for instructions on how to install.
+本教程和其他教程可能最方便在 Jupyter notebook 中运行。有关安装说明，请参见 [这里](https://jupyter.org/install)。
 
-### Installation
+### 安装
 
-To install LangChain run:
+要安装 LangChain，请运行：
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -55,24 +56,22 @@ import CodeBlock from "@theme/CodeBlock";
   </TabItem>
 </Tabs>
 
-
-
-For more details, see our [Installation guide](/docs/how_to/installation).
+有关更多详细信息，请参阅我们的 [安装指南](/docs/how_to/installation)。
 
 ### LangSmith
 
-Many of the applications you build with LangChain will contain multiple steps with multiple invocations of LLM calls.
-As these applications get more and more complex, it becomes crucial to be able to inspect what exactly is going on inside your chain or agent.
-The best way to do this is with [LangSmith](https://smith.langchain.com).
+您使用 LangChain 构建的许多应用程序将包含多个步骤和多次调用 LLM。  
+随着这些应用程序变得越来越复杂，能够检查您的链或代理内部究竟发生了什么变得至关重要。  
+实现这一点的最佳方法是使用 [LangSmith](https://smith.langchain.com)。
 
-After you sign up at the link above, make sure to set your environment variables to start logging traces:
+在您在上述链接注册后，请确保设置您的环境变量以开始记录跟踪：
 
 ```shell
 export LANGCHAIN_TRACING_V2="true"
 export LANGCHAIN_API_KEY="..."
 ```
 
-Or, if in a notebook, you can set them with:
+或者，如果在笔记本中，您可以通过以下方式设置它们：
 
 ```python
 import getpass
@@ -82,54 +81,51 @@ os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["LANGCHAIN_API_KEY"] = getpass.getpass()
 ```
 
-## Overview
+## 概述
 
-A central question for building a summarizer is how to pass your documents into the LLM's context window. Three common approaches for this are:
+构建摘要生成器的一个核心问题是如何将文档传递到LLM的上下文窗口中。常见的三种方法是：
 
-1. `Stuff`: Simply "stuff" all your documents into a single prompt. This is the simplest approach (see [here](/docs/tutorials/rag#built-in-chains) for more on the `create_stuff_documents_chain` constructor, which is used for this method).
+1. `Stuff`: 简单地将所有文档“填充”到一个单一的提示中。这是最简单的方法（有关`create_stuff_documents_chain`构造函数的更多信息，请参见[这里](/docs/tutorials/rag#built-in-chains)，该构造函数用于此方法）。
 
-2. `Map-reduce`: Summarize each document on its own in a "map" step and then "reduce" the summaries into a final summary (see [here](https://api.python.langchain.com/en/latest/chains/langchain.chains.combine_documents.map_reduce.MapReduceDocumentsChain.html) for more on the `MapReduceDocumentsChain`, which is used for this method).
+2. `Map-reduce`: 在“映射”步骤中单独总结每个文档，然后将摘要“归约”成最终摘要（有关`MapReduceDocumentsChain`的更多信息，请参见[这里](https://api.python.langchain.com/en/latest/chains/langchain.chains.combine_documents.map_reduce.MapReduceDocumentsChain.html)，该方法使用此方法）。
 
-3. `Refine`: Update a rolling summary be iterating over the documents in a sequence.
+3. `Refine`: 通过按顺序迭代文档来更新滚动摘要。
    
    
 
-![Image description](../../static/img/summarization_use_case_2.png)
+![图像描述](../../static/img/summarization_use_case_2.png)
 
-## Quickstart
+## 快速入门
 
-To give you a sneak preview, either pipeline can be wrapped in a single object: `load_summarize_chain`. 
+为了给您一个简单的预览，任一管道都可以被封装在一个单一对象中：`load_summarize_chain`。
 
-Suppose we want to summarize a blog post. We can create this in a few lines of code.
+假设我们想要总结一篇博客文章。我们可以用几行代码来实现。
 
-First set environment variables and install packages:
-
+首先设置环境变量并安装包：
 
 ```python
 %pip install --upgrade --quiet  langchain-openai tiktoken chromadb langchain
 
-# Set env var OPENAI_API_KEY or load from a .env file
+# 设置环境变量 OPENAI_API_KEY 或从 .env 文件加载
 # import dotenv
 
 # dotenv.load_dotenv()
 ```
 
-We can use `chain_type="stuff"`, especially if using larger context window models such as:
+我们可以使用 `chain_type="stuff"`，特别是当使用更大的上下文窗口模型时，例如：
 
 * 128k token OpenAI `gpt-4-turbo-2024-04-09` 
 * 200k token Anthropic `claude-3-sonnet-20240229`
 
-We can also supply `chain_type="map_reduce"` or `chain_type="refine"`.
+我们还可以提供 `chain_type="map_reduce"` 或 `chain_type="refine"`。
 
-First we load in our documents. We will use [WebBaseLoader](https://api.python.langchain.com/en/latest/document_loaders/langchain_community.document_loaders.web_base.WebBaseLoader.html) to load a blog post:
-
+首先我们加载文档。我们将使用 [WebBaseLoader](https://api.python.langchain.com/en/latest/document_loaders/langchain_community.document_loaders.web_base.WebBaseLoader.html) 来加载一篇博客文章：
 
 ```python
 import os
 
 os.environ["LANGCHAIN_TRACING_V2"] = "True"
 ```
-
 
 ```python
 from langchain.chains.summarize import load_summarize_chain
@@ -149,12 +145,12 @@ print(result["output_text"])
 ```output
 The article discusses the concept of LLM-powered autonomous agents, with a focus on the components of planning, memory, and tool use. It includes case studies and proof-of-concept examples, as well as challenges and references to related research. The author emphasizes the potential of LLMs in creating powerful problem-solving agents, while also highlighting limitations such as finite context length and reliability of natural language interfaces.
 ```
-## Option 1. Stuff {#stuff}
 
-When we use `load_summarize_chain` with `chain_type="stuff"`, we will use the [StuffDocumentsChain](https://api.python.langchain.com/en/latest/chains/langchain.chains.combine_documents.stuff.StuffDocumentsChain.html#langchain.chains.combine_documents.stuff.StuffDocumentsChain).
+## 选项 1. Stuff {#stuff}
 
-The chain will take a list of documents, insert them all into a prompt, and pass that prompt to an LLM:
+当我们使用 `load_summarize_chain` 并设置 `chain_type="stuff"` 时，我们将使用 [StuffDocumentsChain](https://api.python.langchain.com/en/latest/chains/langchain.chains.combine_documents.stuff.StuffDocumentsChain.html#langchain.chains.combine_documents.stuff.StuffDocumentsChain)。
 
+该链将接受一个文档列表，将它们全部插入到一个提示中，并将该提示传递给 LLM：
 
 ```python
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
@@ -180,19 +176,18 @@ print(stuff_chain.invoke(docs)["output_text"])
 ```output
 The article discusses the concept of building autonomous agents powered by large language models (LLMs). It explores the components of such agents, including planning, memory, and tool use. The article provides case studies and examples of proof-of-concept demos, highlighting the challenges and limitations of LLM-powered agents. It also includes references to related research papers and projects.
 ```
-Great! We can see that we reproduce the earlier result using the `load_summarize_chain`.
+很好！我们可以看到使用 `load_summarize_chain` 重现了之前的结果。
 
-### Go deeper
+### 深入了解
 
-* You can easily customize the prompt. 
-* You can easily try different LLMs, (e.g., [Claude](/docs/integrations/chat/anthropic)) via the `llm` parameter.
+* 您可以轻松自定义提示。
+* 您可以轻松尝试不同的 LLM，例如通过 `llm` 参数使用 [Claude](/docs/integrations/chat/anthropic)。
 
-## Option 2. Map-Reduce {#map-reduce}
+## 选项 2. Map-Reduce {#map-reduce}
 
-Let's unpack the map reduce approach. For this, we'll first map each document to an individual summary using an `LLMChain`. Then we'll use a `ReduceDocumentsChain` to combine those summaries into a single global summary.
- 
-First, we specify the LLMChain to use for mapping each document to an individual summary:
+让我们来解析一下 map reduce 方法。为此，我们将首先使用 `LLMChain` 将每个文档映射到单独的摘要。然后，我们将使用 `ReduceDocumentsChain` 将这些摘要合并为一个全球摘要。
 
+首先，我们指定用于将每个文档映射到单独摘要的 LLMChain：
 
 ```python
 from langchain.chains import MapReduceDocumentsChain, ReduceDocumentsChain
@@ -209,12 +204,11 @@ map_prompt = PromptTemplate.from_template(map_template)
 map_chain = LLMChain(llm=llm, prompt=map_prompt)
 ```
 
-We can also use the Prompt Hub to store and fetch prompts.
+我们还可以使用 Prompt Hub 来存储和获取提示。
 
-This will work with your [LangSmith API key](https://docs.smith.langchain.com/).
+这将与您的 [LangSmith API 密钥](https://docs.smith.langchain.com/) 一起使用。
 
-For example, see the map prompt [here](https://smith.langchain.com/hub/rlm/map-prompt).
-
+例如，可以在 [这里](https://smith.langchain.com/hub/rlm/map-prompt) 查看 map 提示。
 
 ```python
 from langchain import hub
@@ -223,10 +217,9 @@ map_prompt = hub.pull("rlm/map-prompt")
 map_chain = LLMChain(llm=llm, prompt=map_prompt)
 ```
 
-The `ReduceDocumentsChain` handles taking the document mapping results and reducing them into a single output. It wraps a generic `CombineDocumentsChain` (like `StuffDocumentsChain`) but adds the ability to collapse documents before passing it to the `CombineDocumentsChain` if their cumulative size exceeds `token_max`. In this example, we can actually re-use our chain for combining our docs to also collapse our docs.
+`ReduceDocumentsChain` 处理将文档映射结果减少为单个输出。它包装了一个通用的 `CombineDocumentsChain`（如 `StuffDocumentsChain`），但增加了在将文档传递给 `CombineDocumentsChain` 之前，如果它们的累积大小超过 `token_max`，则合并文档的能力。在这个例子中，我们实际上可以重用我们的链来合并我们的文档，同时也合并我们的文档。
 
-So if the cumulative number of tokens in our mapped documents exceeds 4000 tokens, then we'll recursively pass in the documents in batches of < 4000 tokens to our `StuffDocumentsChain` to create batched summaries. And once those batched summaries are cumulatively less than 4000 tokens, we'll pass them all one last time to the `StuffDocumentsChain` to create the final summary.
-
+因此，如果我们映射文档中的累计令牌数量超过 4000 个令牌，那么我们将递归地将文档以少于 4000 个令牌的批次传递给我们的 `StuffDocumentsChain` 以创建批量摘要。一旦这些批量摘要的累计数量少于 4000 个令牌，我们将最后一次将它们全部传递给 `StuffDocumentsChain` 以创建最终摘要。
 
 ```python
 # Reduce
@@ -237,24 +230,18 @@ Helpful Answer:"""
 reduce_prompt = PromptTemplate.from_template(reduce_template)
 ```
 
-
 ```python
 # Note we can also get this from the prompt hub, as noted above
 reduce_prompt = hub.pull("rlm/reduce-prompt")
 ```
 
-
 ```python
 reduce_prompt
 ```
 
-
-
 ```output
 ChatPromptTemplate(input_variables=['docs'], metadata={'lc_hub_owner': 'rlm', 'lc_hub_repo': 'map-prompt', 'lc_hub_commit_hash': 'de4fba345f211a462584fc25b7077e69c1ba6cdcf4e21b7ec9abe457ddb16c87'}, messages=[HumanMessagePromptTemplate(prompt=PromptTemplate(input_variables=['docs'], template='The following is a set of documents:\n{docs}\nBased on this list of docs, please identify the main themes \nHelpful Answer:'))])
 ```
-
-
 
 ```python
 # Run chain
@@ -276,8 +263,7 @@ reduce_documents_chain = ReduceDocumentsChain(
 )
 ```
 
-Combining our map and reduce chains into one:
-
+将我们的 map 和 reduce 链合并为一个：
 
 ```python
 # Combining documents by mapping a chain over them, then combining results
@@ -309,30 +295,29 @@ print(result["output_text"])
 ```output
 The main themes identified in the list of documents provided are related to large language models (LLMs), autonomous agents, prompting, steering language models, natural language processing (NLP), the use of tools to augment language models, reinforcement learning, reasoning, acting, self-reflection, and the integration of language models with external knowledge sources.
 ```
-If we follow the [Langsmith Trace](https://smith.langchain.com/public/3a1a6d51-68e5-4805-8d90-78920ce60a51/r), we can see the the individual LLM summarizations, including the [final call](https://smith.langchain.com/public/69482813-f0b7-46b0-a99f-86d56fc9644a/r) that summarizes the summaries.
+如果我们遵循 [Langsmith Trace](https://smith.langchain.com/public/3a1a6d51-68e5-4805-8d90-78920ce60a51/r)，我们可以看到单个 LLM 摘要，包括总结摘要的 [最终调用](https://smith.langchain.com/public/69482813-f0b7-46b0-a99f-86d56fc9644a/r)。
 
-### Go deeper
- 
-**Customization** 
+### 更深入
 
-* As shown above, you can customize the LLMs and prompts for map and reduce stages.
+**定制化**
 
-**Real-world use-case**
+* 如上所示，您可以定制 LLMs 和提示以用于映射和归约阶段。
 
-* See [this blog post](https://blog.langchain.dev/llms-to-improve-documentation/) case-study on analyzing user interactions (questions about LangChain documentation)!  
-* The blog post and associated [repo](https://github.com/mendableai/QA_clustering) also introduce clustering as a means of summarization.
-* This opens up another path beyond the `stuff` or `map-reduce` approaches that is worth considering.
+**实际用例**
+
+* 请参阅[这篇博客文章](https://blog.langchain.dev/llms-to-improve-documentation/)关于分析用户交互（关于 LangChain 文档的问题）的案例研究！  
+* 该博客文章及相关[仓库](https://github.com/mendableai/QA_clustering)还介绍了聚类作为一种总结手段。
+* 这为超越 `stuff` 或 `map-reduce` 方法提供了另一种值得考虑的途径。
 
 ![Image description](../../static/img/summarization_use_case_3.png)
 
-## Option 3. Refine {#refine}
- 
-[RefineDocumentsChain](https://api.python.langchain.com/en/latest/chains/langchain.chains.combine_documents.refine.RefineDocumentsChain.html) is similar to map-reduce:
+## 选项 3. 精炼 {#refine}
 
-> The refine documents chain constructs a response by looping over the input documents and iteratively updating its answer. For each document, it passes all non-document inputs, the current document, and the latest intermediate answer to an LLM chain to get a new answer.
+[RefineDocumentsChain](https://api.python.langchain.com/en/latest/chains/langchain.chains.combine_documents.refine.RefineDocumentsChain.html) 类似于 map-reduce：
 
-This can be easily run with the `chain_type="refine"` specified.
+> 精炼文档链通过循环处理输入文档并迭代更新其答案来构建响应。对于每个文档，它将所有非文档输入、当前文档和最新的中间答案传递给 LLM 链以获取新的答案。
 
+这可以通过指定 `chain_type="refine"` 轻松运行。
 
 ```python
 chain = load_summarize_chain(llm, chain_type="refine")
@@ -341,29 +326,28 @@ result = chain.invoke(split_docs)
 print(result["output_text"])
 ```
 ```output
-The existing summary provides detailed instructions for implementing a project's architecture through code, focusing on creating core classes, functions, and methods in different files following best practices for the chosen language and framework. Assumptions about the model, view, and controller components are also outlined. The additional context highlights challenges in long-term planning and task decomposition, as well as the reliability issues with natural language interfaces in LLM-powered autonomous agents. These insights shed light on the limitations and potential pitfalls of using LLMs in agent systems, with references to recent research on LLM-powered autonomous agents and related technologies.
+现有的摘要提供了通过代码实现项目架构的详细说明，重点是按照所选语言和框架的最佳实践在不同文件中创建核心类、函数和方法。关于模型、视图和控制器组件的假设也被概述。附加的背景强调了长期规划和任务分解中的挑战，以及 LLM 驱动的自主代理在自然语言接口方面的可靠性问题。这些见解揭示了在代理系统中使用 LLM 的局限性和潜在陷阱，并引用了关于 LLM 驱动的自主代理和相关技术的最新研究。
 ```
-Following the [Langsmith trace](https://smith.langchain.com/public/38017fa7-b190-4635-992c-e8554227a4bb/r), we can see the summaries iteratively updated with new information.
+根据 [Langsmith trace](https://smith.langchain.com/public/38017fa7-b190-4635-992c-e8554227a4bb/r)，我们可以看到摘要随着新信息的迭代更新。
 
-It's also possible to supply a prompt and return intermediate steps.
-
+也可以提供提示并返回中间步骤。
 
 ```python
-prompt_template = """Write a concise summary of the following:
+prompt_template = """写一个简明的摘要，内容如下：
 {text}
-CONCISE SUMMARY:"""
+简明摘要："""
 prompt = PromptTemplate.from_template(prompt_template)
 
 refine_template = (
-    "Your job is to produce a final summary\n"
-    "We have provided an existing summary up to a certain point: {existing_answer}\n"
-    "We have the opportunity to refine the existing summary"
-    "(only if needed) with some more context below.\n"
+    "你的任务是生成最终摘要\n"
+    "我们提供了一个现有的摘要，直到某个点：{existing_answer}\n"
+    "我们有机会用下面的一些更多上下文来精炼现有摘要"
+    "(仅在需要时)。\n"
     "------------\n"
     "{text}\n"
     "------------\n"
-    "Given the new context, refine the original summary in Italian"
-    "If the context isn't useful, return the original summary."
+    "根据新上下文，精炼原始摘要为意大利语"
+    "如果上下文没有用，返回原始摘要。"
 )
 refine_prompt = PromptTemplate.from_template(refine_template)
 chain = load_summarize_chain(
@@ -378,27 +362,26 @@ chain = load_summarize_chain(
 result = chain.invoke({"input_documents": split_docs}, return_only_outputs=True)
 ```
 
-
 ```python
 print(result["output_text"])
 ```
 ```output
-Il presente articolo discute il concetto di costruire agenti autonomi utilizzando LLM (large language model) come controller principale. Esplora i diversi componenti di un sistema di agenti alimentato da LLM, tra cui la pianificazione, la memoria e l'uso degli strumenti. Dimostrazioni di concetto come AutoGPT mostrano il potenziale di LLM come risolutore generale di problemi. Approcci come Chain of Thought, Tree of Thoughts, LLM+P, ReAct e Reflexion consentono agli agenti autonomi di pianificare, riflettere su se stessi e migliorarsi iterativamente. Tuttavia, ci sono sfide da affrontare, come la limitata capacità di contesto che limita l'inclusione di informazioni storiche dettagliate e la difficoltà di pianificazione a lungo termine e decomposizione delle attività. Inoltre, l'affidabilità dell'interfaccia di linguaggio naturale tra LLM e componenti esterni come la memoria e gli strumenti è incerta, poiché i LLM possono commettere errori di formattazione e mostrare comportamenti ribelli. Nonostante ciò, il sistema AutoGPT viene menzionato come esempio di dimostrazione di concetto che utilizza LLM come controller principale per agenti autonomi. Questo articolo fa riferimento a diverse fonti che esplorano approcci e applicazioni specifiche di LLM nell'ambito degli agenti autonomi.
+本文讨论了使用 LLM（大型语言模型）作为核心控制器构建自主代理的概念。它探讨了 LLM 驱动的代理系统的不同组件，包括规划、记忆和工具使用。概念验证演示的例子展示了 LLM 作为通用问题解决者的潜力。像 Chain of Thought、Tree of Thoughts、LLM+P、ReAct 和 Reflexion 等方法使自主代理能够进行规划、自我反思和迭代改进。然而，仍然面临挑战，如有限的上下文能力限制了详细历史信息的包含，以及长期规划和任务分解的困难。此外，LLM 与外部组件（如记忆和工具）之间的自然语言接口的可靠性也不确定，因为 LLM 可能会出现格式错误并表现出反叛行为。尽管如此，AutoGPT 系统被提及作为一个使用 LLM 作为自主代理核心控制器的概念验证示例。本文引用了多个来源，探讨了 LLM 在自主代理领域的具体方法和应用。
 ```
 
 ```python
 print("\n\n".join(result["intermediate_steps"][:3]))
 ```
 ```output
-This article discusses the concept of building autonomous agents using LLM (large language model) as the core controller. The article explores the different components of an LLM-powered agent system, including planning, memory, and tool use. It also provides examples of proof-of-concept demos and highlights the potential of LLM as a general problem solver.
+本文讨论了使用 LLM（大型语言模型）作为核心控制器构建自主代理的概念。文章探讨了 LLM 驱动的代理系统的不同组件，包括规划、记忆和工具使用。它还提供了概念验证演示的例子，并强调了 LLM 作为通用问题解决者的潜力。
 
 Questo articolo discute del concetto di costruire agenti autonomi utilizzando LLM (large language model) come controller principale. L'articolo esplora i diversi componenti di un sistema di agenti alimentato da LLM, inclusa la pianificazione, la memoria e l'uso degli strumenti. Vengono forniti anche esempi di dimostrazioni di proof-of-concept e si evidenzia il potenziale di LLM come risolutore generale di problemi. Inoltre, vengono presentati approcci come Chain of Thought, Tree of Thoughts, LLM+P, ReAct e Reflexion che consentono agli agenti autonomi di pianificare, riflettere su se stessi e migliorare iterativamente.
 
 Questo articolo discute del concetto di costruire agenti autonomi utilizzando LLM (large language model) come controller principale. L'articolo esplora i diversi componenti di un sistema di agenti alimentato da LLM, inclusa la pianificazione, la memoria e l'uso degli strumenti. Vengono forniti anche esempi di dimostrazioni di proof-of-concept e si evidenzia il potenziale di LLM come risolutore generale di problemi. Inoltre, vengono presentati approcci come Chain of Thought, Tree of Thoughts, LLM+P, ReAct e Reflexion che consentono agli agenti autonomi di pianificare, riflettere su se stessi e migliorare iterativamente. Il nuovo contesto riguarda l'approccio Chain of Hindsight (CoH) che permette al modello di migliorare autonomamente i propri output attraverso un processo di apprendimento supervisionato. Viene anche presentato l'approccio Algorithm Distillation (AD) che applica lo stesso concetto alle traiettorie di apprendimento per compiti di reinforcement learning.
 ```
-## Splitting and summarizing in a single chain
-For convenience, we can wrap both the text splitting of our long document and summarizing in a single [chain](/docs/how_to/sequence):
 
+## 在单个链中拆分和总结
+为了方便，我们可以将长文档的文本拆分和总结包装在一个单一的[链](/docs/how_to/sequence)中：
 
 ```python
 def split_text(text: str):
@@ -408,12 +391,12 @@ def split_text(text: str):
 summarize_document_chain = split_text | chain
 ```
 
-## Next steps
+## 下一步
 
-We encourage you to check out the [how-to guides](/docs/how_to) for more detail on: 
+我们鼓励您查看 [使用指南](/docs/how_to) 以获取更多详细信息，内容包括：
 
-- Built-in [document loaders](/docs/how_to/#document-loaders) and [text-splitters](/docs/how_to/#text-splitters)
-- Integrating various combine-document chains into a [RAG application](/docs/tutorials/rag/)
-- Incorporating retrieval into a [chatbot](/docs/how_to/chatbots_retrieval/)
+- 内置的 [文档加载器](/docs/how_to/#document-loaders) 和 [文本拆分器](/docs/how_to/#text-splitters)
+- 将各种组合文档链集成到 [RAG 应用程序](/docs/tutorials/rag/)
+- 将检索功能纳入 [聊天机器人](/docs/how_to/chatbots_retrieval/)
 
-and other concepts.
+以及其他概念。

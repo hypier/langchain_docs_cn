@@ -1,12 +1,13 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/banana.ipynb
 ---
-# Banana
+
+# 香蕉
 
 
-[Banana](https://www.banana.dev/about-us) is focused on building the machine learning infrastructure.
+[Banana](https://www.banana.dev/about-us) 专注于构建机器学习基础设施。
 
-This example goes over how to use LangChain to interact with Banana models
+本示例介绍如何使用 LangChain 与 Banana 模型进行交互
 
 
 ```python
@@ -72,8 +73,7 @@ question = "What NFL team won the Super Bowl in the year Justin Beiber was born?
 llm_chain.run(question)
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

@@ -2,24 +2,24 @@
 sidebar_position: 5
 ---
 
-# Contribute Integrations
+# 贡献集成
 
-To begin, make sure you have all the dependencies outlined in guide on [Contributing Code](/docs/contributing/code/).
+首先，请确保您已安装[贡献代码](/docs/contributing/code/)指南中列出的所有依赖项。
 
-There are a few different places you can contribute integrations for LangChain:
+您可以在以下几个不同的地方为 LangChain 贡献集成：
 
-- **Community**: For lighter-weight integrations that are primarily maintained by LangChain and the Open Source Community.
-- **Partner Packages**: For independent packages that are co-maintained by LangChain and a partner.
+- **社区**：用于由 LangChain 和开源社区主要维护的轻量级集成。
+- **合作伙伴包**：用于由 LangChain 和合作伙伴共同维护的独立包。
 
-For the most part, **new integrations should be added to the Community package**. Partner packages require more maintenance as separate packages, so please confirm with the LangChain team before creating a new partner package.
+在大多数情况下，**新集成应添加到社区包中**。合作伙伴包作为独立包需要更多的维护，因此在创建新的合作伙伴包之前，请与 LangChain 团队确认。
 
-In the following sections, we'll walk through how to contribute to each of these packages from a fake company, `Parrot Link AI`.
+在接下来的部分中，我们将介绍如何从一家虚构公司 `Parrot Link AI` 为这些包贡献代码。
 
-## Community package
+## 社区包
 
-The `langchain-community` package is in `libs/community` and contains most integrations.
+`langchain-community` 包位于 `libs/community`，包含大多数集成。
 
-It can be installed with `pip install langchain-community`, and exported members can be imported with code like 
+可以通过 `pip install langchain-community` 安装，导出的成员可以通过如下代码导入：
 
 ```python
 from langchain_community.chat_models import ChatParrotLink
@@ -27,18 +27,17 @@ from langchain_community.llms import ParrotLinkLLM
 from langchain_community.vectorstores import ParrotLinkVectorStore
 ```
 
-The `community` package relies on manually-installed dependent packages, so you will see errors 
-if you try to import a package that is not installed. In our fake example, if you tried to import `ParrotLinkLLM` without installing `parrot-link-sdk`, you will see an `ImportError` telling you to install it when trying to use it.
+`community` 包依赖于手动安装的依赖包，因此如果尝试导入未安装的包，会出现错误。在我们的假设示例中，如果尝试在未安装 `parrot-link-sdk` 的情况下导入 `ParrotLinkLLM`，则会看到一个 `ImportError`，提示您在尝试使用时安装它。
 
-Let's say we wanted to implement a chat model for Parrot Link AI. We would create a new file in `libs/community/langchain_community/chat_models/parrot_link.py` with the following code:
+假设我们想为 Parrot Link AI 实现一个聊天模型。我们将在 `libs/community/langchain_community/chat_models/parrot_link.py` 中创建一个新文件，包含以下代码：
 
 ```python
 from langchain_core.language_models.chat_models import BaseChatModel
 
 class ChatParrotLink(BaseChatModel):
-    """ChatParrotLink chat model.
+    """ChatParrotLink 聊天模型。
 
-    Example:
+    示例：
         .. code-block:: python
 
             from langchain_community.chat_models import ChatParrotLink
@@ -49,45 +48,42 @@ class ChatParrotLink(BaseChatModel):
     ...
 ```
 
-And we would write tests in:
+我们将在以下位置编写测试：
 
-- Unit tests: `libs/community/tests/unit_tests/chat_models/test_parrot_link.py`
-- Integration tests: `libs/community/tests/integration_tests/chat_models/test_parrot_link.py`
+- 单元测试：`libs/community/tests/unit_tests/chat_models/test_parrot_link.py`
+- 集成测试：`libs/community/tests/integration_tests/chat_models/test_parrot_link.py`
 
-And add documentation to:
+并添加文档到：
 
 - `docs/docs/integrations/chat/parrot_link.ipynb`
 
-## Partner package in LangChain repo
+## LangChain 仓库中的合作伙伴包
 
 :::caution
-Before starting a **partner** package, please confirm your intent with the LangChain team. Partner packages require more maintenance as separate packages, so we will close PRs that add new partner packages without prior discussion. See the above section for how to add a community integration.
+在开始一个 **合作伙伴** 包之前，请与 LangChain 团队确认您的意图。合作伙伴包作为单独的包需要更多的维护，因此我们将关闭在未事先讨论的情况下添加新合作伙伴包的 PR。有关如何添加社区集成，请参见上面的部分。
 :::
 
-Partner packages can be hosted in the `LangChain` monorepo or in an external repo.
+合作伙伴包可以托管在 `LangChain` 单体仓库中或外部仓库中。
 
-Partner package in the `LangChain` repo is placed in `libs/partners/{partner}` 
-and the package source code is in `libs/partners/{partner}/langchain_{partner}`.
+`LangChain` 仓库中的合作伙伴包位于 `libs/partners/{partner}`，包的源代码在 `libs/partners/{partner}/langchain_{partner}`。
 
-A package is 
-installed by users with `pip install langchain-{partner}`, and the package members 
-can be imported with code like:
+用户通过 `pip install langchain-{partner}` 安装包，包的成员可以通过如下代码导入：
 
 ```python
 from langchain_{partner} import X
 ```
 
-### Set up a new package
+### 设置新包
 
-To set up a new partner package, use the latest version of the LangChain CLI. You can install or update it with:
+要设置一个新的合作伙伴包，请使用最新版本的 LangChain CLI。您可以使用以下命令安装或更新它：
 
 ```bash
 pip install -U langchain-cli
 ```
 
-Let's say you want to create a new partner package working for a company called Parrot Link AI.
+假设您想为一家名为 Parrot Link AI 的公司创建一个新的合作伙伴包。
 
-Then, run the following command to create a new partner package:
+然后，运行以下命令以创建一个新的合作伙伴包：
 
 ```bash
 cd libs/partners
@@ -96,75 +92,70 @@ langchain-cli integration new
 > Name of integration in PascalCase [ParrotLink]: ParrotLink
 ```
 
-This will create a new package in `libs/partners/parrot-link` with the following structure:
+这将会在 `libs/partners/parrot-link` 中创建一个新的包，结构如下：
 
 ```
 libs/partners/parrot-link/
-  langchain_parrot_link/ # folder containing your package
+  langchain_parrot_link/ # 包含您的包的文件夹
     ...
   tests/
     ...
-  docs/ # bootstrapped docs notebooks, must be moved to /docs in monorepo root
+  docs/ # 引导文档笔记本，必须移动到单一存储库根目录的 /docs 中
     ...
-  scripts/ # scripts for CI
+  scripts/ # CI 的脚本
     ...
   LICENSE
-  README.md # fill out with information about your package
-  Makefile # default commands for CI
-  pyproject.toml # package metadata, mostly managed by Poetry
-  poetry.lock # package lockfile, managed by Poetry
+  README.md # 填写有关您的包的信息
+  Makefile # CI 的默认命令
+  pyproject.toml # 包元数据，主要由 Poetry 管理
+  poetry.lock # 包锁定文件，由 Poetry 管理
   .gitignore
 ```
 
-### Implement your package
+### 实现您的包
 
-First, add any dependencies your package needs, such as your company's SDK:
+首先，添加您的包所需的任何依赖项，例如您公司的 SDK：
 
 ```bash
 poetry add parrot-link-sdk
 ```
 
-If you need separate dependencies for type checking, you can add them to the `typing` group with:
+如果您需要单独的依赖项用于类型检查，可以将它们添加到 `typing` 组中：
 
 ```bash
 poetry add --group typing types-parrot-link-sdk
 ```
 
-Then, implement your package in `libs/partners/parrot-link/langchain_parrot_link`.
+然后，在 `libs/partners/parrot-link/langchain_parrot_link` 中实现您的包。
 
-By default, this will include stubs for a Chat Model, an LLM, and/or a Vector Store. You should delete any of the files you won't use and remove them from `__init__.py`.
+默认情况下，这将包含 Chat Model、LLM 和/或 Vector Store 的存根。您应该删除任何不使用的文件，并从 `__init__.py` 中移除它们。
 
-### Write Unit and Integration Tests
+### 编写单元测试和集成测试
 
-Some basic tests are presented in the `tests/` directory. You should add more tests to cover your package's functionality.
+在 `tests/` 目录中提供了一些基本测试。您应该添加更多测试以覆盖您包的功能。
 
-For information on running and implementing tests, see the [Testing guide](/docs/contributing/testing/).
+有关运行和实现测试的信息，请参阅 [测试指南](/docs/contributing/testing/)。
 
-### Write documentation
+### 编写文档
 
-Documentation is generated from Jupyter notebooks in the `docs/` directory. You should place the notebooks with examples
-to the relevant `docs/docs/integrations` directory in the monorepo root.
+文档是从 `docs/` 目录中的 Jupyter 笔记本生成的。您应该将包含示例的笔记本放置到单体库根目录下相关的 `docs/docs/integrations` 目录中。
 
-### (If Necessary) Deprecate community integration
+### （如有必要）弃用社区集成
 
-Note: this is only necessary if you're migrating an existing community integration into 
-a partner package. If the component you're integrating is net-new to LangChain (i.e. 
-not already in the `community` package), you can skip this step.
+注意：仅在您将现有社区集成迁移到合作伙伴包时才需要此步骤。如果您集成的组件是 LangChain 中全新的（即不在 `community` 包中），可以跳过此步骤。
 
-Let's pretend we migrated our `ChatParrotLink` chat model from the community package to 
-the partner package. We would need to deprecate the old model in the community package.
+假设我们将 `ChatParrotLink` 聊天模型从社区包迁移到合作伙伴包。我们需要在社区包中弃用旧模型。
 
-We would do that by adding a `@deprecated` decorator to the old model as follows, in
-`libs/community/langchain_community/chat_models/parrot_link.py`.
+我们可以通过在 `libs/community/langchain_community/chat_models/parrot_link.py` 中添加 `@deprecated` 装饰器来实现。
 
-Before our change, our chat model might look like this:
+在我们更改之前，聊天模型可能如下所示：
 
 ```python
 class ChatParrotLink(BaseChatModel):
   ...
 ```
 
-After our change, it would look like this:
+在我们更改之后，它将如下所示：
 
 ```python
 from langchain_core._api.deprecation import deprecated
@@ -178,26 +169,23 @@ class ChatParrotLink(BaseChatModel):
   ...
 ```
 
-You should do this for *each* component that you're migrating to the partner package.
+您应该对每个迁移到合作伙伴包的组件执行此操作。
 
-### Additional steps
+### 附加步骤
 
-Contributor steps:
+贡献者步骤：
 
-- [ ] Add secret names to manual integrations workflow in `.github/workflows/_integration_test.yml`
-- [ ] Add secrets to release workflow (for pre-release testing) in `.github/workflows/_release.yml`
+- [ ] 在 `.github/workflows/_integration_test.yml` 中添加手动集成工作流的密钥名称
+- [ ] 在 `.github/workflows/_release.yml` 中添加发布工作流的密钥（用于预发布测试）
 
-Maintainer steps (Contributors should **not** do these):
+维护者步骤（贡献者**不**应执行这些）：
 
-- [ ] set up pypi and test pypi projects
-- [ ] add credential secrets to Github Actions
-- [ ] add package to conda-forge
+- [ ] 设置 pypi 和 test pypi 项目
+- [ ] 将凭证密钥添加到 Github Actions
+- [ ] 将软件包添加到 conda-forge
 
-## Partner package in external repo
+## 外部仓库中的合作伙伴包
 
-Partner packages in external repos must be coordinated between the LangChain team and
-the partner organization to ensure that they are maintained and updated.
+外部仓库中的合作伙伴包必须在LangChain团队和合作伙伴组织之间进行协调，以确保它们得到维护和更新。
 
-If you're interested in creating a partner package in an external repo, please start
-with one in the LangChain repo, and then reach out to the LangChain team to discuss
-how to move it to an external repo.
+如果您有兴趣在外部仓库中创建一个合作伙伴包，请先从LangChain仓库中的一个开始，然后联系LangChain团队讨论如何将其移动到外部仓库。

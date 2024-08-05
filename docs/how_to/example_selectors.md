@@ -2,11 +2,12 @@
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/how_to/example_selectors.ipynb
 sidebar_position: 1
 ---
-# How to use example selectors
 
-If you have a large number of examples, you may need to select which ones to include in the prompt. The Example Selector is the class responsible for doing so.
+# 如何使用示例选择器
 
-The base interface is defined as below:
+如果您有大量示例，您可能需要选择哪些示例包含在提示中。示例选择器是负责执行此操作的类。
+
+基本接口定义如下：
 
 ```python
 class BaseExampleSelector(ABC):
@@ -21,16 +22,15 @@ class BaseExampleSelector(ABC):
         """Add new example to store."""
 ```
 
-The only method it needs to define is a ``select_examples`` method. This takes in the input variables and then returns a list of examples. It is up to each specific implementation as to how those examples are selected.
+它需要定义的唯一方法是 ``select_examples`` 方法。该方法接受输入变量，然后返回示例列表。具体实现如何选择这些示例则由每个具体实现决定。
 
-LangChain has a few different types of example selectors. For an overview of all these types, see the below table.
+LangChain 有几种不同类型的示例选择器。有关所有这些类型的概述，请参见下表。
 
-In this guide, we will walk through creating a custom example selector.
+在本指南中，我们将介绍如何创建自定义示例选择器。
 
-## Examples
+## 示例
 
-In order to use an example selector, we need to create a list of examples. These should generally be example inputs and outputs. For this demo purpose, let's imagine we are selecting examples of how to translate English to Italian.
-
+为了使用示例选择器，我们需要创建一个示例列表。这些通常应该是示例输入和输出。为了演示的目的，让我们想象一下我们正在选择如何将英语翻译成意大利语的示例。
 
 ```python
 examples = [
@@ -40,9 +40,9 @@ examples = [
 ]
 ```
 
-## Custom Example Selector
+## 自定义示例选择器
 
-Let's write an example selector that chooses what example to pick based on the length of the word.
+让我们编写一个示例选择器，根据单词的长度选择要挑选的示例。
 
 
 ```python
@@ -57,20 +57,20 @@ class CustomExampleSelector(BaseExampleSelector):
         self.examples.append(example)
 
     def select_examples(self, input_variables):
-        # This assumes knowledge that part of the input will be a 'text' key
+        # 这假设输入的一部分将是一个 'text' 键
         new_word = input_variables["input"]
         new_word_length = len(new_word)
 
-        # Initialize variables to store the best match and its length difference
+        # 初始化变量以存储最佳匹配及其长度差
         best_match = None
         smallest_diff = float("inf")
 
-        # Iterate through each example
+        # 遍历每个示例
         for example in self.examples:
-            # Calculate the length difference with the first word of the example
+            # 计算当前示例第一个单词的长度差
             current_diff = abs(len(example["input"]) - new_word_length)
 
-            # Update the best match if the current one is closer in length
+            # 如果当前示例在长度上更接近，则更新最佳匹配
             if current_diff < smallest_diff:
                 smallest_diff = current_diff
                 best_match = example
@@ -111,10 +111,9 @@ example_selector.select_examples({"input": "okay"})
 [{'input': 'hand', 'output': 'mano'}]
 ```
 
+## 用于提示
 
-## Use in a Prompt
-
-We can now use this example selector in a prompt
+我们现在可以在提示中使用这个示例选择器
 
 
 ```python
@@ -130,24 +129,25 @@ prompt = FewShotPromptTemplate(
     example_selector=example_selector,
     example_prompt=example_prompt,
     suffix="Input: {input} -> Output:",
-    prefix="Translate the following words from English to Italian:",
+    prefix="将以下单词从英语翻译成意大利语：",
     input_variables=["input"],
 )
 
 print(prompt.format(input="word"))
 ```
 ```output
-Translate the following words from English to Italian:
+将以下单词从英语翻译成意大利语：
 
 Input: hand -> Output: mano
 
 Input: word -> Output:
 ```
-## Example Selector Types
 
-| Name       | Description                                                                                 |
+## 示例选择器类型
+
+| 名称       | 描述                                                                                       |
 |------------|---------------------------------------------------------------------------------------------|
-| Similarity | Uses semantic similarity between inputs and examples to decide which examples to choose.    |
-| MMR        | Uses Max Marginal Relevance between inputs and examples to decide which examples to choose. |
-| Length     | Selects examples based on how many can fit within a certain length                          |
-| Ngram      | Uses ngram overlap between inputs and examples to decide which examples to choose.          |
+| 相似性     | 使用输入与示例之间的语义相似性来决定选择哪些示例。                                          |
+| MMR        | 使用输入与示例之间的最大边际相关性来决定选择哪些示例。                                     |
+| 长度       | 根据可以适应特定长度的示例数量来选择示例。                                                  |
+| Ngram      | 使用输入与示例之间的n-gram重叠来决定选择哪些示例。                                         |

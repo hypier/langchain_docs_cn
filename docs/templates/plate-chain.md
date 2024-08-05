@@ -1,37 +1,36 @@
-
 # plate-chain
 
-This template enables parsing of data from laboratory plates. 
+此模板可以解析实验室板中的数据。
 
-In the context of biochemistry or molecular biology, laboratory plates are commonly used tools to hold samples in a grid-like format. 
+在生物化学或分子生物学的背景下，实验室板是用于以网格格式保存样本的常用工具。
 
-This can parse the resulting data into standardized (e.g., JSON) format for further processing.
+这可以将结果数据解析为标准化格式（例如，JSON），以便进一步处理。
 
-## Environment Setup
+## 环境设置
 
-Set the `OPENAI_API_KEY` environment variable to access the OpenAI models.
+设置 `OPENAI_API_KEY` 环境变量以访问 OpenAI 模型。
 
-## Usage
+## 使用
 
-To utilize plate-chain, you must have the LangChain CLI installed:
+要使用 plate-chain，您必须安装 LangChain CLI：
 
 ```shell
 pip install -U langchain-cli
 ```
 
-Creating a new LangChain project and installing plate-chain as the only package can be done with:
+创建一个新的 LangChain 项目并将 plate-chain 作为唯一包安装，可以使用以下命令：
 
 ```shell
 langchain app new my-app --package plate-chain
 ```
 
-If you wish to add this to an existing project, simply run:
+如果您希望将其添加到现有项目中，只需运行：
 
 ```shell
 langchain app add plate-chain
 ```
 
-Then add the following code to your `server.py` file:
+然后将以下代码添加到您的 `server.py` 文件中：
 
 ```python
 from plate_chain import chain as plate_chain
@@ -39,27 +38,27 @@ from plate_chain import chain as plate_chain
 add_routes(app, plate_chain, path="/plate-chain")
 ```
 
-(Optional) For configuring LangSmith, which helps trace, monitor and debug LangChain applications, use the following code:
+（可选）要配置 LangSmith，以帮助跟踪、监视和调试 LangChain 应用程序，请使用以下代码：
 
 ```shell
 export LANGCHAIN_TRACING_V2=true
 export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
+export LANGCHAIN_PROJECT=<your-project>  # 如果未指定，默认为 "default"
 ```
 
-If you're in this directory, you can start a LangServe instance directly by:
+如果您在此目录中，可以直接通过以下命令启动 LangServe 实例：
 
 ```shell
 langchain serve
 ```
 
-This starts the FastAPI app with a server running locally at 
+这将在本地启动 FastAPI 应用，服务器运行在 
 [http://localhost:8000](http://localhost:8000)
 
-All templates can be viewed at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-Access the playground at [http://127.0.0.1:8000/plate-chain/playground](http://127.0.0.1:8000/plate-chain/playground)  
+所有模板可以在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 查看
+访问游乐场在 [http://127.0.0.1:8000/plate-chain/playground](http://127.0.0.1:8000/plate-chain/playground)  
 
-You can access the template from code with:
+您可以通过代码访问模板：
 
 ```python
 from langserve.client import RemoteRunnable

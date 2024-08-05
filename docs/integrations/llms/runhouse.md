@@ -1,19 +1,18 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/llms/runhouse.ipynb
 ---
+
 # Runhouse
 
-The [Runhouse](https://github.com/run-house/runhouse) allows remote compute and data across environments and users. See the [Runhouse docs](https://runhouse-docs.readthedocs-hosted.com/en/latest/).
+[Runhouse](https://github.com/run-house/runhouse) 允许跨环境和用户进行远程计算和数据处理。请参阅 [Runhouse 文档](https://runhouse-docs.readthedocs-hosted.com/en/latest/)。
 
-This example goes over how to use LangChain and [Runhouse](https://github.com/run-house/runhouse) to interact with models hosted on your own GPU, or on-demand GPUs on AWS, GCP, AWS, or Lambda.
+本示例介绍如何使用 LangChain 和 [Runhouse](https://github.com/run-house/runhouse) 与托管在您自己 GPU 上的模型或 AWS、GCP、AWS 或 Lambda 上的按需 GPU 进行交互。
 
-**Note**: Code uses `SelfHosted` name instead of the `Runhouse`.
-
+**注意**：代码使用 `SelfHosted` 名称代替 `Runhouse`。
 
 ```python
 %pip install --upgrade --quiet  runhouse
 ```
-
 
 ```python
 import runhouse as rh
@@ -38,15 +37,13 @@ gpu = rh.cluster(name="rh-a10x", instance_type="A100:1", use_spot=False)
 #                  name='rh-a10x')
 ```
 
-
 ```python
 template = """Question: {question}
 
 Answer: Let's think step by step."""
-
+  
 prompt = PromptTemplate.from_template(template)
 ```
-
 
 ```python
 llm = SelfHostedHuggingFaceLLM(
@@ -54,11 +51,9 @@ llm = SelfHostedHuggingFaceLLM(
 )
 ```
 
-
 ```python
 llm_chain = LLMChain(prompt=prompt, llm=llm)
 ```
-
 
 ```python
 question = "What NFL team won the Super Bowl in the year Justin Beiber was born?"
@@ -70,14 +65,11 @@ INFO | 2023-02-17 05:42:23,537 | Running _generate_text via gRPC
 INFO | 2023-02-17 05:42:24,016 | Time to send message: 0.48 seconds
 ```
 
-
 ```output
 "\n\nLet's say we're talking sports teams who won the Super Bowl in the year Justin Beiber"
 ```
 
-
-You can also load more custom models through the SelfHostedHuggingFaceLLM interface:
-
+您还可以通过 SelfHostedHuggingFaceLLM 接口加载更多自定义模型：
 
 ```python
 llm = SelfHostedHuggingFaceLLM(
@@ -87,7 +79,6 @@ llm = SelfHostedHuggingFaceLLM(
 )
 ```
 
-
 ```python
 llm("What is the capital of Germany?")
 ```
@@ -96,14 +87,11 @@ INFO | 2023-02-17 05:54:21,681 | Running _generate_text via gRPC
 INFO | 2023-02-17 05:54:21,937 | Time to send message: 0.25 seconds
 ```
 
-
 ```output
 'berlin'
 ```
 
-
-Using a custom load function, we can load a custom pipeline directly on the remote hardware:
-
+使用自定义加载函数，我们可以直接在远程硬件上加载自定义管道：
 
 ```python
 def load_pipeline():
@@ -126,13 +114,11 @@ def inference_fn(pipeline, prompt, stop=None):
     return pipeline(prompt)[0]["generated_text"][len(prompt) :]
 ```
 
-
 ```python
 llm = SelfHostedHuggingFaceLLM(
     model_load_fn=load_pipeline, hardware=gpu, inference_fn=inference_fn
 )
 ```
-
 
 ```python
 llm("Who is the current US president?")
@@ -142,14 +128,11 @@ INFO | 2023-02-17 05:42:59,219 | Running _generate_text via gRPC
 INFO | 2023-02-17 05:42:59,522 | Time to send message: 0.3 seconds
 ```
 
-
 ```output
 'john w. bush'
 ```
 
-
-You can send your pipeline directly over the wire to your model, but this will only work for small models (<2 Gb), and will be pretty slow:
-
+您可以将管道直接发送到模型，但这仅适用于小模型（<2 Gb），并且速度会很慢：
 
 ```python
 pipeline = load_pipeline()
@@ -158,8 +141,7 @@ llm = SelfHostedPipeline.from_pipeline(
 )
 ```
 
-Instead, we can also send it to the hardware's filesystem, which will be much faster.
-
+相反，我们还可以将其发送到硬件的文件系统，这样会快得多。
 
 ```python
 import pickle
@@ -171,8 +153,7 @@ rh.blob(pickle.dumps(pipeline), path="models/pipeline.pkl").save().to(
 llm = SelfHostedPipeline.from_pipeline(pipeline="models/pipeline.pkl", hardware=gpu)
 ```
 
+## 相关
 
-## Related
-
-- LLM [conceptual guide](/docs/concepts/#llms)
-- LLM [how-to guides](/docs/how_to/#llms)
+- LLM [概念指南](/docs/concepts/#llms)
+- LLM [操作指南](/docs/how_to/#llms)

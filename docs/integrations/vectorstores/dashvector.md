@@ -1,23 +1,24 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/vectorstores/dashvector.ipynb
 ---
+
 # DashVector
 
-> [DashVector](https://help.aliyun.com/document_detail/2510225.html) is a fully-managed vectorDB service that supports high-dimension dense and sparse vectors, real-time insertion and filtered search. It is built to scale automatically and can adapt to different application requirements.
+> [DashVector](https://help.aliyun.com/document_detail/2510225.html) 是一个完全托管的向量数据库服务，支持高维稠密和稀疏向量、实时插入和过滤搜索。它具备自动扩展的能力，可以适应不同的应用需求。
 
-This notebook shows how to use functionality related to the `DashVector` vector database.
+本笔记本展示了如何使用与 `DashVector` 向量数据库相关的功能。
 
-To use DashVector, you must have an API key.
-Here are the [installation instructions](https://help.aliyun.com/document_detail/2510223.html).
+要使用 DashVector，您必须拥有一个 API 密钥。
+以下是 [安装说明](https://help.aliyun.com/document_detail/2510223.html)。
 
-## Install
+## 安装
 
 
 ```python
 %pip install --upgrade --quiet  langchain-community dashvector dashscope
 ```
 
-We want to use `DashScopeEmbeddings` so we also have to get the Dashscope API Key.
+我们想使用 `DashScopeEmbeddings`，所以我们还需要获取 Dashscope API 密钥。
 
 
 ```python
@@ -28,7 +29,7 @@ os.environ["DASHVECTOR_API_KEY"] = getpass.getpass("DashVector API Key:")
 os.environ["DASHSCOPE_API_KEY"] = getpass.getpass("DashScope API Key:")
 ```
 
-## Example
+## 示例
 
 
 ```python
@@ -49,18 +50,18 @@ docs = text_splitter.split_documents(documents)
 embeddings = DashScopeEmbeddings()
 ```
 
-We can create DashVector from documents.
+我们可以从文档创建 DashVector。
 
 
 ```python
 dashvector = DashVector.from_documents(docs, embeddings)
 
-query = "What did the president say about Ketanji Brown Jackson"
+query = "总统对 Ketanji Brown Jackson 说了什么"
 docs = dashvector.similarity_search(query)
 print(docs)
 ```
 
-We can add texts with meta datas and ids, and search with meta filter.
+我们可以添加带有元数据和 ID 的文本，并使用元过滤器进行搜索。
 
 
 ```python
@@ -76,10 +77,10 @@ print(docs)
 ```output
 [Document(page_content='baz', metadata={'key': 2})]
 ```
-### Operating band `partition` parameters
 
-The `partition` parameter defaults to default, and if a non-existent `partition` parameter is passed in, the `partition` will be created automatically. 
+### 操作带 `partition` 参数
 
+`partition` 参数默认为默认值，如果传入一个不存在的 `partition` 参数，将自动创建 `partition`。
 
 ```python
 texts = ["foo", "bar", "baz"]
@@ -98,8 +99,7 @@ docs = dashvector.similarity_search(query, partition=partition)
 dashvector.delete(ids=ids, partition=partition)
 ```
 
+## 相关
 
-## Related
-
-- Vector store [conceptual guide](/docs/concepts/#vector-stores)
-- Vector store [how-to guides](/docs/how_to/#vector-stores)
+- 向量存储 [概念指南](/docs/concepts/#vector-stores)
+- 向量存储 [操作指南](/docs/how_to/#vector-stores)

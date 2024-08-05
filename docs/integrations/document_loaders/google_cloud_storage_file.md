@@ -1,11 +1,12 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/document_loaders/google_cloud_storage_file.ipynb
 ---
-# Google Cloud Storage File
 
->[Google Cloud Storage](https://en.wikipedia.org/wiki/Google_Cloud_Storage) is a managed service for storing unstructured data.
+# Google Cloud Storage 文件
 
-This covers how to load document objects from an `Google Cloud Storage (GCS) file object (blob)`.
+>[Google Cloud Storage](https://en.wikipedia.org/wiki/Google_Cloud_Storage) 是一个用于存储非结构化数据的托管服务。
+
+这部分介绍如何从 `Google Cloud Storage (GCS) 文件对象 (blob)` 加载文档对象。
 
 
 ```python
@@ -37,7 +38,7 @@ loader.load()
 ```
 
 
-If you want to use an alternative loader, you can provide a custom function, for example:
+如果您想使用替代加载器，可以提供自定义函数，例如：
 
 
 ```python
@@ -53,8 +54,7 @@ loader = GCSFileLoader(
 )
 ```
 
+## 相关
 
-## Related
-
-- Document loader [conceptual guide](/docs/concepts/#document-loaders)
-- Document loader [how-to guides](/docs/how_to/#document-loaders)
+- 文档加载器 [概念指南](/docs/concepts/#document-loaders)
+- 文档加载器 [操作指南](/docs/how_to/#document-loaders)

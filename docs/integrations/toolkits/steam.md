@@ -1,32 +1,33 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/toolkits/steam.ipynb
 ---
-# Steam Game Recommendation & Game Details
 
->[Steam (Wikipedia)](https://en.wikipedia.org/wiki/Steam_(service)) is a video game digital distribution service and storefront developed by `Valve Corporation`. It provides game updates automatically for Valve's games, and expanded to distributing third-party titles. `Steam` offers various features, like game server matchmaking with Valve Anti-Cheat measures, social networking, and game streaming services.
+# Steam 游戏推荐与游戏详情
 
->[Steam](https://store.steampowered.com/about/) is the ultimate destination for playing, discussing, and creating games.
+>[Steam (维基百科)](https://en.wikipedia.org/wiki/Steam_(service)) 是由 `Valve Corporation` 开发的视频游戏数字发行服务和商店。它为 Valve 的游戏自动提供更新，并扩展到分发第三方游戏。`Steam` 提供各种功能，如与 Valve 反作弊措施的游戏服务器匹配、社交网络和游戏流媒体服务。
 
-Steam toolkit has two tools:
-- `Game Details`
-- `Recommended Games`
+>[Steam](https://store.steampowered.com/about/) 是玩、讨论和创造游戏的终极目的地。
 
-This notebook provides a walkthrough of using Steam API with LangChain to retrieve Steam game recommendations based on your current Steam Game Inventory or to gather information regarding some Steam Games which you provide.
+Steam 工具包有两个工具：
+- `游戏详情`
+- `推荐游戏`
 
-## Setting up
+本笔记本提供了使用 Steam API 与 LangChain 的操作指南，以根据您当前的 Steam 游戏库存检索 Steam 游戏推荐，或收集您提供的一些 Steam 游戏的信息。
 
-We have to install two python libraries.
+## 设置
 
-## Imports
+我们需要安装两个 Python 库。
+
+## 导入
 
 
 ```python
 %pip install --upgrade --quiet  python-steam-api python-decouple
 ```
 
-## Assign Environmental Variables
-To use this toolkit, please have your OpenAI API Key, Steam API key (from [here](https://steamcommunity.com/dev/apikey)) and your own SteamID handy. Once you have received a Steam API Key, you can input it as an environmental variable below.
-The toolkit will read the "STEAM_KEY" API Key as an environmental variable to authenticate you so please set them here. You will also need to set your "OPENAI_API_KEY" and your "STEAM_ID".
+## 分配环境变量
+要使用此工具包，请准备好您的 OpenAI API 密钥、Steam API 密钥（从 [这里](https://steamcommunity.com/dev/apikey)）和您自己的 SteamID。一旦您获得了 Steam API 密钥，您可以将其作为环境变量输入到下面。
+该工具包将读取 "STEAM_KEY" API 密钥作为环境变量以进行身份验证，因此请在此处设置它们。您还需要设置您的 "OPENAI_API_KEY" 和 "STEAM_ID"。
 
 
 ```python
@@ -37,9 +38,10 @@ os.environ["STEAM_ID"] = "123"
 os.environ["OPENAI_API_KEY"] = "abc"
 ```
 
-## Initialization: 
-Initialize the LLM, SteamWebAPIWrapper, SteamToolkit and most importantly the langchain agent to process your query!
-## Example
+## 初始化：
+初始化 LLM、SteamWebAPIWrapper、SteamToolkit，以及最重要的 langchain 代理来处理您的查询！
+
+## 示例
 
 
 ```python
@@ -63,23 +65,4 @@ agent = initialize_agent(
 ```python
 out = agent("can you give the information about the game Terraria")
 print(out)
-```
-```output
-
-
-[1m> Entering new AgentExecutor chain...[0m
-[32;1m[1;3m I need to find the game details
-Action: Get Games Details
-Action Input: Terraria[0m
-Observation: [36;1m[1;3mThe id is: 105600
-The link is: https://store.steampowered.com/app/105600/Terraria/?snr=1_7_15__13
-The price is: $9.99
-The summary of the game is: Dig, Fight, Explore, Build:  The very world is at your fingertips as you fight for survival, fortune, and glory.   Will you delve deep into cavernous expanses in search of treasure and raw materials with which to craft ever-evolving gear, machinery, and aesthetics?   Perhaps you will choose instead to seek out ever-greater foes to test your mettle in combat?   Maybe you will decide to construct your own city to house the host of mysterious allies you may encounter along your travels? In the World of Terraria, the choice is yours!Blending elements of classic action games with the freedom of sandbox-style creativity, Terraria is a unique gaming experience where both the journey and the destination are completely in the player’s control.   The Terraria adventure is truly as unique as the players themselves!  Are you up for the monumental task of exploring, creating, and defending a world of your own?   Key features: Sandbox Play  Randomly generated worlds Free Content Updates 
-The supported languages of the game are: English, French, Italian, German, Spanish - Spain, Polish, Portuguese - Brazil, Russian, Simplified Chinese
-[0m
-Thought:[32;1m[1;3m I now know the final answer
-Final Answer: Terraria is a game with an id of 105600, a link of https://store.steampowered.com/app/105600/Terraria/?snr=1_7_15__13, a price of $9.99, a summary of "Dig, Fight, Explore, Build:  The very world is at your fingertips as you fight for survival, fortune, and glory.   Will you delve deep into cavernous expanses in search of treasure and raw materials with which to craft ever-evolving gear, machinery, and aesthetics?   Perhaps you will choose instead to seek out ever-greater foes to test your mettle in combat?   Maybe you will decide to construct your own city to house the host of mysterious allies you may encounter along your travels? In the World of Terraria, the choice is yours!Blending elements of classic action games with the freedom of sandbox-style creativity, Terraria is a unique gaming experience where both the journey and the destination are completely in the player’s control.   The Terraria adventure is truly as unique as the players themselves!  Are you up for the monumental task of exploring, creating, and defending a[0m
-
-[1m> Finished chain.[0m
-{'input': 'can you give the information about the game Terraria', 'output': 'Terraria is a game with an id of 105600, a link of https://store.steampowered.com/app/105600/Terraria/?snr=1_7_15__13, a price of $9.99, a summary of "Dig, Fight, Explore, Build:  The very world is at your fingertips as you fight for survival, fortune, and glory.   Will you delve deep into cavernous expanses in search of treasure and raw materials with which to craft ever-evolving gear, machinery, and aesthetics?   Perhaps you will choose instead to seek out ever-greater foes to test your mettle in combat?   Maybe you will decide to construct your own city to house the host of mysterious allies you may encounter along your travels? In the World of Terraria, the choice is yours!Blending elements of classic action games with the freedom of sandbox-style creativity, Terraria is a unique gaming experience where both the journey and the destination are completely in the player’s control.   The Terraria adventure is truly as unique as the players themselves!  Are you up for the monumental task of exploring, creating, and defending a'}
 ```

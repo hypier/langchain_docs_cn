@@ -1,34 +1,34 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/memory/couchbase_chat_message_history.ipynb
 ---
+
 # Couchbase
-> Couchbase is an award-winning distributed NoSQL cloud database that delivers unmatched versatility, performance, scalability, and financial value for all of your cloud, mobile, AI, and edge computing applications. Couchbase embraces AI with coding assistance for developers and vector search for their applications.
+> Couchbase 是一个屡获殊荣的分布式 NoSQL 云数据库，提供无与伦比的多功能性、性能、可扩展性和财务价值，适用于您的所有云、移动、人工智能和边缘计算应用。Couchbase 通过为开发者提供编码辅助和为其应用提供向量搜索来拥抱人工智能。
 
-This notebook goes over how to use the `CouchbaseChatMessageHistory` class to store the chat message history in a Couchbase cluster
+本笔记本介绍如何使用 `CouchbaseChatMessageHistory` 类在 Couchbase 集群中存储聊天消息历史。
 
+## 设置 Couchbase 集群
+要运行此演示，您需要一个 Couchbase 集群。
 
-## Set Up Couchbase Cluster
-To run this demo, you need a Couchbase Cluster. 
+您可以使用 [Couchbase Capella](https://www.couchbase.com/products/capella/) 和您自我管理的 Couchbase Server。
 
-You can work with both [Couchbase Capella](https://www.couchbase.com/products/capella/) and your self-managed Couchbase Server.
-
-## Install Dependencies
-`CouchbaseChatMessageHistory` lives inside the `langchain-couchbase` package. 
+## 安装依赖
+`CouchbaseChatMessageHistory` 位于 `langchain-couchbase` 包中。 
 
 
 ```python
 %pip install --upgrade --quiet langchain-couchbase
 ```
 ```output
-Note: you may need to restart the kernel to use updated packages.
+注意：您可能需要重启内核以使用更新的包。
 ```
-## Create Couchbase Connection Object
-We create a connection to the Couchbase cluster initially and then pass the cluster object to the Vector Store. 
 
-Here, we are connecting using the username and password. You can also connect using any other supported way to your cluster. 
+## 创建 Couchbase 连接对象
+我们首先创建一个与 Couchbase 集群的连接，然后将集群对象传递给向量存储。
 
-For more information on connecting to the Couchbase cluster, please check the [Python SDK documentation](https://docs.couchbase.com/python-sdk/current/hello-world/start-using-sdk.html#connect).
+在这里，我们使用用户名和密码进行连接。您也可以通过其他任何支持的方式连接到您的集群。
 
+有关连接到 Couchbase 集群的更多信息，请查看 [Python SDK 文档](https://docs.couchbase.com/python-sdk/current/hello-world/start-using-sdk.html#connect)。
 
 ```python
 COUCHBASE_CONNECTION_STRING = (
@@ -37,7 +37,6 @@ COUCHBASE_CONNECTION_STRING = (
 DB_USERNAME = "Administrator"
 DB_PASSWORD = "Password"
 ```
-
 
 ```python
 from datetime import timedelta
@@ -54,10 +53,9 @@ cluster = Cluster(COUCHBASE_CONNECTION_STRING, options)
 cluster.wait_until_ready(timedelta(seconds=5))
 ```
 
-We will now set the bucket, scope, and collection names in the Couchbase cluster that we want to use for storing the message history.
+我们现在将在 Couchbase 集群中设置要用于存储消息历史记录的桶、范围和集合名称。
 
-Note that the bucket, scope, and collection need to exist before using them to store the message history.
-
+请注意，桶、范围和集合需要在使用它们存储消息历史记录之前存在。
 
 ```python
 BUCKET_NAME = "langchain-testing"
@@ -65,18 +63,18 @@ SCOPE_NAME = "_default"
 COLLECTION_NAME = "conversational_cache"
 ```
 
-## Usage
-In order to store the messages, you need the following:
-- Couchbase Cluster object: Valid connection to the Couchbase cluster
-- bucket_name: Bucket in cluster to store the chat message history
-- scope_name: Scope in bucket to store the message history
-- collection_name: Collection in scope to store the message history
-- session_id: Unique identifier for the session
+## 使用方法
+为了存储消息，您需要以下内容：
+- Couchbase Cluster object: 有效连接到Couchbase集群
+- bucket_name: 存储聊天消息历史的集群中的桶
+- scope_name: 存储消息历史的桶中的范围
+- collection_name: 存储消息历史的范围中的集合
+- session_id: 会话的唯一标识符
 
-Optionally you can configure the following:
-- session_id_key: Field in the chat message documents to store the `session_id`
-- message_key: Field in the chat message documents to store the message content
-- create_index: Used to specify if the index needs to be created on the collection. By default, an index is created on the `message_key` and the `session_id_key` of the documents
+可选地，您可以配置以下内容：
+- session_id_key: 用于存储`session_id`的聊天消息文档中的字段
+- message_key: 用于存储消息内容的聊天消息文档中的字段
+- create_index: 用于指定是否需要在集合上创建索引。默认情况下，会在文档的`message_key`和`session_id_key`上创建索引
 
 
 ```python
@@ -106,9 +104,8 @@ message_history.messages
 [HumanMessage(content='hi!'), AIMessage(content='how are you doing?')]
 ```
 
-
-## Chaining
-The chat message history class can be used with [LCEL Runnables](https://python.langchain.com/v0.2/docs/how_to/message_history/)
+## 链接
+聊天消息历史类可以与 [LCEL Runnables](https://python.langchain.com/v0.2/docs/how_to/message_history/) 一起使用
 
 
 ```python
@@ -180,4 +177,3 @@ chain_with_history.invoke({"question": "Whats my name"}, config=config)
 ```output
 AIMessage(content='Your name is Bob.', response_metadata={'token_usage': {'completion_tokens': 5, 'prompt_tokens': 43, 'total_tokens': 48}, 'model_name': 'gpt-3.5-turbo-0125', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-f764a9eb-999e-4042-96b6-fe47b7ae4779-0', usage_metadata={'input_tokens': 43, 'output_tokens': 5, 'total_tokens': 48})
 ```
-

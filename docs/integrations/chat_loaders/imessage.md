@@ -1,22 +1,22 @@
 ---
 custom_edit_url: https://github.com/langchain-ai/langchain/edit/master/docs/docs/integrations/chat_loaders/imessage.ipynb
 ---
+
 # iMessage
 
-This notebook shows how to use the iMessage chat loader. This class helps convert iMessage conversations to LangChain chat messages.
+本笔记本展示了如何使用 iMessage 聊天加载器。该类帮助将 iMessage 对话转换为 LangChain 聊天消息。
 
-On MacOS, iMessage stores conversations in a sqlite database at `~/Library/Messages/chat.db` (at least for macOS Ventura 13.4). 
-The `IMessageChatLoader` loads from this database file. 
+在 MacOS 上，iMessage 将对话存储在 `~/Library/Messages/chat.db` 的 sqlite 数据库中（至少适用于 macOS Ventura 13.4）。 
+`IMessageChatLoader` 从此数据库文件中加载数据。
 
-1. Create the `IMessageChatLoader` with the file path pointed to `chat.db` database you'd like to process.
-2. Call `loader.load()` (or `loader.lazy_load()`) to perform the conversion. Optionally use `merge_chat_runs` to combine message from the same sender in sequence, and/or `map_ai_messages` to convert messages from the specified sender to the "AIMessage" class.
+1. 创建 `IMessageChatLoader`，并将文件路径指向您想要处理的 `chat.db` 数据库。
+2. 调用 `loader.load()`（或 `loader.lazy_load()`）以执行转换。可选地使用 `merge_chat_runs` 来按顺序合并来自同一发送方的消息，和/或使用 `map_ai_messages` 将指定发送方的消息转换为 "AIMessage" 类。
 
-## 1. Access Chat DB
+## 1. 访问聊天数据库
 
-It's likely that your terminal is denied access to `~/Library/Messages`. To use this class, you can copy the DB to an accessible directory (e.g., Documents) and load from there. Alternatively (and not recommended), you can grant full disk access for your terminal emulator in System Settings > Security and Privacy > Full Disk Access.
+您的终端可能无法访问 `~/Library/Messages`。要使用此类，您可以将数据库复制到可访问的目录（例如，文档）并从那里加载。或者（不推荐），您可以在系统设置 > 安全性与隐私 > 完整磁盘访问中为您的终端模拟器授予完全磁盘访问权限。
 
-We have created an example database you can use at [this linked drive file](https://drive.google.com/file/d/1NebNKqTA2NXApCmeH6mu0unJD2tANZzo/view?usp=sharing).
-
+我们创建了一个示例数据库，您可以在 [此链接的驱动器文件](https://drive.google.com/file/d/1NebNKqTA2NXApCmeH6mu0unJD2tANZzo/view?usp=sharing) 中使用。
 
 ```python
 # This uses some example data
@@ -47,15 +47,14 @@ download_drive_file(url)
 ```output
 File chat.db downloaded.
 ```
-## 2. Create the Chat Loader
 
-Provide the loader with the file path to the zip directory. You can optionally specify the user id that maps to an ai message as well an configure whether to merge message runs.
+## 2. 创建聊天加载器
 
+提供加载器与 zip 目录的文件路径。您可以选择性地指定映射到 AI 消息的用户 ID，以及配置是否合并消息运行。
 
 ```python
 from langchain_community.chat_loaders.imessage import IMessageChatLoader
 ```
-
 
 ```python
 loader = IMessageChatLoader(
@@ -63,12 +62,11 @@ loader = IMessageChatLoader(
 )
 ```
 
-## 3. Load messages
+## 3. 加载消息
 
-The `load()` (or `lazy_load`) methods return a list of "ChatSessions" that currently just contain a list of messages per loaded conversation. All messages are mapped to "HumanMessage" objects to start. 
+`load()`（或 `lazy_load`）方法返回一个“ChatSessions”列表，该列表当前仅包含每个加载的对话的消息列表。所有消息最初都映射到“HumanMessage”对象。
 
-You can optionally choose to merge message "runs" (consecutive messages from the same sender) and select a sender to represent the "AI". The fine-tuned LLM will learn to generate these AI messages.
-
+您可以选择合并消息“运行”（来自同一发送者的连续消息），并选择一个发送者来代表“AI”。经过微调的 LLM 将学习生成这些 AI 消息。
 
 ```python
 from typing import List
@@ -88,14 +86,11 @@ chat_sessions: List[ChatSession] = list(
 )
 ```
 
-
 ```python
 # Now all of the Tortoise's messages will take the AI message class
 # which maps to the 'assistant' role in OpenAI's training format
 chat_sessions[0]["messages"][:3]
 ```
-
-
 
 ```output
 [AIMessage(content="Slow and steady, that's my motto.", additional_kwargs={'message_time': 1693182723, 'sender': 'Tortoise'}, example=False),
@@ -103,16 +98,13 @@ chat_sessions[0]["messages"][:3]
  AIMessage(content='A balanced approach is more reliable.', additional_kwargs={'message_time': 1693182783, 'sender': 'Tortoise'}, example=False)]
 ```
 
+## 3. 准备微调
 
-## 3. Prepare for fine-tuning
-
-Now it's time to convert our chat  messages to OpenAI dictionaries. We can use the `convert_messages_for_finetuning` utility to do so.
-
+现在是将我们的聊天消息转换为 OpenAI 字典的时刻。我们可以使用 `convert_messages_for_finetuning` 工具来完成此操作。
 
 ```python
 from langchain_community.adapters.openai import convert_messages_for_finetuning
 ```
-
 
 ```python
 training_data = convert_messages_for_finetuning(chat_sessions)
@@ -121,10 +113,10 @@ print(f"Prepared {len(training_data)} dialogues for training")
 ```output
 Prepared 10 dialogues for training
 ```
-## 4. Fine-tune the model
 
-It's time to fine-tune the model. Make sure you have `openai` installed
-and have set your `OPENAI_API_KEY` appropriately
+## 4. 微调模型
+
+现在是微调模型的时候了。确保您已安装 `openai` 并已正确设置 `OPENAI_API_KEY`
 
 
 ```python
@@ -160,7 +152,7 @@ print(f"File {training_file.id} ready after {time.time() - start_time:.2f} secon
 ```output
 File file-zHIgf4r8LltZG3RFpkGd4Sjf ready after 10.19 seconds.
 ```
-With the file ready, it's time to kick off a training job.
+文件准备好后，接下来是启动训练任务。
 
 
 ```python
@@ -170,7 +162,7 @@ job = openai.fine_tuning.jobs.create(
 )
 ```
 
-Grab a cup of tea while your model is being prepared. This may take some time!
+在您的模型准备期间，喝杯茶吧。这可能需要一些时间！
 
 
 ```python
@@ -192,10 +184,10 @@ print(job.fine_tuned_model)
 ```output
 ft:gpt-3.5-turbo-0613:personal::7sKoRdlz
 ```
-## 5. Use in LangChain
 
-You can use the resulting model ID directly the `ChatOpenAI` model class.
+## 5. 在 LangChain 中使用
 
+您可以直接在 `ChatOpenAI` 模型类中使用生成的模型 ID。
 
 ```python
 from langchain_openai import ChatOpenAI
@@ -205,7 +197,6 @@ model = ChatOpenAI(
     temperature=1,
 )
 ```
-
 
 ```python
 from langchain_core.output_parsers import StrOutputParser
@@ -220,7 +211,6 @@ prompt = ChatPromptTemplate.from_messages(
 
 chain = prompt | model | StrOutputParser()
 ```
-
 
 ```python
 for tok in chain.stream({"input": "What's the golden thread?"}):
