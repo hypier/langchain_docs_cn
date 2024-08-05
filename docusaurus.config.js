@@ -83,7 +83,7 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
-          editUrl: "https://github.com/langchain-ai/langchain/edit/master/docs/",
+          editUrl: "https://github.com/hypier/langchain_docs_cn/edit/main/",
           sidebarPath: require.resolve("./sidebars.js"),
           remarkPlugins: [
             [require("@docusaurus/remark-plugin-npm2yarn"), { sync: true }],
