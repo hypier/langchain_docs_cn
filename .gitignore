@@ -2,3 +2,4 @@
 .idea
 /.docusaurus/
 /build/
+.DS_Store

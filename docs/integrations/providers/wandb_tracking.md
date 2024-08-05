@@ -82,31 +82,7 @@ wandb_callback = WandbCallbackHandler(
 callbacks = [StdOutCallbackHandler(), wandb_callback]
 llm = OpenAI(temperature=0, callbacks=callbacks)
 ```
-```output
-[34m[1mwandb[0m: 当前已登录为: [33mharrison-chase[0m。使用 [1m`wandb login --relogin`[0m 强制重新登录
-```
-```html
-使用 wandb 版本 0.14.0 跟踪运行 
-```
 
-```html
-运行数据保存在本地 <code>/Users/harrisonchase/workplace/langchain/docs/ecosystem/wandb/run-20230318_150408-e47j1914</code> 
-```
-
-```html
-将运行 <strong><a href='https://wandb.ai/harrison-chase/langchain_callback_demo/runs/e47j1914' target="_blank">llm</a></strong> 同步到 <a href='https://wandb.ai/harrison-chase/langchain_callback_demo' target="_blank">权重与偏差</a> (<a href='https://wandb.me/run' target="_blank">文档</a>)<br/> 
-```
-
-```html
-在 <a href='https://wandb.ai/harrison-chase/langchain_callback_demo' target="_blank">https://wandb.ai/harrison-chase/langchain_callback_demo</a> 查看项目 
-```
-
-```html
-在 <a href='https://wandb.ai/harrison-chase/langchain_callback_demo/runs/e47j1914' target="_blank">https://wandb.ai/harrison-chase/langchain_callback_demo/runs/e47j1914</a> 查看运行 
-```
-```output
-[34m[1mwandb[0m: [33m警告[0m wandb 回调目前处于测试阶段，并可能会根据 `langchain` 的更新而变化。请将任何问题报告到 https://github.com/wandb/wandb/issues，并附上标签 `langchain`。
-```
 
 ```
 # WandbCallbackHandler.flush_tracker(...) 的默认值
@@ -123,41 +99,7 @@ llm_result = llm.generate(["告诉我一个笑话", "给我一首诗"] * 3)
 wandb_callback.flush_tracker(llm, name="simple_sequential")
 ```
 
-```html
-等待 W&B 进程完成... <strong style="color:green">(成功).</strong> 
-```
 
-```html
-在 <strong style="color:#cdcd00">llm</strong> 运行中查看: <a href='https://wandb.ai/harrison-chase/langchain_callback_demo/runs/e47j1914' target="_blank">https://wandb.ai/harrison-chase/langchain_callback_demo/runs/e47j1914</a><br/>已同步 5 个 W&B 文件，2 个媒体文件，5 个工件文件和 0 个其他文件 
-```
-
-```html
-在: <code>./wandb/run-20230318_150408-e47j1914/logs</code> 查找日志 
-```
-
-```output
-VBox(children=(Label(value='等待 wandb.init()...\r'), FloatProgress(value=0.016745895149999985, max=1.0…
-```
-
-```html
-使用 wandb 版本 0.14.0 跟踪运行 
-```
-
-```html
-运行数据保存在本地 <code>/Users/harrisonchase/workplace/langchain/docs/ecosystem/wandb/run-20230318_150534-jyxma7hu</code> 
-```
-
-```html
-将运行 <strong><a href='https://wandb.ai/harrison-chase/langchain_callback_demo/runs/jyxma7hu' target="_blank">simple_sequential</a></strong> 同步到 <a href='https://wandb.ai/harrison-chase/langchain_callback_demo' target="_blank">权重与偏差</a> (<a href='https://wandb.me/run' target="_blank">文档</a>)<br/> 
-```
-
-```html
-在 <a href='https://wandb.ai/harrison-chase/langchain_callback_demo' target="_blank">https://wandb.ai/harrison-chase/langchain_callback_demo</a> 查看项目 
-```
-
-```html
-在 <a href='https://wandb.ai/harrison-chase/langchain_callback_demo/runs/jyxma7hu' target="_blank">https://wandb.ai/harrison-chase/langchain_callback_demo/runs/jyxma7hu</a> 查看运行 
-```
 
 ```python
 from langchain.chains import LLMChain
@@ -183,41 +125,7 @@ synopsis_chain.apply(test_prompts)
 wandb_callback.flush_tracker(synopsis_chain, name="agent")
 ```
 
-```html
-等待 W&B 进程完成... <strong style="color:green">(成功).</strong> 
-```
 
-```html
-在 <strong style="color:#cdcd00">simple_sequential</strong> 运行中查看: <a href='https://wandb.ai/harrison-chase/langchain_callback_demo/runs/jyxma7hu' target="_blank">https://wandb.ai/harrison-chase/langchain_callback_demo/runs/jyxma7hu</a><br/>已同步 4 个 W&B 文件，2 个媒体文件，6 个工件文件和 0 个其他文件 
-```
-
-```html
-在: <code>./wandb/run-20230318_150534-jyxma7hu/logs</code> 查找日志 
-```
-
-```output
-VBox(children=(Label(value='等待 wandb.init()...\r'), FloatProgress(value=0.016736786816666675, max=1.0…
-```
-
-```html
-使用 wandb 版本 0.14.0 跟踪运行 
-```
-
-```html
-运行数据保存在本地 <code>/Users/harrisonchase/workplace/langchain/docs/ecosystem/wandb/run-20230318_150550-wzy59zjq</code> 
-```
-
-```html
-将运行 <strong><a href='https://wandb.ai/harrison-chase/langchain_callback_demo/runs/wzy59zjq' target="_blank">agent</a></strong> 同步到 <a href='https://wandb.ai/harrison-chase/langchain_callback_demo' target="_blank">权重与偏差</a> (<a href='https://wandb.me/run' target="_blank">文档</a>)<br/> 
-```
-
-```html
-在 <a href='https://wandb.ai/harrison-chase/langchain_callback_demo' target="_blank">https://wandb.ai/harrison-chase/langchain_callback_demo</a> 查看项目 
-```
-
-```html
-在 <a href='https://wandb.ai/harrison-chase/langchain_callback_demo/runs/wzy59zjq' target="_blank">https://wandb.ai/harrison-chase/langchain_callback_demo/runs/wzy59zjq</a> 查看运行 
-```
 
 ```python
 from langchain.agents import AgentType, initialize_agent, load_tools
@@ -236,33 +144,4 @@ agent.run(
     callbacks=callbacks,
 )
 wandb_callback.flush_tracker(agent, reset=False, finish=True)
-```
-```output
-
-
-[1m> 进入新的 AgentExecutor 链...[0m
-[32;1m[1;3m 我需要找出莱昂纳多·迪卡普里奥的女友是谁，然后计算她的年龄的 0.43 次方。
-动作: 搜索
-动作输入: "莱昂纳多·迪卡普里奥 女友"[0m
-观察: [36;1m[1;3m迪卡普里奥有一个稳定的女友，名叫卡米拉·莫罗内。他与这位从模特转行的女演员交往了近五年，最初是在 2017 年底被报道的。现在 26 岁的莫罗内对好莱坞并不陌生。[0m
-思考:[32;1m[1;3m 我需要计算她的年龄的 0.43 次方。
-动作: 计算器
-动作输入: 26^0.43[0m
-观察: [33;1m[1;3m答案: 4.059182145592686
-[0m
-思考:[32;1m[1;3m 我现在知道最终答案。
-最终答案: 莱昂纳多·迪卡普里奥的女友是卡米拉·莫罗内，她当前的年龄的 0.43 次方是 4.059182145592686。[0m
-
-[1m> 完成链。[0m
-```
-
-等待 W&B 进程完成... <strong style="color:green">(成功).</strong> 
-```
-
-```html
-查看运行 <strong style="color:#cdcd00">agent</strong> 在: <a href='https://wandb.ai/harrison-chase/langchain_callback_demo/runs/wzy59zjq' target="_blank">https://wandb.ai/harrison-chase/langchain_callback_demo/runs/wzy59zjq</a><br/>已同步 5 个 W&B 文件，2 个媒体文件，7 个工件文件和 0 个其他文件 
-```
-
-```html
-查找日志在: <code>./wandb/run-20230318_150550-wzy59zjq/logs</code> 
 ```
