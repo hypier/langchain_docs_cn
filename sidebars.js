@@ -111,7 +111,7 @@
   integrations: [
     {
       type: "category",
-      label: "提供商",
+      label: "提供者",
       collapsible: false,
       items: [
         {
